@@ -1,0 +1,7 @@
+# ignore everything that isn't in the `src` directory
+/*
+!/src
+# ignore file types that prettier does not support
+*.png
+*.snap
+*.svg
