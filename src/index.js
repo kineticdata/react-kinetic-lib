@@ -1,11 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { commitStore, store } from './store';
+import { UserDetails } from './user_details/UserDetails';
+import { UserForm } from './user_form/UserForm';
+import { UserList } from './user_list/UserList';
 
-export default class extends Component {
-  render() {
-    return (
-      <div>
-        <h2>Welcome to React components</h2>
-      </div>
-    );
-  }
-}
+commitStore();
+
+const KineticLib = props => (
+  <Provider store={store}>{...props.children}</Provider>
+);
+
+export { KineticLib, UserDetails, UserForm, UserList };
