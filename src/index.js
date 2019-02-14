@@ -1,9 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { commitStore, store } from './store';
-import { UserDetails } from './user_details/UserDetails';
-import { UserForm } from './user_form/UserForm';
-import { UserList } from './user_list/UserList';
+import { UserDetails } from './components/user_details/UserDetails';
+import { UserForm } from './components/user_form/UserForm';
+import { UserList } from './components/user_list/UserList';
 
 commitStore();
 
