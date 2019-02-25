@@ -30,13 +30,17 @@ module.exports = {
   styleguideComponents: {
     Wrapper: path.join(__dirname, 'tests/StyleguideWrapper')
   },
+  usageMode: 'expand',
+  exampleMode: 'expand',
   sections: [
     {
       name: 'Components',
       content: 'src/apis/APIs.md',
+      sectionDepth: 1,
       sections: [
+        { name: 'Common', components: 'src/components/common/**/*.js' },
         { name: 'Core', components: 'src/components/core/**/*.js' },
-        { name: 'Discussions', components: 'src/components/discussions/**/*.js' }, 
+        { name: 'Discussions', components: 'src/components/discussions/**/*.js', }, 
       ]
     },
     {

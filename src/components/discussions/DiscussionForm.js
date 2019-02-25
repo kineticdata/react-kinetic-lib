@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
-import axios from 'axios';
-import { bundle } from 'react-kinetic-core';
+import t from 'prop-types';
+// import axios from 'axios';
+// import { bundle } from 'react-kinetic-core';
 
 export class DiscussionForm extends React.Component {
   constructor(props) {
@@ -34,13 +35,13 @@ export class DiscussionForm extends React.Component {
   }
 
   componentDidMount() {
-    axios
-      .get(`${bundle.apiLocation()}/securityPolicyDefinitions`)
-      .then(response =>
-        this.setState({
-          securityPolicyDefinitions: response.data.securityPolicyDefinitions,
-        }),
-      );
+    // axios
+    //   .get(`${bundle.apiLocation()}/securityPolicyDefinitions`)
+    //   .then(response =>
+    //     this.setState({
+    //       securityPolicyDefinitions: response.data.securityPolicyDefinitions,
+    //     }),
+    //   );
   }
 
   validate = values => {
@@ -111,10 +112,9 @@ export class DiscussionForm extends React.Component {
               onChange={this.handleChange}
               onBlur={this.handleBlur}
             />
-            {validations.title &&
-              this.state.touched.title && (
-                <p className="text-danger">{validations.title}</p>
-              )}
+            {validations.title && this.state.touched.title && (
+              <p className="text-danger">{validations.title}</p>
+            )}
           </div>
           <div className="form-group">
             <label htmlFor="description">Description</label>
@@ -221,3 +221,20 @@ export class DiscussionForm extends React.Component {
     });
   }
 }
+DiscussionForm.propTypes = {
+  /** If the form is editing an existing discussion this should be the discussion object. */
+  discussion: t.object,
+  /** If the form is not editing an existing discussion you can provide default values. */
+  defaults: t.shape({
+    /** Default title. */
+    title: t.string,
+    /** Default description. */
+    description: t.string,
+  }),
+  /** A render function which is used to render the user input/selection. */
+  renderOwningUsersInput: t.func.isRequired,
+  /** A render function which is used to render the team input/selection. */
+  renderOwningTeamsInput: t.func.isRequired,
+  /** A render function which is used to customize and control discussion form. */
+  render: t.func.isRequired,
+};

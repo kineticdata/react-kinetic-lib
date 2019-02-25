@@ -22,6 +22,7 @@
 // SOFTWARE.
 
 import React, { Component } from 'react';
+import t from 'prop-types';
 
 export default class ContentEditable extends Component {
   constructor(props) {
@@ -130,3 +131,26 @@ export default class ContentEditable extends Component {
     );
   }
 }
+ContentEditable.propTypes = {
+  /** The `html` prop is similar to the `value` prop on other controlled inputs. */
+  html: t.string,
+  /** Can be used disable content editable or convert it to plantext-only mode. Default mode allows HTML elements. */
+  contentEditable: t.oneOf(['false', 'plaintext-only']),
+  /** Event callback whenever a key is pressed within the content editable. */
+  onKeyPress: t.func.isRequired,
+  /** Event callback whenever the content editable value is changed. Function signature is `function(event, value)` */
+  onChange: t.func.isRequired,
+  /** Event callback for focus events. */
+  onFocus: t.func,
+  /** Event callback for blur events. */
+  onBlur: t.func,
+  /** Event callback wheneve content is pasted into the content editable element. */
+  onPaste: t.func,
+
+  /** This is used to override the tag that is used when rendering the content editable to the DOM. */
+  tagName: t.any,
+};
+
+ContentEditable.defaultProps = {
+  tagName: 'div',
+};
