@@ -1,4 +1,4 @@
-import { axios } from '../../discussions-lib/redux/store';
+import { axios } from '../store';
 import { bundle } from 'react-kinetic-core';
 import { List } from 'immutable';
 

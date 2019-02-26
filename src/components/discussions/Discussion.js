@@ -1,18 +1,22 @@
 import React from 'react';
+import t from 'prop-types';
 import { is } from 'immutable';
 import { MessagesList } from './MessagesList';
 import { ScrollHelper } from './ScrollHelper';
 import { ChatInputForm } from './ChatInputForm';
 import { MoreMessagesBanner } from './MoreMessagesBanner';
-import canManage from '../helpers/canManage';
+import canManage from '../../helpers/discussions/canManage';
 import {
   JOIN_DISCUSSION,
   LEAVE_DISCUSSION,
   FETCH_MORE_MESSAGES,
-} from '../redux/reducer';
-import { Provider, connect, dispatch } from '../redux/store';
+} from './redux';
+import './sagas';
+import { Provider, connect, dispatch } from '../../store';
 
 export class DiscussionComponent extends React.Component {
+  static displayName = 'Discussion';
+
   constructor(props) {
     super(props);
     this.state = {
@@ -155,10 +159,14 @@ const ConnectedDiscussionComponent = connect((state, props) => {
   };
 })(DiscussionComponent);
 
-export const Discussion = props => (
-  <Provider>
-    <ConnectedDiscussionComponent {...props} />
-  </Provider>
-);
+export const Discussion = props => <ConnectedDiscussionComponent {...props} />;
+// export const Discussion = props => (
+//   <Provider>
+//     <ConnectedDiscussionComponent {...props} />
+//   </Provider>
+// );
 
-export default Discussion;
+export default DiscussionComponent;
+DiscussionComponent.propTypes = {
+  render: t.func.isRequired,
+};

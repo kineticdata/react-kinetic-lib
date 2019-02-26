@@ -25,7 +25,8 @@ module.exports = {
     'babel-polyfill',
   ],
   moduleAliases: {
-    'react-kinetic-lib': path.resolve(__dirname, 'src')
+    'react-kinetic-lib': path.resolve(__dirname, 'src'),
+    'react-kinetic-core': path.resolve(__dirname, 'tests/rkcGuide.js')
   },
   styleguideComponents: {
     Wrapper: path.join(__dirname, 'tests/StyleguideWrapper')

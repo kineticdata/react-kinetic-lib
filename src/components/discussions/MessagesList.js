@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import partitionListBy from '../helpers/partitionListBy';
+import partitionListBy from '../../helpers/partitionListBy';
 import { MessagesByDate } from './MessagesByDate';
 
 const getMessageDate = message =>

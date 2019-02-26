@@ -4,19 +4,19 @@ import Markdown from 'react-markdown';
 import classnames from 'classnames';
 
 // Import images used.
-import aviIcon from '../../../discussions/src/assets/images/avi_128.png';
-import excelIcon from '../../../discussions/src/assets/images/excel_128.png';
-import htmlIcon from '../../../discussions/src/assets/images/html_128.png';
-import illustratorIcon from '../../../discussions/src/assets/images/illustrator_128.png';
-import movieIcon from '../../../discussions/src/assets/images/movie_128.png';
-import indesignIcon from '../../../discussions/src/assets/images/indesign_128.png';
-import mpegIcon from '../../../discussions/src/assets/images/mpeg_128.png';
-import pdfIcon from '../../../discussions/src/assets/images/pdf_128.png';
-import photoshopIcon from '../../../discussions/src/assets/images/photoshop_128.png';
-import powerpointIcon from '../../../discussions/src/assets/images/powerpoint_128.png';
-import txtIcon from '../../../discussions/src/assets/images/txt_128.png';
-import unknownIcon from '../../../discussions/src/assets/images/unknown_128.png';
-import wordIcon from '../../../discussions/src/assets/images/word_128.png';
+import aviIcon from '../../assets/discussions/images/avi_128.png';
+import excelIcon from '../../assets/discussions/images/excel_128.png';
+import htmlIcon from '../../assets/discussions/images/html_128.png';
+import illustratorIcon from '../../assets/discussions/images/illustrator_128.png';
+import movieIcon from '../../assets/discussions/images/movie_128.png';
+import indesignIcon from '../../assets/discussions/images/indesign_128.png';
+import mpegIcon from '../../assets/discussions/images/mpeg_128.png';
+import pdfIcon from '../../assets/discussions/images/pdf_128.png';
+import photoshopIcon from '../../assets/discussions/images/photoshop_128.png';
+import powerpointIcon from '../../assets/discussions/images/powerpoint_128.png';
+import txtIcon from '../../assets/discussions/images/txt_128.png';
+import unknownIcon from '../../assets/discussions/images/unknown_128.png';
+import wordIcon from '../../assets/discussions/images/word_128.png';
 
 const AVAILABLE_ICONS = {
   avi: aviIcon,
@@ -99,47 +99,44 @@ const formatFileSize = fileSize => {
 export const TextMessage = ({ discussion, message }) => (
   <div>
     <Markdown source={produceContent(message)} skipHtml />
-    {message.content.filter(c => c.type === 'attachment').map(attachment => (
-      <div
-        key={attachment.value.documentId}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          paddingBottom: '0.5em',
-        }}
-      >
-        <a
-          href={attachmentUrl(discussion, message, attachment.value)}
-          target="_blank"
+    {message.content
+      .filter(c => c.type === 'attachment')
+      .map(attachment => (
+        <div
+          key={attachment.value.documentId}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            paddingBottom: '0.5em',
+          }}
         >
-          <img
-            src={thumbnailUrl(discussion, message, attachment.value)}
-            alt={attachment.value.filename}
-          />
-        </a>
+          <a
+            href={attachmentUrl(discussion, message, attachment.value)}
+            target="_blank"
+          >
+            <img
+              src={thumbnailUrl(discussion, message, attachment.value)}
+              alt={attachment.value.filename}
+            />
+          </a>
 
-        <small>
-          {attachment.value.filename} (<em>
-            {formatFileSize(attachment.value.size)}
-          </em>)
-        </small>
-      </div>
-    ))}
+          <small>
+            {attachment.value.filename} (
+            <em>{formatFileSize(attachment.value.size)}</em>)
+          </small>
+        </div>
+      ))}
   </div>
 );
 
 export const Message = ({ discussion, message, actions }) => (
   <div className={`message ${editedClass(message)}`}>
     <TextMessage discussion={discussion} message={message} />
-    {actions &&
-      message.createdAt !== message.updatedAt && (
-        <button
-          className="btn btn-link"
-          onClick={() => actions.history(message)}
-        >
-          <em>(Edited)</em>
-        </button>
-      )}
+    {actions && message.createdAt !== message.updatedAt && (
+      <button className="btn btn-link" onClick={() => actions.history(message)}>
+        <em>(Edited)</em>
+      </button>
+    )}
     {message.parent && (
       <div className="message--parent">
         {message.parent.unknown ? (

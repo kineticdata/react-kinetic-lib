@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { DateBanner } from './DateBanner';
-import partitionListBy from '../helpers/partitionListBy';
+import partitionListBy from '../../helpers/partitionListBy';
 import { SystemMessageGroup } from './SystemMessageGroup';
 import { UserMessageGroup } from './UserMessageGroup';
 
@@ -32,7 +32,9 @@ export const MessagesByDate = props => {
               ? UserMessageGroup
               : SystemMessageGroup,
         }))
-        .map(({ Component, ...props }) => <Component {...props} />)}
+        .map(({ Component, ...props }) => (
+          <Component {...props} />
+        ))}
     />
   );
 };

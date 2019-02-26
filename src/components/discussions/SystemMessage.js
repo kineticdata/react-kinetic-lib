@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, Range } from 'immutable';
 import moment from 'moment';
-import generateSystemMessageContent from '../helpers/generateSystemMessageContent';
+import generateSystemMessageContent from '../../helpers/discussions/generateSystemMessageContent';
 
 export const PlainMessageContent = ({ content }) => {
   const plainContent = content

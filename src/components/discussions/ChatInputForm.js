@@ -10,9 +10,10 @@ import {
   PopoverBody,
 } from 'reactstrap';
 import classNames from 'classnames';
-import ContentEditable from './ContentEditable';
-import { Provider, connect, dispatch } from '../redux/store';
-import { actions } from '../redux/reducer';
+import ContentEditable from '../common/ContentEditable';
+import { connect } from '../../store';
+
+// import { actions } from '../redux/reducer';
 import { bundle } from 'react-kinetic-core';
 
 const VALID_IMG_TYPES = [
@@ -365,8 +366,9 @@ class ChatInput extends Component {
 
 export const ConnectedChatInputForm = compose(connect(null))(ChatInput);
 
-export const ChatInputForm = props => (
-  <Provider>
-    <ConnectedChatInputForm {...props} />
-  </Provider>
-);
+export const ChatInputForm = props => <ConnectedChatInputForm {...props} />;
+// (
+//   <Provider>
+//     <ConnectedChatInputForm {...props} />
+//   </Provider>
+// );
