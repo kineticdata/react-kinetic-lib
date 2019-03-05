@@ -16,7 +16,7 @@ import {
   fetchMessages,
   sendMessage,
   updateMessage,
-} from '../../apis/discussionApi';
+} from '../../apis/discussions';
 import { config, regSaga } from '../../store';
 import {
   ADD_DISCUSSION,

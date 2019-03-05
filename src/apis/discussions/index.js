@@ -1,5 +1,5 @@
-import { axios } from '../store';
-import { bundle } from 'react-kinetic-core';
+import { axios } from '../../store';
+import { bundle } from '../../helpers/coreHelpers';
 import { List } from 'immutable';
 
 /** The default number of messages retrieved per page. */

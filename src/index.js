@@ -21,8 +21,68 @@ import {
   removeInvite,
   removeParticipant,
   updateParticipant,
-} from './apis/discussionApi';
-
+} from './apis/discussions';
+import {
+  // Bridged Resource exports
+  bridgedResourceUrl,
+  convertMultipleBridgeRecords,
+  fetchBridgedResource,
+  countBridgedResource,
+  // Bridge Model exports
+  fetchBridgeModels,
+  fetchBridgeModel,
+  createBridgeModel,
+  updateBridgeModel,
+  // Category exports
+  fetchCategories,
+  fetchCategory,
+  // Form exports
+  fetchForms,
+  fetchForm,
+  createForm,
+  updateForm,
+  // Kapp exports
+  fetchKapps,
+  fetchKapp,
+  updateKapp,
+  // Profile exports
+  fetchProfile,
+  updateProfile,
+  // Space exports
+  fetchSpace,
+  updateSpace,
+  // Submission exports
+  SubmissionSearch,
+  searchSubmissions,
+  fetchSubmission,
+  createSubmission,
+  updateSubmission,
+  deleteSubmission,
+  // Team exports
+  fetchTeams,
+  fetchTeam,
+  updateTeam,
+  createTeam,
+  deleteTeam,
+  // User exports
+  fetchUsers,
+  fetchUser,
+  updateUser,
+  createUser,
+  deleteUser,
+  // Version exports
+  fetchVersion as fetchCoreVersion,
+} from './apis/core';
+import {
+  VALID_EVENTS,
+  SOCKET_STAGE,
+  SOCKET_STATUS,
+  Socket,
+  Timer,
+  TOPIC_STATUS,
+  Topic,
+} from './apis/socket';
+import { K, bundle } from './helpers/coreHelpers';
 commitStore();
 
 const KineticLib = props => <Provider store={store}>{props.children}</Provider>;
@@ -32,6 +92,59 @@ export {
   KineticLib,
   // Common exports.
   ContentEditable,
+  // Core Helpers
+  K,
+  bundle,
+  // Core API exports
+  // Bridged Resource exports
+  bridgedResourceUrl,
+  convertMultipleBridgeRecords,
+  fetchBridgedResource,
+  countBridgedResource,
+  // Bridge Model exports
+  fetchBridgeModels,
+  fetchBridgeModel,
+  createBridgeModel,
+  updateBridgeModel,
+  // Category exports
+  fetchCategories,
+  fetchCategory,
+  // Form exports
+  fetchForms,
+  fetchForm,
+  createForm,
+  updateForm,
+  // Kapp exports
+  fetchKapps,
+  fetchKapp,
+  updateKapp,
+  // Profile exports
+  fetchProfile,
+  updateProfile,
+  // Space exports
+  fetchSpace,
+  updateSpace,
+  // Submission exports
+  SubmissionSearch,
+  searchSubmissions,
+  fetchSubmission,
+  createSubmission,
+  updateSubmission,
+  deleteSubmission,
+  // Team exports
+  fetchTeams,
+  fetchTeam,
+  updateTeam,
+  createTeam,
+  deleteTeam,
+  // User exports
+  fetchUsers,
+  fetchUser,
+  updateUser,
+  createUser,
+  deleteUser,
+  // Version exports
+  fetchCoreVersion,
   // Core exports
   UserForm,
   UserList,
@@ -55,4 +168,12 @@ export {
   partitionListBy,
   // Redux exports
   configure,
+  // Socket API exports
+  VALID_EVENTS,
+  SOCKET_STAGE,
+  SOCKET_STATUS,
+  Socket,
+  Timer,
+  TOPIC_STATUS,
+  Topic,
 };
