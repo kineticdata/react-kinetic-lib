@@ -4,6 +4,7 @@ import {
   deserializeAttributes,
   handleErrors,
   paramBuilder,
+  headerBuilder,
   serializeAttributes,
 } from '../http';
 
@@ -11,6 +12,7 @@ export const fetchSpace = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.get(`${bundle.apiLocation()}/space`, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the space one.
   promise = promise.then(response => ({ space: response.data.space }));
@@ -32,7 +34,10 @@ export const updateSpace = (options = {}) => {
     .put(
       `${bundle.apiLocation()}/space`,
       serializeAttributes(space, 'attributes'),
-      { params: paramBuilder(options) },
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
     )
     .then(response => ({ space: response.data.space }))
     .then(deserializeAttributes('attributes', 'space'))

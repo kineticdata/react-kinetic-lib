@@ -1,6 +1,8 @@
 import {
   deserializeAttributes,
+  headerBuilder,
   serializeAttributes,
+  setDefaultAuthAssumed,
   corePath,
   handleErrors,
 } from './http';
@@ -185,6 +187,28 @@ describe('http module', () => {
           '/kinetic/acme/app/datastore/submissions/abc123',
         );
       });
+    });
+  });
+
+  describe('headerBuilder', () => {
+    // Make sure the default is reset for each test case
+    beforeEach(() => setDefaultAuthAssumed(false));
+
+    test('returns empty object when given no relevant options', () => {
+      expect(headerBuilder({})).toEqual({});
+    });
+    test('sets X-Kinetic-AuthAssumed when given no options but default is true', () => {
+      setDefaultAuthAssumed(true);
+      expect(headerBuilder({})).toEqual({ 'X-Kinetic-AuthAssumed': 'true' });
+    });
+    test('sets X-Kinetic-AuthAssumed when given truthy value in options', () => {
+      expect(headerBuilder({ authAssumed: true })).toEqual({
+        'X-Kinetic-AuthAssumed': 'true',
+      });
+    });
+    test('omits X-Kinetic-AuthAssumed when given falsey value in options (and default is true)', () => {
+      setDefaultAuthAssumed(true);
+      expect(headerBuilder({ authAssumed: false })).toEqual({});
     });
   });
 });

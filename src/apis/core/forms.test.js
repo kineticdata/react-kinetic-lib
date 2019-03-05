@@ -169,7 +169,7 @@ describe('forms api', () => {
             name: 'Test Form',
             attributes: [{ name: 'Icon', values: ['fa-gear'] }],
           },
-          { params: { include: 'attributes,pages' } },
+          { params: { include: 'attributes,pages' }, headers: {} },
         ],
       ]);
       expect(form).toEqual({
@@ -206,7 +206,7 @@ describe('forms api', () => {
             name: 'Test Datastore Form',
             attributes: [{ name: 'Icon', values: ['fa-gear'] }],
           },
-          { params: { include: 'attributes,pages' } },
+          { params: { include: 'attributes,pages' }, headers: {} },
         ],
       ]);
       expect(form).toEqual({
@@ -225,7 +225,7 @@ describe('forms api', () => {
         [
           'form/app/api/v1/kapps/mock-kapp/forms',
           { name: 'Test' },
-          { params: {} },
+          { params: {}, headers: {} },
         ],
       ]);
     });
@@ -268,7 +268,7 @@ describe('forms api', () => {
       });
       expect(form).toBeUndefined();
       expect(error).toBe('Invalid form');
-      expect(errors).toBeUndefined();
+      expect(errors).toEqual(['Invalid form']);
       expect(serverError).toBeUndefined();
     });
 
@@ -317,7 +317,7 @@ describe('forms api', () => {
             name: 'Test Form',
             attributes: [{ name: 'Icon', values: ['fa-gear'] }],
           },
-          { params: { include: 'attributes,pages' } },
+          { params: { include: 'attributes,pages' }, headers: {} },
         ],
       ]);
       expect(form).toEqual({
@@ -355,7 +355,7 @@ describe('forms api', () => {
             name: 'Test Datastore Form',
             attributes: [{ name: 'Icon', values: ['fa-gear'] }],
           },
-          { params: { include: 'attributes,pages' } },
+          { params: { include: 'attributes,pages' }, headers: {} },
         ],
       ]);
       expect(form).toEqual({
@@ -374,7 +374,7 @@ describe('forms api', () => {
         [
           'form/app/api/v1/kapps/mock-kapp/forms/test',
           { name: 'Test' },
-          { params: {} },
+          { params: {}, headers: {} },
         ],
       ]);
     });
@@ -425,7 +425,7 @@ describe('forms api', () => {
       });
       expect(form).toBeUndefined();
       expect(error).toBe('Invalid form');
-      expect(errors).toBeUndefined();
+      expect(errors).toEqual(['Invalid form']);
       expect(serverError).toBeUndefined();
     });
 

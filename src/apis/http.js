@@ -1,6 +1,24 @@
 import axios from 'axios';
 import { bundle } from '../helpers/coreHelpers';
 
+// The `X-Kinetic-AuthAssumed` header was added in version 2.2 of Kinetic Core.
+// You can add this if you are expecting to be authenticated for a request to
+// get a 401 instead of a partial list of the data if you are not authenticated.
+// Since many bundles (like request-ce-bundle-kinetic) will want it to always
+// behave this way we let you tell CoreAPI to always add this header to the api
+// calls instead of manually adding it to all usages of CoreAPI functions.
+export let defaultAuthAssumed = false;
+export const setDefaultAuthAssumed = boolean => {
+  defaultAuthAssumed = boolean;
+};
+
+export const addRequestInterceptor = (fulfilled, rejected) => {
+  axios.interceptors.request.use(fulfilled, rejected);
+};
+export const addResponseInterceptor = (fulfilled, rejected) => {
+  axios.interceptors.response.use(fulfilled, rejected);
+};
+
 export const deserializeAttributes = (attributeKey, envelop) => result => {
   const xlatable = envelop ? result[envelop] : result;
 
@@ -60,7 +78,13 @@ export const handleErrors = error => {
   const { data, status, statusText } = error.response;
   if (status === 400 && typeof data === 'object') {
     // If the errors returned are from server-side validations or constraints.
-    return data.errors ? { errors: data.errors } : data;
+    if (data.errors) {
+      return { errors: data.errors };
+    } else if (data.error) {
+      return { errors: [data.error], ...data };
+    } else {
+      return data;
+    }
   }
 
   // For all other server-side errors.
@@ -82,7 +106,27 @@ export const paramBuilder = options => {
     params.manage = options.manage;
   }
 
+  if (options.export) {
+    params.export = options.export;
+  }
+
   return params;
+};
+
+export const headerBuilder = options => {
+  const headers = {};
+  // CAREFUL to not override falsey values explicitly passed in options, hence
+  // the nested if statement.
+  if (options.hasOwnProperty('authAssumed')) {
+    if (options.authAssumed) {
+      headers['X-Kinetic-AuthAssumed'] = 'true';
+    }
+  } else {
+    if (defaultAuthAssumed) {
+      headers['X-Kinetic-AuthAssumed'] = 'true';
+    }
+  }
+  return headers;
 };
 
 export const formPath = ({ form, kapp, datastore }) =>
@@ -107,11 +151,3 @@ export const corePath = ({ submission, kapp, form, datastore = false }) =>
   submission
     ? submissionPath({ submission, datastore })
     : formPath({ form, kapp, datastore });
-
-export const addRequestInterceptor = (fulfilled, rejected) => {
-  axios.interceptors.request.use(fulfilled, rejected);
-};
-
-export const addResponseInterceptor = (fulfilled, rejected) => {
-  axios.interceptors.response.use(fulfilled, rejected);
-};

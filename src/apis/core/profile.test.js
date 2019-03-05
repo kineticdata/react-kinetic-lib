@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { fetchProfile, updateProfile } from './profile';
-import { UserBuilder } from '.../../../tests/utils/user_builder';
+import { UserBuilder } from '../../../tests/utils/user_builder';
 import {
   rejectPromiseWith,
   resolvePromiseWith,

@@ -5,12 +5,14 @@ import {
   serializeAttributes,
   handleErrors,
   paramBuilder,
+  headerBuilder,
 } from '../http';
 
 export const fetchUsers = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.get(`${bundle.apiLocation()}/users`, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the users one.
   promise = promise.then(response => ({ users: response.data.users }));
@@ -33,6 +35,7 @@ export const fetchUser = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.get(`${bundle.apiLocation()}/users/${username}`, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the user one.
   promise = promise.then(response => ({ user: response.data.user }));
@@ -63,6 +66,7 @@ export const updateUser = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.put(`${bundle.apiLocation()}/users/${username}`, user, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the user one.
   promise = promise.then(response => ({ user: response.data.user }));
@@ -88,6 +92,7 @@ export const createUser = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.post(`${bundle.apiLocation()}/users`, user, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the space one.
   promise = promise.then(response => ({ user: response.data.user }));
@@ -110,6 +115,7 @@ export const deleteUser = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.delete(`${bundle.apiLocation()}/users/${username}`, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the space one.
   // promise = promise.then(response => ({ user: response.data.user }));

@@ -3,6 +3,7 @@ import { bundle } from '../../helpers/coreHelpers';
 import {
   deserializeAttributes,
   handleErrors,
+  headerBuilder,
   paramBuilder,
   serializeAttributes,
 } from '../http';
@@ -11,6 +12,7 @@ export const fetchKapps = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.get(`${bundle.apiLocation()}/kapps`, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the space one.
   promise = promise.then(response => ({ kapps: response.data.kapps }));
@@ -28,6 +30,7 @@ export const fetchKapp = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.get(`${bundle.apiLocation()}/kapps/${kappSlug}`, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the space one.
   promise = promise.then(response => ({ kapp: response.data.kapp }));
@@ -52,7 +55,10 @@ export const updateKapp = (options = {}) => {
     .put(
       `${bundle.apiLocation()}/kapps/${kappSlug}`,
       serializeAttributes(kapp, 'attributes'),
-      { params: paramBuilder(options) },
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
     )
     .then(response => ({ kapp: response.data.kapp }))
     .then(deserializeAttributes('attributes', 'kapp'))

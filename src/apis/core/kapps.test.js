@@ -1,7 +1,7 @@
 import axios from 'axios';
 import createError from 'axios/lib/core/createError';
 import { fetchKapp, fetchKapps, updateKapp } from './kapps';
-import { KappBuilder } from '.../../../tests/utils/kapp_builder';
+import { KappBuilder } from '../../../tests/utils/kapp_builder';
 import {
   rejectPromiseWith,
   resolvePromiseWith,
@@ -160,7 +160,7 @@ describe('kapps api', () => {
             name: 'Test',
             attributes: [{ name: 'Company Name', values: ['Foo Bar'] }],
           },
-          { params: { include: 'attributes' } },
+          { params: { include: 'attributes' }, headers: {} },
         ],
       ]);
       expect(kapp).toEqual({
@@ -176,7 +176,11 @@ describe('kapps api', () => {
       axios.put.mockResolvedValue({ status: 200, data: {} });
       await updateKapp({ kapp: { name: 'Test' } });
       expect(axios.put.mock.calls).toEqual([
-        ['kapp/app/api/v1/kapps/mock-kapp', { name: 'Test' }, { params: {} }],
+        [
+          'kapp/app/api/v1/kapps/mock-kapp',
+          { name: 'Test' },
+          { params: {}, headers: {} },
+        ],
       ]);
     });
 
@@ -207,7 +211,7 @@ describe('kapps api', () => {
       });
       expect(kapp).toBeUndefined();
       expect(error).toBe('Invalid kapp');
-      expect(errors).toBeUndefined();
+      expect(errors).toEqual(['Invalid kapp']);
       expect(serverError).toBeUndefined();
     });
 

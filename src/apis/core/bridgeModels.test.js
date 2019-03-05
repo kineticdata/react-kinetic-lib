@@ -31,7 +31,10 @@ describe('bridgeModels api', () => {
       });
       const result = await fetchBridgeModels({ include: 'attributes' });
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/models', { params: { include: 'attributes' } }],
+        [
+          'space/app/api/v1/models',
+          { params: { include: 'attributes' }, headers: {} },
+        ],
       ]);
       expect(result).toEqual({
         bridgeModels: [{ name: 'Person' }, { name: 'Building' }],
@@ -47,7 +50,10 @@ describe('bridgeModels api', () => {
       );
       const result = await fetchBridgeModels({ include: 'attributes' });
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/models', { params: { include: 'attributes' } }],
+        [
+          'space/app/api/v1/models',
+          { params: { include: 'attributes' }, headers: {} },
+        ],
       ]);
       expect(result).toEqual({
         serverError: { status: 403, statusText: 'Forbidden' },
@@ -74,7 +80,7 @@ describe('bridgeModels api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/models/Person',
-          { params: { include: 'attributes' } },
+          { params: { include: 'attributes' }, headers: {} },
         ],
       ]);
       expect(result).toEqual({
@@ -104,7 +110,7 @@ describe('bridgeModels api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/models/Person',
-          { params: { include: 'attributes' } },
+          { params: { include: 'attributes' }, headers: {} },
         ],
       ]);
       expect(result).toEqual({
@@ -133,7 +139,7 @@ describe('bridgeModels api', () => {
         [
           'space/app/api/v1/models',
           { name: 'Person', status: 'Active' },
-          { params: { include: 'attributes' } },
+          { params: { include: 'attributes' }, headers: {} },
         ],
       ]);
       expect(result).toEqual({
@@ -163,6 +169,7 @@ describe('bridgeModels api', () => {
       });
       expect(result).toEqual({
         error: 'Invalid Bridge Model',
+        errors: ['Invalid Bridge Model'],
       });
     });
 
@@ -204,7 +211,7 @@ describe('bridgeModels api', () => {
         [
           'space/app/api/v1/models/Person',
           { name: 'Person New', status: 'Active' },
-          { params: { include: 'attributes' } },
+          { params: { include: 'attributes' }, headers: {} },
         ],
       ]);
       expect(result).toEqual({
@@ -243,6 +250,7 @@ describe('bridgeModels api', () => {
       });
       expect(result).toEqual({
         error: 'Invalid Bridge Model',
+        errors: ['Invalid Bridge Model'],
       });
     });
 

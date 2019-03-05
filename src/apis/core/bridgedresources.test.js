@@ -1,14 +1,11 @@
 import axios from 'axios';
 
+import { resolvePromiseWith } from '../../../tests/utils/promises';
 import {
   bridgedResourceUrl,
   fetchBridgedResource,
   countBridgedResource,
 } from './bridgedresources';
-import {
-  rejectPromiseWith,
-  resolvePromiseWith,
-} from '../../../tests/utils/promises';
 
 // Mock out the bundle object from a dependency.
 jest.mock('../../helpers/coreHelpers', () => ({

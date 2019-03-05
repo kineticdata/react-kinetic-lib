@@ -4,6 +4,7 @@ import {
   deserializeAttributes,
   handleErrors,
   paramBuilder,
+  headerBuilder,
   serializeAttributes,
 } from '../http';
 
@@ -17,6 +18,7 @@ export const fetchForms = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.get(path, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the forms one.
   promise = promise.then(response => ({ forms: response.data.forms }));
@@ -42,6 +44,7 @@ export const fetchForm = (options = {}) => {
   // Build URL and fetch the space.
   let promise = axios.get(path, {
     params: paramBuilder(options),
+    headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the form one.
   promise = promise.then(response => ({ form: response.data.form }));
@@ -69,6 +72,7 @@ export const createForm = (options = {}) => {
   return axios
     .post(path, serializeAttributes(form, 'attributes'), {
       params: paramBuilder(options),
+      headers: headerBuilder(options),
     })
     .then(response => ({ form: response.data.form }))
     .then(deserializeAttributes('attributes', 'form'))
@@ -94,6 +98,7 @@ export const updateForm = (options = {}) => {
   return axios
     .put(path, serializeAttributes(form, 'attributes'), {
       params: paramBuilder(options),
+      headers: headerBuilder(options),
     })
     .then(response => ({ form: response.data.form }))
     .then(deserializeAttributes('attributes', 'form'))

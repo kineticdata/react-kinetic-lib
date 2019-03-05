@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
-import { handleErrors, paramBuilder } from '../http';
+import { handleErrors, headerBuilder, paramBuilder } from '../http';
 
 const validateOptions = (functionName, requiredOptions, options) => {
   const missing = requiredOptions.filter(
@@ -17,6 +17,7 @@ export const fetchBridgeModels = (options = {}) => {
   return axios
     .get(`${bundle.apiLocation()}/models`, {
       params: paramBuilder(options),
+      headers: headerBuilder(options),
     })
     .then(response => ({ bridgeModels: response.data.models }))
     .catch(handleErrors);
@@ -27,6 +28,7 @@ export const fetchBridgeModel = (options = {}) => {
   return axios
     .get(`${bundle.apiLocation()}/models/${options.modelName}`, {
       params: paramBuilder(options),
+      headers: headerBuilder(options),
     })
     .then(response => ({ bridgeModel: response.data.model }))
     .catch(handleErrors);
@@ -37,6 +39,7 @@ export const createBridgeModel = (options = {}) => {
   return axios
     .post(`${bundle.apiLocation()}/models`, options.bridgeModel, {
       params: paramBuilder(options),
+      headers: headerBuilder(options),
     })
     .then(response => ({ bridgeModel: response.data.model }))
     .catch(handleErrors);
@@ -48,7 +51,7 @@ export const updateBridgeModel = (options = {}) => {
     .put(
       `${bundle.apiLocation()}/models/${options.modelName}`,
       options.bridgeModel,
-      { params: paramBuilder(options) },
+      { params: paramBuilder(options), headers: headerBuilder(options) },
     )
     .then(response => ({ bridgeModel: response.data.model }))
     .catch(handleErrors);

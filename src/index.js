@@ -10,7 +10,11 @@ import {
   MessageHistory,
 } from './components/discussions';
 import partitionListBy from './helpers/partitionListBy';
-import { addRequestInterceptor, addResponseInterceptor } from './apis/http';
+import {
+  addRequestInterceptor,
+  addResponseInterceptor,
+  setDefaultAuthAssumed,
+} from './apis/http';
 import { createDiscussionList } from './models/discussions';
 import {
   fetchDiscussions,
@@ -37,6 +41,8 @@ import {
   // Category exports
   fetchCategories,
   fetchCategory,
+  createCategory,
+  updateCategory,
   // Form exports
   fetchForms,
   fetchForm,
@@ -49,6 +55,11 @@ import {
   // Profile exports
   fetchProfile,
   updateProfile,
+  // Security Policy Definition exports
+  fetchSecurityPolicyDefinitions,
+  fetchSecurityPolicyDefinition,
+  createSecurityPolicyDefinition,
+  updateSecurityPolicyDefinition,
   // Space exports
   fetchSpace,
   updateSpace,
@@ -65,6 +76,24 @@ import {
   updateTeam,
   createTeam,
   deleteTeam,
+  // Translations exports
+  fetchAvailableLocales,
+  clearTranslationsCache,
+  fetchStagedTranslations,
+  fetchDefaultLocale,
+  setDefaultLocale,
+  fetchEnabledLocales,
+  enableLocale,
+  disableLocale,
+  fetchContexts,
+  createContext,
+  updateContext,
+  deleteContext,
+  fetchContextKeys,
+  updateContextKey,
+  fetchTranslations,
+  upsertTranslations,
+  deleteTranslations,
   // User exports
   fetchUsers,
   fetchUser,
@@ -72,7 +101,12 @@ import {
   createUser,
   deleteUser,
   // Version exports
-  fetchVersion as fetchCoreVersion,
+  fetchVersion,
+  // Webhook exports
+  fetchWebhooks,
+  fetchWebhook,
+  createWebhook,
+  updateWebhook,
 } from './apis/core';
 import {
   VALID_EVENTS,
@@ -98,6 +132,7 @@ export {
   bundle,
   addRequestInterceptor,
   addResponseInterceptor,
+  setDefaultAuthAssumed,
   // Core API exports
   // Bridged Resource exports
   bridgedResourceUrl,
@@ -112,6 +147,8 @@ export {
   // Category exports
   fetchCategories,
   fetchCategory,
+  createCategory,
+  updateCategory,
   // Form exports
   fetchForms,
   fetchForm,
@@ -124,6 +161,11 @@ export {
   // Profile exports
   fetchProfile,
   updateProfile,
+  // Security Policy Definition exports
+  fetchSecurityPolicyDefinitions,
+  fetchSecurityPolicyDefinition,
+  createSecurityPolicyDefinition,
+  updateSecurityPolicyDefinition,
   // Space exports
   fetchSpace,
   updateSpace,
@@ -140,6 +182,24 @@ export {
   updateTeam,
   createTeam,
   deleteTeam,
+  // Translations exports
+  fetchAvailableLocales,
+  clearTranslationsCache,
+  fetchStagedTranslations,
+  fetchDefaultLocale,
+  setDefaultLocale,
+  fetchEnabledLocales,
+  enableLocale,
+  disableLocale,
+  fetchContexts,
+  createContext,
+  updateContext,
+  deleteContext,
+  fetchContextKeys,
+  updateContextKey,
+  fetchTranslations,
+  upsertTranslations,
+  deleteTranslations,
   // User exports
   fetchUsers,
   fetchUser,
@@ -147,7 +207,12 @@ export {
   createUser,
   deleteUser,
   // Version exports
-  fetchCoreVersion,
+  fetchVersion,
+  // Webhook exports
+  fetchWebhooks,
+  fetchWebhook,
+  createWebhook,
+  updateWebhook,
   // Core exports
   UserForm,
   UserList,

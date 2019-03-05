@@ -10,10 +10,21 @@ import {
   createBridgeModel,
   updateBridgeModel,
 } from './bridgeModels';
-import { fetchCategories, fetchCategory } from './categories';
+import {
+  fetchCategories,
+  fetchCategory,
+  createCategory,
+  updateCategory,
+} from './categories';
 import { fetchForms, fetchForm, createForm, updateForm } from './forms';
 import { fetchKapps, fetchKapp, updateKapp } from './kapps';
 import { fetchProfile, updateProfile } from './profile';
+import {
+  fetchSecurityPolicyDefinitions,
+  fetchSecurityPolicyDefinition,
+  createSecurityPolicyDefinition,
+  updateSecurityPolicyDefinition,
+} from './securityPolicyDefinitions';
 import { fetchSpace, updateSpace } from './space';
 import {
   SubmissionSearch,
@@ -31,6 +42,25 @@ import {
   deleteTeam,
 } from './teams';
 import {
+  fetchAvailableLocales,
+  clearTranslationsCache,
+  fetchStagedTranslations,
+  fetchDefaultLocale,
+  setDefaultLocale,
+  fetchEnabledLocales,
+  enableLocale,
+  disableLocale,
+  fetchContexts,
+  createContext,
+  updateContext,
+  deleteContext,
+  fetchContextKeys,
+  updateContextKey,
+  fetchTranslations,
+  upsertTranslations,
+  deleteTranslations,
+} from './translations';
+import {
   fetchUsers,
   fetchUser,
   updateUser,
@@ -38,6 +68,12 @@ import {
   deleteUser,
 } from './users';
 import { fetchVersion } from './version';
+import {
+  fetchWebhooks,
+  fetchWebhook,
+  createWebhook,
+  updateWebhook,
+} from './webhooks';
 
 export {
   // Bridged Resource exports
@@ -53,6 +89,8 @@ export {
   // Category exports
   fetchCategories,
   fetchCategory,
+  createCategory,
+  updateCategory,
   // Form exports
   fetchForms,
   fetchForm,
@@ -65,6 +103,11 @@ export {
   // Profile exports
   fetchProfile,
   updateProfile,
+  // Security Policy Definition exports
+  fetchSecurityPolicyDefinitions,
+  fetchSecurityPolicyDefinition,
+  createSecurityPolicyDefinition,
+  updateSecurityPolicyDefinition,
   // Space exports
   fetchSpace,
   updateSpace,
@@ -81,6 +124,24 @@ export {
   updateTeam,
   createTeam,
   deleteTeam,
+  // Translations exports
+  fetchAvailableLocales,
+  clearTranslationsCache,
+  fetchStagedTranslations,
+  fetchDefaultLocale,
+  setDefaultLocale,
+  fetchEnabledLocales,
+  enableLocale,
+  disableLocale,
+  fetchContexts,
+  createContext,
+  updateContext,
+  deleteContext,
+  fetchContextKeys,
+  updateContextKey,
+  fetchTranslations,
+  upsertTranslations,
+  deleteTranslations,
   // User exports
   fetchUsers,
   fetchUser,
@@ -89,4 +150,9 @@ export {
   deleteUser,
   // Version exports
   fetchVersion,
+  // Webhook exports
+  fetchWebhooks,
+  fetchWebhook,
+  createWebhook,
+  updateWebhook,
 };

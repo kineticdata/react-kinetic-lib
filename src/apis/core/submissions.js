@@ -1,6 +1,7 @@
 import axios from 'axios';
+import qs from 'qs';
 import { bundle } from '../../helpers/coreHelpers';
-import { handleErrors, paramBuilder } from '../http';
+import { handleErrors, headerBuilder, paramBuilder } from '../http';
 
 const VALID_TIMELINES = ['closedAt', 'createdAt', 'submittedAt', 'updatedAt'];
 const VALID_KAPP_CORE_STATES = ['Draft', 'Submitted', 'Closed'];
@@ -287,7 +288,7 @@ export class SubmissionSearch {
             query += `${op.lvalue} >= ${nullFix(op.rvalue, false)}`;
             break;
           case 'lteq':
-            query += `${op.lvalue} =< ${nullFix(op.rvalue, false)}`;
+            query += `${op.lvalue} <= ${nullFix(op.rvalue, false)}`;
             break;
 
           case 'between':
@@ -358,7 +359,9 @@ export const searchSubmissions = options => {
 
   // Fetch the submissions.
   let promise = axios.get(path, {
+    paramsSerializer: params => qs.stringify(params),
     params: { ...meta, ...paramBuilder(options) },
+    headers: headerBuilder(options),
   });
 
   // Remove the response envelop and leave us with the submissions.
@@ -390,6 +393,7 @@ export const fetchSubmission = options => {
     axios
       .get(path, {
         params: paramBuilder(options),
+        headers: headerBuilder(options),
       })
       // Remove the response envelop and leave us with the submission one.
       .then(response => ({ submission: response.data.submission }))
@@ -426,7 +430,7 @@ export const createSubmission = options => {
 
   return (
     axios
-      .post(path, { values }, { params })
+      .post(path, { values }, { params, headers: headerBuilder(options) })
       // Remove the response envelop and leave us with the submission one.
       .then(response => ({ submission: response.data.submission }))
       // Clean up any errors we receive. Make sure this the last thing so that it
@@ -445,7 +449,7 @@ export const updateSubmission = options => {
 
   return (
     axios
-      .put(path, { values }, { params })
+      .put(path, { values }, { params, headers: headerBuilder(options) })
       // Remove the response envelop and leave us with the submission one.
       .then(response => ({ submission: response.data.submission }))
       // Clean up any errors we receive. Make sure this the last thing so that it
@@ -469,6 +473,7 @@ export const deleteSubmission = options => {
     axios
       .delete(path, {
         params: paramBuilder(options),
+        headers: headerBuilder(options),
       })
       // Remove the response envelop and leave us with the submission one.
       .then(response => ({ submission: response.data.submission }))

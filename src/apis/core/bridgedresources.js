@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
-import { handleErrors } from '../http';
+import { handleErrors, headerBuilder } from '../http';
 
 /**
  * Determines the appropriate parameter separator (? | &) depending if the query separator (?)
@@ -149,7 +149,7 @@ export const fetchBridgedResource = (options = {}) => {
   }
 
   return axios
-    .get(bridgedResourceUrl(options))
+    .get(bridgedResourceUrl(options), { headers: headerBuilder(options) })
     .then(({ data }) => {
       const { record, records } = data;
 
@@ -185,7 +185,9 @@ export const countBridgedResource = (options = {}) => {
   const counting = true;
 
   return axios
-    .get(`${bridgedResourceUrl(options, counting)}`)
+    .get(`${bridgedResourceUrl(options, counting)}`, {
+      headers: headerBuilder(options),
+    })
     .then(({ data }) => ({ count: data.count }))
     .catch(handleErrors);
 };
