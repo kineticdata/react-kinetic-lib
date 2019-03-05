@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { bundle } from '../helpers/coreHelpers';
 
 export const deserializeAttributes = (attributeKey, envelop) => result => {
@@ -106,3 +107,11 @@ export const corePath = ({ submission, kapp, form, datastore = false }) =>
   submission
     ? submissionPath({ submission, datastore })
     : formPath({ form, kapp, datastore });
+
+export const addRequestInterceptor = (fulfilled, rejected) => {
+  axios.interceptors.request.use(fulfilled, rejected);
+};
+
+export const addResponseInterceptor = (fulfilled, rejected) => {
+  axios.interceptors.response.use(fulfilled, rejected);
+};

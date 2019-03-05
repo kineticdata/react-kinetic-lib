@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { commitStore, configure, store } from './store';
 import ContentEditable from './components/common/ContentEditable';
-import { UserForm, UserList, UserDetails } from './components/core';
+import { UserForm, UserList, UserDetails, CoreForm } from './components/core';
 import {
   DateBanner,
   DiscussionForm,
@@ -10,6 +10,7 @@ import {
   MessageHistory,
 } from './components/discussions';
 import partitionListBy from './helpers/partitionListBy';
+import { addRequestInterceptor, addResponseInterceptor } from './apis/http';
 import { createDiscussionList } from './models/discussions';
 import {
   fetchDiscussions,
@@ -95,6 +96,8 @@ export {
   // Core Helpers
   K,
   bundle,
+  addRequestInterceptor,
+  addResponseInterceptor,
   // Core API exports
   // Bridged Resource exports
   bridgedResourceUrl,
@@ -149,6 +152,7 @@ export {
   UserForm,
   UserList,
   UserDetails,
+  CoreForm,
   // Discussions exports.
   Discussion,
   DateBanner,

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { List } from 'immutable';
 import moment from 'moment';
 
-import { fetchMessageHistory } from '../../apis/discussionApi';
+import { fetchMessageHistory } from '../../apis/discussions';
 import { UserMessageGroup } from './UserMessageGroup';
 
 export class MessageHistoryComponent extends Component {
