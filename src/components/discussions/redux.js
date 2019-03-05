@@ -3,7 +3,7 @@ import actionTyper from 'actiontyper';
 
 import { regHandlers } from '../../store';
 
-import { Discussion } from '../../models/discussions';
+import { createDiscussion, Discussion } from '../../models/discussions';
 
 export const {
   JOIN_DISCUSSION,
@@ -34,7 +34,7 @@ const handleJoinDiscussion = (state, { payload }) =>
     ? state
     : state.setIn(['discussions', payload.id], Discussion());
 
-const handleUpsertDiscussion = (state, { payload }) =>
+const handleUpsertDiscussion = (state, { type, payload }) =>
   state.updateIn(['discussions', payload.id], discussion =>
     discussion.mergeWith(
       (prev, next, key) =>

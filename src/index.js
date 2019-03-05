@@ -7,6 +7,7 @@ import {
   DateBanner,
   DiscussionForm,
   Discussion,
+  MessageHistory,
 } from './components/discussions';
 import partitionListBy from './helpers/partitionListBy';
 import { createDiscussionList } from './models/discussions';
@@ -39,6 +40,7 @@ export {
   Discussion,
   DateBanner,
   DiscussionForm,
+  MessageHistory,
   createDiscussionList,
   fetchDiscussions,
   createDiscussion,

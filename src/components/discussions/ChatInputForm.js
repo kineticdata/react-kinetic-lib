@@ -15,6 +15,7 @@ import { connect } from '../../store';
 
 // import { actions } from '../redux/reducer';
 import { bundle } from 'react-kinetic-core';
+import { SEND_MESSAGE_UPDATE, SEND_MESSAGE } from './redux';
 
 const VALID_IMG_TYPES = [
   'image/jpeg',
@@ -122,24 +123,27 @@ class ChatInput extends Component {
     e.preventDefault();
     if (this.props.messageActions.editing) {
       this.props.messageActions.edit(null);
-      this.props.dispatch(
-        actions.sendMessageUpdate(
-          this.props.discussion.id,
-          this.props.messageActions.editing.id,
-          this.state.chatInput,
-          this.state.fileAttachments,
-        ),
-      );
+      this.props.dispatch({
+        type: SEND_MESSAGE_UPDATE,
+        payload: {
+          discussionId: this.props.discussion.id,
+          id: this.props.messageActions.editing.id,
+          message: this.state.chatInput,
+          attachment: this.state.fileAttachments,
+        },
+      });
     } else {
-      this.props.dispatch(
-        actions.sendMessage(
-          this.props.discussion.id,
-          this.state.chatInput,
-          this.state.fileAttachments,
-          this.props.messageActions.replying &&
+      this.props.dispatch({
+        type: SEND_MESSAGE,
+        payload: {
+          id: this.props.discussion.id,
+          message: this.state.chatInput,
+          attachment: this.state.fileAttachments,
+          parentId:
+            this.props.messageActions.replying &&
             this.props.messageActions.replying.id,
-        ),
-      );
+        },
+      });
       if (this.props.messageActions.replying) {
         this.props.messageActions.reply(null);
       }

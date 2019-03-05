@@ -30,7 +30,7 @@
     "nodemon": "^1.18.10",
     "prettier": "^1.16.4",
     "react-avatar": "^3.5.0",
-    "react-dropzone": "^9.0.0",
+    "react-dropzone": "^7.0.1",
     "react-markdown": "^4.0.6",
     "react-redux": "^6.0.0",
     "reactstrap": "^7.1.0",

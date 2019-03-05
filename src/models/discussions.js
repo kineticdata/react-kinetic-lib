@@ -1,4 +1,4 @@
-import { List, Record } from 'immutable/dist/immutable';
+import { List, Record } from 'immutable';
 
 export const createDiscussion = discussion =>
   Discussion({

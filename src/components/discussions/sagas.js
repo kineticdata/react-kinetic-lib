@@ -1,6 +1,5 @@
 import { eventChannel } from 'redux-saga';
 import {
-  all,
   cancelled,
   race,
   take,
@@ -74,7 +73,6 @@ export function* handleTopicChannel(channel, id, socket, topic) {
       const topicEvent = yield take(channel);
       switch (topicEvent.event) {
         case 'status':
-          console.log('topic status');
           yield put({
             type: SET_TOPIC_STATUS,
             payload: { id, status: topicEvent.payload },

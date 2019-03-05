@@ -17,10 +17,7 @@ function({ id, onChange, value })
 ```js
 import { DiscussionForm } from 'react-kinetic-lib';
 
-const PeopleSelect = props => {
-  console.log(props);
-  return <select />;
-};
+const PeopleSelect = props => <select />;
 
 const handleSubmit = () => alert('Form submitted.');
 

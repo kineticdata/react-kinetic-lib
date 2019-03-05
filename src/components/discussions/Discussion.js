@@ -144,6 +144,7 @@ export class DiscussionComponent extends React.Component {
         },
       });
     }
+
     return this.props.loader ? this.props.loader() : null;
   }
 }
@@ -160,11 +161,6 @@ const ConnectedDiscussionComponent = connect((state, props) => {
 })(DiscussionComponent);
 
 export const Discussion = props => <ConnectedDiscussionComponent {...props} />;
-// export const Discussion = props => (
-//   <Provider>
-//     <ConnectedDiscussionComponent {...props} />
-//   </Provider>
-// );
 
 export default DiscussionComponent;
 DiscussionComponent.propTypes = {
