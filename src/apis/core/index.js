@@ -18,6 +18,7 @@ import {
 } from './categories';
 import { fetchForms, fetchForm, createForm, updateForm } from './forms';
 import { fetchKapps, fetchKapp, updateKapp } from './kapps';
+import { createMembership, deleteMembership } from './memberships';
 import { fetchProfile, updateProfile } from './profile';
 import {
   fetchSecurityPolicyDefinitions,
@@ -100,6 +101,9 @@ export {
   fetchKapps,
   fetchKapp,
   updateKapp,
+  // Membership exports
+  createMembership,
+  deleteMembership,
   // Profile exports
   fetchProfile,
   updateProfile,
