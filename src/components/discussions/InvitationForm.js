@@ -91,3 +91,5 @@ export const InvitationForm = compose(
   withState('values', 'setValues', Map({ invitees: [], message: '' })),
   withHandlers({ handleChange, handleSubmit, disabledFn }),
 )(InvitationFormComponent);
+
+export default InvitationForm;
