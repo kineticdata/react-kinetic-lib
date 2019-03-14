@@ -26,7 +26,10 @@ module.exports = {
   ],
   moduleAliases: {
     'react-kinetic-lib': path.resolve(__dirname, 'src'),
-    'react-kinetic-core': path.resolve(__dirname, 'tests/rkcGuide.js')
+  },
+  getComponentPathLine: (componentPath) => {
+    const name = path.basename(componentPath, '.js')
+    return `import { ${name} } from 'react-kinetic-lib';`
   },
   styleguideComponents: {
     Wrapper: path.join(__dirname, 'tests/StyleguideWrapper')
@@ -48,7 +51,7 @@ module.exports = {
       name: 'APIs',
       content: 'src/apis/APIs.md',
       sections: [
-        { name: 'Disussions API', content: 'src/apis/DiscussionsAPI.md' },
+        { name: 'Disussions API', content: 'src/apis/discussions/DiscussionsAPI.md' },
       ],
       sectionDepth: 1
     }

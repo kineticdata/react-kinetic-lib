@@ -2,9 +2,16 @@ import { axios } from '../../store';
 import { bundle } from '../../helpers/coreHelpers';
 import { List } from 'immutable';
 
-/** The default number of messages retrieved per page. */
+/**
+ * @private
+ * The default number of messages retrieved per page.
+ */
 export const DEFAULT_MESSAGE_LIMIT = 25;
-/** The default number of discussions retrieved per page. */
+
+/**
+ * @private
+ * The default number of discussions retrieved per page.
+ */
 export const DEFAULT_DISCUSSION_LIMIT = 10;
 
 const isExistingAttachment = attachment => attachment.type === 'attachment';
@@ -13,7 +20,11 @@ const baseUrl = () => `${bundle.spaceLocation()}/app/discussions`;
 /**
  * Send a message to a discussion.
  *
- * @param {object} params
+ * @param {object} params message parameters
+ * @param {string} params.id the discussion id to send the message to.
+ * @param {string} params.message message text to send.
+ * @param {string} params.parentId the id of the parent message.
+ * @param {array} params.attachment an array of File objects to attach.
  */
 export const sendMessage = params => {
   const message = {
