@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import t from 'prop-types';
-// import axios from 'axios';
-// import { bundle } from 'react-kinetic-core';
+import { fetchSecurityPolicyDefinitions } from '../../apis/core/securityPolicyDefinitions';
 
 export class DiscussionForm extends React.Component {
   constructor(props) {
@@ -35,13 +34,11 @@ export class DiscussionForm extends React.Component {
   }
 
   componentDidMount() {
-    // axios
-    //   .get(`${bundle.apiLocation()}/securityPolicyDefinitions`)
-    //   .then(response =>
-    //     this.setState({
-    //       securityPolicyDefinitions: response.data.securityPolicyDefinitions,
-    //     }),
-    //   );
+    fetchSecurityPolicyDefinitions().then(response =>
+      this.setState({
+        securityPolicyDefinitions: response.data.securityPolicyDefinitions,
+      }),
+    );
   }
 
   validate = values => {
