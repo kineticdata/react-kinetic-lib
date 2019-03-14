@@ -13,8 +13,7 @@ import classNames from 'classnames';
 import ContentEditable from '../common/ContentEditable';
 import { connect } from '../../store';
 
-// import { actions } from '../redux/reducer';
-import { bundle } from 'react-kinetic-core';
+import { bundle } from '../../helpers/coreHelpers';
 import { SEND_MESSAGE_UPDATE, SEND_MESSAGE } from './redux';
 
 const VALID_IMG_TYPES = [

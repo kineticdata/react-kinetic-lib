@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { bundle } from 'react-kinetic-core';
+import { bundle } from '../../helpers/coreHelpers';
 import Markdown from 'react-markdown';
 import classnames from 'classnames';
 
