@@ -162,7 +162,7 @@ const ConnectedDiscussionComponent = connect((state, props) => {
 
 export const Discussion = props => <ConnectedDiscussionComponent {...props} />;
 
-export default DiscussionComponent;
-DiscussionComponent.propTypes = {
+export default Discussion;
+Discussion.propTypes = {
   render: t.func.isRequired,
 };
