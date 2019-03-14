@@ -1,7 +1,7 @@
 {
-  "name": "react-kinetic-lib",
-  "version": "1.0.0",
-  "description": "react-kinetic-lib React component",
+  "name": "@kineticdata/react",
+  "version": "0.1.0-RC1",
+  "description": "Kinetic Data React component library.",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [
@@ -16,6 +16,7 @@
     "start": "webpack-dev-server --mode development --open",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "styleguide": "styleguidist server",
     "styleguide:build": "styleguidist build",
     "format": "prettier --write \"**\""
@@ -67,12 +68,14 @@
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.2.0"
   },
-  "author": "",
-  "homepage": "",
+  "author": "Kinetic Data, Inc",
+  "homepage": "https://github.com/kineticdata/react-kinetic-lib",
   "license": "MIT",
-  "repository": "",
+  "repository": "https://github.com/kineticdata/react-kinetic-lib",
   "keywords": [
-    "react-component"
+    "react-component",
+    "kinetic data",
+    "kinops"
   ],
   "lint-staged": {
     "**": [
