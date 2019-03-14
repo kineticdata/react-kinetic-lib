@@ -2,7 +2,7 @@ import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
 import { handleErrors, headerBuilder, paramBuilder } from '../http';
 
-const ENDPOINT_PREFIX = `${bundle.apiLocation()}/translations`;
+const getEndpointPrefix = () => `${bundle.apiLocation()}/translations`;
 
 const validateOptions = (functionName, requiredOptions, options) => {
   const missing = requiredOptions.filter(
@@ -37,7 +37,7 @@ export const fetchAvailableLocales = (options = {}) => {
 
 export const clearTranslationsCache = (options = {}) => {
   return axios
-    .delete(`${ENDPOINT_PREFIX}/cache`, {
+    .delete(`${getEndpointPrefix()}/cache`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -56,7 +56,7 @@ export const fetchStagedTranslations = (options = {}) => {
         }
       : params;
   return axios
-    .get(`${ENDPOINT_PREFIX}/staged`, {
+    .get(`${getEndpointPrefix()}/staged`, {
       params: paramModifier(paramBuilder(options)),
       headers: headerBuilder(options),
     })
@@ -68,7 +68,7 @@ export const fetchStagedTranslations = (options = {}) => {
 
 export const fetchDefaultLocale = (options = {}) => {
   return axios
-    .get(`${ENDPOINT_PREFIX}/settings/defaultLocale`, {
+    .get(`${getEndpointPrefix()}/settings/defaultLocale`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -82,7 +82,7 @@ export const setDefaultLocale = (options = {}) => {
   validateOptions('setDefaultLocale', ['localeCode'], options);
   return axios
     .put(
-      `${ENDPOINT_PREFIX}/settings/defaultLocale`,
+      `${getEndpointPrefix()}/settings/defaultLocale`,
       { code: options.localeCode },
       {
         params: paramBuilder(options),
@@ -97,7 +97,7 @@ export const setDefaultLocale = (options = {}) => {
 
 export const fetchEnabledLocales = (options = {}) => {
   return axios
-    .get(`${ENDPOINT_PREFIX}/settings/locales`, {
+    .get(`${getEndpointPrefix()}/settings/locales`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -111,7 +111,7 @@ export const enableLocale = (options = {}) => {
   validateOptions('enableLocale', ['localeCode'], options);
   return axios
     .post(
-      `${ENDPOINT_PREFIX}/settings/locales`,
+      `${getEndpointPrefix()}/settings/locales`,
       { code: options.localeCode },
       {
         params: paramBuilder(options),
@@ -127,7 +127,7 @@ export const enableLocale = (options = {}) => {
 export const disableLocale = (options = {}) => {
   validateOptions('disableLocale', ['localeCode'], options);
   return axios
-    .delete(`${ENDPOINT_PREFIX}/settings/locales/${options.localeCode}`, {
+    .delete(`${getEndpointPrefix()}/settings/locales/${options.localeCode}`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -150,7 +150,7 @@ export const fetchContexts = (options = {}) => {
     }
   };
   return axios
-    .get(`${ENDPOINT_PREFIX}/contexts`, {
+    .get(`${getEndpointPrefix()}/contexts`, {
       params: paramModifier(paramBuilder(options)),
       headers: headerBuilder(options),
     })
@@ -163,7 +163,7 @@ export const fetchContexts = (options = {}) => {
 export const createContext = (options = {}) => {
   validateOptions('createContext', ['context'], options);
   return axios
-    .post(`${ENDPOINT_PREFIX}/contexts`, options.context, {
+    .post(`${getEndpointPrefix()}/contexts`, options.context, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -177,7 +177,7 @@ export const updateContext = (options = {}) => {
   validateOptions('updateContext', ['contextName', 'context'], options);
   return axios
     .put(
-      `${ENDPOINT_PREFIX}/contexts/${options.contextName}`,
+      `${getEndpointPrefix()}/contexts/${options.contextName}`,
       options.context,
       {
         params: paramBuilder(options),
@@ -193,7 +193,7 @@ export const updateContext = (options = {}) => {
 export const deleteContext = (options = {}) => {
   validateOptions('deleteContext', ['contextName'], options);
   return axios
-    .delete(`${ENDPOINT_PREFIX}/contexts/${options.contextName}`, {
+    .delete(`${getEndpointPrefix()}/contexts/${options.contextName}`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -206,7 +206,7 @@ export const deleteContext = (options = {}) => {
 export const fetchContextKeys = (options = {}) => {
   validateOptions('fetchContextKeys', ['contextName'], options);
   return axios
-    .get(`${ENDPOINT_PREFIX}/contexts/${options.contextName}/keys`, {
+    .get(`${getEndpointPrefix()}/contexts/${options.contextName}/keys`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -224,7 +224,7 @@ export const updateContextKey = (options = {}) => {
   );
   return axios
     .put(
-      `${ENDPOINT_PREFIX}/contexts/${options.contextName}/keys/${
+      `${getEndpointPrefix()}/contexts/${options.contextName}/keys/${
         options.keyHash
       }`,
       options.key,
@@ -270,7 +270,7 @@ export const fetchTranslations = (options = {}) => {
     return result;
   };
   return axios
-    .get(`${ENDPOINT_PREFIX}/entries`, {
+    .get(`${getEndpointPrefix()}/entries`, {
       params: paramModifier(paramBuilder(options)),
       headers: headerBuilder(options),
     })
@@ -300,7 +300,7 @@ export const upsertTranslations = (options = {}) => {
       ? { ...headers, 'Content-Type': 'multipart/form-data' }
       : headers;
   return axios
-    .post(`${ENDPOINT_PREFIX}/entries`, data, {
+    .post(`${getEndpointPrefix()}/entries`, data, {
       params: paramModifier(paramBuilder(options)),
       headers: headerModifier(headerBuilder(options)),
     })
@@ -328,7 +328,7 @@ export const deleteTranslations = (options = {}) => {
     return result;
   };
   return axios
-    .delete(`${ENDPOINT_PREFIX}/entries`, {
+    .delete(`${getEndpointPrefix()}/entries`, {
       params: paramModifier(paramBuilder(options)),
       headers: headerBuilder(options),
     })

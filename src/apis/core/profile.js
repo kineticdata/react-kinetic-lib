@@ -8,13 +8,13 @@ import {
   headerBuilder,
 } from '../http';
 
-const PROFILE_ENDPOINT = `${bundle.apiLocation()}/me`;
+const getProfileEndpoint = () => `${bundle.apiLocation()}/me`;
 
 // Extract the profile from the data and return it.
 // If there are any errors clean them up and return them instead.
 export const fetchProfile = (options = {}) => {
   // Build URL and fetch the space.
-  let promise = axios.get(PROFILE_ENDPOINT, {
+  let promise = axios.get(getProfileEndpoint(), {
     params: paramBuilder(options),
     headers: headerBuilder(options),
   });
@@ -41,7 +41,7 @@ export const updateProfile = (options = {}) => {
   serializeAttributes(profile, 'profileAttributes');
 
   // Build URL and fetch the space.
-  let promise = axios.put(PROFILE_ENDPOINT, profile, {
+  let promise = axios.put(getProfileEndpoint(), profile, {
     params: paramBuilder(options),
     headers: headerBuilder(options),
   });
