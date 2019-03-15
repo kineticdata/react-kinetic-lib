@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { commitStore, configure, store } from './store';
+
 export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
