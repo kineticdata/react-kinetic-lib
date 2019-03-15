@@ -129,15 +129,7 @@ export {
   createWebhook,
   updateWebhook,
 } from './apis/core';
-export {
-  VALID_EVENTS,
-  SOCKET_STAGE,
-  SOCKET_STATUS,
-  Socket,
-  Timer,
-  TOPIC_STATUS,
-  Topic,
-} from './apis/socket';
+export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
 
 commitStore();

@@ -10,7 +10,7 @@ import {
   select,
   takeEvery,
 } from 'redux-saga/effects';
-
+import { socket } from '../../apis/socket';
 import {
   fetchDiscussion,
   fetchMessages,
@@ -202,13 +202,13 @@ regSaga('WATCH_DISCUSSIONS_SOCKET', function*() {
     if (joinTopic) {
       const topicId = `discussions/discussion/${joinTopic.payload.id}`;
 
-      const topic = config.socket.topic(topicId);
+      const topic = socket.topic(topicId);
       const channel = registerTopicChannel(topic);
       const handler = yield fork(
         handleTopicChannel,
         channel,
         joinTopic.payload.id,
-        config.socket,
+        socket,
         topic,
       );
       discussionTasks.push({

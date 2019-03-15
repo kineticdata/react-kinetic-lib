@@ -13,6 +13,7 @@ import {
 } from './redux';
 import './sagas';
 import { Provider, connect, dispatch } from '../../store';
+import { SOCKET_STATUS } from '../../apis/socket/socket';
 
 export class DiscussionComponent extends React.Component {
   static displayName = 'Discussion';
@@ -96,8 +97,15 @@ export class DiscussionComponent extends React.Component {
   });
 
   render() {
-    if (this.props.error) {
-      const { DiscussionError } = this.props.components;
+    const { DiscussionError } = this.props.components;
+    if (
+      this.props.socketStatus !== SOCKET_STATUS.RECONNECTING &&
+      this.props.socketStatus !== SOCKET_STATUS.IDENTIFIED
+    ) {
+      return (
+        <DiscussionError error="Real-time connection to this server has been interrupted. Please refresh and try again" />
+      );
+    } else if (this.props.error) {
       return <DiscussionError error={this.props.error} />;
     } else if (this.props.discussion && !this.props.loading) {
       const messageActions = this.buildMessageActions();
@@ -152,6 +160,7 @@ export class DiscussionComponent extends React.Component {
 const ConnectedDiscussionComponent = connect((state, props) => {
   const path = ['discussions', props.id];
   return {
+    socketStatus: state.get('socketStatus'),
     discussion: state.getIn(path),
     loading: state.getIn([...path, 'loading']),
     error: state.getIn([...path, 'error']),

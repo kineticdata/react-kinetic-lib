@@ -7,8 +7,7 @@ import { commitSagas, regSaga, runSaga, sagaMiddleware } from './saga';
 
 export const config = {};
 
-export const configure = (socket, getAuthToken) => {
-  config.socket = socket;
+export const configure = getAuthToken => {
   config.getAuthToken = getAuthToken;
 };
 
