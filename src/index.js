@@ -34,6 +34,15 @@ export {
   removeInvite,
   removeParticipant,
   updateParticipant,
+  sendMessage,
+  updateMessage,
+  fetchMessage,
+  fetchMessages,
+  fetchMessageHistory,
+  fetchDiscussion,
+  fetchInvites,
+  fetchParticipants,
+  createInvite,
 } from './apis/discussions';
 export {
   // Bridged Resource exports
