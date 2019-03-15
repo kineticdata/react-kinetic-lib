@@ -1,6 +1,6 @@
 {
   "name": "@kineticdata/react",
-  "version": "0.1.0-RC4",
+  "version": "0.1.0-RC5",
   "description": "Kinetic Data React component library.",
   "main": "lib/index.js",
   "module": "es/index.js",
