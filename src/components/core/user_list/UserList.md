@@ -1,3 +1,3 @@
-```js
+```js static
 <UserList />
 ```

@@ -1,8 +1,7 @@
 import React, { Fragment } from 'react';
 import { KineticLib } from 'react-kinetic-lib';
-import '../src/assets/discussions/styles/master.scss';
-import 'bootstrap/scss/bootstrap.scss';
-import 'font-awesome/css/font-awesome.css';
+// import 'bootstrap/scss/bootstrap.scss';
+// import 'font-awesome/css/font-awesome.css';
 
 // Mock the bundle object.
 window.bundle = window.bundle || {};

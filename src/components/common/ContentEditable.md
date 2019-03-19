@@ -1,4 +1,4 @@
-```js
+```js static
 import { ContentEditable } from 'react-kinetic-lib';
 
 initialState = {

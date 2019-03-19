@@ -1,5 +1,5 @@
 ## User Details View
 
-```js
+```js static
 <UserDetails />
 ```
