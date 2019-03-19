@@ -1,4 +1,4 @@
-```js
+```js static
 import { Discussion } from 'react-kinetic-lib';
 
 const discussion = {

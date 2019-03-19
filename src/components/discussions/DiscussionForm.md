@@ -14,7 +14,7 @@ function({ id, onChange, value })
 
 ### Example
 
-```js
+```js static
 import { DiscussionForm } from 'react-kinetic-lib';
 
 const PeopleSelect = props => <select />;
