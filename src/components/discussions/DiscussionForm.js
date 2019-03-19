@@ -34,9 +34,9 @@ export class DiscussionForm extends React.Component {
   }
 
   componentDidMount() {
-    fetchSecurityPolicyDefinitions().then(response =>
+    fetchSecurityPolicyDefinitions().then(({ securityPolicyDefinitions }) =>
       this.setState({
-        securityPolicyDefinitions: response.data.securityPolicyDefinitions,
+        securityPolicyDefinitions,
       }),
     );
   }

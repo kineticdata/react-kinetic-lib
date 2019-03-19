@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { commitStore, configure, store } from './store';
+
 export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
@@ -34,6 +35,15 @@ export {
   removeInvite,
   removeParticipant,
   updateParticipant,
+  sendMessage,
+  updateMessage,
+  fetchMessage,
+  fetchMessages,
+  fetchMessageHistory,
+  fetchDiscussion,
+  fetchInvites,
+  fetchParticipants,
+  createInvite,
 } from './apis/discussions';
 export {
   // Bridged Resource exports
@@ -119,15 +129,7 @@ export {
   createWebhook,
   updateWebhook,
 } from './apis/core';
-export {
-  VALID_EVENTS,
-  SOCKET_STAGE,
-  SOCKET_STATUS,
-  Socket,
-  Timer,
-  TOPIC_STATUS,
-  Topic,
-} from './apis/socket';
+export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
 
 commitStore();

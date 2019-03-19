@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import { connect } from 'react-redux';
 import { List } from 'immutable';
 import moment from 'moment';
 
 import { fetchMessageHistory } from '../../apis/discussions';
 import { UserMessageGroup } from './UserMessageGroup';
 
-export class MessageHistoryComponent extends Component {
+export class MessageHistory extends Component {
   state = { versions: null, index: null };
   static defaultProps = {
     timeFormat: 'MMMM D, YYYY h:mm A',
@@ -77,9 +76,3 @@ export class MessageHistoryComponent extends Component {
     return null;
   }
 }
-
-export const mapStateToProps = state => ({
-  profile: state.app.profile,
-});
-
-export const MessageHistory = connect(mapStateToProps)(MessageHistoryComponent);

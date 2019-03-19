@@ -57,7 +57,7 @@ export class ScrollHelper extends React.Component {
     <div
       ref={el => (this.helper = el)}
       onScroll={this.handleScroll}
-      className="messages-wrapper"
+      className="discussion-messages-wrapper"
     >
       {this.props.children}
     </div>
