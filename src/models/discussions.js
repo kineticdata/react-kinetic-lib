@@ -1,4 +1,5 @@
 import { List, Record } from 'immutable';
+import moment from 'moment';
 
 export const createDiscussion = discussion =>
   Discussion({

@@ -186,7 +186,6 @@ describe('bridged resource api', () => {
       });
       describe('single record', () => {
         let response;
-        let bridgedResource;
 
         beforeEach(() => {
           response = {

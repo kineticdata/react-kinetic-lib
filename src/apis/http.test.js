@@ -99,7 +99,6 @@ describe('http module', () => {
     test('when attribute key does not exist', () => {
       const src = { thing: {} };
 
-      const dest = serializeAttributes(src, 'attributes');
       expect(src).toEqual(src);
     });
   });
@@ -149,7 +148,6 @@ describe('http module', () => {
     test('when attribute key does not exist', () => {
       const src = { thing: {} };
 
-      const dest = deserializeAttributes('attributes', 'thing')(src);
       expect(src).toEqual(src);
     });
   });

@@ -113,6 +113,7 @@ export const TextMessage = ({ discussion, message }) => (
           <a
             href={attachmentUrl(discussion, message, attachment.value)}
             target="_blank"
+            rel="noopener noreferrer"
           >
             <img
               src={thumbnailUrl(discussion, message, attachment.value)}

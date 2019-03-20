@@ -17,7 +17,7 @@ import {
   sendMessage,
   updateMessage,
 } from '../../apis/discussions';
-import { config, regSaga } from '../../store';
+import { regSaga } from '../../store';
 import {
   ADD_DISCUSSION,
   JOIN_DISCUSSION,
@@ -26,6 +26,7 @@ import {
   FETCH_MORE_MESSAGES,
   SEND_MESSAGE,
   SEND_MESSAGE_UPDATE,
+  SET_MORE_MESSAGES,
   SET_TOPIC_STATUS,
   UPDATE_PRESENCE,
   UPDATE_DISCUSSION,
@@ -176,7 +177,7 @@ regSaga(
   takeEvery(FETCH_MORE_MESSAGES, function*(action) {
     const pageToken = yield select(selectMessageToken(action.payload));
 
-    const { messages, nextPageToken, error } = yield call(
+    const { messages, nextPageToken } = yield call(
       fetchMessages,
       action.payload,
       pageToken,

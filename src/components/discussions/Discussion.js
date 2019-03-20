@@ -12,7 +12,7 @@ import {
   FETCH_MORE_MESSAGES,
 } from './redux';
 import './sagas';
-import { Provider, connect, dispatch } from '../../store';
+import { connect, dispatch } from '../../store';
 import { SOCKET_STATUS } from '../../apis/socket/socket';
 
 export class DiscussionComponent extends React.Component {

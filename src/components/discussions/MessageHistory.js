@@ -12,7 +12,7 @@ export class MessageHistory extends Component {
   };
 
   componentDidMount() {
-    const previous = fetchMessageHistory({
+    fetchMessageHistory({
       discussionId: this.props.discussion.id,
       id: this.props.message.id,
     }).then(response => {

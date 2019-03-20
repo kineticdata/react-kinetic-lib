@@ -1,23 +1,7 @@
 const path = require('path');
-const neutrino = require('neutrino');
-const webpackConfig = neutrino().webpack();
 
-// console.log(webpackConfig.module.rules[0])
 module.exports = {
   title: 'React Kinetic - Component Library and Style Guide',
-  webpackConfig: {
-    ...webpackConfig,
-    module: {
-      ...webpackConfig.module,
-      rules: [
-        ...webpackConfig.module.rules,
-        {
-          test: /\.scss$/,
-          use: ['style-loader', 'css-loader', 'sass-loader']
-        }
-      ]
-    }
-  },
   components: 'src/**/[A-Z]*.js',
   skipComponentsWithoutExample: true,
   pagePerSection: true,
@@ -32,7 +16,7 @@ module.exports = {
     return `import { ${name} } from 'react-kinetic-lib';`
   },
   styleguideComponents: {
-    Wrapper: path.join(__dirname, 'tests/StyleguideWrapper')
+    Wrapper: path.join(__dirname, 'src/styleguide/StyleguideWrapper')
   },
   usageMode: 'expand',
   exampleMode: 'expand',
@@ -44,7 +28,7 @@ module.exports = {
       sections: [
         { name: 'Common', components: 'src/components/common/**/*.js' },
         { name: 'Core', components: 'src/components/core/**/*.js' },
-        { name: 'Discussions', components: 'src/components/discussions/**/*.js', }, 
+        { name: 'Discussions', components: 'src/components/discussions/**/*.js', },
       ]
     },
     {

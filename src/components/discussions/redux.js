@@ -29,6 +29,10 @@ export const {
   UNSUBSCRIBED,
 } = actionTyper('@kd/discussions/');
 
+const invitationsMatch = (i1, i2) =>
+  (i1.user && i2.user && i1.user.username === i2.user.username) ||
+  (i1.email && i2.email && i1.email === i2.email);
+
 const handleJoinDiscussion = (state, { payload }) =>
   state.hasIn(['discussions', payload.id])
     ? state

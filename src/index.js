@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { commitStore, configure, store } from './store';
+import { context, commitStore, configure, store } from './store';
 
 export {
   default as ContentEditable,
@@ -134,6 +134,6 @@ export { K, bundle } from './helpers/coreHelpers';
 
 commitStore();
 
-const KineticLib = props => <Provider store={store}>{props.children}</Provider>;
+const KineticLib = props => <Provider store={store} context={context}>{props.children}</Provider>;
 
 export { configure, KineticLib };

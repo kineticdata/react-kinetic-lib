@@ -1,7 +1,8 @@
+import { createContext } from 'react';
 import { applyMiddleware, compose, createStore } from 'redux';
 import { create as createAxiosInstance } from 'axios';
-import { connect } from 'react-redux';
-import { Map } from 'immutable';
+import { connect as originalConnect } from 'react-redux';
+import { Map, setIn } from 'immutable';
 import { reducer, regHandlers } from './reducer';
 import { commitSagas, regSaga, runSaga, sagaMiddleware } from './saga';
 
@@ -36,7 +37,13 @@ const commitStore = () => {
   commitSagas();
 };
 
+const context = createContext();
+
+const connect = (...args) =>
+  originalConnect(...setIn(args, [3, 'context'], context));
+
 export {
+  context,
   commitStore,
   connect,
   dispatch,
