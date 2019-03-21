@@ -144,6 +144,8 @@ export { K, bundle } from './helpers/coreHelpers';
 export { I18n } from './components/core/i18n/I18n';
 export { Moment, importLocale } from './components/core/i18n/Moment';
 
+import './redux/meta';
+
 commitStore();
 
 const KineticLib = props => (
