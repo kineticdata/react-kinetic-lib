@@ -2,6 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { context, commitStore, configure, store } from './store';
 import { I18nProvider } from './components/core/i18n/I18nProvider';
+import './redux/meta';
 
 export {
   default as ContentEditable,
@@ -143,8 +144,6 @@ export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
 export { I18n } from './components/core/i18n/I18n';
 export { Moment, importLocale } from './components/core/i18n/Moment';
-
-import './redux/meta';
 
 commitStore();
 
