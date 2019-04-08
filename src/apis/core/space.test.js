@@ -54,11 +54,11 @@ describe('space api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchSpace({ xlatAttributes: true }).then(({ space }) => {
           expect(space.attributes).toBeDefined();
-          expect(space.attributes).not.toBeInstanceOf(Array);
+          expect(space.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -69,6 +69,7 @@ describe('space api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.get = rejectPromiseWith({ response });
       });
@@ -78,8 +79,8 @@ describe('space api', () => {
         return fetchSpace({
           includes: 'attributes',
           xlatAttributes: true,
-        }).then(({ serverError }) => {
-          expect(serverError).toBeDefined();
+        }).then(({ error }) => {
+          expect(error).toBeDefined();
         });
       });
     });
@@ -100,8 +101,11 @@ describe('space api', () => {
           },
         },
       });
-      const { space, error, errors, serverError } = await updateSpace({
-        space: { name: 'Foo', attributes: { 'Company Name': ['Foo Bar'] } },
+      const { space, error } = await updateSpace({
+        space: {
+          name: 'Foo',
+          attributes: [{ name: 'Company Name', values: ['Foo Bar'] }],
+        },
         include: 'attributes',
       });
       expect(axios.put.mock.calls).toEqual([
@@ -116,11 +120,9 @@ describe('space api', () => {
       ]);
       expect(space).toEqual({
         name: 'Foo',
-        attributes: { 'Company Name': ['Foo Bar'] },
+        attributes: [{ name: 'Company Name', values: ['Foo Bar'] }],
       });
       expect(error).toBeUndefined();
-      expect(errors).toBeUndefined();
-      expect(serverError).toBeUndefined();
     });
 
     test('missing space', async () => {
@@ -137,13 +139,16 @@ describe('space api', () => {
           data: { error: 'Invalid space' },
         }),
       );
-      const { space, error, errors, serverError } = await updateSpace({
+      const { space, error } = await updateSpace({
         space: { name: null },
       });
       expect(space).toBeUndefined();
-      expect(error).toBe('Invalid space');
-      expect(errors).toEqual(['Invalid space']);
-      expect(serverError).toBeUndefined();
+      expect(error).toEqual({
+        message: 'Invalid space',
+        statusCode: 400,
+        key: null,
+        badRequest: true,
+      });
     });
 
     test('serverError', async () => {
@@ -151,15 +156,19 @@ describe('space api', () => {
         createError('Request failed with status code 403', null, 403, null, {
           status: 403,
           statusText: 'Forbidden',
+          data: {},
         }),
       );
-      const { space, error, errors, serverError } = await updateSpace({
+      const { space, error } = await updateSpace({
         space: { name: 'Foo' },
       });
       expect(space).toBeUndefined();
-      expect(error).toBeUndefined();
-      expect(errors).toBeUndefined();
-      expect(serverError).toEqual({ status: 403, statusText: 'Forbidden' });
+      expect(error).toEqual({
+        statusCode: 403,
+        message: 'Forbidden',
+        key: null,
+        forbidden: true,
+      });
     });
   });
 });

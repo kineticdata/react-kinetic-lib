@@ -46,6 +46,8 @@ export {
   createInvite,
 } from './apis/discussions';
 export {
+  // Attribute Definition exports
+  fetchAttributeDefinitions,
   // Bridged Resource exports
   bridgedResourceUrl,
   convertMultipleBridgeRecords,

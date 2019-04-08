@@ -53,11 +53,11 @@ describe('profile api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchProfile().then(({ profile }) => {
           expect(profile.attributes).toBeDefined();
-          expect(profile.attributes).not.toBeInstanceOf(Array);
+          expect(profile.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -100,11 +100,11 @@ describe('profile api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return updateProfile({ profile: testUser }).then(({ profile }) => {
           expect(profile.attributes).toBeDefined();
-          expect(profile.attributes).not.toBeInstanceOf(Array);
+          expect(profile.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -115,6 +115,7 @@ describe('profile api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.put = rejectPromiseWith({ response });
       });
@@ -127,8 +128,8 @@ describe('profile api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return updateProfile({ profile: {} }).then(({ serverError }) => {
-          expect(serverError).toBeDefined();
+        return updateProfile({ profile: {} }).then(({ error }) => {
+          expect(error).toBeDefined();
         });
       });
     });

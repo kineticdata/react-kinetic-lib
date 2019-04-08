@@ -1,12 +1,6 @@
 import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
-import {
-  deserializeAttributes,
-  serializeAttributes,
-  handleErrors,
-  paramBuilder,
-  headerBuilder,
-} from '../http';
+import { handleErrors, paramBuilder, headerBuilder } from '../http';
 
 const getProfileEndpoint = () => `${bundle.apiLocation()}/me`;
 
@@ -14,20 +8,13 @@ const getProfileEndpoint = () => `${bundle.apiLocation()}/me`;
 // If there are any errors clean them up and return them instead.
 export const fetchProfile = (options = {}) => {
   // Build URL and fetch the space.
-  let promise = axios.get(getProfileEndpoint(), {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-
-  // Remove the response envelop and leave us with the space one.
-  promise = promise.then(response => ({ profile: response.data }));
-  promise = promise.then(deserializeAttributes('attributes', 'profile'));
-  promise = promise.then(deserializeAttributes('profileAttributes', 'profile'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .get(getProfileEndpoint(), {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ profile: response.data }))
+    .catch(handleErrors);
 };
 
 export const updateProfile = (options = {}) => {
@@ -37,22 +24,12 @@ export const updateProfile = (options = {}) => {
     throw new Error('updateProfile failed! The option "profile" is required.');
   }
 
-  serializeAttributes(profile, 'attributes');
-  serializeAttributes(profile, 'profileAttributes');
-
   // Build URL and fetch the space.
-  let promise = axios.put(getProfileEndpoint(), profile, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-
-  // Remove the response envelop and leave us with the space one.
-  promise = promise.then(response => ({ profile: response.data.user }));
-  promise = promise.then(deserializeAttributes('attributes', 'profile'));
-  promise = promise.then(deserializeAttributes('profileAttributes', 'profile'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .put(getProfileEndpoint(), profile, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ profile: response.data.user }))
+    .catch(handleErrors);
 };

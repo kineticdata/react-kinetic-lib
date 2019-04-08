@@ -1,12 +1,6 @@
 import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
-import {
-  deserializeAttributes,
-  serializeAttributes,
-  handleErrors,
-  paramBuilder,
-  headerBuilder,
-} from '../http';
+import { handleErrors, paramBuilder, headerBuilder } from '../http';
 
 export const fetchUsers = (options = {}) => {
   // Build URL and fetch the space.
@@ -15,14 +9,9 @@ export const fetchUsers = (options = {}) => {
     headers: headerBuilder(options),
   });
   // Remove the response envelop and leave us with the users one.
-  promise = promise.then(response => ({ users: response.data.users }));
-  promise = promise.then(deserializeAttributes('attributes', 'users'));
-  promise = promise.then(deserializeAttributes('profileAttributes', 'users'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return promise
+    .then(response => ({ users: response.data.users }))
+    .catch(handleErrors);
 };
 
 export const fetchUser = (options = {}) => {
@@ -33,19 +22,13 @@ export const fetchUser = (options = {}) => {
   }
 
   // Build URL and fetch the space.
-  let promise = axios.get(`${bundle.apiLocation()}/users/${username}`, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the user one.
-  promise = promise.then(response => ({ user: response.data.user }));
-  promise = promise.then(deserializeAttributes('attributes', 'user'));
-  promise = promise.then(deserializeAttributes('profileAttributes', 'user'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .get(`${bundle.apiLocation()}/users/${username}`, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ user: response.data.user }))
+    .catch(handleErrors);
 };
 
 export const updateUser = (options = {}) => {
@@ -59,24 +42,14 @@ export const updateUser = (options = {}) => {
     throw new Error('fetchUser failed! The option "user" is required.');
   }
 
-  // Serialize user attributes.
-  serializeAttributes(user, 'attributes');
-  serializeAttributes(user, 'profileAttributes');
-
   // Build URL and fetch the space.
-  let promise = axios.put(`${bundle.apiLocation()}/users/${username}`, user, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the user one.
-  promise = promise.then(response => ({ user: response.data.user }));
-  promise = promise.then(deserializeAttributes('attributes', 'user'));
-  promise = promise.then(deserializeAttributes('profileAttributes', 'user'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .put(`${bundle.apiLocation()}/users/${username}`, user, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ user: response.data.user }))
+    .catch(handleErrors);
 };
 
 export const createUser = (options = {}) => {
@@ -86,23 +59,14 @@ export const createUser = (options = {}) => {
     throw new Error('createUser failed! The option "user" is required.');
   }
 
-  serializeAttributes(user, 'attributes');
-  serializeAttributes(user, 'profileAttributes');
-
   // Build URL and fetch the space.
-  let promise = axios.post(`${bundle.apiLocation()}/users`, user, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the space one.
-  promise = promise.then(response => ({ user: response.data.user }));
-  promise = promise.then(deserializeAttributes('attributes', 'user'));
-  promise = promise.then(deserializeAttributes('profileAttributes', 'user'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .post(`${bundle.apiLocation()}/users`, user, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ user: response.data.user }))
+    .catch(handleErrors);
 };
 
 export const deleteUser = (options = {}) => {
@@ -113,15 +77,10 @@ export const deleteUser = (options = {}) => {
   }
 
   // Build URL and fetch the space.
-  let promise = axios.delete(`${bundle.apiLocation()}/users/${username}`, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the space one.
-  // promise = promise.then(response => ({ user: response.data.user }));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .delete(`${bundle.apiLocation()}/users/${username}`, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .catch(handleErrors);
 };

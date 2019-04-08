@@ -82,7 +82,12 @@ describe('translations api', () => {
         ['space/app/api/v1/meta/locales', { params: {}, headers: {} }],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -120,7 +125,12 @@ describe('translations api', () => {
         ['space/app/api/v1/translations/cache', { params: {}, headers: {} }],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -175,7 +185,12 @@ describe('translations api', () => {
         ['space/app/api/v1/translations/staged', { params: {}, headers: {} }],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -219,7 +234,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -273,7 +293,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -317,7 +342,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -371,7 +401,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -423,7 +458,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -518,7 +558,12 @@ describe('translations api', () => {
         ['space/app/api/v1/translations/contexts', { params: {}, headers: {} }],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -572,7 +617,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -640,7 +690,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -692,7 +747,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -744,7 +804,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -822,7 +887,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -968,7 +1038,12 @@ describe('translations api', () => {
         ['space/app/api/v1/translations/entries', { params: {}, headers: {} }],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -1085,7 +1160,12 @@ describe('translations api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -1179,7 +1259,12 @@ describe('translations api', () => {
         ['space/app/api/v1/translations/entries', { params: {}, headers: {} }],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });

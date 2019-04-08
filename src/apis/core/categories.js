@@ -1,33 +1,20 @@
 import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
-import {
-  deserializeAttributes,
-  handleErrors,
-  headerBuilder,
-  paramBuilder,
-} from '../http';
+import { handleErrors, headerBuilder, paramBuilder } from '../http';
 
 export const fetchCategories = (options = {}) => {
   const { kappSlug = bundle.kappSlug() } = options;
 
   // Build URL and fetch the categories.
-  let promise = axios.get(
-    `${bundle.apiLocation()}/kapps/${kappSlug}/categories`,
-    {
+  return axios
+    .get(`${bundle.apiLocation()}/kapps/${kappSlug}/categories`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
-    },
-  );
-  // Remove the response envelop and leave us with the categories one.
-  promise = promise.then(response => ({
-    categories: response.data.categories,
-  }));
-  promise = promise.then(deserializeAttributes('attributes', 'categories'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+    })
+    .then(response => ({
+      categories: response.data.categories,
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchCategory = (options = {}) => {
@@ -40,21 +27,16 @@ export const fetchCategory = (options = {}) => {
   }
 
   // Build URL and fetch the category.
-  let promise = axios.get(
-    `${bundle.apiLocation()}/kapps/${kappSlug}/categories/${categorySlug}`,
-    {
-      params: paramBuilder(options),
-      headers: headerBuilder(options),
-    },
-  );
-  // Remove the response envelop and leave us with the category one.
-  promise = promise.then(response => ({ category: response.data.category }));
-  promise = promise.then(deserializeAttributes('attributes', 'category'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .get(
+      `${bundle.apiLocation()}/kapps/${kappSlug}/categories/${categorySlug}`,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => ({ category: response.data.category }))
+    .catch(handleErrors);
 };
 
 export const createCategory = (options = {}) => {
@@ -67,22 +49,13 @@ export const createCategory = (options = {}) => {
   }
 
   // Build URL and fetch the category.
-  let promise = axios.post(
-    `${bundle.apiLocation()}/kapps/${kappSlug}/categories`,
-    category,
-    {
+  return axios
+    .post(`${bundle.apiLocation()}/kapps/${kappSlug}/categories`, category, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
-    },
-  );
-  // Remove the response envelop and leave us with the category one.
-  promise = promise.then(response => ({ category: response.data.category }));
-  promise = promise.then(deserializeAttributes('attributes', 'category'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+    })
+    .then(response => ({ category: response.data.category }))
+    .catch(handleErrors);
 };
 
 export const updateCategory = (options = {}) => {
@@ -101,20 +74,15 @@ export const updateCategory = (options = {}) => {
   }
 
   // Build URL and fetch the category.
-  let promise = axios.put(
-    `${bundle.apiLocation()}/kapps/${kappSlug}/categories/${categorySlug}`,
-    category,
-    {
-      params: paramBuilder(options),
-      headers: headerBuilder(options),
-    },
-  );
-  // Remove the response envelop and leave us with the category one.
-  promise = promise.then(response => ({ category: response.data.category }));
-  promise = promise.then(deserializeAttributes('attributes', 'category'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .put(
+      `${bundle.apiLocation()}/kapps/${kappSlug}/categories/${categorySlug}`,
+      category,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => ({ category: response.data.category }))
+    .catch(handleErrors);
 };

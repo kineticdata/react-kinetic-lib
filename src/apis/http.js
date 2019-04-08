@@ -19,76 +19,34 @@ export const addResponseInterceptor = (fulfilled, rejected) => {
   axios.interceptors.response.use(fulfilled, rejected);
 };
 
-export const deserializeAttributes = (attributeKey, envelop) => result => {
-  const xlatable = envelop ? result[envelop] : result;
-
-  if (xlatable instanceof Array) {
-    // If the item is an array of items then apply the translation to
-    // each item in the array and return the mutated result.
-    xlatable.forEach(xlat => deserializeAttributes(attributeKey)(xlat));
-  } else {
-    // Attempt to translate the item normally.
-    const attributes = xlatable[attributeKey];
-
-    if (!(xlatable[attributeKey] instanceof Array)) {
-      return result;
-    }
-
-    xlatable[attributeKey] = attributes.reduce((attrs, attr) => {
-      // eslint-disable-next-line
-      attrs[attr.name] = attr.values;
-      return attrs;
-    }, {});
-  }
-
-  return result;
+const types = {
+  400: 'badRequest',
+  401: 'unauthorized',
+  403: 'forbidden',
+  404: 'notFound',
+  405: 'methodNotAllowed',
 };
-
-export const serializeAttributes = (xlatable, attributeKey) => {
-  // If the attribute key is missing or is already in a list format then
-  // skip serialization.
-  // eslint-disable-next-line
-  if (
-    !xlatable.hasOwnProperty(attributeKey) ||
-    xlatable[attributeKey] instanceof Array
-  ) {
-    return xlatable;
-  }
-
-  const attributes = xlatable[attributeKey];
-
-  // Serialize the Object form into a List form.
-  // eslint-disable-next-line no-param-reassign
-  xlatable[attributeKey] = Object.keys(attributes).map(
-    key => ({ name: key, values: attributes[key] }),
-    [],
-  );
-
-  return xlatable;
-};
-
 export const handleErrors = error => {
+  // handle a javascript runtime exception by re-throwing it, this is in case we
+  // make a mistake in a `then` block in one of our api functions.
   if (error instanceof Error && !error.response) {
-    // When the error is an Error object an exception was thrown in the process.
-    // so we'll just 'convert' it to a 400 error to be handled downstream.
-    return { serverError: { status: 400, statusText: error.message } };
+    throw error;
   }
 
   // Destructure out the information needed.
-  const { data, status, statusText } = error.response;
-  if (status === 400 && typeof data === 'object') {
-    // If the errors returned are from server-side validations or constraints.
-    if (data.errors) {
-      return { errors: data.errors };
-    } else if (data.error) {
-      return { errors: [data.error], ...data };
-    } else {
-      return data;
-    }
+  const { data = {}, status: statusCode, statusText } = error.response;
+  const { error: message, errorKey: key = null, ...rest } = data;
+  const type = types[statusCode];
+  const result = {
+    ...rest,
+    message: message || statusText,
+    key,
+    statusCode,
+  };
+  if (type) {
+    result[type] = true;
   }
-
-  // For all other server-side errors.
-  return { serverError: { status, statusText, error: data && data.error } };
+  return { error: result };
 };
 
 export const paramBuilder = options => {

@@ -136,7 +136,12 @@ describe('attributeDefinitions api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          statusCode: 403,
+          key: null,
+          forbidden: true,
+          message: 'Forbidden',
+        },
       });
     });
   });

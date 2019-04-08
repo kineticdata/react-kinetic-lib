@@ -44,8 +44,8 @@ describe('teams api', () => {
 
       test('does not return errors', () => {
         expect.assertions(1);
-        return fetchTeams().then(({ serverError }) => {
-          expect(serverError).toBeUndefined();
+        return fetchTeams().then(({ error }) => {
+          expect(error).toBeUndefined();
         });
       });
 
@@ -60,11 +60,11 @@ describe('teams api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchTeams().then(({ teams }) => {
           expect(teams[0].attributes).toBeDefined();
-          expect(teams[0].attributes).not.toBeInstanceOf(Array);
+          expect(teams[0].attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -94,8 +94,8 @@ describe('teams api', () => {
 
       test('does not return errors', () => {
         expect.assertions(1);
-        return fetchTeam({ teamSlug }).then(({ errors }) => {
-          expect(errors).toBeUndefined();
+        return fetchTeam({ teamSlug }).then(({ error }) => {
+          expect(error).toBeUndefined();
         });
       });
 
@@ -109,12 +109,12 @@ describe('teams api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchTeam({ teamSlug, xlatAttributes: true }).then(
           ({ team }) => {
             expect(team.attributes).toBeDefined();
-            expect(team.attributes).not.toBeInstanceOf(Array);
+            expect(team.attributes).toBeInstanceOf(Array);
           },
         );
       });
@@ -126,6 +126,7 @@ describe('teams api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.get = rejectPromiseWith({ response });
       });
@@ -139,8 +140,8 @@ describe('teams api', () => {
       test('does return errors', () => {
         expect.assertions(1);
         return fetchTeam({ teamSlug: 'fake', xlatAttributes: true }).then(
-          ({ serverError }) => {
-            expect(serverError).toBeDefined();
+          ({ error }) => {
+            expect(error).toBeDefined();
           },
         );
       });
@@ -171,8 +172,8 @@ describe('teams api', () => {
 
       test('does not return errors', () => {
         expect.assertions(1);
-        return updateTeam({ teamSlug, team: testTeam }).then(({ errors }) => {
-          expect(errors).toBeUndefined();
+        return updateTeam({ teamSlug, team: testTeam }).then(({ error }) => {
+          expect(error).toBeUndefined();
         });
       });
 
@@ -186,11 +187,11 @@ describe('teams api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return updateTeam({ teamSlug, team: testTeam }).then(({ team }) => {
           expect(team.attributes).toBeDefined();
-          expect(team.attributes).not.toBeInstanceOf(Array);
+          expect(team.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -201,6 +202,7 @@ describe('teams api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.put = rejectPromiseWith({ response });
       });
@@ -219,11 +221,9 @@ describe('teams api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return updateTeam({ teamSlug: 'fake', team: {} }).then(
-          ({ serverError }) => {
-            expect(serverError).toBeDefined();
-          },
-        );
+        return updateTeam({ teamSlug: 'fake', team: {} }).then(({ error }) => {
+          expect(error).toBeDefined();
+        });
       });
     });
   });
@@ -250,8 +250,8 @@ describe('teams api', () => {
 
       test('does not return errors', () => {
         expect.assertions(1);
-        return createTeam({ team: testTeam }).then(({ errors }) => {
-          expect(errors).toBeUndefined();
+        return createTeam({ team: testTeam }).then(({ error }) => {
+          expect(error).toBeUndefined();
         });
       });
 
@@ -265,11 +265,11 @@ describe('teams api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return createTeam({ team: testTeam }).then(({ team }) => {
           expect(team.attributes).toBeDefined();
-          expect(team.attributes).not.toBeInstanceOf(Array);
+          expect(team.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -280,6 +280,7 @@ describe('teams api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.post = rejectPromiseWith({ response });
       });
@@ -292,8 +293,8 @@ describe('teams api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return createTeam({ team: {} }).then(({ serverError }) => {
-          expect(serverError).toBeDefined();
+        return createTeam({ team: {} }).then(({ error }) => {
+          expect(error).toBeDefined();
         });
       });
     });
@@ -314,8 +315,8 @@ describe('teams api', () => {
 
       test('does not return errors', () => {
         expect.assertions(1);
-        return deleteTeam({ teamSlug }).then(({ errors }) => {
-          expect(errors).toBeUndefined();
+        return deleteTeam({ teamSlug }).then(({ error }) => {
+          expect(error).toBeUndefined();
         });
       });
     });
@@ -326,6 +327,7 @@ describe('teams api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.delete = rejectPromiseWith({ response });
       });
@@ -338,8 +340,8 @@ describe('teams api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return deleteTeam({ teamSlug: 'fake' }).then(({ serverError }) => {
-          expect(serverError).toBeDefined();
+        return deleteTeam({ teamSlug: 'fake' }).then(({ error }) => {
+          expect(error).toBeDefined();
         });
       });
     });

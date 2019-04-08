@@ -388,7 +388,9 @@ describe('#fetchSubmission', () => {
 
   describe('when unsuccessful', () => {
     beforeEach(() => {
-      axios.get = rejectPromiseWith({ response: { status: 500 } });
+      axios.get = rejectPromiseWith({
+        response: { status: 500, statusText: 'Server Error' },
+      });
     });
 
     test('throws an exception when no submission id is provided', () => {
@@ -399,8 +401,12 @@ describe('#fetchSubmission', () => {
 
     test('does return errors', () => {
       expect.assertions(1);
-      return fetchSubmission({ id: 'fake' }).then(({ serverError }) => {
-        expect(serverError).toBeDefined();
+      return fetchSubmission({ id: 'fake' }).then(({ error }) => {
+        expect(error).toEqual({
+          statusCode: 500,
+          key: null,
+          message: 'Server Error',
+        });
       });
     });
   });
@@ -468,7 +474,9 @@ describe('#createSubmission', () => {
 
   describe('when unsuccessful', () => {
     beforeEach(() => {
-      axios.post = rejectPromiseWith({ response: { status: 500 } });
+      axios.post = rejectPromiseWith({
+        response: { status: 500, statusText: 'Server Error' },
+      });
     });
 
     test('throws an exception when no formSlug is provided', () => {
@@ -485,8 +493,12 @@ describe('#createSubmission', () => {
 
     test('does return errors', () => {
       expect.assertions(1);
-      return createSubmission({ formSlug, values }).then(({ serverError }) => {
-        expect(serverError).toBeDefined();
+      return createSubmission({ formSlug, values }).then(({ error }) => {
+        expect(error).toEqual({
+          statusCode: 500,
+          key: null,
+          message: 'Server Error',
+        });
       });
     });
   });
@@ -521,7 +533,9 @@ describe('#deleteSubmission', () => {
 
   describe('when unsuccessful', () => {
     beforeEach(() => {
-      axios.delete = rejectPromiseWith({ response: { status: 500 } });
+      axios.delete = rejectPromiseWith({
+        response: { status: 500, statusText: 'Server Error' },
+      });
     });
 
     test('throws an exception when no submission id is provided', () => {
@@ -532,8 +546,12 @@ describe('#deleteSubmission', () => {
 
     test('does return errors', () => {
       expect.assertions(1);
-      return deleteSubmission({ id: 'fake' }).then(({ serverError }) => {
-        expect(serverError).toBeDefined();
+      return deleteSubmission({ id: 'fake' }).then(({ error }) => {
+        expect(error).toEqual({
+          statusCode: 500,
+          key: null,
+          message: 'Server Error',
+        });
       });
     });
   });

@@ -1,27 +1,16 @@
 import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
-import {
-  deserializeAttributes,
-  serializeAttributes,
-  handleErrors,
-  paramBuilder,
-  headerBuilder,
-} from '../http';
+import { handleErrors, paramBuilder, headerBuilder } from '../http';
 
 export const fetchTeams = (options = {}) => {
   // Build URL and fetch the space.
-  let promise = axios.get(`${bundle.apiLocation()}/teams`, {
-    params: { ...paramBuilder(options), archived: options.archived },
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the space one.
-  promise = promise.then(response => ({ teams: response.data.teams }));
-  promise = promise.then(deserializeAttributes('attributes', 'teams'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .get(`${bundle.apiLocation()}/teams`, {
+      params: { ...paramBuilder(options), archived: options.archived },
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ teams: response.data.teams }))
+    .catch(handleErrors);
 };
 
 export const fetchTeam = (options = {}) => {
@@ -32,18 +21,13 @@ export const fetchTeam = (options = {}) => {
   }
 
   // Build URL and fetch the space.
-  let promise = axios.get(`${bundle.apiLocation()}/teams/${teamSlug}`, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the space one.
-  promise = promise.then(response => ({ team: response.data.team }));
-  promise = promise.then(deserializeAttributes('attributes', 'team'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .get(`${bundle.apiLocation()}/teams/${teamSlug}`, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ team: response.data.team }))
+    .catch(handleErrors);
 };
 
 export const updateTeam = (options = {}) => {
@@ -57,21 +41,14 @@ export const updateTeam = (options = {}) => {
     throw new Error('updateTeam failed! The option "team" is required.');
   }
 
-  serializeAttributes(team, 'attributes');
-
   // Build URL and fetch the space.
-  let promise = axios.put(`${bundle.apiLocation()}/teams/${teamSlug}`, team, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the space one.
-  promise = promise.then(response => ({ team: response.data.team }));
-  promise = promise.then(deserializeAttributes('attributes', 'team'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .put(`${bundle.apiLocation()}/teams/${teamSlug}`, team, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ team: response.data.team }))
+    .catch(handleErrors);
 };
 
 export const createTeam = (options = {}) => {
@@ -81,21 +58,14 @@ export const createTeam = (options = {}) => {
     throw new Error('createTeam failed! The option "team" is required.');
   }
 
-  serializeAttributes(team, 'attributes');
-
   // Build URL and fetch the space.
-  let promise = axios.post(`${bundle.apiLocation()}/teams`, team, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the space one.
-  promise = promise.then(response => ({ team: response.data.team }));
-  promise = promise.then(deserializeAttributes('attributes', 'team'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .post(`${bundle.apiLocation()}/teams`, team, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ team: response.data.team }))
+    .catch(handleErrors);
 };
 
 export const deleteTeam = (options = {}) => {
@@ -106,15 +76,10 @@ export const deleteTeam = (options = {}) => {
   }
 
   // Build URL and fetch the space.
-  let promise = axios.delete(`${bundle.apiLocation()}/teams/${teamSlug}`, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the space one.
-  // promise = promise.then(response => ({ team: response.data.team }));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .delete(`${bundle.apiLocation()}/teams/${teamSlug}`, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .catch(handleErrors);
 };

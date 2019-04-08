@@ -1,27 +1,16 @@
 import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
-import {
-  deserializeAttributes,
-  handleErrors,
-  paramBuilder,
-  headerBuilder,
-  serializeAttributes,
-} from '../http';
+import { handleErrors, paramBuilder, headerBuilder } from '../http';
 
 export const fetchSpace = (options = {}) => {
   // Build URL and fetch the space.
-  let promise = axios.get(`${bundle.apiLocation()}/space`, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the space one.
-  promise = promise.then(response => ({ space: response.data.space }));
-  promise = promise.then(deserializeAttributes('attributes', 'space'));
-
-  // Clean up any errors we receive. Make sure this the last thing so that it cleans up any errors.
-  promise = promise.catch(handleErrors);
-
-  return promise;
+  return axios
+    .get(`${bundle.apiLocation()}/space`, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ space: response.data.space }))
+    .catch(handleErrors);
 };
 
 export const updateSpace = (options = {}) => {
@@ -31,15 +20,10 @@ export const updateSpace = (options = {}) => {
   }
 
   return axios
-    .put(
-      `${bundle.apiLocation()}/space`,
-      serializeAttributes(space, 'attributes'),
-      {
-        params: paramBuilder(options),
-        headers: headerBuilder(options),
-      },
-    )
+    .put(`${bundle.apiLocation()}/space`, space, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
     .then(response => ({ space: response.data.space }))
-    .then(deserializeAttributes('attributes', 'space'))
     .catch(handleErrors);
 };

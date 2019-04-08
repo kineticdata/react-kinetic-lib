@@ -59,11 +59,11 @@ describe('categories api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchCategories().then(({ categories }) => {
           expect(categories[0].attributes).toBeDefined();
-          expect(categories[0].attributes).not.toBeInstanceOf(Array);
+          expect(categories[0].attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -108,11 +108,11 @@ describe('categories api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchCategory({ categorySlug }).then(({ category }) => {
           expect(category.attributes).toBeDefined();
-          expect(category.attributes).not.toBeInstanceOf(Array);
+          expect(category.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -123,6 +123,9 @@ describe('categories api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {
+            error: 'Failed',
+          },
         };
         axios.get = rejectPromiseWith({ response });
       });
@@ -135,11 +138,9 @@ describe('categories api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return fetchCategory({ categorySlug: 'fake' }).then(
-          ({ serverError }) => {
-            expect(serverError).toBeDefined();
-          },
-        );
+        return fetchCategory({ categorySlug: 'fake' }).then(({ error }) => {
+          expect(error).toBeDefined();
+        });
       });
     });
   });
@@ -183,12 +184,12 @@ describe('categories api', () => {
         );
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return createCategory({ category: testCategory }).then(
           ({ category }) => {
             expect(category.attributes).toBeDefined();
-            expect(category.attributes).not.toBeInstanceOf(Array);
+            expect(category.attributes).toBeInstanceOf(Array);
           },
         );
       });
@@ -200,6 +201,9 @@ describe('categories api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {
+            error: 'Failed',
+          },
         };
         axios.post = rejectPromiseWith({ response });
       });
@@ -212,8 +216,8 @@ describe('categories api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return createCategory({ category: 'fake' }).then(({ serverError }) => {
-          expect(serverError).toBeDefined();
+        return createCategory({ category: 'fake' }).then(({ error }) => {
+          expect(error).toBeDefined();
         });
       });
     });
@@ -262,12 +266,12 @@ describe('categories api', () => {
         );
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return updateCategory({ categorySlug, category: testCategory }).then(
           ({ category }) => {
             expect(category.attributes).toBeDefined();
-            expect(category.attributes).not.toBeInstanceOf(Array);
+            expect(category.attributes).toBeInstanceOf(Array);
           },
         );
       });
@@ -279,6 +283,9 @@ describe('categories api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {
+            error: 'Failed',
+          },
         };
         axios.put = rejectPromiseWith({ response });
       });
@@ -292,8 +299,8 @@ describe('categories api', () => {
       test('does return errors', () => {
         expect.assertions(1);
         return updateCategory({ categorySlug: 'fake', category: 'fake' }).then(
-          ({ serverError }) => {
-            expect(serverError).toBeDefined();
+          ({ error }) => {
+            expect(error).toBeDefined();
           },
         );
       });

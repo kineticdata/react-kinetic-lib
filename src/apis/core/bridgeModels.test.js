@@ -56,7 +56,12 @@ describe('bridgeModels api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -114,7 +119,12 @@ describe('bridgeModels api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -168,8 +178,12 @@ describe('bridgeModels api', () => {
         include: 'attributes',
       });
       expect(result).toEqual({
-        error: 'Invalid Bridge Model',
-        errors: ['Invalid Bridge Model'],
+        error: {
+          badRequest: true,
+          statusCode: 400,
+          key: null,
+          message: 'Invalid Bridge Model',
+        },
       });
     });
 
@@ -185,7 +199,12 @@ describe('bridgeModels api', () => {
         include: 'attributes',
       });
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });
@@ -249,8 +268,12 @@ describe('bridgeModels api', () => {
         include: 'attributes',
       });
       expect(result).toEqual({
-        error: 'Invalid Bridge Model',
-        errors: ['Invalid Bridge Model'],
+        error: {
+          badRequest: true,
+          statusCode: 400,
+          key: null,
+          message: 'Invalid Bridge Model',
+        },
       });
     });
 
@@ -267,7 +290,12 @@ describe('bridgeModels api', () => {
         include: 'attributes',
       });
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });

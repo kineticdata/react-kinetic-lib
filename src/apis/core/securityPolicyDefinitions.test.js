@@ -171,7 +171,12 @@ describe('securityPolicyDefinitions api', () => {
         ],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });

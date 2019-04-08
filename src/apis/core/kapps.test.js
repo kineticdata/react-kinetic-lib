@@ -56,11 +56,11 @@ describe('kapps api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchKapps({ xlatAttributes: true }).then(({ kapps }) => {
           expect(kapps[0].attributes).toBeDefined();
-          expect(kapps[0].attributes).not.toBeInstanceOf(Array);
+          expect(kapps[0].attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -103,11 +103,11 @@ describe('kapps api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchKapp({ xlatAttributes: true }).then(({ kapp }) => {
           expect(kapp.attributes).toBeDefined();
-          expect(kapp.attributes).not.toBeInstanceOf(Array);
+          expect(kapp.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -118,6 +118,7 @@ describe('kapps api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.get = rejectPromiseWith({ response });
       });
@@ -125,8 +126,8 @@ describe('kapps api', () => {
       test('does return errors', () => {
         expect.assertions(1);
         return fetchKapp({ includes: 'attributes', xlatAttributes: true }).then(
-          ({ serverError }) => {
-            expect(serverError).toBeDefined();
+          ({ error }) => {
+            expect(error).toBeDefined();
           },
         );
       });
@@ -148,9 +149,12 @@ describe('kapps api', () => {
           },
         },
       });
-      const { kapp, error, errors, serverError } = await updateKapp({
+      const { kapp, error } = await updateKapp({
         kappSlug: 'catalog',
-        kapp: { name: 'Test', attributes: { 'Company Name': ['Foo Bar'] } },
+        kapp: {
+          name: 'Test',
+          attributes: [{ name: 'Company Name', values: ['Foo Bar'] }],
+        },
         include: 'attributes',
       });
       expect(axios.put.mock.calls).toEqual([
@@ -165,11 +169,9 @@ describe('kapps api', () => {
       ]);
       expect(kapp).toEqual({
         name: 'Test',
-        attributes: { 'Company Name': ['Foo Bar'] },
+        attributes: [{ name: 'Company Name', values: ['Foo Bar'] }],
       });
       expect(error).toBeUndefined();
-      expect(errors).toBeUndefined();
-      expect(serverError).toBeUndefined();
     });
 
     test('defaults to bundle.kappSlug() when no kappSlug provided', async () => {
@@ -206,29 +208,36 @@ describe('kapps api', () => {
           data: { error: 'Invalid kapp' },
         }),
       );
-      const { kapp, error, errors, serverError } = await updateKapp({
+      const { kapp, error } = await updateKapp({
         kapp: { name: null },
       });
       expect(kapp).toBeUndefined();
-      expect(error).toBe('Invalid kapp');
-      expect(errors).toEqual(['Invalid kapp']);
-      expect(serverError).toBeUndefined();
+      expect(error).toEqual({
+        statusCode: 400,
+        key: null,
+        badRequest: true,
+        message: 'Invalid kapp',
+      });
     });
 
-    test('serverError', async () => {
+    test('forbidden', async () => {
       axios.put.mockRejectedValue(
         createError('Request failed with status code 403', null, 403, null, {
           status: 403,
           statusText: 'Forbidden',
+          data: {},
         }),
       );
-      const { kapp, error, errors, serverError } = await updateKapp({
+      const { kapp, error } = await updateKapp({
         kapp: { name: 'Foo' },
       });
       expect(kapp).toBeUndefined();
-      expect(error).toBeUndefined();
-      expect(errors).toBeUndefined();
-      expect(serverError).toEqual({ status: 403, statusText: 'Forbidden' });
+      expect(error).toEqual({
+        statusCode: 403,
+        key: null,
+        forbidden: true,
+        message: 'Forbidden',
+      });
     });
   });
 });

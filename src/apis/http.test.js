@@ -1,7 +1,5 @@
 import {
-  deserializeAttributes,
   headerBuilder,
-  serializeAttributes,
   setDefaultAuthAssumed,
   corePath,
   handleErrors,
@@ -29,15 +27,16 @@ describe('http module', () => {
           },
         };
 
-        const errorObject = handleErrors(errorResponse);
-        expect(errorObject.serverError.error).toBeDefined();
-        expect(errorObject.serverError.error).toBe(
-          errorResponse.response.data.error,
-        );
+        const { error } = handleErrors(errorResponse);
+        expect(error).toEqual({
+          key: null,
+          message: 'There were no attributes, QQ',
+          statusCode: 500,
+        });
       });
     });
     // What scenarios do we handle?
-    describe('when there is a 500 without an error object', () => {
+    describe('when there is a 500 with empty data object', () => {
       test('returns an object without "error"', () => {
         const errorResponse = {
           response: {
@@ -47,108 +46,13 @@ describe('http module', () => {
           },
         };
 
-        const errorObject = handleErrors(errorResponse);
-        expect(errorObject.serverError.error).toBeUndefined();
+        const { error } = handleErrors(errorResponse);
+        expect(error).toEqual({
+          statusCode: 500,
+          key: null,
+          message: 'Internal server error',
+        });
       });
-    });
-  });
-
-  describe('#serializeAttributes', () => {
-    describe('when translatable contains an attribute object', () => {
-      const xlatable = { attributes: { First: [1], Second: [2] } };
-      const result = serializeAttributes(xlatable, 'attributes');
-
-      test('returns an array', () => {
-        expect(result.attributes).toBeInstanceOf(Array);
-        expect(result.attributes).toHaveLength(2);
-      });
-
-      test('returned array contains objects', () => {
-        expect(result.attributes[0]).toBeDefined();
-        expect(result.attributes[0]).toHaveProperty('name', 'First');
-        expect(result.attributes[0]).toHaveProperty('values', [1]);
-      });
-
-      test('mutates the object passed', () => {
-        expect(xlatable.attributes).toBeDefined();
-        expect(xlatable.attributes).toBeInstanceOf(Array);
-      });
-    });
-
-    describe('when translatable contains an attribute array', () => {
-      const xlatable = {
-        attributes: [
-          { name: 'First', values: [1] },
-          { name: 'Second', values: [2] },
-        ],
-      };
-      const result = serializeAttributes(xlatable, 'attributes');
-
-      test('returns an array', () => {
-        expect(result.attributes).toBeInstanceOf(Array);
-        expect(result.attributes).toHaveLength(2);
-      });
-
-      test('returned array contains objects', () => {
-        expect(result.attributes[0]).toBeDefined();
-        expect(result.attributes[0]).toHaveProperty('name', 'First');
-        expect(result.attributes[0]).toHaveProperty('values', [1]);
-      });
-    });
-
-    test('when attribute key does not exist', () => {
-      const src = { thing: {} };
-
-      expect(src).toEqual(src);
-    });
-  });
-
-  describe('#deserializeAttributes', () => {
-    //  - when the envelop is an array.
-    // when the attribute key is not present
-    test('when there is no envelop', () => {
-      const src = {
-        attributes: [{ name: 'A', values: ['B'] }],
-      };
-      const dest = deserializeAttributes('attributes')(src);
-
-      expect(dest).toBeDefined();
-      expect(dest.attributes).toBeInstanceOf(Object);
-    });
-
-    test('when there is an envelop', () => {
-      const src = {
-        thing: {
-          attributes: [{ name: 'A', values: ['B'] }],
-        },
-      };
-      const dest = deserializeAttributes('attributes', 'thing')(src);
-
-      expect(dest).toBeDefined();
-      expect(dest.thing.attributes).toBeInstanceOf(Object);
-    });
-
-    test('when the envelop contains an array', () => {
-      const src = {
-        thing: [
-          {
-            name: 'Thing',
-            slug: 'thing',
-            attributes: [{ name: 'A', values: ['B'] }],
-          },
-        ],
-      };
-
-      const dest = deserializeAttributes('attributes', 'thing')(src);
-
-      expect(dest).toBeDefined();
-      expect(dest.thing[0].attributes).toBeInstanceOf(Object);
-    });
-
-    test('when attribute key does not exist', () => {
-      const src = { thing: {} };
-
-      expect(src).toEqual(src);
     });
   });
 

@@ -107,7 +107,12 @@ describe('webhooks api', () => {
         ['space/app/api/v1/webhooks', { params: {}, headers: {} }],
       ]);
       expect(result).toEqual({
-        serverError: { status: 403, statusText: 'Forbidden' },
+        error: {
+          forbidden: true,
+          statusCode: 403,
+          key: null,
+          message: 'Forbidden',
+        },
       });
     });
   });

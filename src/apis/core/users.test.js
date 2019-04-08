@@ -60,11 +60,11 @@ describe('users api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchUsers({ xlatAttributes: true }).then(({ users }) => {
           expect(users[0].attributes).toBeDefined();
-          expect(users[0].attributes).not.toBeInstanceOf(Array);
+          expect(users[0].attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -109,11 +109,11 @@ describe('users api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return fetchUser({ username }).then(({ user }) => {
           expect(user.attributes).toBeDefined();
-          expect(user.attributes).not.toBeInstanceOf(Array);
+          expect(user.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -124,6 +124,7 @@ describe('users api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.get = rejectPromiseWith({ response });
       });
@@ -136,8 +137,8 @@ describe('users api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return fetchUser({ username: 'fake' }).then(({ serverError }) => {
-          expect(serverError).toBeDefined();
+        return fetchUser({ username: 'fake' }).then(({ error }) => {
+          expect(error).toBeDefined();
         });
       });
     });
@@ -167,8 +168,8 @@ describe('users api', () => {
 
       test('does not return errors', () => {
         expect.assertions(1);
-        return updateUser({ username, user: testUser }).then(({ errors }) => {
-          expect(errors).toBeUndefined();
+        return updateUser({ username, user: testUser }).then(({ error }) => {
+          expect(error).toBeUndefined();
         });
       });
 
@@ -182,11 +183,11 @@ describe('users api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return updateUser({ username, user: testUser }).then(({ user }) => {
           expect(user.attributes).toBeDefined();
-          expect(user.attributes).not.toBeInstanceOf(Array);
+          expect(user.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -197,6 +198,7 @@ describe('users api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.put = rejectPromiseWith({ response });
       });
@@ -215,11 +217,9 @@ describe('users api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return updateUser({ username: 'fake', user: {} }).then(
-          ({ serverError }) => {
-            expect(serverError).toBeDefined();
-          },
-        );
+        return updateUser({ username: 'fake', user: {} }).then(({ error }) => {
+          expect(error).toBeDefined();
+        });
       });
     });
   });
@@ -246,8 +246,8 @@ describe('users api', () => {
 
       test('does not return errors', () => {
         expect.assertions(1);
-        return createUser({ user: testUser }).then(({ errors }) => {
-          expect(errors).toBeUndefined();
+        return createUser({ user: testUser }).then(({ error }) => {
+          expect(error).toBeUndefined();
         });
       });
 
@@ -261,11 +261,11 @@ describe('users api', () => {
         });
       });
 
-      test('translates attributes', () => {
+      test('returns attributes', () => {
         expect.assertions(2);
         return createUser({ user: testUser }).then(({ user }) => {
           expect(user.attributes).toBeDefined();
-          expect(user.attributes).not.toBeInstanceOf(Array);
+          expect(user.attributes).toBeInstanceOf(Array);
         });
       });
     });
@@ -276,6 +276,7 @@ describe('users api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.post = rejectPromiseWith({ response });
       });
@@ -288,8 +289,8 @@ describe('users api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return createUser({ user: {} }).then(({ serverError }) => {
-          expect(serverError).toBeDefined();
+        return createUser({ user: {} }).then(({ error }) => {
+          expect(error).toBeDefined();
         });
       });
     });
@@ -310,8 +311,8 @@ describe('users api', () => {
 
       test('does not return errors', () => {
         expect.assertions(1);
-        return deleteUser({ username }).then(({ errors }) => {
-          expect(errors).toBeUndefined();
+        return deleteUser({ username }).then(({ error }) => {
+          expect(error).toBeUndefined();
         });
       });
     });
@@ -322,6 +323,7 @@ describe('users api', () => {
       beforeEach(() => {
         response = {
           status: 500,
+          data: {},
         };
         axios.delete = rejectPromiseWith({ response });
       });
@@ -334,8 +336,8 @@ describe('users api', () => {
 
       test('does return errors', () => {
         expect.assertions(1);
-        return deleteUser({ username: 'fake' }).then(({ serverError }) => {
-          expect(serverError).toBeDefined();
+        return deleteUser({ username: 'fake' }).then(({ error }) => {
+          expect(error).toBeDefined();
         });
       });
     });
