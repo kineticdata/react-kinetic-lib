@@ -3,6 +3,7 @@ import {
   setDefaultAuthAssumed,
   corePath,
   handleErrors,
+  paramBuilder,
 } from './http';
 
 jest.mock('../helpers/coreHelpers', () => ({
@@ -111,6 +112,33 @@ describe('http module', () => {
     test('omits X-Kinetic-AuthAssumed when given falsey value in options (and default is true)', () => {
       setDefaultAuthAssumed(true);
       expect(headerBuilder({ authAssumed: false })).toEqual({});
+    });
+  });
+
+  // The `paramBuilder` only strips out unnecessary options.
+  describe('#paramBuilder', () => {
+    test('returns parameter values', () => {
+      const params = [
+        'include',
+        'limit',
+        'pageToken',
+        'q',
+        'direction',
+        'orderBy',
+        'manage',
+        'export',
+      ];
+
+      params.forEach(param =>
+        expect(paramBuilder({ [param]: param })).toMatchObject({
+          [param]: param,
+        }),
+      );
+    });
+    test('does not return non-parameter values', () => {
+      expect(
+        paramBuilder({ limit: 'limit', foobar: 'foobar' }),
+      ).not.toMatchObject({ foobar: 'foobar' });
     });
   });
 });

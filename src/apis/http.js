@@ -50,25 +50,18 @@ export const handleErrors = error => {
 };
 
 export const paramBuilder = options => {
-  const params = {};
-
-  if (options.include) {
-    params.include = options.include;
-  }
-
-  if (options.limit) {
-    params.limit = options.limit;
-  }
-
-  if (options.manage) {
-    params.manage = options.manage;
-  }
-
-  if (options.export) {
-    params.export = options.export;
-  }
-
-  return params;
+  const { include, limit, pageToken, q, direction, orderBy, manage } = options;
+  return {
+    include,
+    limit,
+    pageToken,
+    q,
+    direction,
+    orderBy,
+    manage,
+    // Cannot destructure 'export' since it is a reserved keyword.
+    export: options.export,
+  };
 };
 
 export const headerBuilder = options => {
