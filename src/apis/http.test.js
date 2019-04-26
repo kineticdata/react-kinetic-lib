@@ -140,5 +140,10 @@ describe('http module', () => {
         paramBuilder({ limit: 'limit', foobar: 'foobar' }),
       ).not.toMatchObject({ foobar: 'foobar' });
     });
+    test('does not return parameters not passed', () => {
+      expect(
+        paramBuilder({ limit: 'limit', foobar: 'foobar' }),
+      ).not.toMatchObject({ include: undefined });
+    });
   });
 });
