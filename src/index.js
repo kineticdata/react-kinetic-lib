@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { context, commitStore, configure, store } from './store';
+import { I18nProvider } from './components/core/i18n/I18nProvider';
 
 export {
   default as ContentEditable,
@@ -131,7 +132,6 @@ export {
 } from './apis/core';
 export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
-import { I18nProvider } from './components/core/i18n/I18nProvider';
 export { I18n } from './components/core/i18n/I18n';
 export { Moment } from './components/core/i18n/Moment';
 
