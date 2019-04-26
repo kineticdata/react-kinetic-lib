@@ -131,9 +131,16 @@ export {
 } from './apis/core';
 export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
+import { I18nProvider } from './components/core/i18n/I18nProvider';
+export { I18n } from './components/core/i18n/I18n';
+export { Moment } from './components/core/i18n/Moment';
 
 commitStore();
 
-const KineticLib = props => <Provider store={store} context={context}>{props.children}</Provider>;
+const KineticLib = props => (
+  <Provider store={store} context={context}>
+    <I18nProvider locale={props.locale}>{props.children}</I18nProvider>
+  </Provider>
+);
 
 export { configure, KineticLib };
