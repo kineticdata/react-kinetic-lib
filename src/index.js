@@ -3,6 +3,10 @@ import { Provider } from 'react-redux';
 import { context, commitStore, configure, store } from './store';
 import { I18nProvider } from './components/core/i18n/I18nProvider';
 import './redux/meta';
+import {
+  DefaultFieldConfig,
+  FieldConfigContext,
+} from './components/core/form/FieldConfigContext';
 
 export {
   default as ContentEditable,
@@ -149,7 +153,16 @@ commitStore();
 
 const KineticLib = props => (
   <Provider store={store} context={context}>
-    <I18nProvider locale={props.locale}>{props.children}</I18nProvider>
+    <I18nProvider locale={props.locale}>
+      {props.children}
+      <FieldConfigContext.Provider
+        value={DefaultFieldConfig.merge(
+          props.components && props.components.fields,
+        )}
+      >
+        {props.children}
+      </FieldConfigContext.Provider>
+    </I18nProvider>
   </Provider>
 );
 
