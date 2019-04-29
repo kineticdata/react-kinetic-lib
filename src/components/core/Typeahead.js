@@ -53,7 +53,7 @@ export default class Typeahead extends React.Component {
 
   onSelect = (event, { suggestion }) => {
     const { multiple, textMode } = this.props;
-    this.setState(({ newValue, textMode, value }) => ({
+    this.setState(({ newValue, value }) => ({
       editing: multiple || textMode,
       newValue: multiple || !textMode ? '' : newValue,
       value: multiple ? [...value, suggestion] : suggestion,

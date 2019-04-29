@@ -154,7 +154,6 @@ commitStore();
 const KineticLib = props => (
   <Provider store={store} context={context}>
     <I18nProvider locale={props.locale}>
-      {props.children}
       <FieldConfigContext.Provider
         value={DefaultFieldConfig.merge(
           props.components && props.components.fields,
