@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { context, commitStore, configure, store } from './store';
+import { I18nProvider } from './components/core/i18n/I18nProvider';
 
 export {
   default as ContentEditable,
@@ -138,12 +139,14 @@ export {
 } from './apis/core';
 export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
+export { I18n } from './components/core/i18n/I18n';
+export { Moment, importLocale } from './components/core/i18n/Moment';
 
 commitStore();
 
 const KineticLib = props => (
   <Provider store={store} context={context}>
-    {props.children}
+    <I18nProvider locale={props.locale}>{props.children}</I18nProvider>
   </Provider>
 );
 

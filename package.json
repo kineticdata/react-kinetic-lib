@@ -1,6 +1,6 @@
 {
   "name": "@kineticdata/react",
-  "version": "0.1.0-RC8",
+  "version": "0.1.0-RC10",
   "description": "Kinetic Data React component library.",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -38,6 +38,7 @@
     "lodash.isstring": "^4.0.1",
     "modularscale-sass": "^3.0.8",
     "moment": "^2.21.0",
+    "prop-types": "^15.7.2",
     "react-avatar": "^3.5.0",
     "react-dropzone": "^4.2.3",
     "react-markdown": "^4.0.6",
