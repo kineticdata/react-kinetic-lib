@@ -6,7 +6,14 @@ import { I18nProvider } from './components/core/i18n/I18nProvider';
 export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
-export { UserForm, UserList, UserDetails, CoreForm } from './components/core';
+export {
+  UserForm,
+  UserList,
+  UserDetails,
+  CoreForm,
+  UserSelect,
+  TeamSelect,
+} from './components/core';
 export {
   DateBanner,
   DiscussionForm,

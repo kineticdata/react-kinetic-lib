@@ -21,7 +21,8 @@ export class I18nProvider extends React.Component {
     }
     if (
       !this.state.translations.equals(prevState.translations) &&
-      this.state.translations.get(this.props.locale)
+      this.state.translations.get(this.props.locale) &&
+      bundle.config
     ) {
       bundle.config.translations = {
         ...bundle.config.translations,
