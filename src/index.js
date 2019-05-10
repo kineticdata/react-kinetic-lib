@@ -5,6 +5,11 @@ import { context, commitStore, configure, store } from './store';
 export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
+export { FilterControl } from './components/common/tables/FilterControl';
+export {
+  PaginationControl,
+} from './components/common/tables/PaginationControl';
+export { default as Table } from './components/common/tables/Table';
 export { UserForm, UserList, UserDetails, CoreForm } from './components/core';
 export {
   DateBanner,
@@ -136,6 +141,10 @@ export { K, bundle } from './helpers/coreHelpers';
 
 commitStore();
 
-const KineticLib = props => <Provider store={store} context={context}>{props.children}</Provider>;
+const KineticLib = props => (
+  <Provider store={store} context={context}>
+    {props.children}
+  </Provider>
+);
 
 export { configure, KineticLib };

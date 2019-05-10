@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Table /> when Header is overridden it renders the same each time 1`] = `
+<div>
+  <table
+    class="table table-sm table-striped"
+  >
+    <thead
+      class="sortable"
+    >
+      <tr>
+        <th
+          class=""
+          scope="col"
+        >
+          <div>
+            Username
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td
+          class="text-center"
+          colspan="1"
+        >
+          <em>
+            <div>
+              There are no data rows.
+            </div>
+          </em>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;
