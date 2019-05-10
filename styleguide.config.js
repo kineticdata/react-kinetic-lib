@@ -10,6 +10,8 @@ module.exports = {
   ],
   moduleAliases: {
     'react-kinetic-lib': path.resolve(__dirname, 'src'),
+    '@kineticdata/react': path.resolve(__dirname, 'src'),
+    '@kineticdata/fixtures': path.resolve(__dirname, 'src', 'styleguide', 'fixtures.js')
   },
   getComponentPathLine: (componentPath) => {
     const name = path.basename(componentPath, '.js')

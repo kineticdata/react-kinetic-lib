@@ -69,6 +69,7 @@
     "eslint-plugin-import": "2.x",
     "eslint-plugin-jsx-a11y": "6.x",
     "eslint-plugin-react": "7.x",
+    "faker": "^4.1.0",
     "font-awesome": "4.7.0",
     "jest": "^23.0.0",
     "lint-staged": "^8.1.3",

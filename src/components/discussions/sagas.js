@@ -144,6 +144,7 @@ export function* handleTopicChannel(channel, id, socket, topic) {
           break;
         case 'unsubscribed':
           yield put({ type: UNSUBSCRIBED, payload: { id } });
+          break;
         default:
           console.log(
             `Unhandled socket action '${topicEvent.event}' for ${id}: `,
