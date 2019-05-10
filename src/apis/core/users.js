@@ -10,7 +10,10 @@ export const fetchUsers = (options = {}) => {
   });
   // Remove the response envelop and leave us with the users one.
   return promise
-    .then(response => ({ users: response.data.users }))
+    .then(response => ({
+      users: response.data.users,
+      nextPageToken: response.data.nextPageToken,
+    }))
     .catch(handleErrors);
 };
 

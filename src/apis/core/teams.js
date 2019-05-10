@@ -9,7 +9,10 @@ export const fetchTeams = (options = {}) => {
       params: { ...paramBuilder(options), archived: options.archived },
       headers: headerBuilder(options),
     })
-    .then(response => ({ teams: response.data.teams }))
+    .then(response => ({
+      teams: response.data.teams,
+      nextPageToken: response.data.nextPageToken,
+    }))
     .catch(handleErrors);
 };
 

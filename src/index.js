@@ -11,7 +11,14 @@ export {
   PaginationControl,
 } from './components/common/tables/PaginationControl';
 export { default as Table } from './components/common/tables/Table';
-export { UserForm, UserList, UserDetails, CoreForm } from './components/core';
+export {
+  UserForm,
+  UserList,
+  UserDetails,
+  CoreForm,
+  UserSelect,
+  TeamSelect,
+} from './components/core';
 export {
   DateBanner,
   DiscussionForm,
