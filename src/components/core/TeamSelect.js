@@ -115,6 +115,7 @@ const TeamSelect = props => (
       SearchStatus,
       SearchActions,
     }}
+    textMode={props.textMode}
     multiple={props.multiple}
     search={searchTeams}
     getSuggestionValue={teamToValue}
