@@ -23,13 +23,13 @@
     padding: 0;
   }
 
-  .suggestions ul li {
+  .suggestions .suggestion {
     cursor: pointer;
     padding: 8px 12px;
   }
 
-  .suggestions ul li.active,
-  .suggestions ul li:hover {
+  .suggestions .suggestion.active,
+  .suggestions .suggestion:hover {
     background-color: #f8f9fa;
     color: #1094c4;
   }

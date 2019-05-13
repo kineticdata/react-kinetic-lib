@@ -1,5 +1,19 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import Autosuggest from 'react-autosuggest';
+
+const SelectionsContainerDefault = ({ children }) => (
+  <ul className="selections">{children}</ul>
+);
+
+const SuggestionsContainerDefault = ({ open, children, containerProps }) => (
+  <div {...containerProps} className={`suggestions ${open ? 'open' : ''}`}>
+    {children}
+  </div>
+);
+
+const TypeaheadInputDefault = ({ inputProps }) => (
+  <input {...inputProps} className="form-control" />
+);
 
 export default class Typeahead extends React.Component {
   constructor(props) {
@@ -80,16 +94,16 @@ export default class Typeahead extends React.Component {
   };
 
   renderSuggestionContainer = ({ containerProps, children, query }) => {
-    const { SearchStatus, SearchActions } = this.props.components;
+    const {
+      SearchStatus,
+      SearchActions,
+      SuggestionsContainer = SuggestionsContainerDefault,
+    } = this.props.components;
     const { className, ...props } = containerProps;
     return (
-      <div
-        {...props}
-        className={
-          !className.includes('open') && (this.state.error || this.state.empty)
-            ? `${className} open`
-            : className
-        }
+      <SuggestionsContainer
+        containerProps={props}
+        open={className === 'OPEN' || this.state.error || this.state.empty}
       >
         <SearchStatus
           searchField={this.state.searchField}
@@ -106,17 +120,22 @@ export default class Typeahead extends React.Component {
           value={this.state.searchValue}
         />
         {children}
-      </div>
+      </SuggestionsContainer>
     );
   };
 
-  renderSuggestion = suggestion => {
+  renderSuggestion = (suggestion, { isHighlighted }) => {
     const { Suggestion } = this.props.components;
     return Suggestion ? (
-      <Suggestion suggestion={suggestion} />
+      <Suggestion suggestion={suggestion} active={isHighlighted} />
     ) : (
       this.props.getSuggestionValue(suggestion)
     );
+  };
+
+  renderInput = inputProps => {
+    const { TypeaheadInput = TypeaheadInputDefault } = this.props.components;
+    return <TypeaheadInput inputProps={inputProps} />;
   };
 
   setSearchField = searchField => () => {
@@ -168,7 +187,10 @@ export default class Typeahead extends React.Component {
 
   render() {
     const {
-      components: { Selection } = {},
+      components: {
+        Selection,
+        SelectionsContainer = SelectionsContainerDefault,
+      } = {},
       multiple,
       placeholder,
       getSuggestionValue,
@@ -177,7 +199,7 @@ export default class Typeahead extends React.Component {
     return (
       <div className="kinetic-typeahead">
         {multiple && (
-          <ul className="selections">
+          <SelectionsContainer>
             {value.map((selection, i) => (
               <li key={i}>
                 {Selection ? (
@@ -187,7 +209,7 @@ export default class Typeahead extends React.Component {
                 )}
               </li>
             ))}
-          </ul>
+          </SelectionsContainer>
         )}
         {!multiple && Selection && !editing && value && (
           <Selection selection={value} edit={this.edit} />
@@ -201,12 +223,7 @@ export default class Typeahead extends React.Component {
               onChange: this.onChange,
               placeholder,
             }}
-            theme={{
-              input: 'form-control',
-              suggestionsContainer: 'suggestions',
-              suggestionsContainerOpen: 'open',
-              suggestionHighlighted: 'active',
-            }}
+            theme={{ suggestionsContainerOpen: 'OPEN' }}
             highlightFirstSuggestion
             shouldRenderSuggestions={this.shouldRenderSuggestions}
             suggestions={suggestions}
@@ -215,6 +232,7 @@ export default class Typeahead extends React.Component {
             onSuggestionSelected={this.onSelect}
             renderSuggestion={this.renderSuggestion}
             renderSuggestionsContainer={this.renderSuggestionContainer}
+            renderInputComponent={this.renderInput}
             getSuggestionValue={getSuggestionValue}
           />
         )}

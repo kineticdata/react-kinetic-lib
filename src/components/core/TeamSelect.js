@@ -60,6 +60,7 @@ const SearchActions = props =>
     <ul className="search-actions">
       {Object.entries(props.error.errorData.matches).map(([field, count]) => (
         <li
+          className="suggestion"
           key={field}
           role="button"
           tabIndex={0}
@@ -96,10 +97,10 @@ const Selection = ({ selection, edit, remove }) => {
   );
 };
 
-const Suggestion = ({ suggestion }) => {
+const Suggestion = ({ suggestion, active }) => {
   const [parent, local] = splitTeamName(suggestion);
   return (
-    <div>
+    <div className={`suggestion ${active ? 'active' : ''}`}>
       {parent && <div className="small">{parent}</div>}
       <div className="large">{local}</div>
     </div>
