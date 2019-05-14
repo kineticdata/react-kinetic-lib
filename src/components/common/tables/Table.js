@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import uuid from 'uuid/v1';
 import {
   compose,
   lifecycle,
@@ -9,7 +10,7 @@ import {
 } from 'recompose';
 import { List, Map } from 'immutable';
 import isarray from 'isarray';
-import { I18n } from '../i18n/I18nProvider';
+import { I18n } from '../../core/i18n/I18n';
 import {
   DefaultTableLayout,
   DefaultHeader,
@@ -41,7 +42,6 @@ const TableComponent = props => {
   const {
     children,
     components,
-    // buildPaginationControl,
     buildFilterControl,
     buildTable,
     buildTableHeader,
@@ -49,7 +49,6 @@ const TableComponent = props => {
     buildTableFooter,
     filterProps,
     sortProps,
-    paginationProps,
   } = props;
   const table = buildTable();
   const filter = buildFilterControl();
@@ -60,7 +59,6 @@ const TableComponent = props => {
     filter,
     pagination,
     sortProps,
-    paginationProps,
   });
 };
 
@@ -69,15 +67,15 @@ const buildFilterControl = ({ components, filterProps }) => () => {
   return FilterControl ? <FilterControl {...filterProps} /> : null;
 };
 
-const hasPrevPage = (data, pageTokens, pageSize, pageOffset, nextPageToken) =>
-  isClientSide(data) ? pageOffset > 0 : true;
+const hasPrevPage = (data, pageTokens, pageOffset) =>
+  isClientSide(data) ? pageOffset > 0 : pageTokens.size !== 0;
 
-const hasNextPage = (data, pageTokens, pageSize, pageOffset, nextPageToken) =>
+const hasNextPage = (data, pageOffset, pageSize, currentPageToken) =>
   isClientSide(data)
     ? data
-      ? pageOffset + pageSize < data.size
+      ? pageOffset + pageSize < data.length
       : false
-    : true;
+    : !!currentPageToken;
 
 const buildPaginationControl = ({
   tableKey,
@@ -86,36 +84,21 @@ const buildPaginationControl = ({
   pageSize,
   pageOffset,
   nextPageToken,
+  currentPageToken,
   components,
   paginationProps,
 }) => {
   const PaginationControl = components.PaginationControl;
-  const prevPage = hasPrevPage(
-    data,
-    pageTokens,
-    pageSize,
-    pageOffset,
-    nextPageToken,
-  )
+  const prevPage = hasPrevPage(data, pageTokens, pageOffset)
     ? onPrevPage(tableKey)
     : null;
 
-  const nextPage = hasNextPage(
-    data,
-    pageTokens,
-    pageSize,
-    pageOffset,
-    nextPageToken,
-  )
+  const nextPage = hasNextPage(data, pageOffset, pageSize, currentPageToken)
     ? onNextPage(tableKey)
     : null;
 
   return PaginationControl ? (
-    <PaginationControl
-      {...paginationProps}
-      prevPage={prevPage}
-      nextPage={nextPage}
-    />
+    <PaginationControl prevPage={prevPage} nextPage={nextPage} />
   ) : null;
 };
 
@@ -125,14 +108,14 @@ const buildTable = ({
   buildTableBody,
   buildTableFooter,
 }) => () => {
-  const TableImpl = components.TableLayout
+  const TableLayout = components.TableLayout
     ? components.TableLayout
     : DefaultTableLayout;
   const header = buildTableHeader();
   const body = buildTableBody();
   const footer = buildTableFooter();
 
-  return <TableImpl header={header} body={body} footer={footer} />;
+  return <TableLayout header={header} body={body} footer={footer} />;
 };
 
 const buildTableHeader = ({
@@ -145,10 +128,10 @@ const buildTableHeader = ({
   paginationProps,
   buildTableHeaderRow,
 }) => () => {
-  const HeaderImpl = components.Header || DefaultHeader;
+  const Header = components.Header || DefaultHeader;
   const headerRow = buildTableHeaderRow();
   return (
-    <HeaderImpl
+    <Header
       sorting={sorting}
       headerRow={headerRow}
       rows={rows}
@@ -168,11 +151,11 @@ const buildTableHeaderRow = ({
   paginationProps,
   buildTableHeaderCell,
 }) => () => {
-  const HeaderRowImpl = components.HeaderRow || DefaultHeaderRow;
+  const HeaderRow = components.HeaderRow || DefaultHeaderRow;
   const columnHeaders = columns.map(buildTableHeaderCell);
 
   return (
-    <HeaderRowImpl
+    <HeaderRow
       columnHeaders={columnHeaders}
       rows={rows.toJS()}
       filterProps={filterProps}
@@ -195,28 +178,16 @@ const buildTableHeaderCell = props => (column, index) => {
     paginationProps,
   } = props;
   const { title, sortable = true } = column;
+  const HeaderCell = components.HeaderCell || DefaultHeaderCell;
 
-  // console.log('props', props.sort, props.sortProps);
-  let sortClass = '',
-    sortClick;
-  // if (sorting) {
-  //   if (sortable) {
-  //     if (sort.column === index) {
-  //       sortClass = sort.descending ? 'sort-desc' : 'sort-asc';
-  //       sortClick = () => sortProps.reverse();
-  //     } else {
-  //       sortClick = () => sortProps.handleSort(index);
-  //     }
-  //   } else {
-  //     sortClass = 'sort-disabled';
-  //   }
-  // }
-  const HeaderCellImpl = components.HeaderCell || DefaultHeaderCell;
   return (
     <KeyWrapper key={`column-${index}`}>
-      <HeaderCellImpl
+      <HeaderCell
         onSortColumn={onSortColumn(tableKey, column)}
         title={title}
+        column={column}
+        sortColumn={sortColumn}
+        sortDirection={sortDirection}
         rows={rows.toJS}
         filterProps={filterProps}
         sortProps={sortProps}
@@ -234,11 +205,11 @@ const buildTableBody = ({
   paginationProps,
   buildTableBodyRows,
 }) => () => {
-  const BodyImpl = components.TableBody || DefaultTableBody;
+  const Body = components.Body || DefaultTableBody;
   const tableRows = buildTableBodyRows(rows);
 
   return (
-    <BodyImpl
+    <Body
       tableRows={tableRows}
       rows={rows.toJS()}
       filterProps={filterProps}
@@ -258,7 +229,7 @@ const buildTableBodyRows = ({
   paginationProps,
   buildTableBodyCells,
 }) => () => {
-  const TableBodyRow = components.TableBodyRow || DefaultTableBodyRow;
+  const BodyRow = components.BodyRow || DefaultTableBodyRow;
   const EmptyBodyRow = components.EmptyBodyRow || DefaultEmptyBodyRow;
   const tableRows =
     rows.size > 0 ? (
@@ -266,16 +237,17 @@ const buildTableBodyRows = ({
         const cells = buildTableBodyCells(row, index);
         return (
           <KeyWrapper key={`row-${index}`}>
-            <TableBodyRow
+            <BodyRow
               cells={cells}
               columns={columns}
               row={row}
               index={index}
               rows={rows.toJS()}
-              filterProps={filterProps}
+            />
+            {/* filterProps={filterProps}
               sortProps={sortProps}
               paginationProps={paginationProps}
-            />
+            */}
           </KeyWrapper>
         );
       })
@@ -332,10 +304,10 @@ const buildTableFooter = ({
   footer,
 }) => () => {
   const footerRow = buildTableFooterRow();
-  const TableFooter = components.TableFooter || DefaultTableFooter;
+  const Footer = components.Footer || DefaultTableFooter;
 
   return footer ? (
-    <TableFooter
+    <Footer
       rows={rows.toJS()}
       footerRow={footerRow}
       filterProps={filterProps}
@@ -355,10 +327,10 @@ const buildTableFooterRow = ({
   buildTableFooterCells,
 }) => () => {
   const cells = buildTableFooterCells();
-  const TableFooterRow = components.TableFooterRow || DefaultTableFooterRow;
+  const FooterRow = components.FooterRow || DefaultTableFooterRow;
 
   return (
-    <TableFooterRow
+    <FooterRow
       cells={cells}
       filterProps={filterProps}
       sortProps={sortProps}
@@ -376,15 +348,15 @@ const buildTableFooterCells = ({
   paginationProps,
 }) => () => {
   return columns.map((column, index) => {
-    const CustomBodyCell = column.components
-      ? column.components.TableFooterCell
+    const CustomFooterCell = column.components
+      ? column.components.FooterCell
       : null;
-    const TableFooterCell =
-      CustomBodyCell || components.TableFooterCell || DefaultTableFooterCell;
+    const FooterCell =
+      CustomFooterCell || components.FooterCell || DefaultTableFooterCell;
 
     return (
       <KeyWrapper key={`column-${index}`}>
-        <TableFooterCell
+        <FooterCell
           column={column}
           rows={rows.toJS()}
           filterProps={filterProps}
@@ -401,16 +373,21 @@ const onPrevPage = tableKey => () => dispatch('PREV_PAGE', { tableKey });
 const onSortColumn = (tableKey, column) => () =>
   dispatch('SORT_COLUMN', { tableKey, column });
 
-const Table = compose(
-  // withState('filter', 'setFilter', ''),
-  // Wrap data in a `List`.
-  // withProps(({ data, rows }) => {
-  //   console.log('rows', rows, data);
-  //   return {
-  //     rows: rows ? rows : List(data),
-  //   };
-  // }),
+const mapStateToProps = state => (state, props) => {
+  console.log('applying mstp', props.tableKey);
+  return state.getIn(['tables', props.tableKey], Map()).toObject();
+};
 
+const Table = compose(
+  // Determine if a tableKey was provided, if not set one and flag this as
+  // automatically setting up/tearing down.
+  withProps(({ tableKey }) => {
+    return {
+      tableKey: tableKey || uuid(),
+      auto: !tableKey,
+    };
+  }),
+  connect(mapStateToProps),
   withHandlers({
     buildTableHeaderCell,
     buildTableBodyCells,
@@ -428,19 +405,28 @@ const Table = compose(
   }),
   withHandlers({
     buildFilterControl,
-    // buildPaginationControl,
     buildTable,
   }),
 
-  // lifecycle({
-  //   componentDidUpdate(prevProps) {
-  //     if (this.props.identifier !== prevProps.identifier) {
-  //       this.props.setPageNumber(1);
-  //       this.props.setFilter('');
-  //       this.props.setSort(buildSortFromProps(this.props));
-  //     }
-  //   },
-  // }),
+  lifecycle({
+    componentDidMount() {
+      const { data, columns, pageSize, tableKey, auto } = this.props;
+      if (auto) {
+        setupTable({
+          tableKey,
+          data,
+          columns,
+          pageSize,
+        });
+      }
+    },
+
+    componentWillUnmount() {
+      if (this.props.auto) {
+        teardownTable({ tableKey: this.props.tableKey });
+      }
+    },
+  }),
 )(TableComponent);
 
 Table.propTypes = {
@@ -482,9 +468,6 @@ Table.defaultProps = {
   pageSize: 10,
 };
 
-const mapStateToProps = state => (state, props) =>
-  state.getIn(['tables', props.tableKey], Map()).toObject();
-
 Table.setup = setupTable;
 Table.teardown = teardownTable;
-export default connect(mapStateToProps)(Table);
+export default Table;

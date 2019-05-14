@@ -1,5 +1,5 @@
 import React from 'react';
-import { I18n } from '../i18n/I18nProvider';
+import { I18n } from '../../core/i18n/I18n';
 
 export const FilterControl = ({ filter, handleFilterChange }) => (
   <div className="input-group">

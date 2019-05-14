@@ -7,4 +7,7 @@ const generateUser = () => ({
   spaceAdmin: Faker.random.boolean(),
 });
 
-export const users = count => Repeat(generateUser, count).map(g => g());
+export const users = count =>
+  Repeat(generateUser, count)
+    .map(g => g())
+    .toJS();

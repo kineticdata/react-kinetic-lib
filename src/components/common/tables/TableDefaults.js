@@ -1,8 +1,8 @@
 import React from 'react';
-import { I18n } from '../i18n/I18nProvider';
+import { I18n } from '../../core/i18n/I18n';
 
 export const DefaultTableLayout = ({ header, body, footer }) => (
-  <table className="table table-sm table-striped">
+  <table>
     {header}
     {body}
     {footer}
@@ -15,20 +15,15 @@ export const DefaultHeader = ({ sorting, headerRow }) => (
 
 export const DefaultHeaderRow = ({ columnHeaders }) => <tr>{columnHeaders}</tr>;
 
-export const DefaultHeaderCell = ({
-  onSortColumn,
-  sortClass,
-  sortClick,
-  title,
-}) => (
-  <th
-    className={sortClass}
-    {...(title ? { scope: 'col' } : {})}
-    onClick={sortClick}
-  >
-    <a onClick={onSortColumn}>
+export const DefaultHeaderCell = ({ onSortColumn, column, title }) => (
+  <th {...(title ? { scope: 'col' } : {})}>
+    {column.sortable === false ? (
       <I18n>{title}</I18n>
-    </a>
+    ) : (
+      <a onClick={onSortColumn}>
+        <I18n>{title}</I18n>
+      </a>
+    )}
   </th>
 );
 
@@ -38,7 +33,7 @@ export const DefaultTableBodyRow = ({ cells }) => <tr>{cells}</tr>;
 
 export const DefaultEmptyBodyRow = ({ columns, emptyMessage }) => (
   <tr>
-    <td className="text-center" colSpan={columns.length}>
+    <td className="text-center" colSpan={columns.size}>
       <em>
         <I18n>{emptyMessage || 'No data found.'}</I18n>
       </em>

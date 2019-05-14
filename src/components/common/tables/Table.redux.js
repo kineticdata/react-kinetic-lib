@@ -8,7 +8,8 @@ import {
   regSaga,
 } from '../../../store';
 
-export const isClientSide = data => typeof data !== 'function';
+export const isClientSide = data =>
+  data instanceof Array || data instanceof List;
 
 const clientSideNextPage = tableData =>
   tableData.update('pageOffset', pageOffset => pageOffset + tableData.pageSize);
@@ -17,6 +18,18 @@ const clientSidePrevPage = tableData =>
   tableData.update('pageOffset', pageOffset =>
     Math.max(0, pageOffset - tableData.pageSize),
   );
+
+const serverSideNextPage = tableData =>
+  tableData
+    .set('nextPageToken', tableData.currentPageToken)
+    .update('pageTokens', pt => pt.push(tableData.currentPageToken));
+
+const serverSidePrevPage = tableData => {
+  console.log('doing prev page', tableData.pageTokens.last());
+  return tableData
+    .update('pageTokens', pt => pt.pop())
+    .update(t => t.set('nextPageToken', t.pageTokens.last()));
+};
 
 const TableData = Record({
   data: null,
@@ -28,6 +41,7 @@ const TableData = Record({
   sortDirection: 'desc',
 
   // Pagination
+  currentPageToken: null,
   nextPageToken: null,
   pageTokens: List(),
   pageSize: 25,
@@ -39,21 +53,30 @@ regHandlers({
     state.setIn(
       ['tables', tableKey],
       TableData({
-        data: isClientSide(data) ? List(data) : data,
+        data,
         columns: List(columns),
 
         pageSize,
       }),
     ),
-  SET_ROWS: (state, { payload: { tableKey, rows } }) =>
-    state.setIn(['tables', tableKey, 'rows'], rows),
+  SET_ROWS: (state, { payload: { tableKey, rows, nextPageToken } }) =>
+    state.updateIn(['tables', tableKey], table =>
+      table
+        .set('rows', rows)
+        .set('currentPageToken', nextPageToken)
+        .set('nextPageToken', null),
+    ),
   NEXT_PAGE: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
-      isClientSide(tableData.data) ? clientSideNextPage(tableData) : tableData,
+      isClientSide(tableData.data)
+        ? clientSideNextPage(tableData)
+        : serverSideNextPage(tableData),
     ),
   PREV_PAGE: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
-      isClientSide(tableData.data) ? clientSidePrevPage(tableData) : tableData,
+      isClientSide(tableData.data)
+        ? clientSidePrevPage(tableData)
+        : serverSidePrevPage(tableData),
     ),
   SORT_COLUMN: (state, { payload: { tableKey, column } }) =>
     state.updateIn(['tables', tableKey], t =>
@@ -78,8 +101,9 @@ function* calculateRowsTask({ payload }) {
 
   const tableData = yield select(state => state.getIn(['tables', tableKey]));
 
-  const rows = yield call(calculateRows, tableData);
-  yield put({ type: 'SET_ROWS', payload: { tableKey, rows } });
+  const { rows, nextPageToken } = yield call(calculateRows, tableData);
+  yield put({ type: 'SET_ROWS', payload: { tableKey, rows, nextPageToken } });
+  // set nextPageToken
 }
 
 regSaga(takeEvery('SETUP_TABLE', calculateRowsTask));
@@ -88,28 +112,55 @@ regSaga(takeEvery('PREV_PAGE', calculateRowsTask));
 regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
 regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 
+const generateSortParams = tableData =>
+  tableData.sortColumn
+    ? {
+        orderBy: tableData.sortColumn.value,
+        direction: tableData.sortDirection,
+      }
+    : {};
+const sortParams = {};
+
 const calculateRows = tableData => {
-  if (typeof tableData.data === 'function') {
-    console.log('re-fetching data source');
-    const details = tableData.data(tableData);
-    return details.ds(details.params);
-  } else {
-    const {
-      pageOffset,
-      pageSize,
-      sortColumn,
-      sortDirection,
-      data,
-      columns,
-    } = tableData;
+  const {
+    pageOffset,
+    pageSize,
+    sortColumn,
+    sortDirection,
+    columns,
+
+    nextPageToken,
+  } = tableData;
+  const data = isClientSide(tableData.data)
+    ? List(tableData.data)
+    : tableData.data;
+
+  if (isClientSide(tableData.data)) {
     const startIndex = pageOffset;
     const endIndex = Math.min(pageOffset + pageSize, data.size);
-    console.log('SORT', sortColumn, columns);
+
     const rows = data
       .update(d => (sortColumn ? d.sortBy(r => r[sortColumn.value]) : d))
       .update(d => (sortDirection === 'asc' ? d.reverse() : d))
       .update(d => d.slice(startIndex, endIndex));
-    return Promise.resolve(rows);
+
+    return Promise.resolve({ rows });
+  } else {
+    const transform = data.transform || (result => result);
+    console.log('nextPageToken', tableData.nextPageToken);
+    const params = {
+      ...data.params(tableData),
+      ...generateSortParams(tableData),
+      pageToken: tableData.nextPageToken,
+    };
+
+    return data
+      .dataSource(params)
+      .then(transform)
+      .then(result => ({
+        nextPageToken: result.nextPageToken,
+        rows: List(result.data),
+      }));
   }
 };
 

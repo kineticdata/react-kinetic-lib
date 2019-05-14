@@ -4,7 +4,7 @@
 
 When the data passed into the `Table` is empty it will display the empty message.
 
-```js static
+```js
 <Table
   data={[]}
   columns={[{ value: 'username', title: 'Username' }]}
@@ -16,8 +16,10 @@ When the data passed into the `Table` is empty it will display the empty message
 
 ### With basic data
 
-```js static
-const data = [{ username: 'demo@acme.com', displayName: 'Demo User' }];
+```js
+import { users } from '@kineticdata/fixtures';
+
+const data = users(2);
 const columns = [
   {
     value: 'username',
@@ -35,19 +37,12 @@ const columns = [
 
 ### If you need to custom render a field
 
-```js static
-const data = [
-  {
-    username: 'demo@acme.com',
-    displayName: 'Demo User',
-    spaceAdmin: false,
-  },
-  {
-    username: 'demo-admin@acme.com',
-    displayName: 'Demo Admin',
-    spaceAdmin: true,
-  },
-];
+```js
+import { users } from '@kineticdata/fixtures';
+
+const BooleanYesNoCell = props => <td>{props.value ? 'Yes' : 'No'}</td>;
+
+const data = users(2);
 const columns = [
   {
     value: 'username',
@@ -60,9 +55,7 @@ const columns = [
   {
     value: 'spaceAdmin',
     title: 'Is Space Admin?',
-    renderBodyCell: ({ content, row }) => (
-      <td>{row.spaceAdmin ? 'Yes' : 'No'}</td>
-    ),
+    components: { BodyCell: BooleanYesNoCell },
   },
 ];
 <Table emptyMessage="There are no data rows." data={data} columns={columns}>
@@ -70,50 +63,15 @@ const columns = [
 </Table>;
 ```
 
-### Proposed props.
+### With configured pagination controls
 
-Current render props:
+```js
+import { users } from '@kineticdata/fixtures';
+import { FilterControl, PaginationControl } from '@kineticdata/react';
 
-- renderHeader
-- renderHeaderRow
-- renderBody
-- renderBodyRow
-- renderFooter
-- renderFooterRow
-- render
-- columns
+const BooleanYesNoCell = props => <td>{props.value ? 'Yes' : 'No'}</td>;
 
-  - renderBodyCell
-  - renderHeaderCell
-  - renderFooterCell
-
-- customProps
-  - header
-  - body
-  - ...?
-
-```js static
-import { FilterControl, PaginationControl } from 'react-kinetic-lib';
-
-const SpaceAdminCell = props => {
-  console.log('props', props);
-  return <td>{props.value ? 'Yes' : 'No'}</td>;
-};
-
-const SpaceAdminFooter = () => <td>Space Admin ?</td>;
-
-const data = [
-  {
-    username: 'demo@acme.com',
-    displayName: 'Demo User',
-    spaceAdmin: false,
-  },
-  {
-    username: 'demo-admin@acme.com',
-    displayName: 'Demo Admin',
-    spaceAdmin: true,
-  },
-];
+const data = users(35);
 const columns = [
   {
     value: 'username',
@@ -126,11 +84,7 @@ const columns = [
   {
     value: 'spaceAdmin',
     title: 'Is Space Admin?',
-    components: {
-      // HeaderCell,
-      TableFooterCell: SpaceAdminFooter,
-      TableBodyCell: SpaceAdminCell,
-    },
+    components: { BodyCell: BooleanYesNoCell },
   },
 ];
 
@@ -139,23 +93,8 @@ const columns = [
   components={{
     FilterControl,
     PaginationControl,
-    // Header,
-    // HeaderRow,
-    // Footer,
-    // FooterRow,
-    // HeaderCell,
-    // BodyCell,
-    // EmptyBodyRow,
-    // FooterCell,
-    // PaginationControl,
-    // FilterControl,
   }}
   columns={columns}
-  omitHeader
-  footer
-  filtering
-  pagination
-  sorting
 >
   {({ table, filter, pagination }) => (
     <div>
