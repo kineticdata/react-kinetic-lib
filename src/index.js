@@ -7,6 +7,7 @@ import {
   DefaultFieldConfig,
   FieldConfigContext,
 } from './components/core/form/FieldConfigContext';
+import { createHashHistory } from 'history';
 
 export {
   default as ContentEditable,
@@ -170,4 +171,6 @@ const KineticLib = props => (
   </Provider>
 );
 
-export { configure, KineticLib };
+const history = createHashHistory();
+
+export { configure, KineticLib, history };
