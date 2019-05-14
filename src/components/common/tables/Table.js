@@ -373,10 +373,8 @@ const onPrevPage = tableKey => () => dispatch('PREV_PAGE', { tableKey });
 const onSortColumn = (tableKey, column) => () =>
   dispatch('SORT_COLUMN', { tableKey, column });
 
-const mapStateToProps = state => (state, props) => {
-  console.log('applying mstp', props.tableKey);
-  return state.getIn(['tables', props.tableKey], Map()).toObject();
-};
+const mapStateToProps = state => (state, props) =>
+  state.getIn(['tables', props.tableKey], Map()).toObject();
 
 const Table = compose(
   // Determine if a tableKey was provided, if not set one and flag this as

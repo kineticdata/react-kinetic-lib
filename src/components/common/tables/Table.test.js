@@ -1,17 +1,20 @@
 import React from 'react';
 import Table from './Table';
 import { render } from 'enzyme';
+import { KineticLib } from '../../../index';
 
 const renderTable = (data, columns, components) =>
   render(
-    <Table
-      data={data}
-      columns={columns}
-      components={components}
-      emptyMessage="There are no data rows."
-    >
-      {({ table }) => <div>{table}</div>}
-    </Table>,
+    <KineticLib>
+      <Table
+        data={data}
+        columns={columns}
+        components={components}
+        emptyMessage="There are no data rows."
+      >
+        {({ table }) => <div>{table}</div>}
+      </Table>
+    </KineticLib>,
   );
 
 const CustomTHead = ({ children }) => (
