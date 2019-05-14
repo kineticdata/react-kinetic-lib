@@ -1,4 +1,4 @@
-import { List, Map, OrderedMap } from 'immutable/dist/immutable-nonambient';
+import { List, Map, OrderedMap } from 'immutable';
 import { initializeDataSources, validateFields } from './Form';
 
 describe('initializeDataSources', () => {
@@ -148,7 +148,7 @@ describe('validateFields', () => {
     );
     expect(result.map(f => f.get('errors'))).toEqualImmutable(
       OrderedMap([
-        ['First Name', List(['is required'])],
+        ['First Name', List(['This field is required'])],
         ['Last Name', List(['Last name is required!'])],
         ['Other', List()],
       ]),
@@ -166,7 +166,7 @@ describe('validateFields', () => {
     );
     expect(result.map(f => f.get('errors'))).toEqualImmutable(
       OrderedMap([
-        ['a', List(['invalid format'])],
+        ['a', List(['Invalid format'])],
         ['b', List(['num'])],
         ['c', List()],
         ['d', List()],
@@ -203,7 +203,7 @@ describe('validateFields', () => {
     );
     expect(result.map(f => f.get('errors'))).toEqualImmutable(
       OrderedMap([
-        ['a', List(['invalid'])],
+        ['a', List(['Invalid'])],
         ['b', List(['a and b must be equal'])],
         ['c', List()],
       ]),
