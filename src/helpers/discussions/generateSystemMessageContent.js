@@ -4,15 +4,15 @@ const formatLabel = label =>
   label === 'owningUsers'
     ? 'owning users'
     : label === 'owningTeams'
-      ? 'owning teams'
-      : label;
+    ? 'owning teams'
+    : label;
 
 const formatValue = value =>
   value === null
     ? ''
     : isarray(value)
-      ? value.map(formatValue).join(', ')
-      : value.username || value.name || value;
+    ? value.map(formatValue).join(', ')
+    : value.username || value.name || value;
 
 const getToken = (tokens, name, required = true) => {
   const result = tokens
@@ -141,6 +141,10 @@ export default (action, content) => {
             return textToken(`${prefix}${l} from [${p}] to [${c}]`);
           }),
         ];
+      default:
+        console.warn(
+          `Invalid system message action '${action}' - unable to generate content.`,
+        );
     }
   } catch (e) {
     error = e;

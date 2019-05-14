@@ -11,6 +11,11 @@ import {
 export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
+export { FilterControl } from './components/common/tables/FilterControl';
+export {
+  PaginationControl,
+} from './components/common/tables/PaginationControl';
+export { default as Table } from './components/common/tables/Table';
 export {
   UserForm,
   UserList,

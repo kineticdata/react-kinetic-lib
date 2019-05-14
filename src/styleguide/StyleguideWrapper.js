@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { KineticLib } from 'react-kinetic-lib';
+import { KineticLib } from '@kineticdata/react';
 // import 'bootstrap/scss/bootstrap.scss';
 // import 'font-awesome/css/font-awesome.css';
 
@@ -7,4 +7,8 @@ import { KineticLib } from 'react-kinetic-lib';
 window.bundle = window.bundle || {};
 window.bundle.apiLocation = '/fake-api';
 
-export default ({ children }) => <Fragment><KineticLib>{children}</KineticLib></Fragment>
+export default ({ children }) => (
+  <Fragment>
+    <KineticLib>{children}</KineticLib>
+  </Fragment>
+);
