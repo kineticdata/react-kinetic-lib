@@ -1,38 +1,516 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Table /> when Header is overridden it renders the same each time 1`] = `
-<div>
-  <table
-    class="table table-sm table-striped"
+<KineticLib>
+  <Provider
+    context={
+      Object {
+        "$$typeof": Symbol(react.context),
+        "Consumer": Object {
+          "$$typeof": Symbol(react.context),
+          "_calculateChangedBits": null,
+          "_context": [Circular],
+        },
+        "Provider": Object {
+          "$$typeof": Symbol(react.provider),
+          "_context": [Circular],
+        },
+        "_calculateChangedBits": null,
+        "_currentRenderer": Object {},
+        "_currentRenderer2": null,
+        "_currentValue": undefined,
+        "_currentValue2": undefined,
+        "_threadCount": 0,
+      }
+    }
+    store={
+      Object {
+        "dispatch": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+        Symbol(Symbol.observable): [Function],
+      }
+    }
   >
-    <thead
-      class="sortable"
-    >
-      <tr>
-        <th
-          class=""
-          scope="col"
+    <I18nProvider>
+      <withProps(Connect(withHandlers(withHandlers(withHandlers(withHandlers(lifecycle(TableComponent)))))))
+        auto={true}
+        columns={
+          Array [
+            Object {
+              "title": "Username",
+              "value": "username",
+            },
+          ]
+        }
+        components={Object {}}
+        data={
+          Array [
+            Object {
+              "username": "user-1",
+            },
+            Object {
+              "username": "user-2",
+            },
+          ]
+        }
+        emptyMessage="There are no data rows."
+        filtering={true}
+        pageSize={10}
+        pagination={true}
+        rows={Immutable.List []}
+        sorting={true}
+        tableKey="abc"
+      >
+        <Connect(withHandlers(withHandlers(withHandlers(withHandlers(lifecycle(TableComponent))))))
+          auto={false}
+          columns={
+            Array [
+              Object {
+                "title": "Username",
+                "value": "username",
+              },
+            ]
+          }
+          components={Object {}}
+          data={
+            Array [
+              Object {
+                "username": "user-1",
+              },
+              Object {
+                "username": "user-2",
+              },
+            ]
+          }
+          emptyMessage="There are no data rows."
+          filtering={true}
+          pageSize={10}
+          pagination={true}
+          rows={Immutable.List []}
+          sorting={true}
+          tableKey="abc"
         >
-          <div>
-            Username
-          </div>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td
-          class="text-center"
-          colspan="1"
-        >
-          <em>
-            <div>
-              There are no data rows.
-            </div>
-          </em>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+          <withHandlers(withHandlers(withHandlers(withHandlers(lifecycle(TableComponent)))))
+            auto={false}
+            columns={
+              Array [
+                Object {
+                  "title": "Username",
+                  "value": "username",
+                },
+              ]
+            }
+            components={Object {}}
+            data={
+              Array [
+                Object {
+                  "username": "user-1",
+                },
+                Object {
+                  "username": "user-2",
+                },
+              ]
+            }
+            dispatch={[Function]}
+            emptyMessage="There are no data rows."
+            filtering={true}
+            pageSize={10}
+            pagination={true}
+            rows={Immutable.List []}
+            sorting={true}
+            tableKey="abc"
+          >
+            <withHandlers(withHandlers(withHandlers(lifecycle(TableComponent))))
+              auto={false}
+              buildTableBodyCells={[Function]}
+              buildTableFooterCells={[Function]}
+              buildTableHeaderCell={[Function]}
+              columns={
+                Array [
+                  Object {
+                    "title": "Username",
+                    "value": "username",
+                  },
+                ]
+              }
+              components={Object {}}
+              data={
+                Array [
+                  Object {
+                    "username": "user-1",
+                  },
+                  Object {
+                    "username": "user-2",
+                  },
+                ]
+              }
+              dispatch={[Function]}
+              emptyMessage="There are no data rows."
+              filtering={true}
+              pageSize={10}
+              pagination={true}
+              rows={Immutable.List []}
+              sorting={true}
+              tableKey="abc"
+            >
+              <withHandlers(withHandlers(lifecycle(TableComponent)))
+                auto={false}
+                buildTableBodyCells={[Function]}
+                buildTableBodyRows={[Function]}
+                buildTableFooterCells={[Function]}
+                buildTableFooterRow={[Function]}
+                buildTableHeaderCell={[Function]}
+                buildTableHeaderRow={[Function]}
+                columns={
+                  Array [
+                    Object {
+                      "title": "Username",
+                      "value": "username",
+                    },
+                  ]
+                }
+                components={Object {}}
+                data={
+                  Array [
+                    Object {
+                      "username": "user-1",
+                    },
+                    Object {
+                      "username": "user-2",
+                    },
+                  ]
+                }
+                dispatch={[Function]}
+                emptyMessage="There are no data rows."
+                filtering={true}
+                pageSize={10}
+                pagination={true}
+                rows={Immutable.List []}
+                sorting={true}
+                tableKey="abc"
+              >
+                <withHandlers(lifecycle(TableComponent))
+                  auto={false}
+                  buildTableBody={[Function]}
+                  buildTableBodyCells={[Function]}
+                  buildTableBodyRows={[Function]}
+                  buildTableFooter={[Function]}
+                  buildTableFooterCells={[Function]}
+                  buildTableFooterRow={[Function]}
+                  buildTableHeader={[Function]}
+                  buildTableHeaderCell={[Function]}
+                  buildTableHeaderRow={[Function]}
+                  columns={
+                    Array [
+                      Object {
+                        "title": "Username",
+                        "value": "username",
+                      },
+                    ]
+                  }
+                  components={Object {}}
+                  data={
+                    Array [
+                      Object {
+                        "username": "user-1",
+                      },
+                      Object {
+                        "username": "user-2",
+                      },
+                    ]
+                  }
+                  dispatch={[Function]}
+                  emptyMessage="There are no data rows."
+                  filtering={true}
+                  pageSize={10}
+                  pagination={true}
+                  rows={Immutable.List []}
+                  sorting={true}
+                  tableKey="abc"
+                >
+                  <lifecycle(TableComponent)
+                    auto={false}
+                    buildFilterControl={[Function]}
+                    buildTable={[Function]}
+                    buildTableBody={[Function]}
+                    buildTableBodyCells={[Function]}
+                    buildTableBodyRows={[Function]}
+                    buildTableFooter={[Function]}
+                    buildTableFooterCells={[Function]}
+                    buildTableFooterRow={[Function]}
+                    buildTableHeader={[Function]}
+                    buildTableHeaderCell={[Function]}
+                    buildTableHeaderRow={[Function]}
+                    columns={
+                      Array [
+                        Object {
+                          "title": "Username",
+                          "value": "username",
+                        },
+                      ]
+                    }
+                    components={Object {}}
+                    data={
+                      Array [
+                        Object {
+                          "username": "user-1",
+                        },
+                        Object {
+                          "username": "user-2",
+                        },
+                      ]
+                    }
+                    dispatch={[Function]}
+                    emptyMessage="There are no data rows."
+                    filtering={true}
+                    pageSize={10}
+                    pagination={true}
+                    rows={Immutable.List []}
+                    sorting={true}
+                    tableKey="abc"
+                  >
+                    <TableComponent
+                      auto={false}
+                      buildFilterControl={[Function]}
+                      buildTable={[Function]}
+                      buildTableBody={[Function]}
+                      buildTableBodyCells={[Function]}
+                      buildTableBodyRows={[Function]}
+                      buildTableFooter={[Function]}
+                      buildTableFooterCells={[Function]}
+                      buildTableFooterRow={[Function]}
+                      buildTableHeader={[Function]}
+                      buildTableHeaderCell={[Function]}
+                      buildTableHeaderRow={[Function]}
+                      columns={
+                        Array [
+                          Object {
+                            "title": "Username",
+                            "value": "username",
+                          },
+                        ]
+                      }
+                      components={Object {}}
+                      data={
+                        Array [
+                          Object {
+                            "username": "user-1",
+                          },
+                          Object {
+                            "username": "user-2",
+                          },
+                        ]
+                      }
+                      dispatch={[Function]}
+                      emptyMessage="There are no data rows."
+                      filtering={true}
+                      pageSize={10}
+                      pagination={true}
+                      rows={Immutable.List []}
+                      sorting={true}
+                      tableKey="abc"
+                    >
+                      <div>
+                        <DefaultTableLayout
+                          body={
+                            <DefaultTableBody
+                              rows={Array []}
+                              tableRows={
+                                <DefaultEmptyBodyRow
+                                  columns={
+                                    Array [
+                                      Object {
+                                        "title": "Username",
+                                        "value": "username",
+                                      },
+                                    ]
+                                  }
+                                  emptyMessage="There are no data rows."
+                                  rows={Array []}
+                                />
+                              }
+                            />
+                          }
+                          footer={null}
+                          header={
+                            <DefaultHeader
+                              headerRow={
+                                <DefaultHeaderRow
+                                  columnHeaders={
+                                    Array [
+                                      <KeyWrapper>
+                                        <DefaultHeaderCell
+                                          column={
+                                            Object {
+                                              "title": "Username",
+                                              "value": "username",
+                                            }
+                                          }
+                                          onSortColumn={[Function]}
+                                          rows={[Function]}
+                                          title="Username"
+                                        />
+                                      </KeyWrapper>,
+                                    ]
+                                  }
+                                  rows={Array []}
+                                />
+                              }
+                              rows={Immutable.List []}
+                              sorting={true}
+                            />
+                          }
+                        >
+                          <table>
+                            <DefaultHeader
+                              headerRow={
+                                <DefaultHeaderRow
+                                  columnHeaders={
+                                    Array [
+                                      <KeyWrapper>
+                                        <DefaultHeaderCell
+                                          column={
+                                            Object {
+                                              "title": "Username",
+                                              "value": "username",
+                                            }
+                                          }
+                                          onSortColumn={[Function]}
+                                          rows={[Function]}
+                                          title="Username"
+                                        />
+                                      </KeyWrapper>,
+                                    ]
+                                  }
+                                  rows={Array []}
+                                />
+                              }
+                              rows={Immutable.List []}
+                              sorting={true}
+                            >
+                              <thead
+                                className="sortable"
+                              >
+                                <DefaultHeaderRow
+                                  columnHeaders={
+                                    Array [
+                                      <KeyWrapper>
+                                        <DefaultHeaderCell
+                                          column={
+                                            Object {
+                                              "title": "Username",
+                                              "value": "username",
+                                            }
+                                          }
+                                          onSortColumn={[Function]}
+                                          rows={[Function]}
+                                          title="Username"
+                                        />
+                                      </KeyWrapper>,
+                                    ]
+                                  }
+                                  rows={Array []}
+                                >
+                                  <tr>
+                                    <KeyWrapper
+                                      key="column-0"
+                                    >
+                                      <DefaultHeaderCell
+                                        column={
+                                          Object {
+                                            "title": "Username",
+                                            "value": "username",
+                                          }
+                                        }
+                                        onSortColumn={[Function]}
+                                        rows={[Function]}
+                                        title="Username"
+                                      >
+                                        <th
+                                          scope="col"
+                                        >
+                                          <a
+                                            onClick={[Function]}
+                                          >
+                                            <I18n>
+                                              <I18nTranslate
+                                                context="shared"
+                                                loadTranslations={[Function]}
+                                                locale="en"
+                                                translations={Immutable.Map {}}
+                                              />
+                                            </I18n>
+                                          </a>
+                                        </th>
+                                      </DefaultHeaderCell>
+                                    </KeyWrapper>
+                                  </tr>
+                                </DefaultHeaderRow>
+                              </thead>
+                            </DefaultHeader>
+                            <DefaultTableBody
+                              rows={Array []}
+                              tableRows={
+                                <DefaultEmptyBodyRow
+                                  columns={
+                                    Array [
+                                      Object {
+                                        "title": "Username",
+                                        "value": "username",
+                                      },
+                                    ]
+                                  }
+                                  emptyMessage="There are no data rows."
+                                  rows={Array []}
+                                />
+                              }
+                            >
+                              <tbody>
+                                <DefaultEmptyBodyRow
+                                  columns={
+                                    Array [
+                                      Object {
+                                        "title": "Username",
+                                        "value": "username",
+                                      },
+                                    ]
+                                  }
+                                  emptyMessage="There are no data rows."
+                                  rows={Array []}
+                                >
+                                  <tr>
+                                    <td
+                                      className="text-center"
+                                    >
+                                      <em>
+                                        <I18n>
+                                          <I18nTranslate
+                                            context="shared"
+                                            loadTranslations={[Function]}
+                                            locale="en"
+                                            translations={Immutable.Map {}}
+                                          />
+                                        </I18n>
+                                      </em>
+                                    </td>
+                                  </tr>
+                                </DefaultEmptyBodyRow>
+                              </tbody>
+                            </DefaultTableBody>
+                          </table>
+                        </DefaultTableLayout>
+                      </div>
+                    </TableComponent>
+                  </lifecycle(TableComponent)>
+                </withHandlers(lifecycle(TableComponent))>
+              </withHandlers(withHandlers(lifecycle(TableComponent)))>
+            </withHandlers(withHandlers(withHandlers(lifecycle(TableComponent))))>
+          </withHandlers(withHandlers(withHandlers(withHandlers(lifecycle(TableComponent)))))>
+        </Connect(withHandlers(withHandlers(withHandlers(withHandlers(lifecycle(TableComponent))))))>
+      </withProps(Connect(withHandlers(withHandlers(withHandlers(withHandlers(lifecycle(TableComponent)))))))>
+    </I18nProvider>
+  </Provider>
+</KineticLib>
 `;

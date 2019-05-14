@@ -1,16 +1,19 @@
 import React from 'react';
+import { KineticLib } from '@kineticdata/react';
+import { mount, render } from 'enzyme';
+import { users } from '../../../styleguide/fixtures';
 import Table from './Table';
-import { render } from 'enzyme';
-import { KineticLib } from '../../../index';
 
-const renderTable = (data, columns, components) =>
-  render(
+const renderTable = (data, columns, components, doRender = render) =>
+  doRender(
     <KineticLib>
       <Table
         data={data}
         columns={columns}
         components={components}
         emptyMessage="There are no data rows."
+        tableKey="abc"
+        auto
       >
         {({ table }) => <div>{table}</div>}
       </Table>
@@ -22,16 +25,18 @@ const CustomTHead = ({ children }) => (
 );
 
 describe('<Table />', () => {
-  test('false is false', () => {
-    expect(false).toEqual(false);
-  });
-
   describe('when Header is overridden', () => {
-    const data = [];
-    const columns = [{ value: 'username', title: 'Username' }];
+    let data = [];
+    let columns = [];
+
+    beforeEach(() => {
+      data = users(2);
+      columns = [{ value: 'username', title: 'Username' }];
+    });
 
     test('it renders the same each time', () => {
-      const tableWrapper = renderTable(data, columns);
+      data = [{ username: 'user-1' }, { username: 'user-2' }];
+      const tableWrapper = renderTable(data, columns, undefined, mount);
       expect(tableWrapper).toMatchSnapshot();
     });
 
