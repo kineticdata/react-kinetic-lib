@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Form, setupForm, teardownForm } from '../form/Form';
+import React from 'react';
+import { Form } from '../form/Form';
 import { fetchSpace, fetchTeams, fetchUser } from '../../../apis/core';
 import { fetchLocales, fetchTimezones } from '../../../apis/core/meta';
 import { fetchAttributeDefinitions } from '../../../apis/core/attributeDefinitions';
@@ -170,49 +170,16 @@ const fields = ({ attributeFields, profileAttributeFields, username }) => [
   },
 ];
 
-const setup = ({
-  formKey,
-  handleSubmitSuccess,
-  handleSubmitError,
-  ...setupProps
-}) => {
-  setupForm({
-    formKey,
-    setupProps,
-    dataSources,
-    fields,
-    handleSubmit,
-    handleSubmitSuccess,
-    handleSubmitError,
-  });
-};
-
-const teardown = ({ formKey }) => {
-  teardownForm({ formKey });
-};
-
-export class UserForm extends Component {
-  componentDidMount() {
-    const { auto, components, ...setupProps } = this.props;
-    if (auto) {
-      setup(setupProps);
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.props.auto) {
-      teardown({ formKey: this.props.formKey });
-    }
-  }
-
-  render() {
-    return (
-      <Form formKey={this.props.formKey} components={this.props.components}>
-        {this.props.children}
-      </Form>
-    );
-  }
-}
-
-UserForm.setup = setup;
-UserForm.teardown = teardown;
+export const UserForm = props => (
+  <Form
+    formKey={props.formKey}
+    components={props.components}
+    onSubmit={handleSubmit({ username: props.username })}
+    onSave={props.onSave}
+    onError={props.onError}
+    dataSources={dataSources({ username: props.username })}
+    fields={fields({ username: props.username })}
+  >
+    {props.children}
+  </Form>
+);

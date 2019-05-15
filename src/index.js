@@ -154,6 +154,7 @@ export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
 export { I18n } from './components/core/i18n/I18n';
 export { Moment, importLocale } from './components/core/i18n/Moment';
+export { mountForm, unmountForm } from './components/core/form/Form';
 
 commitStore();
 

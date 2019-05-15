@@ -1,9 +1,7 @@
-import { UserForm } from './user_form/UserForm';
-import UserList from './user_list/UserList';
-import UserDetails from './user_details/UserDetails';
-import UserSelect from './UserSelect';
-import TeamSelect from './TeamSelect';
+export { UserForm } from './user_form/UserForm';
+export { default as UserList } from './user_list/UserList';
+export { default as UserDetails } from './user_details/UserDetails';
+export { default as UserSelect } from './UserSelect';
+export { default as TeamSelect } from './TeamSelect';
 
-import { CoreForm } from './core_form/CoreForm';
-
-export { UserForm, UserList, UserDetails, CoreForm, TeamSelect, UserSelect };
+export { CoreForm } from './core_form/CoreForm';
