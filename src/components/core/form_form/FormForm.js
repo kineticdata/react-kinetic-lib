@@ -53,7 +53,7 @@ export const FormForm = ({
   onSave,
   onError,
   children,
-  formSlug
+  formSlug,
 }) => (
   <Form
     formKey={formKey}
@@ -61,7 +61,7 @@ export const FormForm = ({
     onSubmit={handleSubmit({ formSlug })}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources{ formSlug })}
+    dataSources={dataSources({ formSlug })}
     fields={fields({ formSlug })}
   >
     {children}
