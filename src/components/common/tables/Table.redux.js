@@ -1,64 +1,68 @@
-import { List, Map, Record } from 'immutable';
+import { List, Record, Map } from 'immutable';
+import isarray from 'isarray';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
-import {
-  action,
-  connect,
-  dispatch,
-  regHandlers,
-  regSaga,
-} from '../../../store';
+import { dispatch, regHandlers, regSaga } from '../../../store';
 
-export const isClientSide = data =>
-  data instanceof Array || data instanceof List;
+export const isClientSide = data => isarray(data) || data instanceof List;
 
 const clientSideNextPage = tableData =>
-  tableData.update('pageOffset', pageOffset => pageOffset + tableData.pageSize);
+  tableData.update(
+    'pageOffset',
+    pageOffset => pageOffset + tableData.get('pageSize'),
+  );
 
 const clientSidePrevPage = tableData =>
   tableData.update('pageOffset', pageOffset =>
-    Math.max(0, pageOffset - tableData.pageSize),
+    Math.max(0, pageOffset - tableData.get('pageSize')),
   );
 
 const serverSideNextPage = tableData =>
   tableData
-    .set('nextPageToken', tableData.currentPageToken)
-    .update('pageTokens', pt => pt.push(tableData.currentPageToken));
+    .set('nextPageToken', tableData.get('currentPageToken'))
+    .update('pageTokens', pt => pt.push(tableData.get('currentPageToken')));
 
-const serverSidePrevPage = tableData => {
-  console.log('doing prev page', tableData.pageTokens.last());
-  return tableData
+const serverSidePrevPage = tableData =>
+  tableData
     .update('pageTokens', pt => pt.pop())
-    .update(t => t.set('nextPageToken', t.pageTokens.last()));
-};
-
-const TableData = Record({
-  data: null,
-  columns: List(),
-  rows: List(),
-
-  // Sort
-  sortColumn: null,
-  sortDirection: 'desc',
-
-  // Pagination
-  currentPageToken: null,
-  nextPageToken: null,
-  pageTokens: List(),
-  pageSize: 25,
-  pageOffset: 0,
-});
+    .update(t => t.set('nextPageToken', t.get('pageTokens').last()));
 
 regHandlers({
-  SETUP_TABLE: (state, { payload: { tableKey, data, columns, pageSize } }) =>
-    state.setIn(
-      ['tables', tableKey],
-      TableData({
-        data,
-        columns: List(columns),
+  MOUNT_TABLE: (state, { payload: { tableKey } }) => {
+    return state.setIn(['tables', tableKey, 'mounted'], true);
+  },
+  UNMOUNT_TABLE: (state, { payload: { tableKey } }) => {
+    return state.deleteIn(['tables', tableKey]);
+  },
+  CONFIGURE_TABLE: (
+    state,
+    { payload: { tableKey, data = List(), columns, pageSize = 25 } },
+  ) =>
+    !state.getIn(['tables', tableKey, 'mounted'])
+      ? state
+      : state.hasIn(['tables', tableKey, 'configured'])
+      ? state.setIn(['tables', tableKey, 'initialize'], false)
+      : state.mergeIn(
+          ['tables', tableKey],
+          Map({
+            data,
+            columns,
+            rows: List(),
+            MATTR: 'IS THE BERST',
 
-        pageSize,
-      }),
-    ),
+            pageSize,
+            sortColumn: null,
+            sortDirection: 'desc',
+
+            // Pagination
+            currentPageToken: null,
+            nextPageToken: null,
+            pageTokens: List(),
+            pageOffset: 0,
+
+            configured: true,
+            initialize: true,
+          }),
+        ),
   SET_ROWS: (state, { payload: { tableKey, rows, nextPageToken } }) =>
     state.updateIn(['tables', tableKey], table =>
       table
@@ -68,13 +72,13 @@ regHandlers({
     ),
   NEXT_PAGE: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
-      isClientSide(tableData.data)
+      isClientSide(tableData.get('data'))
         ? clientSideNextPage(tableData)
         : serverSideNextPage(tableData),
     ),
   PREV_PAGE: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
-      isClientSide(tableData.data)
+      isClientSide(tableData.get('data'))
         ? clientSidePrevPage(tableData)
         : serverSidePrevPage(tableData),
     ),
@@ -98,44 +102,37 @@ regHandlers({
 
 function* calculateRowsTask({ payload }) {
   const { tableKey } = payload;
-
   const tableData = yield select(state => state.getIn(['tables', tableKey]));
 
   const { rows, nextPageToken } = yield call(calculateRows, tableData);
   yield put({ type: 'SET_ROWS', payload: { tableKey, rows, nextPageToken } });
-  // set nextPageToken
 }
 
-regSaga(takeEvery('SETUP_TABLE', calculateRowsTask));
+regSaga(takeEvery('CONFIGURE_TABLE', calculateRowsTask));
 regSaga(takeEvery('NEXT_PAGE', calculateRowsTask));
 regSaga(takeEvery('PREV_PAGE', calculateRowsTask));
 regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
 regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 
 const generateSortParams = tableData =>
-  tableData.sortColumn
+  tableData.get('sortColumn')
     ? {
-        orderBy: tableData.sortColumn.value,
-        direction: tableData.sortDirection,
+        orderBy: tableData.get('sortColumn').value,
+        direction: tableData.get('sortDirection'),
       }
     : {};
-const sortParams = {};
 
 const calculateRows = tableData => {
-  const {
-    pageOffset,
-    pageSize,
-    sortColumn,
-    sortDirection,
-    columns,
+  const pageOffset = tableData.get('pageOffset');
+  const pageSize = tableData.get('pageSize');
+  const sortColumn = tableData.get('sortColumn');
+  const sortDirection = tableData.get('sortDirection');
 
-    nextPageToken,
-  } = tableData;
-  const data = isClientSide(tableData.data)
-    ? List(tableData.data)
-    : tableData.data;
+  const data = isClientSide(tableData.get('data'))
+    ? List(tableData.get('data'))
+    : tableData.get('data');
 
-  if (isClientSide(tableData.data)) {
+  if (isClientSide(tableData.get('data'))) {
     const startIndex = pageOffset;
     const endIndex = Math.min(pageOffset + pageSize, data.size);
 
@@ -147,11 +144,10 @@ const calculateRows = tableData => {
     return Promise.resolve({ rows });
   } else {
     const transform = data.transform || (result => result);
-    console.log('nextPageToken', tableData.nextPageToken);
     const params = {
-      ...data.params(tableData),
+      ...data.params(tableData.toJS()),
       ...generateSortParams(tableData),
-      pageToken: tableData.nextPageToken,
+      pageToken: tableData.get('nextPageToken'),
     };
 
     return data
@@ -164,10 +160,6 @@ const calculateRows = tableData => {
   }
 };
 
-export const setupTable = payload => {
-  dispatch('SETUP_TABLE', payload);
-};
-
-export const teardownTable = ({ tableKey }) => {
-  dispatch('TEARDOWN_TABLE', { tableKey });
-};
+export const mountTable = tableKey => dispatch('MOUNT_TABLE', { tableKey });
+export const unmountTable = tableKey => dispatch('UNMOUNT_TABLE', { tableKey });
+export const configureTable = payload => dispatch('CONFIGURE_TABLE', payload);

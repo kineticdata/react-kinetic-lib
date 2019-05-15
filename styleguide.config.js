@@ -15,7 +15,7 @@ module.exports = {
   },
   getComponentPathLine: (componentPath) => {
     const name = path.basename(componentPath, '.js')
-    return `import { ${name} } from 'react-kinetic-lib';`
+    return `import { ${name} } from '@kineticdata/react';`
   },
   styleguideComponents: {
     Wrapper: path.join(__dirname, 'src/styleguide/StyleguideWrapper')

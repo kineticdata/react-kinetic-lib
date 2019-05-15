@@ -35,7 +35,7 @@ export const DefaultEmptyBodyRow = ({ columns, emptyMessage }) => (
   <tr>
     <td className="text-center" colSpan={columns.size}>
       <em>
-        <I18n>{emptyMessage || 'No data found.'}</I18n>
+        <I18n>{emptyMessage}</I18n>
       </em>
     </td>
   </tr>
