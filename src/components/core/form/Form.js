@@ -471,7 +471,21 @@ regSaga(
 );
 
 regSaga(
-  takeEvery('SET_VALUE', function*({ payload: { formKey } }) {
+  takeEvery('SET_VALUE', function*({
+    payload: { formKey, name, triggerChange },
+  }) {
+    if (triggerChange) {
+      const onChange = yield select(state =>
+        state.getIn(['forms', formKey, 'fields', name, 'onChange']),
+      );
+      if (onChange) {
+        yield call(
+          onChange,
+          yield select(selectBindings(formKey)),
+          bindActions(formKey),
+        );
+      }
+    }
     const dataSources = yield select(state =>
       state.getIn(['forms', formKey, 'dataSources']),
     );
@@ -525,6 +539,17 @@ regSaga(
   }),
 );
 
+const actions = {
+  setValue: formKey => (name, value, triggerChange = true) =>
+    dispatch('SET_VALUE', { formKey, name, value, triggerChange }),
+};
+
+const bindActions = formKey =>
+  Object.entries(actions).reduce(
+    (acc, [name, fn]) => ({ ...acc, [name]: fn(formKey) }),
+    {},
+  );
+
 export const onFocus = ({ formKey, field }) => () => {
   dispatch('FOCUS_FIELD', { formKey, field });
 };
@@ -534,19 +559,10 @@ export const onBlur = ({ formKey, field }) => () => {
 };
 
 export const onChange = ({ formKey, type, name }) => event => {
-  if (type === 'checkbox') {
-    dispatch('SET_VALUE', {
-      formKey,
-      name,
-      value: event.target.checked,
-    });
-  } else {
-    dispatch('SET_VALUE', {
-      formKey,
-      name,
-      value: event.target.value,
-    });
-  }
+  actions.setValue(formKey)(
+    name,
+    type === 'checkbox' ? event.target.checked : event.target.value,
+  );
 };
 
 export const onSubmit = formKey => event => {

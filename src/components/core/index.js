@@ -1,3 +1,4 @@
+export { FormForm } from './form_form/FormForm';
 export { UserForm } from './user_form/UserForm';
 export { default as UserList } from './user_list/UserList';
 export { default as UserDetails } from './user_details/UserDetails';

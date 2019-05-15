@@ -18,6 +18,7 @@ export {
 } from './components/common/tables/PaginationControl';
 export { default as Table } from './components/common/tables/Table';
 export {
+  FormForm,
   UserForm,
   UserList,
   UserDetails,
