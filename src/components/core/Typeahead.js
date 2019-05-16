@@ -70,11 +70,10 @@ export default class Typeahead extends React.Component {
     if (method === 'enter') {
       event.preventDefault();
     }
-    const { multiple, textMode, value } = this.props;
-    const { newValue } = this.state;
+    const { getSuggestionValue, multiple, textMode, value } = this.props;
     this.setState({
       editing: multiple || textMode,
-      newValue: multiple || !textMode ? '' : newValue,
+      newValue: multiple || !textMode ? '' : getSuggestionValue(suggestion),
       touched: false,
     });
     this.props.onChange(multiple ? value.push(suggestion) : suggestion);
@@ -146,10 +145,9 @@ export default class Typeahead extends React.Component {
 
   handleSearch = searchValue => ({ suggestions, error, nextPageToken }) => {
     const custom = this.props.custom ? this.props.custom(searchValue) : null;
-    const existing = (this.props.multiple
-      ? this.props.value
-      : [this.props.value]
-    ).map(this.props.getSuggestionValue);
+    const existing = (this.props.multiple ? this.props.value : []).map(
+      this.props.getSuggestionValue,
+    );
     const filtered = suggestions.filter(
       suggestion =>
         !existing.includes(this.props.getSuggestionValue(suggestion)),
