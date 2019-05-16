@@ -22,7 +22,7 @@ import {
   DefaultTableFooter,
   DefaultTableFooterRow,
   DefaultTableFooterCell,
-} from './TableDefaults';
+} from './defaults';
 import { connect, dispatch } from '../../../store';
 import {
   configureTable,
@@ -199,7 +199,13 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
 
     return (
       <KeyWrapper key={`column-${index}`}>
-        <BodyCell row={row} index={index} value={value} rows={rows.toJS()} />
+        <BodyCell
+          row={row}
+          index={index}
+          value={value}
+          rows={rows.toJS()}
+          column={column}
+        />
       </KeyWrapper>
     );
   });

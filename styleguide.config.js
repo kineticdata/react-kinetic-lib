@@ -28,7 +28,25 @@ module.exports = {
       content: 'src/apis/APIs.md',
       sectionDepth: 1,
       sections: [
-        { name: 'Common', components: 'src/components/common/**/*.js' },
+        { 
+          name: 'Common', 
+          components: 'src/components/common/**/*.js', 
+          ignore: ['src/components/common/tables/**'],
+          sectionDepth: 1,
+          sections: [
+            { 
+              name: 'Tables', 
+              components: 'src/components/common/tables/*.js',
+              sections: [
+                { 
+                  name: 'Components',
+                  content: 'src/components/common/tables/defaults/Components.md',
+                  components: 'src/components/common/tables/defaults/*.js'
+                }
+              ]
+            }
+          ] 
+        },
         { name: 'Core', components: 'src/components/core/**/*.js' },
         { name: 'Discussions', components: 'src/components/discussions/**/*.js', },
       ]
