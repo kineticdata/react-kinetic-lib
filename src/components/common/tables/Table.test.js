@@ -61,6 +61,15 @@ describe('<Table />', () => {
         expect(wrapper.is('thead.custom-thead')).toBeFalsy();
       });
 
+      test('it does not render when omitHeader is set', () => {
+        props.omitHeader = true;
+        const wrapper = render(
+          <KineticLib>{buildTableHeader(props)}</KineticLib>,
+        );
+
+        expect(wrapper.is('thead')).toBeFalsy();
+      });
+
       test('it renders a custom thead', () => {
         const Header = () => <thead className="custom-thead" />;
 

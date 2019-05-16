@@ -34,15 +34,6 @@ import generateKey from '../../../helpers/generateKey';
 
 const KeyWrapper = ({ children }) => children;
 
-const validateTag = (content, tag, functionName) => {
-  if (!content || content.type !== tag) {
-    throw new Error(
-      `Table failed, ${functionName} must return a ${tag} dom element.`,
-    );
-  }
-  return content;
-};
-
 const TableComponent = props => {
   if (props.configured) {
     const { children, components } = props;
@@ -114,7 +105,7 @@ export const buildTable = props => {
 export const buildTableHeader = props => {
   const Header = props.components.Header || DefaultHeader;
   const headerRow = buildTableHeaderRow(props);
-  return (
+  return props.omitHeader ? null : (
     <Header sorting={props.sorting} headerRow={headerRow} rows={props.rows} />
   );
 };
