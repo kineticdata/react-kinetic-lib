@@ -4,7 +4,7 @@ import { fetchSpace, fetchTeams, fetchUser } from '../../../apis/core';
 import { fetchLocales, fetchTimezones } from '../../../apis/core/meta';
 import { fetchAttributeDefinitions } from '../../../apis/core/attributeDefinitions';
 import { createUser, updateUser } from '../../../apis/core/users';
-import { get, getIn } from 'immutable';
+import { get, getIn, Map } from 'immutable';
 
 const dataSources = ({ username }) => ({
   space: [
@@ -163,10 +163,12 @@ const fields = ({ attributeFields, profileAttributeFields, username }) => [
   {
     name: 'memberships',
     label: 'Teams',
-    type: 'teams',
+    type: 'team-multi',
     required: false,
     options: ({ teams }) => teams,
-    initialValue: ({ user }) => get(user, 'memberships'),
+    initialValue: ({ user }) =>
+      get(user, 'memberships').map(m => m.get('team')),
+    serialize: value => value.map(team => Map({ team })),
   },
 ];
 

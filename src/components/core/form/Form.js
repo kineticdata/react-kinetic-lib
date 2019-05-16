@@ -514,7 +514,7 @@ regSaga(
       state.getIn(['forms', formKey, 'onError']),
       state
         .getIn(['forms', formKey, 'fields'])
-        .map(field => field.get('value')),
+        .map(field => field.get('serialize', identity)(field.get('value'))),
       state
         .getIn(['forms', formKey, 'fields'])
         .map(field => field.get('errors'))
