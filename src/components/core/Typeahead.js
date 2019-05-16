@@ -2,7 +2,9 @@ import React, { Fragment } from 'react';
 import Autosuggest from 'react-autosuggest';
 
 const SelectionsContainerDefault = ({ children }) => (
-  <ul className="selections">{children}</ul>
+  <table className="selections">
+    <tbody>{children}</tbody>
+  </table>
 );
 
 const SuggestionsContainerDefault = ({ open, children, containerProps }) => (
@@ -28,7 +30,6 @@ export default class Typeahead extends React.Component {
       searchValue: '',
       suggestions: [],
       touched: false,
-      value: props.multiple ? [] : '',
     };
   }
 
@@ -37,9 +38,7 @@ export default class Typeahead extends React.Component {
   };
 
   remove = index => event => {
-    this.setState(({ value }) => ({
-      value: [...value.slice(0, index), ...value.slice(index + 1)],
-    }));
+    this.props.onChange(this.props.value.delete(index));
   };
 
   onChange = (event, { newValue }) => {
@@ -50,32 +49,35 @@ export default class Typeahead extends React.Component {
   // sets to custom, I think because suggestions in empty when the menu is closed.
   onBlur = () => {
     const { custom, getSuggestionValue, multiple, textMode } = this.props;
-    this.setState(({ newValue, suggestions, touched, value }) => {
-      const match = suggestions.find(
-        suggestion => getSuggestionValue(suggestion) === newValue,
-      );
-      const customValue = custom && custom(newValue);
-      return {
-        newValue:
-          !touched || (textMode && (match || customValue)) ? newValue : '',
-        value: textMode && touched ? match || customValue || '' : value,
-        editing: multiple || textMode,
-        touched: false,
-      };
+    const { newValue, suggestions, touched } = this.state;
+    const match = suggestions.find(
+      suggestion => getSuggestionValue(suggestion) === newValue,
+    );
+    const customValue = custom && custom(newValue);
+    this.setState({
+      newValue:
+        !touched || (textMode && (match || customValue)) ? newValue : '',
+      editing: multiple || textMode,
+      touched: false,
     });
+    this.props.onBlur();
+    if (textMode && touched) {
+      this.props.onChange(match || customValue || '');
+    }
   };
 
   onSelect = (event, { method, suggestion }) => {
     if (method === 'enter') {
       event.preventDefault();
     }
-    const { multiple, textMode } = this.props;
-    this.setState(({ newValue, value }) => ({
+    const { multiple, textMode, value } = this.props;
+    const { newValue } = this.state;
+    this.setState({
       editing: multiple || textMode,
       newValue: multiple || !textMode ? '' : newValue,
-      value: multiple ? [...value, suggestion] : suggestion,
       touched: false,
-    }));
+    });
+    this.props.onChange(multiple ? value.push(suggestion) : suggestion);
   };
 
   onSearch = ({ value }) => {
@@ -145,8 +147,8 @@ export default class Typeahead extends React.Component {
   handleSearch = searchValue => ({ suggestions, error, nextPageToken }) => {
     const custom = this.props.custom ? this.props.custom(searchValue) : null;
     const existing = (this.props.multiple
-      ? this.state.value
-      : [this.state.value]
+      ? this.props.value
+      : [this.props.value]
     ).map(this.props.getSuggestionValue);
     const filtered = suggestions.filter(
       suggestion =>
@@ -194,20 +196,21 @@ export default class Typeahead extends React.Component {
       multiple,
       placeholder,
       getSuggestionValue,
+      value,
     } = this.props;
-    const { editing, newValue, suggestions, value } = this.state;
+    const { editing, newValue, suggestions } = this.state;
     return (
       <div className="kinetic-typeahead">
         {multiple && (
           <SelectionsContainer>
             {value.map((selection, i) => (
-              <li key={i}>
+              <Fragment key={i}>
                 {Selection ? (
                   <Selection selection={selection} remove={this.remove(i)} />
                 ) : (
                   getSuggestionValue(selection)
                 )}
-              </li>
+              </Fragment>
             ))}
           </SelectionsContainer>
         )}
@@ -220,6 +223,7 @@ export default class Typeahead extends React.Component {
             inputProps={{
               value: newValue,
               onBlur: this.onBlur,
+              onFocus: this.props.onFocus,
               onChange: this.onChange,
               placeholder,
             }}

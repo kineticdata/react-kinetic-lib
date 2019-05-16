@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { get } from 'immutable';
 import Typeahead from './Typeahead';
 import { fetchTeams } from '../../apis/core';
 
@@ -20,10 +21,12 @@ const searchTeams = (field, value) =>
     nextPageToken,
   }));
 
-const teamToValue = team => team.name;
+const teamToValue = team => get(team, 'name');
 
 const splitTeamName = team => {
-  const [local, ...parents] = team.name.split('::').reverse();
+  const [local, ...parents] = get(team, 'name')
+    .split('::')
+    .reverse();
   return [parents.reverse().join('::'), local];
 };
 
@@ -79,21 +82,31 @@ const SearchActions = props =>
 const Selection = ({ selection, edit, remove }) => {
   const [parent, local] = splitTeamName(selection);
   return (
-    <div className={`selection ${remove ? 'multi' : ''}`}>
-      <div>
+    <tr className={`selection ${remove ? 'multi' : ''}`}>
+      <td>
         {parent && <div className="small">{parent}</div>}
         <div className="large">{local}</div>
-      </div>
-      {edit ? (
-        <button className="btn btn-sm btn-subtle" onClick={edit}>
-          <i className="fa fa-fw fa-pencil" />
-        </button>
-      ) : (
-        <button className="btn btn-sm btn-danger" onClick={remove}>
-          <i className="fa fa-fw fa-times" />
-        </button>
-      )}
-    </div>
+      </td>
+      <td>
+        {edit ? (
+          <button
+            className="btn btn-sm btn-subtle"
+            onClick={edit}
+            type="button"
+          >
+            <i className="fa fa-fw fa-pencil" />
+          </button>
+        ) : (
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={remove}
+            type="button"
+          >
+            <i className="fa fa-fw fa-times" />
+          </button>
+        )}
+      </td>
+    </tr>
   );
 };
 
@@ -120,6 +133,10 @@ const TeamSelect = props => (
     multiple={props.multiple}
     search={searchTeams}
     getSuggestionValue={teamToValue}
+    value={props.value}
+    onChange={props.onChange}
+    onFocus={props.onFocus}
+    onBlur={props.onBlur}
   />
 );
 

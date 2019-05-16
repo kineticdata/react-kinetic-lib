@@ -19,7 +19,6 @@ import {
 } from '../../../store';
 import { ComponentConfigContext } from '../../common/ComponentConfigContext';
 import { generateAttributesFieldProps } from './AttributesField';
-import { generateTeamsFieldProps } from './TeamsField';
 import { generateKey } from '../../../helpers';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
@@ -562,7 +561,11 @@ export const onBlur = ({ formKey, field }) => () => {
 export const onChange = ({ formKey, type, name }) => event => {
   actions.setValue(formKey)(
     name,
-    type === 'checkbox' ? event.target.checked : event.target.value,
+    type === 'checkbox'
+      ? event.target.checked
+      : event.target
+      ? event.target.value
+      : event,
   );
 };
 
@@ -588,11 +591,7 @@ export const mapStateToProps = (state, props) =>
   state.getIn(['forms', props.formKey], Map()).toObject();
 
 const generateFieldProps = props =>
-  props.type === 'attributes'
-    ? generateAttributesFieldProps(props)
-    : props.type === 'teams'
-    ? generateTeamsFieldProps(props)
-    : props;
+  props.type === 'attributes' ? generateAttributesFieldProps(props) : props;
 
 export const Field = props => (
   <ComponentConfigContext.Consumer>
