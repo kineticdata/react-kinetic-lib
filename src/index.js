@@ -17,6 +17,7 @@ export {
   FormForm,
   KappForm,
   KappTable,
+  TeamForm,
   UserForm,
   UserTable,
   UserDetails,

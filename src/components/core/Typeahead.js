@@ -22,7 +22,10 @@ export default class Typeahead extends React.Component {
     super(props);
     this.state = {
       editing: true,
-      newValue: '',
+      newValue:
+        this.props.textMode && this.props.value
+          ? this.props.getSuggestionValue(this.props.value)
+          : '',
       error: null,
       empty: false,
       nextPageToken: null,
@@ -62,7 +65,7 @@ export default class Typeahead extends React.Component {
     });
     this.props.onBlur();
     if (textMode && touched) {
-      this.props.onChange(match || customValue || '');
+      this.props.onChange(match || customValue || null);
     }
   };
 

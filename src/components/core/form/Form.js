@@ -508,13 +508,17 @@ regSaga(
 
 regSaga(
   takeEvery('SUBMIT', function*({ payload: { formKey } }) {
+    const bindings = yield select(selectBindings(formKey));
     const [onSubmit, onSave, onError, values, errors] = yield select(state => [
       state.getIn(['forms', formKey, 'onSubmit']),
       state.getIn(['forms', formKey, 'onSave']),
       state.getIn(['forms', formKey, 'onError']),
       state
         .getIn(['forms', formKey, 'fields'])
-        .map(field => field.get('serialize', identity)(field.get('value'))),
+        .filter(field => !field.get('transient'))
+        .map(field =>
+          field.get('serialize', identity)(field.get('value'), bindings),
+        ),
       state
         .getIn(['forms', formKey, 'fields'])
         .map(field => field.get('errors'))
@@ -563,7 +567,7 @@ export const onChange = ({ formKey, type, name }) => event => {
     name,
     type === 'checkbox'
       ? event.target.checked
-      : event.target
+      : event && event.target
       ? event.target.value
       : event,
   );
