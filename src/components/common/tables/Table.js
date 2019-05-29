@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
 import t from 'prop-types';
-import {
-  compose,
-  lifecycle,
-  withHandlers,
-  withProps,
-  withState,
-} from 'recompose';
+import { compose, lifecycle } from 'recompose';
 import { List, Map } from 'immutable';
-import isarray from 'isarray';
-import { I18n } from '../../core/i18n/I18n';
 import {
   DefaultTableLayout,
   DefaultHeader,
@@ -22,6 +14,8 @@ import {
   DefaultTableFooter,
   DefaultTableFooterRow,
   DefaultTableFooterCell,
+  DefaultPaginationControl,
+  DefaultFilterControl,
 } from './defaults';
 import { connect, dispatch } from '../../../store';
 import {
@@ -36,7 +30,7 @@ const KeyWrapper = ({ children }) => children;
 
 const TableComponent = props => {
   if (props.configured) {
-    const { children, components } = props;
+    const { children } = props;
     const table = buildTable(props);
     const filter = buildFilterControl(props);
     const pagination = buildPaginationControl(props);
@@ -50,9 +44,27 @@ const TableComponent = props => {
   return null;
 };
 
-const buildFilterControl = ({ components, filterProps }) => {
-  const FilterControl = components.FilterControl;
-  return FilterControl ? <FilterControl {...filterProps} /> : null;
+const buildFilterControl = ({ components, filters, tableKey, filtering }) => {
+  // Add an onChange to each filter and convert it to a list for looping.
+  const f = filters
+    .map((filter, key) =>
+      filter
+        .set('onChange', value => {
+          dispatch('SET_FILTER', { tableKey, filter: key, value });
+        })
+        .set('column', key),
+    )
+    .toIndexedSeq()
+    .toList();
+
+  const onSearch = e => {
+    e.preventDefault();
+    dispatch('APPLY_FILTERS', { tableKey });
+  };
+  const FilterControl = components.FilterControl || DefaultFilterControl;
+  return filtering && FilterControl ? (
+    <FilterControl filters={f} onSearch={onSearch} />
+  ) : null;
 };
 
 const hasPrevPage = (data, pageTokens, pageOffset) =>
@@ -67,17 +79,17 @@ const hasNextPage = (data, pageOffset, pageSize, currentPageToken) =>
 
 const buildPaginationControl = props => {
   const {
+    pagination,
     tableKey,
     data,
     pageTokens,
     pageSize,
     pageOffset,
-    nextPageToken,
     currentPageToken,
     components,
-    paginationProps,
   } = props;
-  const PaginationControl = components.PaginationControl;
+  const PaginationControl =
+    components.PaginationControl || DefaultPaginationControl;
   const prevPage = hasPrevPage(data, pageTokens, pageOffset)
     ? onPrevPage(tableKey)
     : null;
@@ -86,7 +98,7 @@ const buildPaginationControl = props => {
     ? onNextPage(tableKey)
     : null;
 
-  return PaginationControl ? (
+  return pagination ? (
     <PaginationControl prevPage={prevPage} nextPage={nextPage} />
   ) : null;
 };
@@ -142,7 +154,6 @@ export const buildTableHeaderCell = props => (column, index) => {
         column={column}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
-        rows={rows.toJS}
       />
     </KeyWrapper>
   );
@@ -222,7 +233,7 @@ export const buildTableFooter = props => {
 };
 
 export const buildTableFooterRow = props => {
-  const { components, rows, columns } = props;
+  const { components } = props;
   const cells = buildTableFooterCells(props);
   const FooterRow = components.FooterRow || DefaultTableFooterRow;
 
@@ -230,7 +241,7 @@ export const buildTableFooterRow = props => {
 };
 
 export const buildTableFooterCells = props => {
-  const { components, columns, rows } = props;
+  const { components, columns } = props;
   return columns.map((column, index) => {
     const CustomFooterCell = column.components
       ? column.components.FooterCell
@@ -240,7 +251,7 @@ export const buildTableFooterCells = props => {
 
     return (
       <KeyWrapper key={`column-${index}`}>
-        <FooterCell column={column} rows={rows.toJS()} />
+        <FooterCell column={column} />
       </KeyWrapper>
     );
   });
@@ -332,6 +343,25 @@ Table.propTypes = {
       }),
     }),
   ).isRequired,
+  /** Add additional columns to a table. */
+  addColumns: t.arrayOf(
+    t.shape({
+      /** The title that will be rendered in the header. */
+      title: t.string,
+      /** The value key that will be used to map the column to the data object. */
+      value: t.string,
+      /** Flag that determines if the column can be used as a filter. */
+      filterable: t.bool,
+      /** Flag that determines if the column is sortable.*/
+      sortable: t.bool,
+      /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
+      components: t.shape({
+        HeaderCell: t.func,
+        BodyCell: t.func,
+        FooterCell: t.func,
+      }),
+    }),
+  ),
   components: t.shape({
     /** Override the default table layout, analogous to `<table>`. */
     TableLayout: t.func,

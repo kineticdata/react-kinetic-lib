@@ -1,5 +1,5 @@
 import React from 'react';
-import { I18n } from '../../core/i18n/I18n';
+import { I18n } from '../../../core/i18n/I18n';
 
 export const PaginationControl = ({ nextPage, prevPage }) => (
   <div>
@@ -11,3 +11,5 @@ export const PaginationControl = ({ nextPage, prevPage }) => (
     </button>
   </div>
 );
+
+export default PaginationControl;

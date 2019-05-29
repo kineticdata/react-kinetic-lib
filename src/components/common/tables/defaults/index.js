@@ -9,3 +9,5 @@ export { default as DefaultTableBodyCell } from './BodyCell';
 export { default as DefaultTableFooter } from './Footer';
 export { default as DefaultTableFooterRow } from './FooterRow';
 export { default as DefaultTableFooterCell } from './FooterCell';
+export { default as DefaultFilterControl } from './FilterControl';
+export { default as DefaultPaginationControl } from './PaginationControl';

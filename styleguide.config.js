@@ -35,8 +35,10 @@ module.exports = {
           sectionDepth: 1,
           sections: [
             { 
-              name: 'Tables', 
+              name: 'Tables',
+              content: 'src/components/common/tables/Tables.md',
               components: 'src/components/common/tables/*.js',
+              ignore: ['src/components/common/tables/Table.redux.js'],
               sections: [
                 { 
                   name: 'Components',

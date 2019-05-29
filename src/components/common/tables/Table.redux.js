@@ -35,7 +35,15 @@ regHandlers({
   },
   CONFIGURE_TABLE: (
     state,
-    { payload: { tableKey, data = List(), columns, pageSize = 25 } },
+    {
+      payload: {
+        tableKey,
+        data = List(),
+        columns,
+        addColumns = [],
+        pageSize = 25,
+      },
+    },
   ) =>
     !state.getIn(['tables', tableKey, 'mounted'])
       ? state
@@ -45,9 +53,8 @@ regHandlers({
           ['tables', tableKey],
           Map({
             data,
-            columns,
+            columns: [...columns, ...addColumns],
             rows: List(),
-            MATTR: 'IS THE BERST',
 
             pageSize,
             sortColumn: null,
@@ -58,6 +65,22 @@ regHandlers({
             nextPageToken: null,
             pageTokens: List(),
             pageOffset: 0,
+
+            // Filtering
+            filters: Map(
+              columns
+                .filter(c => c.filterable)
+                .reduce(
+                  (filters, column) => ({
+                    ...filters,
+                    [column.value]: Map({
+                      value: '',
+                      title: column.title,
+                    }),
+                  }),
+                  {},
+                ),
+            ),
 
             configured: true,
             initialize: true,
@@ -98,6 +121,8 @@ regHandlers({
         )
         .set('sortColumn', column),
     ),
+  SET_FILTER: (state, { payload: { tableKey, filter, value } }) =>
+    state.setIn(['tables', tableKey, 'filters', filter, 'value'], value),
 });
 
 function* calculateRowsTask({ payload }) {
@@ -113,6 +138,7 @@ regSaga(takeEvery('NEXT_PAGE', calculateRowsTask));
 regSaga(takeEvery('PREV_PAGE', calculateRowsTask));
 regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
 regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
+regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
 
 const generateSortParams = tableData =>
   tableData.get('sortColumn')
@@ -122,11 +148,29 @@ const generateSortParams = tableData =>
       }
     : {};
 
+export const clientSideRowFilter = filters => row => {
+  const usableFilters = filters
+    .filter(filter => filter.get('value') !== '')
+    .map((filter, column) => filter.set('currentValue', row[column]));
+
+  return usableFilters.size === 0
+    ? true
+    : usableFilters.reduce((has, filter) => {
+        const value = filter.get('value');
+        const currentValue = filter.get('currentValue');
+
+        return value && typeof value === 'string' && value !== ''
+          ? currentValue.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+          : has;
+      }, false);
+};
+
 const calculateRows = tableData => {
   const pageOffset = tableData.get('pageOffset');
   const pageSize = tableData.get('pageSize');
   const sortColumn = tableData.get('sortColumn');
   const sortDirection = tableData.get('sortDirection');
+  const filters = tableData.get('filters');
 
   const data = isClientSide(tableData.get('data'))
     ? List(tableData.get('data'))
@@ -137,6 +181,7 @@ const calculateRows = tableData => {
     const endIndex = Math.min(pageOffset + pageSize, data.size);
 
     const rows = data
+      .update(d => d.filter(clientSideRowFilter(filters)))
       .update(d => (sortColumn ? d.sortBy(r => r[sortColumn.value]) : d))
       .update(d => (sortDirection === 'asc' ? d.reverse() : d))
       .update(d => d.slice(startIndex, endIndex));
