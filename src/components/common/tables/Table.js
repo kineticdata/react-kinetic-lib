@@ -26,6 +26,14 @@ import {
 } from './Table.redux';
 import generateKey from '../../../helpers/generateKey';
 
+const generateColumns = (columns, columnSet) => {
+  const allColumns = columns.map(c => c.value);
+  const cset =
+    typeof columnSet === 'function' ? columnSet(allColumns) : columnSet;
+
+  return cset.map(cs => columns.find(c => c.value === cs));
+};
+
 const KeyWrapper = ({ children }) => children;
 
 const TableComponent = props => {
@@ -123,9 +131,11 @@ export const buildTableHeader = props => {
 };
 
 export const buildTableHeaderRow = props => {
-  const { components, rows, columns } = props;
+  const { components, rows, columns, columnSet } = props;
   const HeaderRow = components.HeaderRow || DefaultHeaderRow;
-  const columnHeaders = columns.map(buildTableHeaderCell(props));
+  const columnHeaders = generateColumns(columns, columnSet).map(
+    buildTableHeaderCell(props),
+  );
 
   return <HeaderRow columnHeaders={columnHeaders} rows={rows.toJS()} />;
 };
@@ -199,8 +209,8 @@ export const buildTableBodyRows = props => {
 };
 
 export const buildTableBodyCells = (props, row, rowIndex) => {
-  const { components, rows, columns } = props;
-  return columns.map((column, index) => {
+  const { components, rows, columns, columnSet } = props;
+  return generateColumns(columns, columnSet).map((column, index) => {
     const CustomBodyCell = column.components
       ? column.components.BodyCell
       : null;
@@ -241,8 +251,8 @@ export const buildTableFooterRow = props => {
 };
 
 export const buildTableFooterCells = props => {
-  const { components, columns } = props;
-  return columns.map((column, index) => {
+  const { components, columns, columnSet } = props;
+  return generateColumns(columns, columnSet).map((column, index) => {
     const CustomFooterCell = column.components
       ? column.components.FooterCell
       : null;
@@ -362,6 +372,8 @@ Table.propTypes = {
       }),
     }),
   ),
+  /** Allow overriding the columns shown and in which order. */
+  columnSet: t.oneOf([t.arrayOf(t.string), t.func]),
   components: t.shape({
     /** Override the default table layout, analogous to `<table>`. */
     TableLayout: t.func,

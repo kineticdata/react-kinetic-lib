@@ -41,6 +41,7 @@ regHandlers({
         data = List(),
         columns,
         addColumns = [],
+        columnSet = columns.map(c => c.value),
         pageSize = 25,
       },
     },
@@ -54,6 +55,7 @@ regHandlers({
           Map({
             data,
             columns: [...columns, ...addColumns],
+            columnSet,
             rows: List(),
 
             pageSize,
