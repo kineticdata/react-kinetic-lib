@@ -29,7 +29,11 @@ import generateKey from '../../../helpers/generateKey';
 const generateColumns = (columns, columnSet) => {
   const allColumns = columns.map(c => c.value);
   const cset =
-    typeof columnSet === 'function' ? columnSet(allColumns) : columnSet;
+    typeof columnSet === 'function'
+      ? columnSet(allColumns)
+      : columnSet && columnSet instanceof Array && columnSet.length > 0
+      ? columnSet
+      : allColumns;
 
   return cset.map(cs => columns.find(c => c.value === cs));
 };

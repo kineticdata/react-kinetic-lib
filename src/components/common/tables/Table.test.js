@@ -21,6 +21,7 @@ describe('<Table />', () => {
     let props;
     let data = [];
     let columns = [];
+    let columnSet = [];
 
     beforeEach(() => {
       data = users(2);
@@ -29,6 +30,7 @@ describe('<Table />', () => {
         components: {},
         data,
         columns,
+        columnSet,
         rows: List(data),
       };
     });

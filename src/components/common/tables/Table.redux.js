@@ -26,6 +26,14 @@ const serverSidePrevPage = tableData =>
     .update('pageTokens', pt => pt.pop())
     .update(t => t.set('nextPageToken', t.get('pageTokens').last()));
 
+export const generateColumns = (columns, addColumns, alterColumns) => {
+  return [...columns, ...addColumns].map(c => ({
+    ...c,
+    ...alterColumns[c.value],
+    value: c.value,
+  }));
+};
+
 regHandlers({
   MOUNT_TABLE: (state, { payload: { tableKey } }) => {
     return state.setIn(['tables', tableKey, 'mounted'], true);
@@ -54,7 +62,7 @@ regHandlers({
           ['tables', tableKey],
           Map({
             data,
-            columns: [...columns, ...addColumns],
+            columns: generateColumns(columns, addColumns, alterColumns),
             columnSet,
             rows: List(),
 
