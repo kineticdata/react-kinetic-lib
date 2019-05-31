@@ -18,11 +18,13 @@ const clientSidePrevPage = tableData =>
 
 const serverSideNextPage = tableData =>
   tableData
+    .set('loading', true)
     .set('nextPageToken', tableData.get('currentPageToken'))
     .update('pageTokens', pt => pt.push(tableData.get('currentPageToken')));
 
 const serverSidePrevPage = tableData =>
   tableData
+    .set('loading', true)
     .update('pageTokens', pt => pt.pop())
     .update(t => t.set('nextPageToken', t.get('pageTokens').last()));
 
@@ -65,6 +67,9 @@ regHandlers({
             columns: generateColumns(columns, addColumns, alterColumns),
             rows: List(),
 
+            initializing: true,
+            loading: true,
+
             pageSize,
             sortColumn: null,
             sortDirection: 'desc',
@@ -84,7 +89,15 @@ regHandlers({
                     ...filters,
                     [column.value]: Map({
                       value: '',
+                      column: column.value,
                       title: column.title,
+                      onChange: value => {
+                        dispatch('SET_FILTER', {
+                          tableKey,
+                          filter: column.value,
+                          value,
+                        });
+                      },
                     }),
                   }),
                   {},
@@ -100,7 +113,9 @@ regHandlers({
       table
         .set('rows', rows)
         .set('currentPageToken', nextPageToken)
-        .set('nextPageToken', null),
+        .set('nextPageToken', null)
+        .set('initializng', false)
+        .set('loading', false),
     ),
   NEXT_PAGE: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>

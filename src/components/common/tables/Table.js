@@ -50,21 +50,13 @@ const buildFilterControl = ({
   columnSet,
 }) => {
   // Add an onChange to each filter and convert it to a list for looping.
-  const f = filters
-    .map((filter, key) =>
-      filter
-        .set('onChange', value => {
-          dispatch('SET_FILTER', { tableKey, filter: key, value });
-        })
-        .set('column', key),
-    )
-    .toIndexedSeq()
-    .toList();
+  const f = filters.toIndexedSeq().toList();
 
   const onSearch = e => {
     e.preventDefault();
     dispatch('APPLY_FILTERS', { tableKey });
   };
+
   const FilterControl = components.FilterControl;
   return filtering && FilterControl ? (
     <FilterControl filters={f} onSearch={onSearch} columnSet={columnSet} />
@@ -142,7 +134,7 @@ export const buildTableHeaderCell = props => (column, index) => {
     sortDirection,
     rows,
   } = props;
-  const { title, sortable = true } = column;
+  const { title, sortable = false } = column;
   const CustomHeaderCell = column.components
     ? column.components.HeaderCell
     : null;
