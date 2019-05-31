@@ -1,5 +1,4 @@
 import { Map } from 'immutable';
-import { createContext } from 'react';
 import { AttributesField } from './AttributesField';
 import { CheckboxField } from './CheckboxField';
 import { TeamsField } from './TeamsField';
@@ -15,5 +14,3 @@ export const DefaultFieldConfig = Map({
   text: TextField,
   'text-multi': TextMultiField,
 });
-
-export const FieldConfigContext = createContext();

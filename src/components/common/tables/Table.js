@@ -2,21 +2,7 @@ import React, { Component } from 'react';
 import t from 'prop-types';
 import { compose, lifecycle } from 'recompose';
 import { List, Map } from 'immutable';
-import {
-  DefaultTableLayout,
-  DefaultHeader,
-  DefaultHeaderRow,
-  DefaultHeaderCell,
-  DefaultTableBody,
-  DefaultTableBodyRow,
-  DefaultEmptyBodyRow,
-  DefaultTableBodyCell,
-  DefaultTableFooter,
-  DefaultTableFooterRow,
-  DefaultTableFooterCell,
-  DefaultPaginationControl,
-  DefaultFilterControl,
-} from './defaults';
+import { ComponentConfigContext } from '../ComponentConfigContext';
 import { connect, dispatch } from '../../../store';
 import {
   configureTable,
@@ -56,7 +42,13 @@ const TableComponent = props => {
   return null;
 };
 
-const buildFilterControl = ({ components, filters, tableKey, filtering }) => {
+const buildFilterControl = ({
+  components,
+  filters,
+  tableKey,
+  filtering,
+  columnSet,
+}) => {
   // Add an onChange to each filter and convert it to a list for looping.
   const f = filters
     .map((filter, key) =>
@@ -73,9 +65,9 @@ const buildFilterControl = ({ components, filters, tableKey, filtering }) => {
     e.preventDefault();
     dispatch('APPLY_FILTERS', { tableKey });
   };
-  const FilterControl = components.FilterControl || DefaultFilterControl;
+  const FilterControl = components.FilterControl;
   return filtering && FilterControl ? (
-    <FilterControl filters={f} onSearch={onSearch} />
+    <FilterControl filters={f} onSearch={onSearch} columnSet={columnSet} />
   ) : null;
 };
 
@@ -100,8 +92,7 @@ const buildPaginationControl = props => {
     currentPageToken,
     components,
   } = props;
-  const PaginationControl =
-    components.PaginationControl || DefaultPaginationControl;
+  const PaginationControl = components.PaginationControl;
   const prevPage = hasPrevPage(data, pageTokens, pageOffset)
     ? onPrevPage(tableKey)
     : null;
@@ -116,9 +107,7 @@ const buildPaginationControl = props => {
 };
 
 export const buildTable = props => {
-  const TableLayout = props.components.TableLayout
-    ? props.components.TableLayout
-    : DefaultTableLayout;
+  const TableLayout = props.components.TableLayout;
   const header = buildTableHeader(props);
   const body = buildTableBody(props);
   const footer = buildTableFooter(props);
@@ -127,7 +116,7 @@ export const buildTable = props => {
 };
 
 export const buildTableHeader = props => {
-  const Header = props.components.Header || DefaultHeader;
+  const Header = props.components.Header;
   const headerRow = buildTableHeaderRow(props);
   return props.omitHeader ? null : (
     <Header sorting={props.sorting} headerRow={headerRow} rows={props.rows} />
@@ -136,7 +125,7 @@ export const buildTableHeader = props => {
 
 export const buildTableHeaderRow = props => {
   const { components, rows, columns, columnSet } = props;
-  const HeaderRow = components.HeaderRow || DefaultHeaderRow;
+  const HeaderRow = components.HeaderRow;
   const columnHeaders = generateColumns(columns, columnSet).map(
     buildTableHeaderCell(props),
   );
@@ -157,8 +146,7 @@ export const buildTableHeaderCell = props => (column, index) => {
   const CustomHeaderCell = column.components
     ? column.components.HeaderCell
     : null;
-  const HeaderCell =
-    CustomHeaderCell || components.HeaderCell || DefaultHeaderCell;
+  const HeaderCell = CustomHeaderCell || components.HeaderCell;
 
   return (
     <KeyWrapper key={`column-${index}`}>
@@ -174,7 +162,7 @@ export const buildTableHeaderCell = props => (column, index) => {
 };
 
 export const buildTableBody = props => {
-  const Body = props.components.Body || DefaultTableBody;
+  const Body = props.components.Body;
   const tableRows = buildTableBodyRows(props);
 
   return <Body tableRows={tableRows} rows={props.rows.toJS()} />;
@@ -182,8 +170,8 @@ export const buildTableBody = props => {
 
 export const buildTableBodyRows = props => {
   const { components, rows, columns, emptyMessage } = props;
-  const BodyRow = components.BodyRow || DefaultTableBodyRow;
-  const EmptyBodyRow = components.EmptyBodyRow || DefaultEmptyBodyRow;
+  const BodyRow = components.BodyRow;
+  const EmptyBodyRow = components.EmptyBodyRow;
 
   const tableRows =
     rows.size > 0 ? (
@@ -218,8 +206,7 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
     const CustomBodyCell = column.components
       ? column.components.BodyCell
       : null;
-    const BodyCell =
-      CustomBodyCell || components.BodyCell || DefaultTableBodyCell;
+    const BodyCell = CustomBodyCell || components.BodyCell;
     const value = row[column.value];
 
     return (
@@ -239,7 +226,7 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
 export const buildTableFooter = props => {
   const { components, rows, includeFooter } = props;
   const footerRow = buildTableFooterRow(props);
-  const Footer = components.Footer || DefaultTableFooter;
+  const Footer = components.Footer;
 
   return includeFooter ? (
     <Footer rows={rows.toJS()} footerRow={footerRow} />
@@ -249,7 +236,7 @@ export const buildTableFooter = props => {
 export const buildTableFooterRow = props => {
   const { components } = props;
   const cells = buildTableFooterCells(props);
-  const FooterRow = components.FooterRow || DefaultTableFooterRow;
+  const FooterRow = components.FooterRow;
 
   return <FooterRow cells={cells} />;
 };
@@ -260,8 +247,7 @@ export const buildTableFooterCells = props => {
     const CustomFooterCell = column.components
       ? column.components.FooterCell
       : null;
-    const FooterCell =
-      CustomFooterCell || components.FooterCell || DefaultTableFooterCell;
+    const FooterCell = CustomFooterCell || components.FooterCell;
 
     return (
       <KeyWrapper key={`column-${index}`}>
@@ -322,10 +308,24 @@ class Table extends Component {
   }
 
   render() {
+    const columnSet =
+      this.props.columnSet || this.props.columns.map(c => c.value);
     return (
-      <TableImpl {...this.props} tableKey={this.tableKey} auto={this.auto}>
-        {this.props.children}
-      </TableImpl>
+      <ComponentConfigContext.Consumer>
+        {componentConfig => {
+          return (
+            <TableImpl
+              {...this.props}
+              components={componentConfig.merge(this.props.components).toJS()}
+              columnSet={columnSet}
+              tableKey={this.tableKey}
+              auto={this.auto}
+            >
+              {this.props.children}
+            </TableImpl>
+          );
+        }}
+      </ComponentConfigContext.Consumer>
     );
   }
 }

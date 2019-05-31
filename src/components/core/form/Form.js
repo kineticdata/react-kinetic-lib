@@ -17,7 +17,7 @@ import {
   regHandlers,
   regSaga,
 } from '../../../store';
-import { FieldConfigContext } from './FieldConfigContext';
+import { ComponentConfigContext } from '../../common/ComponentConfigContext';
 import { generateAttributesFieldProps } from './AttributesField';
 import { generateTeamsFieldProps } from './TeamsField';
 import generateKey from '../../../helpers/generateKey';
@@ -594,13 +594,13 @@ const generateFieldProps = props =>
     : props;
 
 export const Field = props => (
-  <FieldConfigContext.Consumer>
+  <ComponentConfigContext.Consumer>
     {fieldConfig => {
       const FieldImpl =
         props.component || fieldConfig.get(props.type, fieldConfig.get('text'));
       return <FieldImpl {...generateFieldProps(props)} />;
     }}
-  </FieldConfigContext.Consumer>
+  </ComponentConfigContext.Consumer>
 );
 
 // Wraps the FormImpl to handle the formKey behavior. If this is passed a

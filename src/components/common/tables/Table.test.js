@@ -1,9 +1,10 @@
 import React from 'react';
 import { KineticLib } from '@kineticdata/react';
-import { mount, render } from 'enzyme';
+import { render } from 'enzyme';
 import { List } from 'immutable';
 import { users } from '../../../styleguide/fixtures';
-import Table, {
+import { DefaultTableConfig } from './defaults';
+import {
   buildTable,
   buildTableHeader,
   buildTableHeaderRow,
@@ -27,7 +28,10 @@ describe('<Table />', () => {
       data = users(2);
       columns = [{ value: 'username', title: 'Username' }];
       props = {
-        components: {},
+        // Spread in the default components since the method tests will not be getting
+        // any components from the context since we're bypassing the top level `Table`
+        // component for testing.
+        components: { ...DefaultTableConfig.toJS() },
         data,
         columns,
         columnSet,

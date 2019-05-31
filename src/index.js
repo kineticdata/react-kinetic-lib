@@ -3,11 +3,11 @@ import { Provider } from 'react-redux';
 import { context, commitStore, configure, store } from './store';
 import { I18nProvider } from './components/core/i18n/I18nProvider';
 import './redux/meta';
-import {
-  DefaultFieldConfig,
-  FieldConfigContext,
-} from './components/core/form/FieldConfigContext';
+import { DefaultFieldConfig } from './components/core/form/DefaultFieldConfig';
+import { ComponentConfigContext } from './components/common/ComponentConfigContext';
 import { createHashHistory } from 'history';
+import { DefaultTableConfig } from './components/common/tables/defaults';
+import { remove } from 'immutable';
 
 export {
   default as ContentEditable,
@@ -16,7 +16,7 @@ export { default as Table } from './components/common/tables/Table';
 export {
   FormForm,
   UserForm,
-  UserList,
+  UserTable,
   UserDetails,
   CoreForm,
   UserSelect,
@@ -158,13 +158,13 @@ commitStore();
 const KineticLib = props => (
   <Provider store={store} context={context}>
     <I18nProvider locale={props.locale}>
-      <FieldConfigContext.Provider
-        value={DefaultFieldConfig.merge(
-          props.components && props.components.fields,
-        )}
+      <ComponentConfigContext.Provider
+        value={DefaultFieldConfig.merge(DefaultTableConfig)
+          .merge(remove(props.components || {}, 'fields'))
+          .merge(props.components && props.components.fields)}
       >
         {props.children}
-      </FieldConfigContext.Provider>
+      </ComponentConfigContext.Provider>
     </I18nProvider>
   </Provider>
 );

@@ -1,13 +1,30 @@
-export { default as DefaultTableLayout } from './TableLayout';
-export { default as DefaultHeader } from './Header';
-export { default as DefaultHeaderRow } from './HeaderRow';
-export { default as DefaultHeaderCell } from './HeaderCell';
-export { default as DefaultTableBody } from './TableBody';
-export { default as DefaultTableBodyRow } from './BodyRow';
-export { default as DefaultEmptyBodyRow } from './EmptyBodyRow';
-export { default as DefaultTableBodyCell } from './BodyCell';
-export { default as DefaultTableFooter } from './Footer';
-export { default as DefaultTableFooterRow } from './FooterRow';
-export { default as DefaultTableFooterCell } from './FooterCell';
-export { default as DefaultFilterControl } from './FilterControl';
-export { default as DefaultPaginationControl } from './PaginationControl';
+import { Map } from 'immutable';
+import TableLayout from './TableLayout';
+import Header from './Header';
+import HeaderRow from './HeaderRow';
+import HeaderCell from './HeaderCell';
+import Body from './TableBody';
+import BodyRow from './BodyRow';
+import EmptyBodyRow from './EmptyBodyRow';
+import BodyCell from './BodyCell';
+import Footer from './Footer';
+import FooterRow from './FooterRow';
+import FooterCell from './FooterCell';
+import FilterControl from './FilterControl';
+import PaginationControl from './PaginationControl';
+
+export const DefaultTableConfig = Map({
+  TableLayout,
+  Header,
+  HeaderRow,
+  HeaderCell,
+  Body,
+  BodyCell,
+  BodyRow,
+  EmptyBodyRow,
+  Footer,
+  FooterRow,
+  FooterCell,
+  FilterControl,
+  PaginationControl,
+});

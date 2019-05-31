@@ -67,7 +67,6 @@ const columns = [
 
 ```js
 import { users } from '@kineticdata/fixtures';
-import { FilterControl, PaginationControl } from '@kineticdata/react';
 
 const BooleanYesNoCell = props => <td>{props.value ? 'Yes' : 'No'}</td>;
 
@@ -76,6 +75,7 @@ const columns = [
   {
     value: 'username',
     title: 'Username',
+    filterable: true,
   },
   {
     value: 'displayName',
@@ -88,14 +88,39 @@ const columns = [
   },
 ];
 
-<Table
-  data={data}
-  components={{
-    FilterControl,
-    PaginationControl,
-  }}
-  columns={columns}
->
+<Table data={data} columns={columns} filtering pagination>
+  {({ table, filter, pagination }) => (
+    <div>
+      {filter}
+      {table}
+      {pagination}
+    </div>
+  )}
+</Table>;
+```
+
+### With configured footer
+
+```js
+import { users } from '@kineticdata/fixtures';
+
+const data = users(4);
+const columns = [
+  {
+    value: 'username',
+    title: 'Username',
+  },
+  {
+    value: 'displayName',
+    title: 'Display Name',
+  },
+  {
+    value: 'spaceAdmin',
+    title: 'Is Space Admin?',
+  },
+];
+
+<Table data={data} columns={columns} includeFooter>
   {({ table, filter, pagination }) => (
     <div>
       {filter}
