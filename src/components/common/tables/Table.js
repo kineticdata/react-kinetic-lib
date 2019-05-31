@@ -148,6 +148,7 @@ export const buildTableHeaderCell = props => (column, index) => {
         column={column}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
+        sortable={sortable}
       />
     </KeyWrapper>
   );
