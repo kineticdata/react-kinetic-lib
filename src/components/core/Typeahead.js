@@ -1,6 +1,24 @@
 import React, { Fragment } from 'react';
 import Autosuggest from 'react-autosuggest';
 
+const StatusDefault = props => (
+  <div>
+    {props.info && (
+      <div>
+        {props.info}
+        <button onClick={props.clearFilterField}>&times;</button>
+      </div>
+    )}
+    {props.warning && <div>{props.warning}</div>}
+    {props.filterFieldOptions &&
+      props.filterFieldOptions.map(({ label, onClick }, i) => (
+        <button onClick={onClick} key={i}>
+          {label}
+        </button>
+      ))}
+  </div>
+);
+
 const SelectionsContainerDefault = ({ children }) => (
   <table className="selections">
     <tbody>{children}</tbody>
@@ -13,9 +31,7 @@ const SuggestionsContainerDefault = ({ open, children, containerProps }) => (
   </div>
 );
 
-const TypeaheadInputDefault = ({ inputProps }) => (
-  <input {...inputProps} className="form-control" />
-);
+const TypeaheadInputDefault = ({ inputProps }) => <input {...inputProps} />;
 
 export default class Typeahead extends React.Component {
   constructor(props) {
@@ -63,7 +79,9 @@ export default class Typeahead extends React.Component {
       editing: multiple || textMode,
       touched: false,
     });
-    this.props.onBlur();
+    if (typeof this.props.onBlur === 'function') {
+      this.props.onBlur();
+    }
     if (textMode && touched) {
       this.props.onChange(match || customValue || null);
     }
@@ -99,8 +117,7 @@ export default class Typeahead extends React.Component {
 
   renderSuggestionContainer = ({ containerProps, children, query }) => {
     const {
-      SearchStatus,
-      SearchActions,
+      Status = StatusDefault,
       SuggestionsContainer = SuggestionsContainerDefault,
     } = this.props.components;
     const { className, ...props } = containerProps;
@@ -109,19 +126,16 @@ export default class Typeahead extends React.Component {
         containerProps={props}
         open={className === 'OPEN' || this.state.error || this.state.empty}
       >
-        <SearchStatus
-          searchField={this.state.searchField}
-          setSearchField={this.setSearchField}
-          error={this.state.error}
-          value={this.state.searchValue}
-          empty={this.state.empty}
-          more={!!this.state.nextPageToken}
-          custom={!!this.props.custom}
-        />
-        <SearchActions
-          setSearchField={this.setSearchField}
-          error={this.state.error}
-          value={this.state.searchValue}
+        <Status
+          {...this.props.getStatusProps({
+            searchField: this.state.searchField,
+            setSearchField: this.setSearchField,
+            error: this.state.error,
+            value: this.state.searchValue,
+            empty: this.state.empty,
+            more: !!this.state.nextPageToken,
+            custom: !!this.props.custom,
+          })}
         />
         {children}
       </SuggestionsContainer>
@@ -138,8 +152,8 @@ export default class Typeahead extends React.Component {
   };
 
   renderInput = inputProps => {
-    const { TypeaheadInput = TypeaheadInputDefault } = this.props.components;
-    return <TypeaheadInput inputProps={inputProps} />;
+    const { Input = TypeaheadInputDefault } = this.props.components;
+    return <Input inputProps={inputProps} />;
   };
 
   setSearchField = searchField => () => {
@@ -202,9 +216,9 @@ export default class Typeahead extends React.Component {
     const { editing, newValue, suggestions } = this.state;
     return (
       <div className="kinetic-typeahead">
-        {multiple && (
-          <SelectionsContainer>
-            {value.map((selection, i) => (
+        <SelectionsContainer>
+          {multiple &&
+            value.map((selection, i) => (
               <Fragment key={i}>
                 {Selection ? (
                   <Selection selection={selection} remove={this.remove(i)} />
@@ -213,11 +227,10 @@ export default class Typeahead extends React.Component {
                 )}
               </Fragment>
             ))}
-          </SelectionsContainer>
-        )}
-        {!multiple && Selection && !editing && value && (
-          <Selection selection={value} edit={this.edit} />
-        )}
+          {!multiple && Selection && !editing && value && (
+            <Selection selection={value} edit={this.edit} />
+          )}
+        </SelectionsContainer>
         {(!value || editing) && (
           <Autosuggest
             ref={el => (this.autosuggest = el)}

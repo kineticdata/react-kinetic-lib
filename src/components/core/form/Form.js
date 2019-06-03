@@ -1,15 +1,6 @@
 import React, { Component } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
-import {
-  fromJS,
-  get,
-  is,
-  isImmutable,
-  List,
-  Map,
-  OrderedMap,
-  Set,
-} from 'immutable';
+import { fromJS, is, isImmutable, List, Map, OrderedMap, Set } from 'immutable';
 import {
   action,
   connect,
@@ -133,8 +124,9 @@ const evaluateFieldProps = (props, bindings) => field =>
 
 const defaultMap = Map({
   attributes: Map(),
-  teams: List(),
   checkbox: false,
+  'team-multi': List(),
+  'user-multi': List(),
 });
 
 const defaultInitialValue = field =>
@@ -597,11 +589,25 @@ export const mapStateToProps = (state, props) =>
 const generateFieldProps = props =>
   props.type === 'attributes' ? generateAttributesFieldProps(props) : props;
 
+const typeToComponent = {
+  text: 'TextField',
+  'text-multi': 'TextMultiField',
+  checkbox: 'CheckboxField',
+  select: 'SelectField',
+  attributes: 'AttributesField',
+  team: 'TeamField',
+  'team-multi': 'TeamMultiField',
+  user: 'UserField',
+  'user-multi': 'UserMultiField',
+};
+
 export const Field = props => (
   <ComponentConfigContext.Consumer>
     {fieldConfig => {
+      const componentName = typeToComponent[props.type];
       const FieldImpl =
-        props.component || fieldConfig.get(props.type, fieldConfig.get('text'));
+        props.components[componentName] ||
+        fieldConfig.get(componentName, fieldConfig.get('TextField'));
       return <FieldImpl {...generateFieldProps(props)} />;
     }}
   </ComponentConfigContext.Consumer>
@@ -700,7 +706,7 @@ class FormImplComponent extends Component {
                 formKey: this.props.formKey,
                 name: field.get('name'),
               })}
-              component={get(this.props.components, field.get('name'))}
+              components={this.props.components}
             />
           ))}
         </form>

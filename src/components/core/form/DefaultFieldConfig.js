@@ -6,13 +6,17 @@ import { TeamMultiField } from './TeamMultiField';
 import { SelectField } from './SelectField';
 import { TextField } from './TextField';
 import { TextMultiField } from './TextMultiField';
+import { UserField } from './UserField';
+import { UserMultiField } from './UserMultiField';
 
 export const DefaultFieldConfig = Map({
-  attributes: AttributesField,
-  checkbox: CheckboxField,
-  team: TeamField,
-  'team-multi': TeamMultiField,
-  select: SelectField,
-  text: TextField,
-  'text-multi': TextMultiField,
+  AttributesField,
+  CheckboxField,
+  TeamField,
+  TeamMultiField,
+  SelectField,
+  TextField,
+  TextMultiField,
+  UserField,
+  UserMultiField,
 });
