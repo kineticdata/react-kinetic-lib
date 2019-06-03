@@ -601,17 +601,14 @@ const typeToComponent = {
   'user-multi': 'UserMultiField',
 };
 
-export const Field = props => (
-  <ComponentConfigContext.Consumer>
-    {fieldConfig => {
-      const componentName = typeToComponent[props.type];
-      const FieldImpl =
-        props.components[componentName] ||
-        fieldConfig.get(componentName, fieldConfig.get('TextField'));
-      return <FieldImpl {...generateFieldProps(props)} />;
-    }}
-  </ComponentConfigContext.Consumer>
-);
+export const Field = props => {
+  const componentName = typeToComponent[props.type] || 'TextField';
+  const FieldImpl =
+    props.components.field ||
+    props.components.form[componentName] ||
+    props.components.context.get(componentName);
+  return <FieldImpl {...generateFieldProps(props)} />;
+};
 
 // Wraps the FormImpl to handle the formKey behavior. If this is passed a
 // formKey prop this wrapper is essentially a noop, but if it is not passed a
@@ -653,6 +650,29 @@ export class Form extends Component {
   }
 }
 
+const DefaultFormWrapper = props => props.form;
+
+const DefaultFormError = props => (
+  <div>
+    {props.error}
+    <button type="button" onClick={props.clear}>
+      &times;
+    </button>
+  </div>
+);
+
+const DefaultFormButtons = props => (
+  <div>
+    <button
+      type="submit"
+      onClick={props.submit}
+      disabled={!props.dirty || props.submitting}
+    >
+      Submit
+    </button>
+  </div>
+);
+
 class FormImplComponent extends Component {
   checkConfigure() {
     if (this.props.mounted && !this.props.configured) {
@@ -668,57 +688,83 @@ class FormImplComponent extends Component {
   }
 
   render() {
-    return this.props.children({
-      form: this.props.loaded && (
-        <form onSubmit={onSubmit(this.props.formKey)}>
-          {this.props.fields.toList().map(field => (
-            <Field
-              key={field.get('name')}
-              name={field.get('name')}
-              id={field.get('id')}
-              label={field.get('label')}
-              options={field.get('options')}
-              type={field.get('type')}
-              value={field.get('value')}
-              onFocus={onFocus({
-                formKey: this.props.formKey,
-                field: field.get('name'),
-              })}
-              onBlur={onBlur({
-                formKey: this.props.formKey,
-                field: field.get('name'),
-              })}
-              onChange={onChange({
-                formKey: this.props.formKey,
-                name: field.get('name'),
-                type: field.get('type'),
-              })}
-              visible={field.get('visible')}
-              required={field.get('required')}
-              enabled={field.get('enabled')}
-              dirty={field.get('dirty')}
-              valid={field.get('valid')}
-              focused={field.get('focused')}
-              touched={field.get('touched')}
-              errors={field.get('errors')}
-              custom={field.get('custom')}
-              setCustom={setFieldCustom({
-                formKey: this.props.formKey,
-                name: field.get('name'),
-              })}
-              components={this.props.components}
+    return (
+      <ComponentConfigContext.Consumer>
+        {config => {
+          const {
+            FormButtons = config.get('FormButtons', DefaultFormButtons),
+            FormError = config.get('FormError', DefaultFormError),
+            children: FormWrapper = DefaultFormWrapper,
+          } = this.props.components;
+          return (
+            <FormWrapper
+              initialized={!this.props.loaded}
+              form={
+                this.props.loaded ? (
+                  <form onSubmit={onSubmit(this.props.formKey)}>
+                    {this.props.fields.toList().map(field => (
+                      <Field
+                        key={field.get('name')}
+                        name={field.get('name')}
+                        id={field.get('id')}
+                        label={field.get('label')}
+                        options={field.get('options')}
+                        type={field.get('type')}
+                        value={field.get('value')}
+                        onFocus={onFocus({
+                          formKey: this.props.formKey,
+                          field: field.get('name'),
+                        })}
+                        onBlur={onBlur({
+                          formKey: this.props.formKey,
+                          field: field.get('name'),
+                        })}
+                        onChange={onChange({
+                          formKey: this.props.formKey,
+                          name: field.get('name'),
+                          type: field.get('type'),
+                        })}
+                        visible={field.get('visible')}
+                        required={field.get('required')}
+                        enabled={field.get('enabled')}
+                        dirty={field.get('dirty')}
+                        valid={field.get('valid')}
+                        focused={field.get('focused')}
+                        touched={field.get('touched')}
+                        errors={field.get('errors')}
+                        custom={field.get('custom')}
+                        setCustom={setFieldCustom({
+                          formKey: this.props.formKey,
+                          name: field.get('name'),
+                        })}
+                        components={{
+                          context: config,
+                          form: this.props.components,
+                          field: field.get('component'),
+                        }}
+                      />
+                    ))}
+                    {this.props.error && (
+                      <FormError
+                        error={this.props.error}
+                        clear={clearError(this.props.formKey)}
+                      />
+                    )}
+                    <FormButtons
+                      submit={onSubmit(this.props.formKey)}
+                      submitting={this.props.submitting}
+                      dirty={this.props.fields.some(field =>
+                        field.get('dirty'),
+                      )}
+                    />
+                  </form>
+                ) : null
+              }
             />
-          ))}
-        </form>
-      ),
-      error: this.props.error,
-      clearError: clearError(this.props.formKey),
-      submit: onSubmit(this.props.formKey),
-      submitting: this.props.submitting,
-      dirty:
-        this.props.loaded &&
-        this.props.fields.some(field => field.get('dirty')),
-    });
+          );
+        }}
+      </ComponentConfigContext.Consumer>
+    );
   }
 }
 const FormImpl = connect(mapStateToProps)(FormImplComponent);
