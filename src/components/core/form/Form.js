@@ -20,7 +20,7 @@ import {
 import { ComponentConfigContext } from '../../common/ComponentConfigContext';
 import { generateAttributesFieldProps } from './AttributesField';
 import { generateTeamsFieldProps } from './TeamsField';
-import generateKey from '../../../helpers/generateKey';
+import { generateKey } from '../../../helpers';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
 const identity = it => it;
@@ -103,6 +103,7 @@ const dynamicFieldProps = List([
   'options',
   'required',
   'visible',
+  'label',
 ]);
 
 const selectDataSourcesData = formKey => state =>
@@ -240,7 +241,7 @@ regHandlers({
       .updateIn(['forms', formKey, 'fields'], fields =>
         fields.map(
           evaluateFieldProps(
-            ['enabled', 'options', 'required', 'visible'],
+            ['enabled', 'options', 'required', 'visible', 'label'],
             bindings,
           ),
         ),

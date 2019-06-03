@@ -15,6 +15,8 @@ export {
 export { default as Table } from './components/common/tables/Table';
 export {
   FormForm,
+  KappForm,
+  KappTable,
   UserForm,
   UserTable,
   UserDetails,
@@ -30,7 +32,7 @@ export {
   MessageHistory,
   UserMessageGroup,
 } from './components/discussions';
-export { default as partitionListBy } from './helpers/partitionListBy';
+export { partitionListBy } from './helpers';
 export {
   addRequestInterceptor,
   addResponseInterceptor,
