@@ -1,15 +1,6 @@
 import React from 'react';
 import { Form } from '../form/Form';
-
-const slugify = text =>
-  text
-    .trim()
-    // Convert uppercase to lowercase
-    .toLowerCase()
-    // Replace spaces with -
-    .replace(/\s+/g, '-')
-    // Remove all non-word chars
-    .replace(/[^A-Za-z0-9\u0080-\u00FF\-]+/g, '');
+import { slugify } from '../../../helpers';
 
 const dataSources = ({ formSlug }) => ({});
 

@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { DateBanner } from './DateBanner';
-import partitionListBy from '../../helpers/partitionListBy';
+import { partitionListBy } from '../../helpers';
 import { SystemMessageGroup } from './SystemMessageGroup';
 import { UserMessageGroup } from './UserMessageGroup';
 

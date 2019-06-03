@@ -2,7 +2,7 @@
 // returns a different value.
 import { List } from 'immutable/dist/immutable';
 
-export default (fn, list) =>
+export const partitionListBy = (fn, list) =>
   list.isEmpty()
     ? List()
     : list
@@ -16,3 +16,25 @@ export default (fn, list) =>
                 ),
           List([List([list.first()])]),
         );
+
+export const generateKey = (length = 6) => {
+  let result = '';
+  while (result.length < length) {
+    result =
+      result +
+      Math.floor(Math.random() * 16)
+        .toString(16)
+        .toUpperCase();
+  }
+  return result;
+};
+
+export const slugify = text =>
+  text
+    .trim()
+    // Convert uppercase to lowercase
+    .toLowerCase()
+    // Replace spaces with -
+    .replace(/\s+/g, '-')
+    // Remove all non-word chars
+    .replace(/[^A-Za-z0-9\u0080-\u00FF\-]+/g, '');
