@@ -1,6 +1,6 @@
-import { List, Record, Map } from 'immutable';
+import { List, Map } from 'immutable';
 import isarray from 'isarray';
-import { call, put, select, takeEvery } from 'redux-saga/effects';
+import { call, put, select, takeEvery, delay } from 'redux-saga/effects';
 import { dispatch, regHandlers, regSaga } from '../../../store';
 
 export const isClientSide = data => isarray(data) || data instanceof List;
@@ -35,6 +35,30 @@ export const generateColumns = (columns, addColumns, alterColumns) => {
     value: c.value,
   }));
 };
+
+export const generateFilters = (tableKey, columns) =>
+  Map(
+    columns
+      .filter(c => c.filterable)
+      .reduce(
+        (filters, column) => ({
+          ...filters,
+          [column.value]: Map({
+            value: '',
+            column: column.value,
+            title: column.title,
+            onChange: value => {
+              dispatch('SET_FILTER', {
+                tableKey,
+                filter: column.value,
+                value,
+              });
+            },
+          }),
+        }),
+        {},
+      ),
+  );
 
 regHandlers({
   MOUNT_TABLE: (state, { payload: { tableKey } }) => {
@@ -81,28 +105,8 @@ regHandlers({
             pageOffset: 0,
 
             // Filtering
-            filters: Map(
-              columns
-                .filter(c => c.filterable)
-                .reduce(
-                  (filters, column) => ({
-                    ...filters,
-                    [column.value]: Map({
-                      value: '',
-                      column: column.value,
-                      title: column.title,
-                      onChange: value => {
-                        dispatch('SET_FILTER', {
-                          tableKey,
-                          filter: column.value,
-                          value,
-                        });
-                      },
-                    }),
-                  }),
-                  {},
-                ),
-            ),
+            filters: generateFilters(tableKey, columns),
+            appliedFilters: generateFilters(tableKey, columns),
 
             configured: true,
             initialize: true,
@@ -114,7 +118,7 @@ regHandlers({
         .set('rows', rows)
         .set('currentPageToken', nextPageToken)
         .set('nextPageToken', null)
-        .set('initializng', false)
+        .set('initializing', false)
         .set('loading', false),
     ),
   NEXT_PAGE: (state, { payload: { tableKey } }) =>
@@ -147,6 +151,11 @@ regHandlers({
     ),
   SET_FILTER: (state, { payload: { tableKey, filter, value } }) =>
     state.setIn(['tables', tableKey, 'filters', filter, 'value'], value),
+  APPLY_FILTERS: (state, { payload: { tableKey } }) =>
+    state.setIn(
+      ['tables', tableKey, 'appliedFilters'],
+      state.getIn(['tables', tableKey, 'filters']),
+    ),
 });
 
 function* calculateRowsTask({ payload }) {
@@ -194,7 +203,7 @@ const calculateRows = tableData => {
   const pageSize = tableData.get('pageSize');
   const sortColumn = tableData.get('sortColumn');
   const sortDirection = tableData.get('sortDirection');
-  const filters = tableData.get('filters');
+  const filters = tableData.get('appliedFilters');
 
   const data = isClientSide(tableData.get('data'))
     ? List(tableData.get('data'))

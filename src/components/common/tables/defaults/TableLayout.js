@@ -16,6 +16,10 @@ TableLayout.propTypes = {
   body: t.object.isRequired,
   /** Contains the rendered table footer. */
   footer: t.object,
+  /** Denotes wherther the table has initialized and loaded its first set of data. */
+  initializing: t.bool,
+  /** Denotes whether the table is currently loading data. */
+  loading: t.bool,
 };
 
 export default TableLayout;

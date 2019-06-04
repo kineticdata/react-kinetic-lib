@@ -28,7 +28,7 @@ const KeyWrapper = ({ children }) => children;
 
 const TableComponent = props => {
   if (props.configured) {
-    const { children } = props;
+    const { children, loading, initializing } = props;
     const table = buildTable(props);
     const filter = buildFilterControl(props);
     const pagination = buildPaginationControl(props);
@@ -37,6 +37,8 @@ const TableComponent = props => {
       table,
       filter,
       pagination,
+      initializing,
+      loading,
     });
   }
   return null;
@@ -83,6 +85,7 @@ const buildPaginationControl = props => {
     pageOffset,
     currentPageToken,
     components,
+    loading,
   } = props;
   const PaginationControl = components.PaginationControl;
   const prevPage = hasPrevPage(data, pageTokens, pageOffset)
@@ -94,7 +97,11 @@ const buildPaginationControl = props => {
     : null;
 
   return pagination ? (
-    <PaginationControl prevPage={prevPage} nextPage={nextPage} />
+    <PaginationControl
+      prevPage={prevPage}
+      nextPage={nextPage}
+      loading={loading}
+    />
   ) : null;
 };
 
@@ -104,7 +111,15 @@ export const buildTable = props => {
   const body = buildTableBody(props);
   const footer = buildTableFooter(props);
 
-  return <TableLayout header={header} body={body} footer={footer} />;
+  return (
+    <TableLayout
+      header={header}
+      body={body}
+      footer={footer}
+      initializing={props.initializing}
+      loading={props.loading}
+    />
+  );
 };
 
 export const buildTableHeader = props => {
@@ -126,14 +141,7 @@ export const buildTableHeaderRow = props => {
 };
 
 export const buildTableHeaderCell = props => (column, index) => {
-  const {
-    tableKey,
-    components,
-    sorting,
-    sortColumn,
-    sortDirection,
-    rows,
-  } = props;
+  const { tableKey, components, sorting, sortColumn, sortDirection } = props;
   const { title, sortable = false } = column;
   const CustomHeaderCell = column.components
     ? column.components.HeaderCell
@@ -162,7 +170,7 @@ export const buildTableBody = props => {
 };
 
 export const buildTableBodyRows = props => {
-  const { components, rows, columns, emptyMessage } = props;
+  const { components, rows, columns, emptyMessage, appliedFilters } = props;
   const BodyRow = components.BodyRow;
   const EmptyBodyRow = components.EmptyBodyRow;
 
@@ -185,7 +193,9 @@ export const buildTableBodyRows = props => {
     ) : (
       <EmptyBodyRow
         columns={columns}
-        rows={rows.toJS()}
+        initializing={props.initializing}
+        loading={props.loading}
+        appliedFilters={props.appliedFilters}
         emptyMessage={emptyMessage}
       />
     );
