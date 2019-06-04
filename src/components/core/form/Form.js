@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
-import { fromJS, is, isImmutable, List, Map, OrderedMap, Set } from 'immutable';
+import {
+  get,
+  fromJS,
+  is,
+  isImmutable,
+  List,
+  Map,
+  OrderedMap,
+  Set,
+} from 'immutable';
 import {
   action,
   connect,
@@ -14,6 +23,8 @@ import { generateKey } from '../../../helpers';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
 const identity = it => it;
+
+const sameName = left => right => left.name === right.name;
 
 export const isEmpty = value =>
   value === null ||
@@ -125,7 +136,10 @@ const evaluateFieldProps = (props, bindings) => field =>
 const defaultMap = Map({
   attributes: Map(),
   checkbox: false,
+  'checkbox-multi': List(),
+  team: null,
   'team-multi': List(),
+  user: null,
   'user-multi': List(),
 });
 
@@ -185,7 +199,15 @@ regHandlers({
     {
       payload: {
         formKey,
-        config: { dataSources, fields, onSubmit, onSave, onError },
+        config: {
+          addFields,
+          alterFields,
+          dataSources,
+          fields,
+          onSubmit,
+          onSave,
+          onError,
+        },
       },
     },
   ) =>
@@ -198,12 +220,21 @@ regHandlers({
           Map({
             dataSources: initializeDataSources(dataSources),
             fields: OrderedMap(
-              List(fields)
-                .flatten()
-                .filter(f => !!f)
-                .map(convertField)
-                .map(field => [field.get('name'), field]),
-            ),
+              List([
+                ...fields,
+                ...addFields
+                  .filter(field => !fields.find(sameName(field)))
+                  .map(field => ({ ...field, transient: true })),
+              ])
+                .filter(field => !!field)
+                .map(field => [field.name, field]),
+            )
+              .mergeDeep(
+                Map(alterFields).map(
+                  ({ name, type, ...allowedAlterations }) => allowedAlterations,
+                ),
+              )
+              .map(convertField),
             state: Map(),
             onSubmit,
             onSave,

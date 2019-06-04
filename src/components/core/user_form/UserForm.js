@@ -154,6 +154,8 @@ const fields = ({ username }) => [
 ];
 
 export const UserForm = ({
+  addFields,
+  alterFields,
   children,
   components,
   formKey,
@@ -162,6 +164,8 @@ export const UserForm = ({
   username,
 }) => (
   <Form
+    addFields={addFields}
+    alterFields={alterFields}
     components={components}
     dataSources={dataSources({ username })}
     fields={fields({ username })}

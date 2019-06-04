@@ -24,7 +24,7 @@ const searchUsers = (searchField, value) =>
     nextPageToken,
   }));
 
-const userToValue = user => user.username || user.email;
+const userToValue = user => get(user, 'username') || get(user, 'email');
 
 const valueToCustomUser = value =>
   value.match(emailPattern) && { email: value };
