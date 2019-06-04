@@ -1,15 +1,6 @@
 import React, { Component } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
-import {
-  get,
-  fromJS,
-  is,
-  isImmutable,
-  List,
-  Map,
-  OrderedMap,
-  Set,
-} from 'immutable';
+import { fromJS, is, isImmutable, List, Map, OrderedMap, Set } from 'immutable';
 import {
   action,
   connect,
@@ -200,8 +191,8 @@ regHandlers({
       payload: {
         formKey,
         config: {
-          addFields,
-          alterFields,
+          addFields = [],
+          alterFields = {},
           dataSources,
           fields,
           onSubmit,
@@ -540,7 +531,9 @@ regSaga(
         .getIn(['forms', formKey, 'fields'])
         .filter(field => !field.get('transient'))
         .map(field =>
-          field.get('serialize', identity)(field.get('value'), bindings),
+          field.has('serialize')
+            ? field.get('serialize')(bindings)
+            : field.get('value'),
         ),
       state
         .getIn(['forms', formKey, 'fields'])
@@ -722,11 +715,12 @@ class FormImplComponent extends Component {
     return (
       <ComponentConfigContext.Consumer>
         {config => {
+          const { components = {} } = this.props;
           const {
             FormButtons = config.get('FormButtons', DefaultFormButtons),
             FormError = config.get('FormError', DefaultFormError),
             children: FormWrapper = DefaultFormWrapper,
-          } = this.props.components;
+          } = components;
           return (
             <FormWrapper
               initialized={!this.props.loaded}
@@ -770,7 +764,7 @@ class FormImplComponent extends Component {
                         })}
                         components={{
                           context: config,
-                          form: this.props.components,
+                          form: components,
                           field: field.get('component'),
                         }}
                       />

@@ -149,7 +149,8 @@ const fields = ({ username }) => [
     options: ({ teams }) => teams,
     initialValue: ({ user }) =>
       get(user, 'memberships', List()).map(m => m.get('team')),
-    serialize: value => value.map(team => Map({ team })),
+    serialize: ({ values }) =>
+      values.get('memberships').map(team => Map({ team })),
   },
 ];
 

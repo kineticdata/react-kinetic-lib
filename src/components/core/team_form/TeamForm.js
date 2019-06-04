@@ -36,12 +36,11 @@ const handleSubmit = ({ teamSlug }) => values =>
 
 const fields = ({ teamSlug }) => [
   {
-    name: 'name',
+    name: 'localName',
     label: 'Name',
     type: 'text',
     required: true,
-    serialize: (value, { values }) =>
-      `${values.get('parentTeam').name}::${value}`,
+    transient: true,
     initialValue: ({ team }) => (team ? splitTeamName(team)[1] : ''),
   },
   {
@@ -58,9 +57,18 @@ const fields = ({ teamSlug }) => [
           }
         : null,
   },
+  {
+    name: 'name',
+    type: 'text',
+    visible: false,
+    serialize: ({ values }) =>
+      `${values.get('parentTeam').name}::${values.get('localName')}`,
+  },
 ];
 
 export const TeamForm = ({
+  addFields,
+  alterFields,
   formKey,
   components,
   onSave,
@@ -69,6 +77,8 @@ export const TeamForm = ({
   ...formOptions
 }) => (
   <Form
+    addFields={addFields}
+    alterFields={alterFields}
     formKey={formKey}
     components={components}
     onSubmit={handleSubmit(formOptions)}
