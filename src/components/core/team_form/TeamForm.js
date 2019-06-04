@@ -69,6 +69,7 @@ const fields = ({ teamSlug }) => [
 export const TeamForm = ({
   addFields,
   alterFields,
+  fieldSet,
   formKey,
   components,
   onSave,
@@ -79,6 +80,7 @@ export const TeamForm = ({
   <Form
     addFields={addFields}
     alterFields={alterFields}
+    fieldSet={fieldSet}
     formKey={formKey}
     components={components}
     onSubmit={handleSubmit(formOptions)}

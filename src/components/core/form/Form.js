@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
-import { fromJS, is, isImmutable, List, Map, OrderedMap, Set } from 'immutable';
+import {
+  fromJS,
+  is,
+  isImmutable,
+  List,
+  Map,
+  OrderedMap,
+  OrderedSet,
+  Set,
+} from 'immutable';
 import {
   action,
   connect,
@@ -521,7 +530,7 @@ regSaga(
 );
 
 regSaga(
-  takeEvery('SUBMIT', function*({ payload: { formKey } }) {
+  takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet } }) {
     const bindings = yield select(selectBindings(formKey));
     const [onSubmit, onSave, onError, values, errors] = yield select(state => [
       state.getIn(['forms', formKey, 'onSubmit']),
@@ -529,7 +538,10 @@ regSaga(
       state.getIn(['forms', formKey, 'onError']),
       state
         .getIn(['forms', formKey, 'fields'])
-        .filter(field => !field.get('transient'))
+        .filter(
+          field =>
+            !field.get('transient') && fieldSet.contains(field.get('name')),
+        )
         .map(field =>
           field.has('serialize')
             ? field.get('serialize')(bindings)
@@ -589,9 +601,9 @@ export const onChange = ({ formKey, type, name }) => event => {
   );
 };
 
-export const onSubmit = formKey => event => {
+export const onSubmit = (formKey, fieldSet) => event => {
   event && event.preventDefault && event.preventDefault();
-  dispatch('SUBMIT', { formKey });
+  dispatch('SUBMIT', { formKey, fieldSet });
 };
 
 export const clearError = formKey => event => {
@@ -642,8 +654,7 @@ export const Field = props => {
 export class Form extends Component {
   constructor(props) {
     super(props);
-    const { components, formKey, ...config } = props;
-    this.components = components;
+    const { components, fieldSet, formKey, ...config } = props;
     this.config = config;
     this.auto = !formKey;
     this.formKey = formKey || generateKey();
@@ -664,8 +675,9 @@ export class Form extends Component {
   render() {
     return (
       <FormImpl
+        fieldSet={this.props.fieldSet}
         formKey={this.formKey}
-        components={this.components}
+        components={this.props.components}
         config={this.config}
       >
         {this.props.children}
@@ -721,54 +733,66 @@ class FormImplComponent extends Component {
             FormError = config.get('FormError', DefaultFormError),
             children: FormWrapper = DefaultFormWrapper,
           } = components;
-          return (
-            <FormWrapper
-              initialized={!this.props.loaded}
-              form={
-                this.props.loaded ? (
-                  <form onSubmit={onSubmit(this.props.formKey)}>
-                    {this.props.fields.toList().map(field => (
-                      <Field
-                        key={field.get('name')}
-                        name={field.get('name')}
-                        id={field.get('id')}
-                        label={field.get('label')}
-                        options={field.get('options')}
-                        type={field.get('type')}
-                        value={field.get('value')}
-                        onFocus={onFocus({
-                          formKey: this.props.formKey,
-                          field: field.get('name'),
-                        })}
-                        onBlur={onBlur({
-                          formKey: this.props.formKey,
-                          field: field.get('name'),
-                        })}
-                        onChange={onChange({
-                          formKey: this.props.formKey,
-                          name: field.get('name'),
-                          type: field.get('type'),
-                        })}
-                        visible={field.get('visible')}
-                        required={field.get('required')}
-                        enabled={field.get('enabled')}
-                        dirty={field.get('dirty')}
-                        valid={field.get('valid')}
-                        focused={field.get('focused')}
-                        touched={field.get('touched')}
-                        errors={field.get('errors')}
-                        custom={field.get('custom')}
-                        setCustom={setFieldCustom({
-                          formKey: this.props.formKey,
-                          name: field.get('name'),
-                        })}
-                        components={{
-                          context: config,
-                          form: components,
-                          field: field.get('component'),
-                        }}
-                      />
-                    ))}
+          if (this.props.loaded) {
+            const fullFieldSet = OrderedSet(this.props.fields.keySeq());
+            const computedFieldSet = OrderedSet(
+              !this.props.fieldSet
+                ? fullFieldSet
+                : typeof this.props.fieldSet === 'function'
+                ? this.props.fieldSet(fullFieldSet)
+                : this.props.fieldSet,
+            );
+            return (
+              <FormWrapper
+                initialized
+                form={
+                  <form
+                    onSubmit={onSubmit(this.props.formKey, computedFieldSet)}
+                  >
+                    {computedFieldSet
+                      .map(name => this.props.fields.get(name))
+                      .map(field => (
+                        <Field
+                          key={field.get('name')}
+                          name={field.get('name')}
+                          id={field.get('id')}
+                          label={field.get('label')}
+                          options={field.get('options')}
+                          type={field.get('type')}
+                          value={field.get('value')}
+                          onFocus={onFocus({
+                            formKey: this.props.formKey,
+                            field: field.get('name'),
+                          })}
+                          onBlur={onBlur({
+                            formKey: this.props.formKey,
+                            field: field.get('name'),
+                          })}
+                          onChange={onChange({
+                            formKey: this.props.formKey,
+                            name: field.get('name'),
+                            type: field.get('type'),
+                          })}
+                          visible={field.get('visible')}
+                          required={field.get('required')}
+                          enabled={field.get('enabled')}
+                          dirty={field.get('dirty')}
+                          valid={field.get('valid')}
+                          focused={field.get('focused')}
+                          touched={field.get('touched')}
+                          errors={field.get('errors')}
+                          custom={field.get('custom')}
+                          setCustom={setFieldCustom({
+                            formKey: this.props.formKey,
+                            name: field.get('name'),
+                          })}
+                          components={{
+                            context: config,
+                            form: components,
+                            field: field.get('component'),
+                          }}
+                        />
+                      ))}
                     {this.props.error && (
                       <FormError
                         error={this.props.error}
@@ -776,17 +800,19 @@ class FormImplComponent extends Component {
                       />
                     )}
                     <FormButtons
-                      submit={onSubmit(this.props.formKey)}
+                      submit={onSubmit(this.props.formKey, computedFieldSet)}
                       submitting={this.props.submitting}
                       dirty={this.props.fields.some(field =>
                         field.get('dirty'),
                       )}
                     />
                   </form>
-                ) : null
-              }
-            />
-          );
+                }
+              />
+            );
+          } else {
+            return <FormWrapper initialized={false} form={null} />;
+          }
         }}
       </ComponentConfigContext.Consumer>
     );

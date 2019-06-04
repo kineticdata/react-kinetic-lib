@@ -159,6 +159,7 @@ export const UserForm = ({
   alterFields,
   children,
   components,
+  fieldSet,
   formKey,
   onError,
   onSave,
@@ -170,6 +171,7 @@ export const UserForm = ({
     components={components}
     dataSources={dataSources({ username })}
     fields={fields({ username })}
+    fieldSet={fieldSet}
     formKey={formKey}
     onError={onError}
     onSave={onSave}
