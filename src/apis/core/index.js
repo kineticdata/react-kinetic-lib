@@ -28,7 +28,7 @@ export {
 
 export { fetchForms, fetchForm, createForm, updateForm } from './forms';
 
-export { fetchKapps, fetchKapp, updateKapp } from './kapps';
+export { fetchKapps, fetchKapp, updateKapp, createKapp } from './kapps';
 
 export { createMembership, deleteMembership } from './memberships';
 

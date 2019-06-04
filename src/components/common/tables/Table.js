@@ -10,7 +10,7 @@ import {
   unmountTable,
   isClientSide,
 } from './Table.redux';
-import generateKey from '../../../helpers/generateKey';
+import { generateKey } from '../../../helpers';
 
 const generateColumns = (columns, columnSet) => {
   const allColumns = columns.map(c => c.value);

@@ -1,15 +1,6 @@
 import React, { Component } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
-import {
-  fromJS,
-  get,
-  is,
-  isImmutable,
-  List,
-  Map,
-  OrderedMap,
-  Set,
-} from 'immutable';
+import { fromJS, is, isImmutable, List, Map, OrderedMap, Set } from 'immutable';
 import {
   action,
   connect,
@@ -19,11 +10,12 @@ import {
 } from '../../../store';
 import { ComponentConfigContext } from '../../common/ComponentConfigContext';
 import { generateAttributesFieldProps } from './AttributesField';
-import { generateTeamsFieldProps } from './TeamsField';
-import generateKey from '../../../helpers/generateKey';
+import { generateKey } from '../../../helpers';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
 const identity = it => it;
+
+const sameName = left => right => left.name === right.name;
 
 export const isEmpty = value =>
   value === null ||
@@ -103,6 +95,7 @@ const dynamicFieldProps = List([
   'options',
   'required',
   'visible',
+  'label',
 ]);
 
 const selectDataSourcesData = formKey => state =>
@@ -133,8 +126,12 @@ const evaluateFieldProps = (props, bindings) => field =>
 
 const defaultMap = Map({
   attributes: Map(),
-  teams: List(),
   checkbox: false,
+  'checkbox-multi': List(),
+  team: null,
+  'team-multi': List(),
+  user: null,
+  'user-multi': List(),
 });
 
 const defaultInitialValue = field =>
@@ -193,7 +190,15 @@ regHandlers({
     {
       payload: {
         formKey,
-        config: { dataSources, fields, onSubmit, onSave, onError },
+        config: {
+          addFields = [],
+          alterFields = {},
+          dataSources,
+          fields,
+          onSubmit,
+          onSave,
+          onError,
+        },
       },
     },
   ) =>
@@ -206,12 +211,21 @@ regHandlers({
           Map({
             dataSources: initializeDataSources(dataSources),
             fields: OrderedMap(
-              List(fields)
-                .flatten()
-                .filter(f => !!f)
-                .map(convertField)
-                .map(field => [field.get('name'), field]),
-            ),
+              List([
+                ...fields,
+                ...addFields
+                  .filter(field => !fields.find(sameName(field)))
+                  .map(field => ({ ...field, transient: true })),
+              ])
+                .filter(field => !!field)
+                .map(field => [field.name, field]),
+            )
+              .mergeDeep(
+                Map(alterFields).map(
+                  ({ name, type, ...allowedAlterations }) => allowedAlterations,
+                ),
+              )
+              .map(convertField),
             state: Map(),
             onSubmit,
             onSave,
@@ -240,7 +254,7 @@ regHandlers({
       .updateIn(['forms', formKey, 'fields'], fields =>
         fields.map(
           evaluateFieldProps(
-            ['enabled', 'options', 'required', 'visible'],
+            ['enabled', 'options', 'required', 'visible', 'label'],
             bindings,
           ),
         ),
@@ -508,13 +522,19 @@ regSaga(
 
 regSaga(
   takeEvery('SUBMIT', function*({ payload: { formKey } }) {
+    const bindings = yield select(selectBindings(formKey));
     const [onSubmit, onSave, onError, values, errors] = yield select(state => [
       state.getIn(['forms', formKey, 'onSubmit']),
       state.getIn(['forms', formKey, 'onSave']),
       state.getIn(['forms', formKey, 'onError']),
       state
         .getIn(['forms', formKey, 'fields'])
-        .map(field => field.get('value')),
+        .filter(field => !field.get('transient'))
+        .map(field =>
+          field.has('serialize')
+            ? field.get('serialize')(bindings)
+            : field.get('value'),
+        ),
       state
         .getIn(['forms', formKey, 'fields'])
         .map(field => field.get('errors'))
@@ -561,7 +581,11 @@ export const onBlur = ({ formKey, field }) => () => {
 export const onChange = ({ formKey, type, name }) => event => {
   actions.setValue(formKey)(
     name,
-    type === 'checkbox' ? event.target.checked : event.target.value,
+    type === 'checkbox'
+      ? event.target.checked
+      : event && event.target
+      ? event.target.value
+      : event,
   );
 };
 
@@ -587,21 +611,28 @@ export const mapStateToProps = (state, props) =>
   state.getIn(['forms', props.formKey], Map()).toObject();
 
 const generateFieldProps = props =>
-  props.type === 'attributes'
-    ? generateAttributesFieldProps(props)
-    : props.type === 'teams'
-    ? generateTeamsFieldProps(props)
-    : props;
+  props.type === 'attributes' ? generateAttributesFieldProps(props) : props;
 
-export const Field = props => (
-  <ComponentConfigContext.Consumer>
-    {fieldConfig => {
-      const FieldImpl =
-        props.component || fieldConfig.get(props.type, fieldConfig.get('text'));
-      return <FieldImpl {...generateFieldProps(props)} />;
-    }}
-  </ComponentConfigContext.Consumer>
-);
+const typeToComponent = {
+  text: 'TextField',
+  'text-multi': 'TextMultiField',
+  checkbox: 'CheckboxField',
+  select: 'SelectField',
+  attributes: 'AttributesField',
+  team: 'TeamField',
+  'team-multi': 'TeamMultiField',
+  user: 'UserField',
+  'user-multi': 'UserMultiField',
+};
+
+export const Field = props => {
+  const componentName = typeToComponent[props.type] || 'TextField';
+  const FieldImpl =
+    props.components.field ||
+    props.components.form[componentName] ||
+    props.components.context.get(componentName);
+  return <FieldImpl {...generateFieldProps(props)} />;
+};
 
 // Wraps the FormImpl to handle the formKey behavior. If this is passed a
 // formKey prop this wrapper is essentially a noop, but if it is not passed a
@@ -643,6 +674,29 @@ export class Form extends Component {
   }
 }
 
+const DefaultFormWrapper = props => props.form;
+
+const DefaultFormError = props => (
+  <div>
+    {props.error}
+    <button type="button" onClick={props.clear}>
+      &times;
+    </button>
+  </div>
+);
+
+const DefaultFormButtons = props => (
+  <div>
+    <button
+      type="submit"
+      onClick={props.submit}
+      disabled={!props.dirty || props.submitting}
+    >
+      Submit
+    </button>
+  </div>
+);
+
 class FormImplComponent extends Component {
   checkConfigure() {
     if (this.props.mounted && !this.props.configured) {
@@ -658,57 +712,84 @@ class FormImplComponent extends Component {
   }
 
   render() {
-    return this.props.children({
-      form: this.props.loaded && (
-        <form onSubmit={onSubmit(this.props.formKey)}>
-          {this.props.fields.toList().map(field => (
-            <Field
-              key={field.get('name')}
-              name={field.get('name')}
-              id={field.get('id')}
-              label={field.get('label')}
-              options={field.get('options')}
-              type={field.get('type')}
-              value={field.get('value')}
-              onFocus={onFocus({
-                formKey: this.props.formKey,
-                field: field.get('name'),
-              })}
-              onBlur={onBlur({
-                formKey: this.props.formKey,
-                field: field.get('name'),
-              })}
-              onChange={onChange({
-                formKey: this.props.formKey,
-                name: field.get('name'),
-                type: field.get('type'),
-              })}
-              visible={field.get('visible')}
-              required={field.get('required')}
-              enabled={field.get('enabled')}
-              dirty={field.get('dirty')}
-              valid={field.get('valid')}
-              focused={field.get('focused')}
-              touched={field.get('touched')}
-              errors={field.get('errors')}
-              custom={field.get('custom')}
-              setCustom={setFieldCustom({
-                formKey: this.props.formKey,
-                name: field.get('name'),
-              })}
-              component={get(this.props.components, field.get('name'))}
+    return (
+      <ComponentConfigContext.Consumer>
+        {config => {
+          const { components = {} } = this.props;
+          const {
+            FormButtons = config.get('FormButtons', DefaultFormButtons),
+            FormError = config.get('FormError', DefaultFormError),
+            children: FormWrapper = DefaultFormWrapper,
+          } = components;
+          return (
+            <FormWrapper
+              initialized={!this.props.loaded}
+              form={
+                this.props.loaded ? (
+                  <form onSubmit={onSubmit(this.props.formKey)}>
+                    {this.props.fields.toList().map(field => (
+                      <Field
+                        key={field.get('name')}
+                        name={field.get('name')}
+                        id={field.get('id')}
+                        label={field.get('label')}
+                        options={field.get('options')}
+                        type={field.get('type')}
+                        value={field.get('value')}
+                        onFocus={onFocus({
+                          formKey: this.props.formKey,
+                          field: field.get('name'),
+                        })}
+                        onBlur={onBlur({
+                          formKey: this.props.formKey,
+                          field: field.get('name'),
+                        })}
+                        onChange={onChange({
+                          formKey: this.props.formKey,
+                          name: field.get('name'),
+                          type: field.get('type'),
+                        })}
+                        visible={field.get('visible')}
+                        required={field.get('required')}
+                        enabled={field.get('enabled')}
+                        dirty={field.get('dirty')}
+                        valid={field.get('valid')}
+                        focused={field.get('focused')}
+                        touched={field.get('touched')}
+                        errors={field.get('errors')}
+                        custom={field.get('custom')}
+                        setCustom={setFieldCustom({
+                          formKey: this.props.formKey,
+                          name: field.get('name'),
+                        })}
+                        components={{
+                          context: config,
+                          form: components,
+                          field: field.get('component'),
+                        }}
+                      />
+                    ))}
+                    {this.props.error && (
+                      <FormError
+                        error={this.props.error}
+                        clear={clearError(this.props.formKey)}
+                      />
+                    )}
+                    <FormButtons
+                      submit={onSubmit(this.props.formKey)}
+                      submitting={this.props.submitting}
+                      dirty={this.props.fields.some(field =>
+                        field.get('dirty'),
+                      )}
+                    />
+                  </form>
+                ) : null
+              }
             />
-          ))}
-        </form>
-      ),
-      error: this.props.error,
-      clearError: clearError(this.props.formKey),
-      submit: onSubmit(this.props.formKey),
-      submitting: this.props.submitting,
-      dirty:
-        this.props.loaded &&
-        this.props.fields.some(field => field.get('dirty')),
-    });
+          );
+        }}
+      </ComponentConfigContext.Consumer>
+    );
   }
 }
 const FormImpl = connect(mapStateToProps)(FormImplComponent);

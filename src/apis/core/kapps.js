@@ -43,3 +43,18 @@ export const updateKapp = (options = {}) => {
     .then(response => ({ kapp: response.data.kapp }))
     .catch(handleErrors);
 };
+
+export const createKapp = (options = {}) => {
+  const { kapp } = options;
+  if (!kapp) {
+    throw new Error('createKapp failed! The option "kapp" is required.');
+  }
+
+  return axios
+    .post(`${bundle.apiLocation()}/kapps`, kapp, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ kapp: response.data.kapp }))
+    .catch(handleErrors);
+};

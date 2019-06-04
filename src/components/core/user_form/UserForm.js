@@ -4,7 +4,7 @@ import { fetchSpace, fetchTeams, fetchUser } from '../../../apis/core';
 import { fetchLocales, fetchTimezones } from '../../../apis/core/meta';
 import { fetchAttributeDefinitions } from '../../../apis/core/attributeDefinitions';
 import { createUser, updateUser } from '../../../apis/core/users';
-import { get, getIn } from 'immutable';
+import { get, List, Map } from 'immutable';
 
 const dataSources = ({ username }) => ({
   space: [
@@ -45,7 +45,7 @@ const handleSubmit = ({ username }) => values => {
   return username ? updateUser({ username, user }) : createUser({ user });
 };
 
-const fields = ({ attributeFields, profileAttributeFields, username }) => [
+const fields = ({ username }) => [
   !username && {
     name: 'username',
     label: 'Username',
@@ -125,61 +125,56 @@ const fields = ({ attributeFields, profileAttributeFields, username }) => [
       })),
     initialValue: ({ user }) => get(user, 'timezone'),
   },
-  attributeFields
-    ? Object.entries(attributeFields).map(([name, config]) => ({
-        name: `attributesMap.${name}`,
-        label: get(config, 'label', name),
-        type: get(config, 'type', 'text'),
-        required: get(config, 'required', false),
-        initialValue: ({ user }) =>
-          getIn(user, ['attributesMap', 'name'], config.initialValue),
-      }))
-    : {
-        name: 'attributesMap',
-        label: 'Attributes',
-        type: 'attributes',
-        required: false,
-        options: ({ attributeDefinitions }) => attributeDefinitions,
-        initialValue: ({ user }) => get(user, 'attributesMap'),
-      },
-  profileAttributeFields
-    ? Object.entries(profileAttributeFields).map(([name, config]) => ({
-        name: `profileAttributesMap.${name}`,
-        label: get(config, 'label', name),
-        type: get(config, 'type', 'text'),
-        required: get(config, 'required', false),
-        initialValue: ({ user }) =>
-          getIn(user, ['profileAttributesMap', 'name'], config.initialValue),
-      }))
-    : {
-        name: 'profileAttributesMap',
-        label: 'Profile Attributes',
-        type: 'attributes',
-        required: false,
-        options: ({ profileAttributeDefinitions }) =>
-          profileAttributeDefinitions,
-        initialValue: ({ user }) => get(user, 'profileAttributesMap'),
-      },
+  {
+    name: 'attributesMap',
+    label: 'Attributes',
+    type: 'attributes',
+    required: false,
+    options: ({ attributeDefinitions }) => attributeDefinitions,
+    initialValue: ({ user }) => get(user, 'attributesMap'),
+  },
+  {
+    name: 'profileAttributesMap',
+    label: 'Profile Attributes',
+    type: 'attributes',
+    required: false,
+    options: ({ profileAttributeDefinitions }) => profileAttributeDefinitions,
+    initialValue: ({ user }) => get(user, 'profileAttributesMap'),
+  },
   {
     name: 'memberships',
     label: 'Teams',
-    type: 'teams',
+    type: 'team-multi',
     required: false,
     options: ({ teams }) => teams,
-    initialValue: ({ user }) => get(user, 'memberships'),
+    initialValue: ({ user }) =>
+      get(user, 'memberships', List()).map(m => m.get('team')),
+    serialize: ({ values }) =>
+      values.get('memberships').map(team => Map({ team })),
   },
 ];
 
-export const UserForm = props => (
+export const UserForm = ({
+  addFields,
+  alterFields,
+  children,
+  components,
+  formKey,
+  onError,
+  onSave,
+  username,
+}) => (
   <Form
-    formKey={props.formKey}
-    components={props.components}
-    onSubmit={handleSubmit({ username: props.username })}
-    onSave={props.onSave}
-    onError={props.onError}
-    dataSources={dataSources({ username: props.username })}
-    fields={fields({ username: props.username })}
+    addFields={addFields}
+    alterFields={alterFields}
+    components={components}
+    dataSources={dataSources({ username })}
+    fields={fields({ username })}
+    formKey={formKey}
+    onError={onError}
+    onSave={onSave}
+    onSubmit={handleSubmit({ username })}
   >
-    {props.children}
+    {children}
   </Form>
 );
