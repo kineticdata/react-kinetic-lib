@@ -7,7 +7,7 @@ const tableKey = 'kapp-table';
 
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
-const STARTS_WITH_FIELDS = ['name', 'slug'];
+const STARTS_WITH_FIELDS = ['slug', 'name'];
 
 const kappFilter = filters => {
   const q = Map(filters)
@@ -36,7 +36,6 @@ const data = {
     nextPageToken: result.nextPageToken,
   }),
 };
-
 
 const columns = [
   {
@@ -69,6 +68,20 @@ const columns = [
     value: 'updatedBy',
     title: 'Updated By',
   },
+  {
+    value: 'resetPasswordPage',
+    title: 'Reset Password Page',
+  },
+
+  { value: 'afterLogoutPath', title: 'After Logout Path' },
+  { value: 'bundlePath', title: 'Bundle Path' },
+  { value: 'defaultFormConfirmationPage', title: 'Form Confirmation Page' },
+  { value: 'defaultFormDisplayPage', title: 'Form Display Page' },
+  { value: 'defaultSubmissionLabelExpression', title: 'Submission Label' },
+  { value: 'displayType', title: 'Display Type' },
+  { value: 'displayValue', title: 'Display Value' },
+  { value: 'loginPage', title: 'Login Page' },
+  { value: 'resetPasswordPage', title: 'Reset Password Page' },
 ];
 
 export default class KappTable extends Component {

@@ -4,6 +4,7 @@ import { get, getIn } from 'immutable';
 import { Form } from '../form/Form';
 import { fetchKapp, fetchSpace } from '../../../apis/core';
 import { fetchAttributeDefinitions } from '../../../apis/core/attributeDefinitions';
+import { fetchSecurityPolicyDefinitions } from '../../../apis/core/securityPolicyDefinitions';
 import { createKapp, updateKapp } from '../../../apis/core/kapps';
 import { slugify } from '../../../helpers';
 
@@ -12,12 +13,12 @@ const DISPLAY_TYPES = ['Display Page', 'Redirect'];
 const dataSources = ({ kappSlug }) => ({
   space: [
     fetchSpace,
-    [{ include: 'attributesMap' }],
+    [{ include: 'details' }],
     { transform: result => result.space },
   ],
   kapp: [
     fetchKapp,
-    [{ kappSlug, include: 'attributesMap,details' }],
+    [{ kappSlug, include: 'attributesMap,securityPolicies,details' }],
     {
       transform: result => result.kapp,
       runIf: () => !!kappSlug,
@@ -28,6 +29,14 @@ const dataSources = ({ kappSlug }) => ({
     [{ kappSlug, attributeType: 'kappAttributeDefinitions' }],
     {
       transform: result => result.attributeDefinitions,
+      runIf: () => !!kappSlug,
+    },
+  ],
+  sercurityPolicyDefinitions: [
+    fetchSecurityPolicyDefinitions,
+    [{ kappSlug }],
+    {
+      transform: result => result.securityPolicyDefinitions,
       runIf: () => !!kappSlug,
     },
   ],
@@ -45,30 +54,77 @@ const handleSubmit = ({ kappSlug }) => values => {
       });
 };
 
-const fields = ({ attributeFields, kappSlug }) => [
+const securityEndpoints = {
+  kappDisplay: {
+    endpoint: 'Display',
+    label: 'Kapp Display',
+    types: ['Kapp'],
+  },
+  formCreation: {
+    endpoint: 'Form Creation',
+    label: 'Form Creation',
+    types: ['Kapp', 'Form'],
+  },
+  formModification: {
+    endpoint: 'Modification',
+    label: 'Kapp Modification',
+    types: ['Kapp'],
+  },
+  defaultFormDisplay: {
+    endpoint: 'Default Form Display',
+    label: 'Default Form Display',
+    types: ['Kapp', 'Form'],
+  },
+  defaultFormModification: {
+    endpoint: 'Default Form Modification',
+    label: 'Default Form Modification',
+    types: ['Kapp', 'Form'],
+  },
+  defaultSubmissionAccess: {
+    endpoint: 'Default Submission Access',
+    label: 'Default Submission Access',
+    types: ['Kapp', 'Form', 'Submission'],
+  },
+  defaultSubmissionModification: {
+    endpoint: 'Default Submission Modification',
+    label: 'Default Submission Modification',
+    types: ['Kapp', 'Form', 'Submission'],
+  },
+  submissionSupport: {
+    endpoint: 'Submission Support',
+    label: 'Submission Support',
+    types: ['Kapp', 'Form', 'Submission'],
+  },
+};
+
+const fields = ({ kappSlug }) => [
   {
     name: 'afterLogoutPath',
     label: 'After Logout Path',
     type: 'text',
     initialValue: ({ kapp }) => get(kapp, 'afterLogoutPath'),
+    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'bundlePath',
     label: 'Bundle Path',
     type: 'text',
     initialValue: ({ kapp }) => get(kapp, 'bundlePath'),
+    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'defaultFormConfirmationPage',
     label: 'Form Confirmation Page',
     type: 'text',
     initialValue: ({ kapp }) => get(kapp, 'defaultFormConfirmationPage'),
+    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'defaultFormDisplayPage',
     label: 'Form Display Page',
     type: 'text',
     initialValue: ({ kapp }) => get(kapp, 'defaultFormDisplayPage'),
+    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'defaultSubmissionLabelExpression',
@@ -84,7 +140,14 @@ const fields = ({ attributeFields, kappSlug }) => [
       value: displayType,
       label: displayType,
     })),
+    enabled: ({ space }) => get(space, 'displayType') !== 'Single Page App',
     initialValue: ({ kapp }) => get(kapp, 'displayType') || 'Display Page',
+  },
+  {
+    name: 'spaMessage',
+    label: 'Display Type',
+    transient: true,
+    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'displayValue',
@@ -96,12 +159,14 @@ const fields = ({ attributeFields, kappSlug }) => [
     initialValue: ({ kapp }) => get(kapp, 'displayValue'),
     required: ({ values }) => values.get('displayType') === 'Redirect',
     requiredMessage: "This field is required, when display type is 'Redirect'",
+    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'loginPage',
     label: 'Login Page',
     type: 'text',
     initialValue: ({ kapp }) => get(kapp, 'loginPage'),
+    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'name',
@@ -120,6 +185,7 @@ const fields = ({ attributeFields, kappSlug }) => [
     label: 'Reset Password Page',
     type: 'text',
     initialValue: ({ kapp }) => get(kapp, 'resetPasswordPage'),
+    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'slug',
@@ -139,36 +205,80 @@ const fields = ({ attributeFields, kappSlug }) => [
     initialValue: true,
     visible: false,
   },
-  kappSlug &&
-    (attributeFields
-      ? Object.entries(attributeFields).map(([name, config]) => ({
-          name: `attributesMap.${name}`,
-          label: get(config, 'label', name),
-          type: get(config, 'type', 'text'),
-          required: get(config, 'required', false),
+  ...(kappSlug
+    ? Object.entries(securityEndpoints).map(
+        ([endpointFieldName, endpoint]) => ({
+          name: endpointFieldName,
+          label: endpoint.label,
+          type: 'select',
+          required: true,
+          options: ({ sercurityPolicyDefinitions }) =>
+            sercurityPolicyDefinitions
+              ? sercurityPolicyDefinitions
+                  .filter(definition =>
+                    endpoint.types.includes(definition.get('type')),
+                  )
+                  .map(definition => ({
+                    value: definition.get('name'),
+                    label: definition.get('name'),
+                  }))
+              : [],
           initialValue: ({ kapp }) =>
-            getIn(kapp, ['attributesMap', 'name'], config.initialValue),
-        }))
-      : {
-          name: 'attributesMap',
-          label: 'Attributes',
-          type: 'attributes',
-          required: false,
-          options: ({ attributeDefinitions }) => attributeDefinitions,
-          initialValue: ({ kapp }) => get(kapp, 'attributesMap'),
+            kapp
+              ? kapp
+                  .get('securityPolicies')
+                  .find(pol => pol.get('endpoint') === endpoint.endpoint)
+                  .get('name')
+              : '',
+          transient: true,
         }),
+      )
+    : []),
+  {
+    name: 'securityPolicies',
+    label: 'Security Policies',
+    type: null,
+    visible: false,
+    serialize: ({ values }) =>
+      Object.entries(securityEndpoints).map(([endpointFieldName, policy]) => ({
+        endpoint: policy.endpoint,
+        name: values.get(endpointFieldName),
+      })),
+    initialValue: ({ kapp }) => get(kapp, 'securityPolicies'),
+  },
+  kappSlug && {
+    name: 'attributesMap',
+    label: 'Attributes',
+    type: 'attributes',
+    required: false,
+    options: ({ attributeDefinitions }) => attributeDefinitions,
+    initialValue: ({ kapp }) => get(kapp, 'attributesMap'),
+  },
 ];
 
-export const KappForm = props => (
+export const KappForm = ({
+  addFields,
+  alterFields,
+  fieldSet,
+  formKey,
+  components,
+  onSave,
+  onError,
+  children,
+  ...formOptions
+}) => (
   <Form
-    formKey={props.formKey}
-    components={props.components}
-    onSubmit={handleSubmit({ kappSlug: props.kappSlug })}
-    onSave={props.onSave}
-    onError={props.onError}
-    dataSources={dataSources({ kappSlug: props.kappSlug })}
-    fields={fields({ slug: props.kappSlug })}
+    formKey={formKey}
+    addFields={addFields}
+    alterFields={alterFields}
+    fieldSet={fieldSet}
+    components={components}
+    onSubmit={handleSubmit(formOptions)}
+    onSave={onSave}
+    onError={onError}
+    dataSources={dataSources(formOptions)}
+    fields={fields(formOptions)}
   >
-    {props.children}
+    {children}
   </Form>
 );
