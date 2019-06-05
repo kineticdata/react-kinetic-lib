@@ -120,12 +120,14 @@ const dynamicFieldProps = List([
 
 const selectDataSourcesData = formKey => state =>
   state
-    .getIn(['forms', formKey, 'dataSources'])
+    .getIn(['forms', formKey, 'dataSources'], Map())
     .map(dataSource => dataSource.get('data'))
     .toObject();
 
 const selectValues = formKey => state =>
-  state.getIn(['forms', formKey, 'fields']).map(field => field.get('value'));
+  state
+    .getIn(['forms', formKey, 'fields'], Map())
+    .map(field => field.get('value'));
 
 const selectBindings = formKey => state => ({
   ...selectDataSourcesData(formKey)(state),
@@ -653,7 +655,10 @@ export const configureForm = (formKey, config) =>
   dispatch('CONFIGURE_FORM', { formKey, config });
 
 export const mapStateToProps = (state, props) =>
-  state.getIn(['forms', props.formKey], Map()).toObject();
+  state
+    .getIn(['forms', props.formKey], Map())
+    .set('bindings', selectBindings(props.formKey)(state))
+    .toObject();
 
 const generateFieldProps = props =>
   props.type === 'attributes' ? generateAttributesFieldProps(props) : props;
@@ -860,6 +865,7 @@ class FormImplComponent extends Component {
                     />
                   </form>
                 }
+                bindings={this.props.bindings}
               />
             );
           } else {
