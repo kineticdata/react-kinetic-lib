@@ -1,5 +1,5 @@
 import React from 'react';
-import { get, getIn } from 'immutable';
+import { get } from 'immutable';
 
 import { Form } from '../form/Form';
 import { fetchKapp, fetchSpace } from '../../../apis/core';
@@ -18,7 +18,12 @@ const dataSources = ({ kappSlug }) => ({
   ],
   kapp: [
     fetchKapp,
-    [{ kappSlug, include: 'attributesMap,securityPolicies,details' }],
+    [
+      {
+        kappSlug,
+        include: 'attributesMap,securityPolicies,details,fields.details',
+      },
+    ],
     {
       transform: result => result.kapp,
       runIf: () => !!kappSlug,
@@ -65,7 +70,7 @@ const securityEndpoints = {
     label: 'Form Creation',
     types: ['Kapp', 'Form'],
   },
-  formModification: {
+  kappModification: {
     endpoint: 'Modification',
     label: 'Kapp Modification',
     types: ['Kapp'],
