@@ -48,8 +48,9 @@ const buildFilterControl = ({
   components,
   filters,
   tableKey,
-  filtering,
   columnSet,
+  loading,
+  initializing,
 }) => {
   // Add an onChange to each filter and convert it to a list for looping.
   const f = filters.toIndexedSeq().toList();
@@ -60,9 +61,17 @@ const buildFilterControl = ({
   };
 
   const FilterControl = components.FilterControl;
-  return filtering && FilterControl ? (
-    <FilterControl filters={f} onSearch={onSearch} columnSet={columnSet} />
-  ) : null;
+  return (
+    FilterControl && (
+      <FilterControl
+        filters={f}
+        onSearch={onSearch}
+        columnSet={columnSet}
+        loading={loading}
+        initializing={initializing}
+      />
+    )
+  );
 };
 
 const hasPrevPage = (data, pageTokens, pageOffset) =>
@@ -77,7 +86,6 @@ const hasNextPage = (data, pageOffset, pageSize, currentPageToken) =>
 
 const buildPaginationControl = props => {
   const {
-    pagination,
     tableKey,
     data,
     pageTokens,
@@ -96,13 +104,13 @@ const buildPaginationControl = props => {
     ? onNextPage(tableKey)
     : null;
 
-  return pagination ? (
+  return (
     <PaginationControl
       prevPage={prevPage}
       nextPage={nextPage}
       loading={loading}
     />
-  ) : null;
+  );
 };
 
 export const buildTable = props => {
@@ -126,7 +134,7 @@ export const buildTableHeader = props => {
   const Header = props.components.Header;
   const headerRow = buildTableHeaderRow(props);
   return props.omitHeader ? null : (
-    <Header sorting={props.sorting} headerRow={headerRow} rows={props.rows} />
+    <Header sortable={props.sortable} headerRow={headerRow} rows={props.rows} />
   );
 };
 
@@ -141,21 +149,21 @@ export const buildTableHeaderRow = props => {
 };
 
 export const buildTableHeaderCell = props => (column, index) => {
-  const { tableKey, components, sorting, sortColumn, sortDirection } = props;
-  const { title, sortable = false } = column;
+  const { tableKey, components } = props;
   const CustomHeaderCell = column.components
     ? column.components.HeaderCell
     : null;
   const HeaderCell = CustomHeaderCell || components.HeaderCell;
 
+  const sorting = column === props.sortColumn && props.sortDirection;
+  const sortable = props.sortable && column.sortable;
+
   return (
     <KeyWrapper key={`column-${index}`}>
       <HeaderCell
         onSortColumn={onSortColumn(tableKey, column)}
-        title={title}
-        column={column}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
+        title={column.title}
+        sorting={sorting}
         sortable={sortable}
       />
     </KeyWrapper>
@@ -166,11 +174,17 @@ export const buildTableBody = props => {
   const Body = props.components.Body;
   const tableRows = buildTableBodyRows(props);
 
-  return <Body tableRows={tableRows} rows={props.rows.toJS()} />;
+  return (
+    <Body
+      loading={props.loading}
+      initializing={props.initializing}
+      tableRows={tableRows}
+    />
+  );
 };
 
 export const buildTableBodyRows = props => {
-  const { components, rows, columns, emptyMessage, appliedFilters } = props;
+  const { components, rows, columns, columnSet, appliedFilters } = props;
   const BodyRow = components.BodyRow;
   const EmptyBodyRow = components.EmptyBodyRow;
 
@@ -180,23 +194,16 @@ export const buildTableBodyRows = props => {
         const cells = buildTableBodyCells(props, row, index);
         return (
           <KeyWrapper key={`row-${index}`}>
-            <BodyRow
-              cells={cells}
-              columns={columns}
-              row={row}
-              index={index}
-              rows={rows.toJS()}
-            />
+            <BodyRow cells={cells} columns={columns} row={row} index={index} />
           </KeyWrapper>
         );
       })
     ) : (
       <EmptyBodyRow
-        columns={columns}
+        colSpan={columnSet.length}
         initializing={props.initializing}
         loading={props.loading}
-        appliedFilters={props.appliedFilters}
-        emptyMessage={emptyMessage}
+        appliedFilters={appliedFilters}
       />
     );
 
@@ -410,14 +417,15 @@ Table.propTypes = {
   }),
   /** Override the text message in the empty body row when there is no data in the table. */
   emptyMessage: t.string,
-  /** Flag to enable/disable pagination support. */
-  pagination: t.bool,
+
   /** Set the page size when paginating data. */
   pageSize: t.number,
-  /** Flag to enable/disable filtering support. */
-  filtering: t.bool,
-  /** Flag to enable/disable sorting support. */
-  sorting: t.bool,
+
+  /**
+   * Flag to enable/disable sorting support.
+   * @ignore
+   */
+  sortable: t.bool,
   /** The child of this component should be a function which renders the table layout. */
   children: t.func.isRequired,
 
@@ -433,9 +441,7 @@ const defaultProps = {
   columns: [],
   emptyMessage: 'No data found.',
 
-  filtering: true,
-  sorting: true,
-  pagination: true,
+  sortable: true,
   pageSize: 25,
   omitHeader: false,
   includeFooter: false,
