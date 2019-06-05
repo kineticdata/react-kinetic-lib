@@ -775,11 +775,14 @@ class FormImplComponent extends Component {
     return (
       <ComponentConfigContext.Consumer>
         {config => {
-          const { components = {}, fieldComponents = {} } = this.props;
+          const {
+            components = {},
+            fieldComponents = {},
+            children: FormWrapper = DefaultFormWrapper,
+          } = this.props;
           const {
             FormButtons = config.get('FormButtons', DefaultFormButtons),
             FormError = config.get('FormError', DefaultFormError),
-            children: FormWrapper = DefaultFormWrapper,
           } = components;
           if (this.props.loaded) {
             const fullFieldSet = OrderedSet(this.props.fields.keySeq());
