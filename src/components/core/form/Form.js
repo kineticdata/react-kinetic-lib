@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
 import {
   fromJS,
+  getIn,
   is,
   isImmutable,
   List,
   Map,
   OrderedMap,
   OrderedSet,
+  Seq,
   Set,
 } from 'immutable';
 import {
@@ -81,6 +83,15 @@ const reinitializeFields = fields =>
   fields.map(field =>
     field.merge({
       initialValue: field.get('value'),
+      dirty: false,
+      touched: false,
+    }),
+  );
+
+const resetValues = fields =>
+  fields.map(field =>
+    field.merge({
+      value: field.get('initialValue'),
       dirty: false,
       touched: false,
     }),
@@ -317,6 +328,8 @@ regHandlers({
       resolved: true,
     });
   },
+  RESET: (state, { payload: { formKey } }) =>
+    state.updateIn(['forms', formKey, 'fields'], resetValues),
   SUBMIT: (state, { payload: { formKey } }) =>
     state.setIn(['forms', formKey, 'submitting'], true),
   SUBMIT_SUCCESS: (state, { payload: { formKey } }) =>
@@ -522,6 +535,22 @@ regSaga(
 );
 
 regSaga(
+  takeEvery('RESET', function*({ payload: { formKey } }) {
+    const dataSources = yield select(state =>
+      state.getIn(['forms', formKey, 'dataSources']),
+    );
+    yield put(action('EVAL_FIELDS', { formKey }));
+    yield all(
+      dataSources
+        .filter(dependsOn('values'))
+        .keySeq()
+        .map(name => put(action('CHECK_DATA_SOURCE', { formKey, name })))
+        .toArray(),
+    );
+  }),
+);
+
+regSaga(
   takeEvery('REJECT_DATA_SOURCE', function*({ payload }) {
     yield call(console.error, 'REJECT_DATA_SOURCE', payload);
   }),
@@ -604,6 +633,10 @@ export const onSubmit = (formKey, fieldSet) => event => {
   dispatch('SUBMIT', { formKey, fieldSet });
 };
 
+const onReset = formKey => () => {
+  resetForm(formKey);
+};
+
 export const clearError = formKey => event => {
   dispatch('CLEAR_ERROR', { formKey });
 };
@@ -614,6 +647,8 @@ export const setFieldCustom = ({ formKey, name }) => (path, value) => {
 
 export const mountForm = formKey => dispatch('MOUNT_FORM', { formKey });
 export const unmountForm = formKey => dispatch('UNMOUNT_FORM', { formKey });
+export const resetForm = formKey => dispatch('RESET', { formKey });
+
 export const configureForm = (formKey, config) =>
   dispatch('CONFIGURE_FORM', { formKey, config });
 
@@ -643,6 +678,20 @@ export const Field = props => {
     props.components.context.get(componentName);
   return <FieldImpl {...generateFieldProps(props)} />;
 };
+
+const extractFieldComponents = ({ fields, addFields, alterFields }) =>
+  Seq(addFields)
+    .concat(fields)
+    .reduce(
+      (result, current) =>
+        result.set(
+          current.name,
+          getIn(alterFields, [current.name, 'component'], current.component),
+        ),
+      Map(),
+    )
+    .filter(component => !!component)
+    .toObject();
 
 // Wraps the FormImpl to handle the formKey behavior. If this is passed a
 // formKey prop this wrapper is essentially a noop, but if it is not passed a
@@ -676,6 +725,7 @@ export class Form extends Component {
         fieldSet={this.props.fieldSet}
         formKey={this.formKey}
         components={this.props.components}
+        fieldComponents={extractFieldComponents(this.config)}
         config={this.config}
       >
         {this.props.children}
@@ -725,7 +775,7 @@ class FormImplComponent extends Component {
     return (
       <ComponentConfigContext.Consumer>
         {config => {
-          const { components = {} } = this.props;
+          const { components = {}, fieldComponents = {} } = this.props;
           const {
             FormButtons = config.get('FormButtons', DefaultFormButtons),
             FormError = config.get('FormError', DefaultFormError),
@@ -787,7 +837,7 @@ class FormImplComponent extends Component {
                           components={{
                             context: config,
                             form: components,
-                            field: field.get('component'),
+                            field: fieldComponents[field.get('name')],
                           }}
                         />
                       ))}
@@ -798,6 +848,7 @@ class FormImplComponent extends Component {
                       />
                     )}
                     <FormButtons
+                      reset={onReset(this.props.formKey)}
                       submit={onSubmit(this.props.formKey, computedFieldSet)}
                       submitting={this.props.submitting}
                       dirty={this.props.fields.some(field =>
