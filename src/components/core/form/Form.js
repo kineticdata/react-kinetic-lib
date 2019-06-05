@@ -869,7 +869,9 @@ class FormImplComponent extends Component {
               />
             );
           } else {
-            return <FormWrapper initialized={false} form={null} />;
+            return (
+              <FormWrapper initialized={false} form={null} bindings={{}} />
+            );
           }
         }}
       </ComponentConfigContext.Consumer>
