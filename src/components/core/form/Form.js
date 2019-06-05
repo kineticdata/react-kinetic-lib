@@ -406,9 +406,7 @@ regSaga(
         const data = yield select(state =>
           state.getIn(['dataSources', name, 'data']),
         );
-        const timestamp = yield select(state =>
-          state.getIn(['dataSources', name, 'timestamp']),
-        );
+
         if (options.get('shared') && data) {
           yield put(
             action('RESOLVE_DATA_SOURCE', { formKey, name, data, args }),
@@ -525,7 +523,7 @@ regSaga(
 
 regSaga(
   takeEvery('REJECT_DATA_SOURCE', function*({ payload }) {
-    console.error('REJECT_DATA_SOURCE', payload);
+    yield call(console.error, 'REJECT_DATA_SOURCE', payload);
   }),
 );
 

@@ -37,4 +37,4 @@ export const slugify = text =>
     // Replace spaces with -
     .replace(/\s+/g, '-')
     // Remove all non-word chars
-    .replace(/[^A-Za-z0-9\u0080-\u00FF\-]+/g, '');
+    .replace(/[^A-Za-z0-9\u0080-\u00FF-]+/g, '');

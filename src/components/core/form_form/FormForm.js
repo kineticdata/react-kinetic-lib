@@ -25,7 +25,7 @@ const fields = ({ formSlug }) => [
     label: 'Slug',
     type: 'text',
     required: true,
-    onChange: ({}, { setValue }) => {
+    onChange: (_bindings, { setValue }) => {
       setValue('linked', false);
     },
   },

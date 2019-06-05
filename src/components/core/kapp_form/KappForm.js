@@ -127,7 +127,7 @@ const fields = ({ attributeFields, kappSlug }) => [
     type: 'text',
     required: true,
     initialValue: ({ kapp }) => get(kapp, 'slug'),
-    onChange: ({}, { setValue }) => {
+    onChange: (_bindings, { setValue }) => {
       setValue('linked', false);
     },
   },
