@@ -24,6 +24,7 @@ export {
   CoreForm,
   UserSelect,
   TeamSelect,
+  SpaceForm,
 } from './components/core';
 export {
   DateBanner,

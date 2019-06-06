@@ -37,7 +37,7 @@ const dataSources = ({ kappSlug }) => ({
       runIf: () => !!kappSlug,
     },
   ],
-  sercurityPolicyDefinitions: [
+  securityPolicyDefinitions: [
     fetchSecurityPolicyDefinitions,
     [{ kappSlug }],
     {
@@ -149,12 +149,6 @@ const fields = ({ kappSlug }) => [
     initialValue: ({ kapp }) => get(kapp, 'displayType') || 'Display Page',
   },
   {
-    name: 'spaMessage',
-    label: 'Display Type',
-    transient: true,
-    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
-  },
-  {
     name: 'displayValue',
     label: ({ values }) =>
       values.get('displayType') === 'Redirect'
@@ -217,9 +211,9 @@ const fields = ({ kappSlug }) => [
           label: endpoint.label,
           type: 'select',
           required: true,
-          options: ({ sercurityPolicyDefinitions }) =>
-            sercurityPolicyDefinitions
-              ? sercurityPolicyDefinitions
+          options: ({ securityPolicyDefinitions }) =>
+            securityPolicyDefinitions
+              ? securityPolicyDefinitions
                   .filter(definition =>
                     endpoint.types.includes(definition.get('type')),
                   )
