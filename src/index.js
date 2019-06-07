@@ -15,6 +15,7 @@ export {
 export { default as Table } from './components/common/tables/Table';
 export {
   FormForm,
+  FormTable,
   KappForm,
   KappTable,
   TeamForm,
@@ -24,6 +25,7 @@ export {
   CoreForm,
   UserSelect,
   TeamSelect,
+  SpaceForm,
 } from './components/core';
 export {
   DateBanner,
@@ -154,7 +156,7 @@ export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
 export { I18n } from './components/core/i18n/I18n';
 export { Moment, importLocale } from './components/core/i18n/Moment';
-export { mountForm, unmountForm } from './components/core/form/Form';
+export { mountForm, resetForm, unmountForm } from './components/core/form/Form';
 
 commitStore();
 

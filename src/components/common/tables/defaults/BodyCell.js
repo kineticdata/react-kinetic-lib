@@ -29,8 +29,6 @@ BodyCell.propTypes = {
   row: t.object,
   /** The value as retrieved by the column configuration. */
   value: t.any,
-  /** The overall rows object, representing visible data in the table. */
-  rows: t.arrayOf(t.object),
 };
 
 export default BodyCell;

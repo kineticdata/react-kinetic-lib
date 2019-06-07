@@ -2,55 +2,36 @@ import React from 'react';
 import t from 'prop-types';
 import { I18n } from '../../../core/i18n/I18n';
 
-const HeaderCell = ({ onSortColumn, column, title }) => (
+const HeaderCell = ({ onSortColumn, sortable, sorting, title }) => (
   <th {...(title ? { scope: 'col' } : {})}>
-    {column.sortable === false ? (
+    {sortable === false ? (
       <I18n>{title}</I18n>
     ) : (
-      <a onClick={onSortColumn}>
+      <span>
         <I18n>{title}</I18n>
-      </a>
+        <button type="button" onClick={onSortColumn}>
+          {sorting === 'desc' ? (
+            <span>&darr;</span>
+          ) : sorting === 'asc' ? (
+            <span>&uarr;</span>
+          ) : (
+            <span>&ndash;</span>
+          )}
+        </button>
+      </span>
     )}
   </th>
 );
 
 HeaderCell.propTypes = {
+  /** The event function to be used */
   onSortColumn: t.func,
+  /** The column's human friendly title string. */
   title: t.string,
-  column: t.shape({
-    /** The title that will be rendered in the header. */
-    title: t.string,
-    /** The value key that will be used to map the column to the data object. */
-    value: t.string,
-    /** Flag that determines if the column can be used as a filter. */
-    filterable: t.bool,
-    /** Flag that determines if the column is sortable.*/
-    sortable: t.bool,
-    /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
-    components: t.shape({
-      HeaderCell: t.func,
-      BodyCell: t.func,
-      FooterCell: t.func,
-    }),
-  }),
-  sortColumn: t.shape({
-    /** The title that will be rendered in the header. */
-    title: t.string,
-    /** The value key that will be used to map the column to the data object. */
-    value: t.string,
-    /** Flag that determines if the column can be used as a filter. */
-    filterable: t.bool,
-    /** Flag that determines if the column is sortable.*/
-    sortable: t.bool,
-    /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
-    components: t.shape({
-      HeaderCell: t.func,
-      BodyCell: t.func,
-      FooterCell: t.func,
-    }),
-  }),
-  sortDirection: t.string,
-  rows: t.arrayOf(t.object),
+  /** Is the direction this column is sorting or `undefined` if not sorting by this column. */
+  sorting: t.oneOf(['asc', 'desc']),
+  /** A flag denoting whether this column can be sorted. */
+  sortable: t.bool,
 };
 
 export default HeaderCell;

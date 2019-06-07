@@ -7,7 +7,7 @@ const Header = ({ sorting, headerRow }) => (
 
 Header.propTypes = {
   /** A flag that signifies if sorting is enabled or disabled. */
-  sorting: t.bool,
+  sortable: t.bool,
   /** Contains the rendered header row component. */
   headerRow: t.object,
 };

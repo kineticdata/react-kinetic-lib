@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { Map } from 'immutable';
 import Table from '../../common/tables/Table';
-import { fetchKapps } from '../../../apis/core';
+import { fetchForms } from '../../../apis/core';
+import t from 'prop-types';
 
-const tableKey = 'kapp-table';
+const tableKey = 'form-table';
 
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
-const STARTS_WITH_FIELDS = ['slug', 'name'];
+const STARTS_WITH_FIELDS = ['slug', 'name', 'status', 'category', 'type'];
+const VALID_FORM_STATUES = ['New', 'Active', 'Inactive', 'Delete'];
 
-const kappFilter = filters => {
+const formFilter = filters => {
   const q = Map(filters)
     .filter(filter => filter.value !== '')
     .map((filter, key) =>
@@ -24,18 +26,20 @@ const kappFilter = filters => {
   return q.length > 0 ? { q } : {};
 };
 
-const data = {
-  dataSource: fetchKapps,
+const dataSource = ({ kappSlug = null, datastore }) => ({
+  dataSource: fetchForms,
   params: ({ pageSize, sortColumn, sortDirection, filters }) => ({
     include: 'details',
     limit: pageSize,
-    ...kappFilter(filters),
+    datastore,
+    kappSlug,
+    ...formFilter(filters),
   }),
   transform: result => ({
-    data: result.kapps,
+    data: result.forms,
     nextPageToken: result.nextPageToken,
   }),
-};
+});
 
 const columns = [
   {
@@ -54,6 +58,7 @@ const columns = [
     value: 'CreatedAt',
     title: 'Created At',
     sortable: true,
+    filterable: true,
   },
   {
     value: 'createdBy',
@@ -63,28 +68,23 @@ const columns = [
     value: 'updatedAt',
     title: 'Last Modified',
     sortable: true,
+    filterable: true,
   },
   {
     value: 'updatedBy',
     title: 'Updated By',
+    sortable: true,
   },
   {
-    value: 'resetPasswordPage',
-    title: 'Reset Password Page',
+    value: 'notes',
+    title: 'Notes',
   },
-
-  { value: 'afterLogoutPath', title: 'After Logout Path' },
-  { value: 'bundlePath', title: 'Bundle Path' },
-  { value: 'defaultFormConfirmationPage', title: 'Form Confirmation Page' },
-  { value: 'defaultFormDisplayPage', title: 'Form Display Page' },
-  { value: 'defaultSubmissionLabelExpression', title: 'Submission Label' },
-  { value: 'displayType', title: 'Display Type' },
-  { value: 'displayValue', title: 'Display Value' },
-  { value: 'loginPage', title: 'Login Page' },
-  { value: 'resetPasswordPage', title: 'Reset Password Page' },
+  { value: 'status', title: 'Status', sortable: true, filterable: true },
+  { value: 'submissionLabelExpression', title: 'Submission Label' },
+  { value: 'type', title: 'Type', sortable: true, filterable: true },
 ];
 
-export default class KappTable extends Component {
+export default class FormTable extends Component {
   componentDidMount() {
     Table.mount(tableKey);
   }
@@ -100,7 +100,10 @@ export default class KappTable extends Component {
         components={{
           ...this.props.components,
         }}
-        data={data}
+        data={dataSource({
+          kappSlug: this.props.kappSlug,
+          datastore: this.props.datastore,
+        })}
         columns={columns}
         alterColumns={this.props.alterColumns}
         addColumns={this.props.addColumns}
@@ -113,8 +116,14 @@ export default class KappTable extends Component {
   }
 }
 
-KappTable.defaultProps = {
-  columns,
+FormTable.defaultProps = {};
+
+FormTable.propTypes = {
+  /** Kapp Slug of associated forms to render.  */
+  kappSlug: t.string,
+  /** If datastore forms should be rendered.  */
+  datastore: t.bool,
 };
 
-KappTable.STARTS_WITH_FIELDS = STARTS_WITH_FIELDS;
+FormTable.STARTS_WITH_FIELDS = STARTS_WITH_FIELDS;
+FormTable.VALID_FORM_STATUES = VALID_FORM_STATUES;

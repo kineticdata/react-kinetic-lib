@@ -1,6 +1,6 @@
 import { List, Map } from 'immutable';
 import isarray from 'isarray';
-import { call, put, select, takeEvery, delay } from 'redux-saga/effects';
+import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { dispatch, regHandlers, regSaga } from '../../../store';
 
 export const isClientSide = data => isarray(data) || data instanceof List;
@@ -134,21 +134,25 @@ regHandlers({
         : serverSidePrevPage(tableData),
     ),
   SORT_COLUMN: (state, { payload: { tableKey, column } }) =>
-    state.updateIn(['tables', tableKey], t =>
-      t
-        // When sorting changes, reset pagination.
-        .set('pageOffset', 0)
-        // Update the sort column / direction.
-        .set(
-          'sortDirection',
-          t.sortColumn === column
-            ? t.sortDirection === 'desc'
-              ? 'asc'
-              : 'desc'
-            : 'desc',
-        )
-        .set('sortColumn', column),
-    ),
+    state.updateIn(['tables', tableKey], t => {
+      const sortColumn = t.get('sortColumn');
+      const sortDirection = t.get('sortDirection');
+      return (
+        t
+          // When sorting changes, reset pagination.
+          .set('pageOffset', 0)
+          // Update the sort column / direction.
+          .set(
+            'sortDirection',
+            sortColumn === column
+              ? sortDirection === 'desc'
+                ? 'asc'
+                : 'desc'
+              : 'desc',
+          )
+          .set('sortColumn', column)
+      );
+    }),
   SET_FILTER: (state, { payload: { tableKey, filter, value } }) =>
     state.setIn(['tables', tableKey, 'filters', filter, 'value'], value),
   APPLY_FILTERS: (state, { payload: { tableKey } }) =>
