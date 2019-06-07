@@ -15,6 +15,7 @@ export {
 export { default as Table } from './components/common/tables/Table';
 export {
   FormForm,
+  FormTable,
   KappForm,
   KappTable,
   TeamForm,

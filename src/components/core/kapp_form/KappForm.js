@@ -210,7 +210,6 @@ const fields = ({ kappSlug }) => [
           name: endpointFieldName,
           label: endpoint.label,
           type: 'select',
-          required: true,
           options: ({ securityPolicyDefinitions }) =>
             securityPolicyDefinitions
               ? securityPolicyDefinitions
@@ -239,13 +238,15 @@ const fields = ({ kappSlug }) => [
     type: null,
     visible: false,
     serialize: ({ values }) =>
-      Object.entries(securityEndpoints).map(([endpointFieldName, policy]) => ({
-        endpoint: policy.endpoint,
-        name: values.get(endpointFieldName),
-      })),
+      Object.entries(securityEndpoints)
+        .map(([endpointFieldName, policy]) => ({
+          endpoint: policy.endpoint,
+          name: values.get(endpointFieldName),
+        }))
+        .filter(endpoint => endpoint.name !== ''),
     initialValue: ({ kapp }) => get(kapp, 'securityPolicies'),
   },
-  kappSlug && {
+  !!kappSlug && {
     name: 'attributesMap',
     label: 'Attributes',
     type: 'attributes',
