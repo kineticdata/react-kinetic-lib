@@ -1,7 +1,7 @@
 import React from 'react';
 import { KineticLib } from '@kineticdata/react';
 import { render } from 'enzyme';
-import { List } from 'immutable';
+import { List, Map } from 'immutable';
 import { users } from '../../../styleguide/fixtures';
 import { DefaultTableConfig } from './defaults';
 import {
@@ -15,18 +15,26 @@ import {
   buildTableFooter,
   buildTableFooterRow,
   buildTableFooterCells,
+  extractColumnComponents,
+  generateColumns,
 } from './Table';
+
+const buildProps = props => {
+  props.columnComponents = extractColumnComponents(props.columns);
+  return props;
+};
 
 describe('<Table />', () => {
   describe('build methods', () => {
     let props;
     let data = [];
-    let columns = [];
-    let columnSet = [];
+    let columns = List([]);
+    let columnSet = List([]);
 
     beforeEach(() => {
       data = users(2);
-      columns = [{ value: 'username', title: 'Username' }];
+      columns = List([Map({ value: 'username', title: 'Username' })]);
+      columnSet = List(['username']);
       props = {
         // Spread in the default components since the method tests will not be getting
         // any components from the context since we're bypassing the top level `Table`
@@ -41,7 +49,9 @@ describe('<Table />', () => {
 
     describe('#buildTable', () => {
       test('it renders normally', () => {
-        const wrapper = render(<KineticLib>{buildTable(props)}</KineticLib>);
+        const wrapper = render(
+          <KineticLib>{buildTable(buildProps(props))}</KineticLib>,
+        );
 
         expect(wrapper.is('table')).toBeTruthy();
         expect(wrapper.is('table.custom-table')).toBeFalsy();
@@ -51,7 +61,9 @@ describe('<Table />', () => {
         const TableLayout = () => <table className="custom-table" />;
 
         props.components.TableLayout = TableLayout;
-        const wrapper = render(<KineticLib>{buildTable(props)}</KineticLib>);
+        const wrapper = render(
+          <KineticLib>{buildTable(buildProps(props))}</KineticLib>,
+        );
 
         expect(wrapper.is('table.custom-table')).toBeTruthy();
       });
@@ -60,7 +72,7 @@ describe('<Table />', () => {
     describe('#buildTableHeader', () => {
       test('it renders normally', () => {
         const wrapper = render(
-          <KineticLib>{buildTableHeader(props)}</KineticLib>,
+          <KineticLib>{buildTableHeader(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('thead')).toBeTruthy();
@@ -70,7 +82,7 @@ describe('<Table />', () => {
       test('it does not render when omitHeader is set', () => {
         props.omitHeader = true;
         const wrapper = render(
-          <KineticLib>{buildTableHeader(props)}</KineticLib>,
+          <KineticLib>{buildTableHeader(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('thead')).toBeFalsy();
@@ -81,7 +93,7 @@ describe('<Table />', () => {
 
         props.components.Header = Header;
         const wrapper = render(
-          <KineticLib>{buildTableHeader(props)}</KineticLib>,
+          <KineticLib>{buildTableHeader(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('thead.custom-thead')).toBeTruthy();
@@ -91,7 +103,7 @@ describe('<Table />', () => {
     describe('#buildTableHeaderRow', () => {
       test('it renders normally', () => {
         const wrapper = render(
-          <KineticLib>{buildTableHeaderRow(props)}</KineticLib>,
+          <KineticLib>{buildTableHeaderRow(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tr')).toBeTruthy();
@@ -103,7 +115,7 @@ describe('<Table />', () => {
 
         props.components.HeaderRow = HeaderRow;
         const wrapper = render(
-          <KineticLib>{buildTableHeaderRow(props)}</KineticLib>,
+          <KineticLib>{buildTableHeaderRow(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tr.custom-tr')).toBeTruthy();
@@ -112,9 +124,11 @@ describe('<Table />', () => {
 
     describe('#buildTableHeaderCell', () => {
       test('it renders normally', () => {
-        const column = columns[0];
+        const column = columns.first();
         const wrapper = render(
-          <KineticLib>{buildTableHeaderCell(props)(column, 0)}</KineticLib>,
+          <KineticLib>
+            {buildTableHeaderCell(buildProps(props))(column, 0)}
+          </KineticLib>,
         );
 
         expect(wrapper.is('th')).toBeTruthy();
@@ -122,34 +136,45 @@ describe('<Table />', () => {
       });
 
       test('it renders a custom th', () => {
-        const column = columns[0];
+        const column = columns.first();
         const HeaderCell = () => <th className="custom-th" />;
         props.components.HeaderCell = HeaderCell;
 
         const wrapper = render(
-          <KineticLib>{buildTableHeaderCell(props)(column, 0)}</KineticLib>,
+          <KineticLib>
+            {buildTableHeaderCell(buildProps(props))(column, 0)}
+          </KineticLib>,
         );
 
         expect(wrapper.is('th.custom-th')).toBeTruthy();
       });
 
       test('it renders a custom th for a specific column', () => {
-        const column = columns[0];
         const HeaderCell = () => <th className="custom-cell-th" />;
-        column.components = { HeaderCell };
+        props.columns = props.columns.push(
+          Map({
+            value: 'displayName',
+            title: 'DisplayName',
+            components: { HeaderCell },
+          }),
+        );
+        props.columnSet = props.columnSet.push('displayName');
 
+        const column = props.columns.last();
         const wrapper = render(
-          <KineticLib>{buildTableHeaderCell(props)(column, 0)}</KineticLib>,
+          <KineticLib>
+            {buildTableHeaderCell(buildProps(props))(column, 0)}
+          </KineticLib>,
         );
 
-        expect(wrapper.is('th.custom-cell-th')).toBeTruthy();
+        expect(wrapper.hasClass('custom-cell-th')).toBeTruthy();
       });
     });
 
     describe('#buildTableBody', () => {
       test('it renders normally', () => {
         const wrapper = render(
-          <KineticLib>{buildTableBody(props)}</KineticLib>,
+          <KineticLib>{buildTableBody(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tbody')).toBeTruthy();
@@ -161,7 +186,7 @@ describe('<Table />', () => {
 
         props.components.Header = Header;
         const wrapper = render(
-          <KineticLib>{buildTableHeader(props)}</KineticLib>,
+          <KineticLib>{buildTableHeader(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tbody.custom-tbody')).toBeTruthy();
@@ -173,7 +198,7 @@ describe('<Table />', () => {
         const wrapper = render(
           <KineticLib>
             <table>
-              <tbody>{buildTableBodyRows(props)}</tbody>
+              <tbody>{buildTableBodyRows(buildProps(props))}</tbody>
             </table>
           </KineticLib>,
         );
@@ -194,7 +219,7 @@ describe('<Table />', () => {
         const wrapper = render(
           <KineticLib>
             <table>
-              <tbody>{buildTableBodyRows(props)}</tbody>
+              <tbody>{buildTableBodyRows(buildProps(props))}</tbody>
             </table>
           </KineticLib>,
         );
@@ -214,7 +239,7 @@ describe('<Table />', () => {
         const wrapper = render(
           <KineticLib>
             <table>
-              <tbody>{buildTableBodyRows(props)}</tbody>
+              <tbody>{buildTableBodyRows(buildProps(props))}</tbody>
             </table>
           </KineticLib>,
         );
@@ -236,7 +261,7 @@ describe('<Table />', () => {
         const wrapper = render(
           <KineticLib>
             <table>
-              <tbody>{buildTableBodyRows(props)}</tbody>
+              <tbody>{buildTableBodyRows(buildProps(props))}</tbody>
             </table>
           </KineticLib>,
         );
@@ -252,7 +277,13 @@ describe('<Table />', () => {
           <KineticLib>
             <table>
               <tbody>
-                <tr>{buildTableBodyCells(props, props.rows.first(), 0)}</tr>
+                <tr>
+                  {buildTableBodyCells(
+                    buildProps(props),
+                    props.rows.first(),
+                    0,
+                  )}
+                </tr>
               </tbody>
             </table>
           </KineticLib>,
@@ -269,20 +300,25 @@ describe('<Table />', () => {
 
       test('it renders custom cells', () => {
         const BodyCell = () => <td className="custom-td" />;
-        // props.columns = [...props.columns, { value: 'displayName', title: 'DisplayName'}]
         props.components.BodyCell = BodyCell;
 
         const wrapper = render(
           <KineticLib>
             <table>
               <tbody>
-                <tr>{buildTableBodyCells(props, props.rows.first(), 0)}</tr>
+                <tr>
+                  {buildTableBodyCells(
+                    buildProps(props),
+                    props.rows.first(),
+                    0,
+                  )}
+                </tr>
               </tbody>
             </table>
           </KineticLib>,
         );
 
-        expect(wrapper.find('tr td')).toHaveLength(props.columns.length);
+        expect(wrapper.find('tr td')).toHaveLength(props.columnSet.size);
         expect(
           wrapper
             .find('tr td')
@@ -293,26 +329,32 @@ describe('<Table />', () => {
 
       test('it renders custom column cells', () => {
         const BodyCell = () => <td className="custom-td" />;
-        props.columns = [
-          ...props.columns,
-          {
+        props.columns = props.columns.push(
+          Map({
             value: 'displayName',
             title: 'DisplayName',
             components: { BodyCell },
-          },
-        ];
+          }),
+        );
+        props.columnSet = props.columnSet.push('displayName');
 
         const wrapper = render(
           <KineticLib>
             <table>
               <tbody>
-                <tr>{buildTableBodyCells(props, props.rows.first(), 0)}</tr>
+                <tr>
+                  {buildTableBodyCells(
+                    buildProps(props),
+                    props.rows.first(),
+                    0,
+                  )}
+                </tr>
               </tbody>
             </table>
           </KineticLib>,
         );
 
-        expect(wrapper.find('tr td')).toHaveLength(props.columns.length);
+        expect(wrapper.find('tr td')).toHaveLength(props.columns.size);
         expect(
           wrapper
             .find('tr td')
@@ -331,7 +373,7 @@ describe('<Table />', () => {
     describe('#buildTableFooter', () => {
       test('it does not render normally', () => {
         const wrapper = render(
-          <KineticLib>{buildTableFooter(props)}</KineticLib>,
+          <KineticLib>{buildTableFooter(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tfoot')).toBeFalsy();
@@ -340,7 +382,7 @@ describe('<Table />', () => {
       test('it renders with includeFooter', () => {
         props.includeFooter = true;
         const wrapper = render(
-          <KineticLib>{buildTableFooter(props)}</KineticLib>,
+          <KineticLib>{buildTableFooter(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tfoot')).toBeTruthy();
@@ -353,7 +395,7 @@ describe('<Table />', () => {
         props.components.Footer = Footer;
 
         const wrapper = render(
-          <KineticLib>{buildTableFooter(props)}</KineticLib>,
+          <KineticLib>{buildTableFooter(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tfoot.custom-tfoot')).toBeTruthy();
@@ -363,7 +405,7 @@ describe('<Table />', () => {
     describe('#buildTableFooterRow', () => {
       test('it renders normally', () => {
         const wrapper = render(
-          <KineticLib>{buildTableFooterRow(props)}</KineticLib>,
+          <KineticLib>{buildTableFooterRow(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tr')).toBeTruthy();
@@ -375,7 +417,7 @@ describe('<Table />', () => {
 
         props.components.FooterRow = FooterRow;
         const wrapper = render(
-          <KineticLib>{buildTableFooterRow(props)}</KineticLib>,
+          <KineticLib>{buildTableFooterRow(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('tr.custom-tr')).toBeTruthy();
@@ -385,7 +427,7 @@ describe('<Table />', () => {
     describe('#buildTableFooterCells', () => {
       test('it renders normally', () => {
         const wrapper = render(
-          <KineticLib>{buildTableFooterCells(props)}</KineticLib>,
+          <KineticLib>{buildTableFooterCells(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.first().is('td')).toBeTruthy();
@@ -397,7 +439,7 @@ describe('<Table />', () => {
         props.components.FooterCell = FooterCell;
 
         const wrapper = render(
-          <KineticLib>{buildTableFooterCells(props)}</KineticLib>,
+          <KineticLib>{buildTableFooterCells(buildProps(props))}</KineticLib>,
         );
 
         expect(wrapper.is('td.custom-td')).toBeTruthy();
@@ -405,24 +447,24 @@ describe('<Table />', () => {
 
       test('it renders a custom td for a specific column', () => {
         const FooterCell = () => <td className="custom-td" />;
-        props.columns = [
-          ...props.columns,
-          {
+        props.columns = props.columns.push(
+          Map({
             value: 'displayName',
             title: 'DisplayName',
             components: { FooterCell },
-          },
-        ];
+          }),
+        );
+        props.columnSet = props.columnSet.push('displayName');
 
         const wrapper = render(
           <KineticLib>
             <tfoot>
-              <tr>{buildTableFooterCells(props)}</tr>
+              <tr>{buildTableFooterCells(buildProps(props))}</tr>
             </tfoot>
           </KineticLib>,
         );
 
-        expect(wrapper.find('td')).toHaveLength(props.columns.length);
+        expect(wrapper.find('td')).toHaveLength(props.columns.size);
         expect(
           wrapper
             .find('td')
@@ -435,6 +477,74 @@ describe('<Table />', () => {
             .last()
             .hasClass('custom-td'),
         ).toBeTruthy();
+      });
+    });
+  });
+
+  xdescribe('data manipulators', () => {
+    describe('#generateColumns', () => {
+      let columns;
+      let addColumns;
+      let alterColumns;
+
+      beforeEach(() => {
+        columns = [{ value: 'a', title: 'A' }];
+        addColumns = [{ value: 'b', title: 'B' }];
+        alterColumns = {};
+      });
+
+      test('combines the column config and additional columns', () => {
+        const total = columns.length + addColumns.length;
+        expect(generateColumns(columns, addColumns, alterColumns)).toHaveLength(
+          total,
+        );
+      });
+
+      test('alters columns with config', () => {
+        alterColumns.a = { sortable: true };
+        const columnConfig = generateColumns(columns, addColumns, alterColumns);
+        const column = columnConfig.find(
+          c => c.get('value') === columns[0].value,
+        );
+        expect(column.get('sortable')).toBeTruthy();
+      });
+
+      test('alters columns does not change value key', () => {
+        alterColumns.a = { value: 'c' };
+        const columnConfig = generateColumns(columns, addColumns, alterColumns);
+        console.log(columnConfig.toJS());
+        const column = columnConfig.find(c => c.get('value') === 'a');
+        expect(column).not.toBeUndefined();
+      });
+    });
+
+    xdescribe('#extractColumnComponents', () => {
+      let columns, addColumns, alterColumns;
+
+      beforeEach(() => {
+        columns = [
+          { value: 'first' },
+          { value: 'second', components: { BodyCell: 'two' } },
+          { value: 'third' },
+        ];
+
+        addColumns = [
+          { value: 'fourth' },
+          { value: 'fifth', components: { BodyCell: 'five' } },
+        ];
+
+        alterColumns = { third: { components: { BodyCell: 'three' } } };
+      });
+
+      xtest('returns a map of components with overrides', () => {
+        const result = extractColumnComponents({
+          columns,
+          addColumns,
+          alterColumns,
+        });
+
+        console.log(columns);
+        expect(result.toJS()).toBe([]);
       });
     });
   });

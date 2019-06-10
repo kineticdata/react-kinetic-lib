@@ -14,6 +14,10 @@ export {
 } from './components/common/ContentEditable';
 export { default as Table } from './components/common/tables/Table';
 export {
+  mountTable,
+  unmountTable,
+} from './components/common/tables/Table.redux';
+export {
   FormForm,
   KappForm,
   KappTable,

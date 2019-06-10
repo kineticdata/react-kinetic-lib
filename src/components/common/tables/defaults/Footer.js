@@ -8,5 +8,7 @@ Footer.propTypes = {
   rows: t.arrayOf(t.object),
   /** The rendered footer row. */
   footerRow: t.object,
+  /** The number of columns displayed. */
+  colSpan: t.number,
 };
 export default Footer;
