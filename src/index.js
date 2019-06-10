@@ -19,6 +19,7 @@ export {
 } from './components/common/tables/Table.redux';
 export {
   FormForm,
+  FormTable,
   KappForm,
   KappTable,
   TeamForm,
