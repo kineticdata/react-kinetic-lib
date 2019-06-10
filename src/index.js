@@ -21,6 +21,7 @@ export {
   TeamForm,
   UserForm,
   UserTable,
+  TeamTable,
   UserDetails,
   CoreForm,
   UserSelect,
