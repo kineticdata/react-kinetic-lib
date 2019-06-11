@@ -107,6 +107,7 @@ const defaultFieldProps = fromJS({
   touched: false,
   errors: [],
   custom: {},
+  renderAttributes: {},
 });
 
 const dynamicFieldProps = List([
@@ -167,7 +168,7 @@ const convertField = field =>
       typeof field[prop] === 'function'
         ? acc.setIn(['functions', prop], field[prop]).set(prop, null)
         : acc,
-    Map(defaultFieldProps).merge(field),
+    Map(defaultFieldProps).mergeDeep(field),
   );
 
 export const checkRequired = field =>
@@ -807,6 +808,7 @@ class FormImplComponent extends Component {
                   >
                     {computedFieldSet
                       .map(name => this.props.fields.get(name))
+                      .filter(field => field)
                       .map(field => (
                         <Field
                           key={field.get('name')}
@@ -847,6 +849,7 @@ class FormImplComponent extends Component {
                             form: components,
                             field: fieldComponents[field.get('name')],
                           }}
+                          renderAttributes={field.get('renderAttributes')}
                         />
                       ))}
                     {this.props.error && (
