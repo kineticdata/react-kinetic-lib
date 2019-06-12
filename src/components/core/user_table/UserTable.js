@@ -90,36 +90,22 @@ const columns = [
   },
 ];
 
-export default class UserTable extends Component {
-  componentDidMount() {
-    Table.mount(tableKey);
-  }
+export const UserTable = props => (
+  <Table
+    tableKey={props.tableKey}
+    components={{
+      ...props.components,
+    }}
+    data={data}
+    columns={columns}
+    addColumns={props.addColumns}
+    columnSet={props.columnSet}
+    pageSize={props.pageSize}
+  >
+    {props.children}
+  </Table>
+);
 
-  componentWillUnmount() {
-    Table.unmount(tableKey);
-  }
-
-  render() {
-    return (
-      <Table
-        tableKey={tableKey}
-        components={{
-          ...this.props.components,
-        }}
-        data={data}
-        columns={columns}
-        addColumns={this.props.addColumns}
-        columnSet={this.props.columnSet}
-        pageSize={this.props.pageSize}
-      >
-        {this.props.children}
-      </Table>
-    );
-  }
-}
-
-UserTable.defaultProps = {
-  columns,
-};
+export default UserTable;
 
 UserTable.STARTS_WITH_FIELDS = STARTS_WITH_FIELDS;

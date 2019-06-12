@@ -58,7 +58,7 @@ const columns = [
     components: { BodyCell: BooleanYesNoCell },
   },
 ];
-<Table emptyMessage="There are no data rows." data={data} columns={columns}>
+<Table data={data} columns={columns}>
   {({ table }) => <div>{table}</div>}
 </Table>;
 ```
@@ -120,10 +120,19 @@ const columns = [
   },
 ];
 
-<Table data={data} columns={columns} includeFooter>
-  {({ table, filter, pagination }) => (
+const Footer = ({ colSpan }) => (
+  <tfoot>
+    <tr>
+      <td colSpan={colSpan}>
+        <b>Footer</b>
+      </td>
+    </tr>
+  </tfoot>
+);
+
+<Table data={data} columns={columns} components={{ Footer }} includeFooter>
+  {({ table, pagination }) => (
     <div>
-      {filter}
       {table}
       {pagination}
     </div>
