@@ -14,7 +14,7 @@ const dataSources = ({ attributeType, attributeName }) => ({
     [{ attributeType, attributeName, include: 'details' }],
     {
       transform: result => result.attributeDefinition,
-      runIf: () => !!attributeType,
+      runIf: () => !!attributeName,
     },
   ],
   attributeDefinitions: [
@@ -24,12 +24,16 @@ const dataSources = ({ attributeType, attributeName }) => ({
   ],
 });
 
-const handleSubmit = ({ attributeType }) => values =>
+const handleSubmit = ({ attributeType, attributeName }) => values =>
   new Promise((resolve, reject) => {
     const attributeDefinition = values.toJS();
-    (attributeType
-      ? updateAttributeDefinition({ attributeType, attributeDefinition })
-      : createAttributeDefinition({ attributeDefinition })
+    (attributeName
+      ? updateAttributeDefinition({
+          attributeType,
+          attributeName,
+          attributeDefinition,
+        })
+      : createAttributeDefinition({ attributeType, attributeDefinition })
     ).then(({ attributeDefinition, error }) => {
       if (attributeDefinition) {
         resolve(attributeDefinition);
@@ -45,9 +49,8 @@ const fields = () => [
     label: 'Name',
     type: 'text',
     required: true,
-    transient: true,
     initialValue: ({ attributeDefinition }) =>
-      attributeDefinition ? attributeDefinition.get('description') : '',
+      attributeDefinition ? attributeDefinition.get('name') : '',
   },
   {
     name: 'description',
@@ -56,6 +59,14 @@ const fields = () => [
     required: false,
     initialValue: ({ attributeDefinition }) =>
       attributeDefinition ? attributeDefinition.get('description') : '',
+  },
+  {
+    name: 'allowsMultiple',
+    label: 'Allow multiple attributes?',
+    type: 'checkbox',
+    required: false,
+    initialValue: ({ attributeDefinition }) =>
+      attributeDefinition ? attributeDefinition.get('allowsMultiple') : '',
   },
 ];
 

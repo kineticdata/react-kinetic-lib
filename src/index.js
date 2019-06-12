@@ -27,6 +27,7 @@ export {
   UserForm,
   UserTable,
   AttributeDefinitionsTable,
+  AttributeDefinitionForm,
   UserDetails,
   CoreForm,
   UserSelect,

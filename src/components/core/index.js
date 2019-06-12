@@ -3,6 +3,9 @@ export { KappForm } from './kapp_form/KappForm';
 export { TeamForm } from './team_form/TeamForm';
 export { UserForm } from './user_form/UserForm';
 export { SpaceForm } from './space_form/SpaceForm';
+export {
+  AttributeDefinitionForm,
+} from './attribute_definitions_form/AttributeDefinitionsForm';
 export { default as KappTable } from './kapp_table/KappTable';
 export { default as FormTable } from './form_table/FormTable';
 export { default as UserTable } from './user_table/UserTable';
