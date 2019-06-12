@@ -3,8 +3,6 @@ import { Map } from 'immutable';
 import Table from '../../common/tables/Table';
 import { fetchTeams } from '../../../apis/core';
 
-const tableKey = 'team-table';
-
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
 const STARTS_WITH_FIELDS = ['username']; // Needs to be changed
@@ -46,33 +44,23 @@ const columns = [
   },
 ];
 
-export default class TeamTable extends Component {
-  componentDidMount() {
-    Table.mount(tableKey);
-  }
+export const TeamTable = props => (
+  <Table
+    tableKey={props.tableKey}
+    components={{
+      ...props.components,
+    }}
+    data={data}
+    columns={columns}
+    addColumns={props.addColumns}
+    columnSet={props.columnSet}
+    pageSize={props.pageSize}
+  >
+    {props.children}
+  </Table>
+);
 
-  componentWillUnmount() {
-    Table.unmount(tableKey);
-  }
-
-  render() {
-    return (
-      <Table
-        tableKey={tableKey}
-        components={{
-          ...this.props.components,
-        }}
-        data={data}
-        columns={columns}
-        addColumns={this.props.addColumns}
-        columnSet={this.props.columnSet}
-        pageSize={this.props.pageSize}
-      >
-        {this.props.children}
-      </Table>
-    );
-  }
-}
+export default TeamTable;
 
 TeamTable.defaultProps = {
   columns,
