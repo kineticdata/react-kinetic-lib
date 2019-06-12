@@ -1,9 +1,7 @@
 import React from 'react';
 import t from 'prop-types';
 
-const Header = ({ sorting, headerRow }) => (
-  <thead className={sorting ? 'sortable' : ''}>{headerRow}</thead>
-);
+const Header = ({ headerRow }) => <thead>{headerRow}</thead>;
 
 Header.propTypes = {
   /** A flag that signifies if sorting is enabled or disabled. */

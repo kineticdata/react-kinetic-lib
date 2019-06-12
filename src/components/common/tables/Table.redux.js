@@ -28,14 +28,6 @@ const serverSidePrevPage = tableData =>
     .update('pageTokens', pt => pt.pop())
     .update(t => t.set('nextPageToken', t.get('pageTokens').last()));
 
-export const generateColumns = (columns, addColumns, alterColumns) => {
-  return [...columns, ...addColumns].map(c => ({
-    ...c,
-    ...alterColumns[c.value],
-    value: c.value,
-  }));
-};
-
 export const generateFilters = (tableKey, columns) =>
   Map(
     columns
@@ -69,16 +61,7 @@ regHandlers({
   },
   CONFIGURE_TABLE: (
     state,
-    {
-      payload: {
-        tableKey,
-        data = List(),
-        columns,
-        addColumns = [],
-        alterColumns = {},
-        pageSize = 25,
-      },
-    },
+    { payload: { tableKey, data = List(), columns, pageSize = 25 } },
   ) =>
     !state.getIn(['tables', tableKey, 'mounted'])
       ? state
@@ -88,7 +71,7 @@ regHandlers({
           ['tables', tableKey],
           Map({
             data,
-            columns: generateColumns(columns, addColumns, alterColumns),
+            columns,
             rows: List(),
 
             initializing: true,

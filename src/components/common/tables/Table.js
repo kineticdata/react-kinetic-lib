@@ -12,17 +12,8 @@ import {
 } from './Table.redux';
 import { generateKey } from '../../../helpers';
 
-const generateColumns = (columns, columnSet) => {
-  const allColumns = columns.map(c => c.value);
-  const cset =
-    typeof columnSet === 'function'
-      ? columnSet(allColumns)
-      : columnSet && columnSet instanceof Array && columnSet.length > 0
-      ? columnSet
-      : allColumns;
-
-  return cset.map(cs => columns.find(c => c.value === cs));
-};
+const fromColumnSet = (columns, columnSet) =>
+  columnSet.map(cs => columns.find(c => c.get('value') === cs));
 
 const KeyWrapper = ({ children }) => children;
 
@@ -141,7 +132,7 @@ export const buildTableHeader = props => {
 export const buildTableHeaderRow = props => {
   const { components, rows, columns, columnSet } = props;
   const HeaderRow = components.HeaderRow;
-  const columnHeaders = generateColumns(columns, columnSet).map(
+  const columnHeaders = fromColumnSet(columns, columnSet).map(
     buildTableHeaderCell(props),
   );
 
@@ -149,20 +140,20 @@ export const buildTableHeaderRow = props => {
 };
 
 export const buildTableHeaderCell = props => (column, index) => {
-  const { tableKey, components } = props;
-  const CustomHeaderCell = column.components
-    ? column.components.HeaderCell
-    : null;
-  const HeaderCell = CustomHeaderCell || components.HeaderCell;
+  const { tableKey, components, columnComponents } = props;
+  const HeaderCell = columnComponents.getIn(
+    [column.get('value'), 'HeaderCell'],
+    components.HeaderCell,
+  );
 
   const sorting = column === props.sortColumn && props.sortDirection;
-  const sortable = props.sortable && column.sortable;
+  const sortable = props.sortable && column.get('sortable');
 
   return (
     <KeyWrapper key={`column-${index}`}>
       <HeaderCell
         onSortColumn={onSortColumn(tableKey, column)}
-        title={column.title}
+        title={column.get('title')}
         sorting={sorting}
         sortable={sortable}
       />
@@ -200,7 +191,7 @@ export const buildTableBodyRows = props => {
       })
     ) : (
       <EmptyBodyRow
-        colSpan={columnSet.length}
+        colSpan={columnSet.size}
         initializing={props.initializing}
         loading={props.loading}
         appliedFilters={appliedFilters}
@@ -210,14 +201,16 @@ export const buildTableBodyRows = props => {
   return tableRows;
 };
 
-export const buildTableBodyCells = (props, row, rowIndex) => {
-  const { components, rows, columns, columnSet } = props;
-  return generateColumns(columns, columnSet).map((column, index) => {
-    const CustomBodyCell = column.components
-      ? column.components.BodyCell
-      : null;
-    const BodyCell = CustomBodyCell || components.BodyCell;
-    const value = row[column.value];
+export const buildTableBodyCells = (props, row, _rowIndex) => {
+  const { components, rows, columns, columnSet, columnComponents } = props;
+
+  return fromColumnSet(columns, columnSet).map((column, index) => {
+    const BodyCell = columnComponents.getIn(
+      [column.get('value'), 'BodyCell'],
+      components.BodyCell,
+    );
+
+    const value = row[column.get('value')];
 
     return (
       <KeyWrapper key={`column-${index}`}>
@@ -234,12 +227,12 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
 };
 
 export const buildTableFooter = props => {
-  const { components, rows, includeFooter } = props;
+  const { components, columnSet, rows, includeFooter } = props;
   const footerRow = buildTableFooterRow(props);
   const Footer = components.Footer;
 
   return includeFooter ? (
-    <Footer rows={rows.toJS()} footerRow={footerRow} />
+    <Footer rows={rows.toJS()} footerRow={footerRow} colSpan={columnSet.size} />
   ) : null;
 };
 
@@ -252,12 +245,12 @@ export const buildTableFooterRow = props => {
 };
 
 export const buildTableFooterCells = props => {
-  const { components, columns, columnSet } = props;
-  return generateColumns(columns, columnSet).map((column, index) => {
-    const CustomFooterCell = column.components
-      ? column.components.FooterCell
-      : null;
-    const FooterCell = CustomFooterCell || components.FooterCell;
+  const { components, columns, columnSet, columnComponents } = props;
+  return fromColumnSet(columns, columnSet).map((column, index) => {
+    const FooterCell = columnComponents.getIn(
+      [column.get('value'), 'FooterCell'],
+      components.FooterCell,
+    );
 
     return (
       <KeyWrapper key={`column-${index}`}>
@@ -295,6 +288,20 @@ const TableImpl = compose(
   }),
 )(TableComponent);
 
+export const generateColumns = (columns, addColumns, alterColumns) =>
+  List(addColumns)
+    .concat(columns)
+    .map(c => Map({ ...c, ...alterColumns, value: c.value }));
+
+export const extractColumnComponents = columns =>
+  columns
+    .filter(c => c.has('components'))
+    .reduce(
+      (result, current) =>
+        result.set(current.get('value'), current.get('components')),
+      Map(),
+    );
+
 class Table extends Component {
   constructor(props) {
     super(props);
@@ -318,8 +325,21 @@ class Table extends Component {
   }
 
   render() {
-    const columnSet =
-      this.props.columnSet || this.props.columns.map(c => c.value);
+    const columns = generateColumns(
+      this.props.columns,
+      this.props.addColumns,
+      this.props.alterColumns,
+    );
+    const allColumns = columns.map(c => c.get('value'));
+    const columnSet = List(
+      this.props.columnSet
+        ? typeof this.props.columnSet === 'function'
+          ? this.props.columnSet(allColumns)
+          : this.props.columnSet
+        : allColumns,
+    ).filter(c => columns.find(c2 => c2.get('value') === c));
+    const columnComponents = extractColumnComponents(columns);
+
     return (
       <ComponentConfigContext.Consumer>
         {componentConfig => {
@@ -327,6 +347,8 @@ class Table extends Component {
             <TableImpl
               {...this.props}
               components={componentConfig.merge(this.props.components).toJS()}
+              columnComponents={columnComponents}
+              columns={columns}
               columnSet={columnSet}
               tableKey={this.tableKey}
               auto={this.auto}
@@ -415,8 +437,6 @@ Table.propTypes = {
     /** Override the table footer cells, analogous to `<td>`. */
     FooterCell: t.func,
   }),
-  /** Override the text message in the empty body row when there is no data in the table. */
-  emptyMessage: t.string,
 
   /** Set the page size when paginating data. */
   pageSize: t.number,
@@ -439,6 +459,7 @@ const defaultProps = {
   components: {},
   rows: List([]),
   columns: [],
+  addColumns: [],
   emptyMessage: 'No data found.',
 
   sortable: true,
@@ -450,8 +471,8 @@ const defaultProps = {
 Table.defaultProps = defaultProps;
 
 Table.configure = configureTable;
-Table.mount = mountTable;
-Table.unmount = unmountTable;
+// Table.mount = mountTable;
+// Table.unmount = unmountTable;
 
 /**
  * @component
