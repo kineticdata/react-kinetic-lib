@@ -8,9 +8,7 @@ import { ComponentConfigContext } from './components/common/ComponentConfigConte
 import { createHashHistory } from 'history';
 import { DefaultTableConfig } from './components/common/tables/defaults';
 import { remove } from 'immutable';
-export {
-  default as AuthenticationContainer,
-} from './components/common/AuthenticationContainer';
+
 export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
@@ -75,9 +73,6 @@ export {
 export {
   // Attribute Definition exports
   fetchAttributeDefinitions,
-  // Authentication exports,
-  login,
-  coreOauthAuthorizeUrl,
   // Bridged Resource exports
   bridgedResourceUrl,
   convertMultipleBridgeRecords,
