@@ -98,10 +98,12 @@ export {
   fetchForm,
   createForm,
   updateForm,
+  deleteForm,
   // Kapp exports
   fetchKapps,
   fetchKapp,
   updateKapp,
+  deleteKapp,
   // Membership exports
   createMembership,
   deleteMembership,

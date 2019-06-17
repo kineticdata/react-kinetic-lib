@@ -39,7 +39,7 @@ regSaga(
 );
 
 const mapStateToProps = state => ({
-  loggedIn: state.getIn(['session', 'loggedIn'], false),
+  loggedIn: state.getIn(['session', 'loggedIn'], true),
   token: state.getIn(['session', 'token'], null),
   error: state.getIn(['login', 'error'], null),
 });

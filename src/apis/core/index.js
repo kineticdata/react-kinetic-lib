@@ -28,9 +28,21 @@ export {
   updateCategory,
 } from './categories';
 
-export { fetchForms, fetchForm, createForm, updateForm } from './forms';
+export {
+  fetchForms,
+  fetchForm,
+  createForm,
+  updateForm,
+  deleteForm,
+} from './forms';
 
-export { fetchKapps, fetchKapp, updateKapp, createKapp } from './kapps';
+export {
+  fetchKapps,
+  fetchKapp,
+  updateKapp,
+  createKapp,
+  deleteKapp,
+} from './kapps';
 
 export { createMembership, deleteMembership } from './memberships';
 
