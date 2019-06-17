@@ -31,24 +31,26 @@ const serverSidePrevPage = tableData =>
 export const generateFilters = (tableKey, columns) =>
   Map(
     columns
-      .filter(c => c.filterable)
+      .filter(c => c.get('filterable'))
       .reduce(
-        (filters, column) => ({
-          ...filters,
-          [column.value]: Map({
-            value: '',
-            column: column.value,
-            title: column.title,
-            onChange: value => {
-              dispatch('SET_FILTER', {
-                tableKey,
-                filter: column.value,
-                value,
-              });
-            },
-          }),
-        }),
-        {},
+        (filters, column) =>
+          filters.set(
+            column.get('value'),
+            Map({
+              value: '',
+              column: column.get('value'),
+              title: column.get('title'),
+              onChange: value => {
+                dispatch('SET_FILTER', {
+                  tableKey,
+                  filter: column.get('value'),
+                  value,
+                });
+              },
+            }),
+          ),
+
+        Map(),
       ),
   );
 
