@@ -117,7 +117,7 @@
     display: flex;
   }
   .dropdown-menu {
-    border: none;
+    border: 0;
     flex-direction: column;
     margin: 0.5rem;
     padding: 0.5rem;
@@ -424,4 +424,3 @@
     margin-left: 0.5rem;
   }
 }
-

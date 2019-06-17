@@ -108,7 +108,7 @@ form {
   input {
     &[type='text'],
     &[type='password'] {
-      background: #fff;
+      background: $white;
       border: 1px solid $blue3;
       border-radius: 3px;
       width: 100%;
@@ -143,7 +143,7 @@ form {
   }
   // Textarea
   textarea {
-    background: #fff;
+    background: $white;
     border: 1px solid $blue3;
     border-radius: 3px;
     outline: none;

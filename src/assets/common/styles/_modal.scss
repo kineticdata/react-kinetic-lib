@@ -8,7 +8,7 @@
     margin: 0;
     max-width: none;
     .modal-content {
-      border: none;
+      border: 0;
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -28,7 +28,7 @@
 @media (min-width: 768px) {
   .modal-dialog {
     .modal-content {
-      border: none;
+      border: 0;
       box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.5);
     }
   }

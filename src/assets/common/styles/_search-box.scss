@@ -48,7 +48,7 @@
   // Search Input
   input[type='text'] {
     height: auto;
-    border: none;
+    border: 0;
     border-radius: $border-radius-base;
     background-color: transparent;
     font-size: 0.875rem;
@@ -56,10 +56,10 @@
     line-height: 1.125rem;
     padding: 0.9375rem;
     &:focus {
-      border: none;
+      border: 0;
     }
   }
   &::placeholder {
-    color: #ffffff;
+    color: $white;
   }
 }

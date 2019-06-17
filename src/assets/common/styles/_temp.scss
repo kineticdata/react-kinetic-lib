@@ -128,7 +128,7 @@ ins {
   stroke-dasharray: 622;
   stroke-dashoffset: 0;
   transform-origin: center;
-  stroke: #ffffff;
+  stroke: $white;
   animation: wally-loader__dash 1.4s ease-in-out infinite;
 }
 
@@ -185,7 +185,7 @@ ins {
 }
 
 .popover.avatar-popover {
-  border: none;
+  border: 0;
   .card.card--profile {
     margin-bottom: 0px;
   }
