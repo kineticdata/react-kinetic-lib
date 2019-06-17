@@ -1,2 +1,5 @@
 export const K = window.K;
-export const bundle = window.bundle || { apiLocation: () => '/app/api/v1' };
+export const bundle = window.bundle || {
+  apiLocation: () => '/app/api/v1',
+  spaceLocation: () => '',
+};
