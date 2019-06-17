@@ -59,7 +59,7 @@ const columns = [
   },
   {
     value: 'updatedAt',
-    title: 'Last Modified',
+    title: 'Updated At',
     sortable: true,
   },
   {
