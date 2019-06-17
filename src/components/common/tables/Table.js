@@ -460,7 +460,7 @@ const defaultProps = {
   rows: List([]),
   columns: [],
   addColumns: [],
-  emptyMessage: 'No data found.',
+  alterColumns: {},
 
   sortable: true,
   pageSize: 25,
