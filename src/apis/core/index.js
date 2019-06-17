@@ -5,6 +5,8 @@ export {
   updateAttributeDefinition,
 } from './attributeDefinitions';
 
+export { login, coreOauthAuthorizeUrl } from './authentication';
+
 export {
   bridgedResourceUrl,
   convertMultipleBridgeRecords,
