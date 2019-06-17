@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
 import {
   fromJS,
@@ -107,6 +107,7 @@ const defaultFieldProps = fromJS({
   touched: false,
   errors: [],
   custom: {},
+  renderAttributes: {},
 });
 
 const dynamicFieldProps = List([
@@ -167,7 +168,7 @@ const convertField = field =>
       typeof field[prop] === 'function'
         ? acc.setIn(['functions', prop], field[prop]).set(prop, null)
         : acc,
-    Map(defaultFieldProps).merge(field),
+    Map(defaultFieldProps).mergeDeep(field),
   );
 
 export const checkRequired = field =>
@@ -741,6 +742,14 @@ export class Form extends Component {
 
 const DefaultFormWrapper = props => props.form;
 
+const DefaultFormLayout = props => (
+  <Fragment>
+    {props.fields.toList()}
+    {props.error}
+    {props.buttons}
+  </Fragment>
+);
+
 const DefaultFormError = props => (
   <div>
     {props.error}
@@ -788,6 +797,7 @@ class FormImplComponent extends Component {
           const {
             FormButtons = config.get('FormButtons', DefaultFormButtons),
             FormError = config.get('FormError', DefaultFormError),
+            FormLayout = config.get('FormLayout', DefaultFormLayout),
           } = components;
           if (this.props.loaded) {
             const fullFieldSet = OrderedSet(this.props.fields.keySeq());
@@ -805,63 +815,80 @@ class FormImplComponent extends Component {
                   <form
                     onSubmit={onSubmit(this.props.formKey, computedFieldSet)}
                   >
-                    {computedFieldSet
-                      .map(name => this.props.fields.get(name))
-                      .map(field => (
-                        <Field
-                          key={field.get('name')}
-                          name={field.get('name')}
-                          id={field.get('id')}
-                          label={field.get('label')}
-                          options={field.get('options')}
-                          type={field.get('type')}
-                          value={field.get('value')}
-                          onFocus={onFocus({
-                            formKey: this.props.formKey,
-                            field: field.get('name'),
-                          })}
-                          onBlur={onBlur({
-                            formKey: this.props.formKey,
-                            field: field.get('name'),
-                          })}
-                          onChange={onChange({
-                            formKey: this.props.formKey,
-                            name: field.get('name'),
-                            type: field.get('type'),
-                          })}
-                          visible={field.get('visible')}
-                          required={field.get('required')}
-                          enabled={field.get('enabled')}
-                          dirty={field.get('dirty')}
-                          valid={field.get('valid')}
-                          focused={field.get('focused')}
-                          touched={field.get('touched')}
-                          errors={field.get('errors')}
-                          custom={field.get('custom')}
-                          setCustom={setFieldCustom({
-                            formKey: this.props.formKey,
-                            name: field.get('name'),
-                          })}
-                          components={{
-                            context: config,
-                            form: components,
-                            field: fieldComponents[field.get('name')],
-                          }}
+                    <FormLayout
+                      fields={computedFieldSet
+                        .reduce(
+                          (map, fieldName) =>
+                            map.set(
+                              fieldName,
+                              this.props.fields.get(fieldName),
+                            ),
+                          OrderedMap(),
+                        )
+                        .map(field => (
+                          <Field
+                            key={field.get('name')}
+                            name={field.get('name')}
+                            id={`${this.props.formKey}-${field.get('name')}`}
+                            label={field.get('label')}
+                            options={field.get('options')}
+                            type={field.get('type')}
+                            value={field.get('value')}
+                            onFocus={onFocus({
+                              formKey: this.props.formKey,
+                              field: field.get('name'),
+                            })}
+                            onBlur={onBlur({
+                              formKey: this.props.formKey,
+                              field: field.get('name'),
+                            })}
+                            onChange={onChange({
+                              formKey: this.props.formKey,
+                              name: field.get('name'),
+                              type: field.get('type'),
+                            })}
+                            visible={field.get('visible')}
+                            required={field.get('required')}
+                            enabled={field.get('enabled')}
+                            dirty={field.get('dirty')}
+                            valid={field.get('valid')}
+                            focused={field.get('focused')}
+                            touched={field.get('touched')}
+                            errors={field.get('errors')}
+                            custom={field.get('custom')}
+                            setCustom={setFieldCustom({
+                              formKey: this.props.formKey,
+                              name: field.get('name'),
+                            })}
+                            components={{
+                              context: config,
+                              form: components,
+                              field: fieldComponents[field.get('name')],
+                            }}
+                            renderAttributes={field.get('renderAttributes')}
+                          />
+                        ))}
+                      error={
+                        this.props.error && (
+                          <FormError
+                            error={this.props.error}
+                            clear={clearError(this.props.formKey)}
+                          />
+                        )
+                      }
+                      buttons={
+                        <FormButtons
+                          reset={onReset(this.props.formKey)}
+                          submit={onSubmit(
+                            this.props.formKey,
+                            computedFieldSet,
+                          )}
+                          submitting={this.props.submitting}
+                          dirty={this.props.fields.some(field =>
+                            field.get('dirty'),
+                          )}
                         />
-                      ))}
-                    {this.props.error && (
-                      <FormError
-                        error={this.props.error}
-                        clear={clearError(this.props.formKey)}
-                      />
-                    )}
-                    <FormButtons
-                      reset={onReset(this.props.formKey)}
-                      submit={onSubmit(this.props.formKey, computedFieldSet)}
-                      submitting={this.props.submitting}
-                      dirty={this.props.fields.some(field =>
-                        field.get('dirty'),
-                      )}
+                      }
                     />
                   </form>
                 }
