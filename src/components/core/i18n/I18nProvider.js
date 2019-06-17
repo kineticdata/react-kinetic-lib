@@ -9,6 +9,8 @@ export class I18nProvider extends React.Component {
     super(props);
     this.state = { translations: Map() };
     this.loading = Map();
+    // this effectively enables translations for the CE client-side code
+    bundle.config.translations = bundle.config.translations || {};
   }
 
   componentDidMount() {
@@ -34,23 +36,36 @@ export class I18nProvider extends React.Component {
   loadTranslations = (locale, context) => {
     if (!this.loading.hasIn([locale, context])) {
       this.loading = this.loading.setIn([locale, context], true);
-      const url = `${bundle.apiLocation()}/translations/entries?cache&context=${context}&locale=${locale ||
-        ''}`;
-      axios
-        .get(url)
-        .then(response => {
-          this.setState(state => ({
-            translations: state.translations.setIn(
-              [locale, context],
-              Map(response.data.entries.map(entry => [entry.key, entry.value])),
-            ),
-          }));
-        })
-        .catch(error => {
-          this.setState(state => ({
-            translations: state.translations.setIn([locale, context], Map()),
-          }));
-        });
+      // check to see if the translation context was already loaded by the CE
+      // client-side code (like if K.load is used in a form event)
+      if (bundle.config.translations[context]) {
+        this.setState(state => ({
+          translations: state.translations.setIn(
+            [locale, context],
+            Map(bundle.config.translations[context]),
+          ),
+        }));
+      } else {
+        const url = `${bundle.apiLocation()}/translations/entries?cache&context=${context}&locale=${locale ||
+          ''}`;
+        axios
+          .get(url)
+          .then(response => {
+            this.setState(state => ({
+              translations: state.translations.setIn(
+                [locale, context],
+                Map(
+                  response.data.entries.map(entry => [entry.key, entry.value]),
+                ),
+              ),
+            }));
+          })
+          .catch(error => {
+            this.setState(state => ({
+              translations: state.translations.setIn([locale, context], Map()),
+            }));
+          });
+      }
     }
   };
 
