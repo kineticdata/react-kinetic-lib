@@ -210,8 +210,6 @@ export const buildTableBodyCells = (props, row, _rowIndex) => {
       components.BodyCell,
     );
 
-    console.log(columnComponents.toJS());
-
     const value = row[column.get('value')];
 
     return (
