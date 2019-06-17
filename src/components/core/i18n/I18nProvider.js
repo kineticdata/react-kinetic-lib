@@ -10,6 +10,7 @@ export class I18nProvider extends React.Component {
     this.state = { translations: Map() };
     this.loading = Map();
     // this effectively enables translations for the CE client-side code
+    bundle.config = bundle.config || {};
     bundle.config.translations = bundle.config.translations || {};
   }
 
