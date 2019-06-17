@@ -210,6 +210,8 @@ export const buildTableBodyCells = (props, row, _rowIndex) => {
       components.BodyCell,
     );
 
+    console.log(columnComponents.toJS());
+
     const value = row[column.get('value')];
 
     return (
@@ -291,7 +293,7 @@ const TableImpl = compose(
 export const generateColumns = (columns, addColumns, alterColumns) =>
   List(addColumns)
     .concat(columns)
-    .map(c => Map({ ...c, ...alterColumns, value: c.value }));
+    .map(c => Map({ ...c, ...alterColumns[c.value], value: c.value }));
 
 export const extractColumnComponents = columns =>
   columns
