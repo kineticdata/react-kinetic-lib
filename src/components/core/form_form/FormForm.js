@@ -162,7 +162,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     label: 'Linked',
     type: 'checkbox',
     transient: true,
-    initialValue: true,
+    initialValue: ({ form }) => (get(form, 'slug') ? false : true),
     visible: false,
   },
   {
