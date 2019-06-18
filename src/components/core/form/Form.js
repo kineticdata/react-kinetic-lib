@@ -332,7 +332,9 @@ regHandlers({
     });
   },
   RESET: (state, { payload: { formKey } }) =>
-    state.updateIn(['forms', formKey, 'fields'], resetValues),
+    state.hasIn(['forms', formKey])
+      ? state.updateIn(['forms', formKey, 'fields'], resetValues)
+      : state,
   SUBMIT: (state, { payload: { formKey } }) =>
     state.setIn(['forms', formKey, 'submitting'], true),
   SUBMIT_SUCCESS: (state, { payload: { formKey } }) =>
@@ -542,14 +544,16 @@ regSaga(
     const dataSources = yield select(state =>
       state.getIn(['forms', formKey, 'dataSources']),
     );
-    yield put(action('EVAL_FIELDS', { formKey }));
-    yield all(
-      dataSources
-        .filter(dependsOn('values'))
-        .keySeq()
-        .map(name => put(action('CHECK_DATA_SOURCE', { formKey, name })))
-        .toArray(),
-    );
+    if (dataSources) {
+      yield put(action('EVAL_FIELDS', { formKey }));
+      yield all(
+        dataSources
+          .filter(dependsOn('values'))
+          .keySeq()
+          .map(name => put(action('CHECK_DATA_SOURCE', { formKey, name })))
+          .toArray(),
+      );
+    }
   }),
 );
 
