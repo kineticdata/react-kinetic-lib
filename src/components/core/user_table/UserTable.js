@@ -99,6 +99,7 @@ export const UserTable = props => (
     data={data}
     columns={columns}
     addColumns={props.addColumns}
+    alterColumns={props.alterColumns}
     columnSet={props.columnSet}
     pageSize={props.pageSize}
   >
