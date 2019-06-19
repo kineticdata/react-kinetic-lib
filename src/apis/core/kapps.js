@@ -58,3 +58,18 @@ export const createKapp = (options = {}) => {
     .then(response => ({ kapp: response.data.kapp }))
     .catch(handleErrors);
 };
+
+export const deleteKapp = (options = {}) => {
+  const { kappSlug } = options;
+  if (!kappSlug) {
+    throw new Error('deleteKapp failed! The option "kappSlug" is required.');
+  }
+
+  return axios
+    .delete(`${bundle.apiLocation()}/kapps/${kappSlug}`, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ kapp: response.data.kapp }))
+    .catch(handleErrors);
+};

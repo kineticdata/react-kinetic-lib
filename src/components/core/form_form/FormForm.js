@@ -23,7 +23,8 @@ const dataSources = ({ formSlug, kappSlug, datastore }) => ({
         datastore,
         formSlug,
         kappSlug,
-        include: 'details,attributesMap,securityPolicies',
+        include:
+          'details,attributesMap,securityPolicies,indexDefinitions,backgroundJobs,fields',
       },
     ],
     { transform: result => result.form, runIf: () => !!formSlug },
@@ -85,7 +86,7 @@ const securityEndpoints = {
     label: 'Form Display',
     types: ['Space', 'Kapp', 'Form', 'Datastore Form'],
   },
-  formCreation: {
+  formModification: {
     endpoint: 'Modification',
     label: 'Form Modification',
     types: ['Space', 'Kapp', 'Form', 'Datastore Form'],
@@ -162,7 +163,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     label: 'Linked',
     type: 'checkbox',
     transient: true,
-    initialValue: true,
+    initialValue: ({ form }) => (get(form, 'slug') ? false : true),
     visible: false,
   },
   {
@@ -173,7 +174,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
       value: status,
       label: status,
     })),
-    initialValue: ({ form }) => get(form, 'status'),
+    initialValue: ({ form }) => get(form, 'status') || 'New',
   },
   {
     name: 'submissionLabelExpression',

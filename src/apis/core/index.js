@@ -5,6 +5,8 @@ export {
   updateAttributeDefinition,
 } from './attributeDefinitions';
 
+export { login, coreOauthAuthorizeUrl } from './authentication';
+
 export {
   bridgedResourceUrl,
   convertMultipleBridgeRecords,
@@ -26,9 +28,21 @@ export {
   updateCategory,
 } from './categories';
 
-export { fetchForms, fetchForm, createForm, updateForm } from './forms';
+export {
+  fetchForms,
+  fetchForm,
+  createForm,
+  updateForm,
+  deleteForm,
+} from './forms';
 
-export { fetchKapps, fetchKapp, updateKapp, createKapp } from './kapps';
+export {
+  fetchKapps,
+  fetchKapp,
+  updateKapp,
+  createKapp,
+  deleteKapp,
+} from './kapps';
 
 export { createMembership, deleteMembership } from './memberships';
 

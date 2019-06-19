@@ -1,10 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Map } from 'immutable';
 import Table from '../../common/tables/Table';
 import { fetchForms } from '../../../apis/core';
 import t from 'prop-types';
-
-const tableKey = 'form-table';
 
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
@@ -84,37 +82,27 @@ const columns = [
   { value: 'type', title: 'Type', sortable: true, filterable: true },
 ];
 
-export default class FormTable extends Component {
-  componentDidMount() {
-    Table.mount(tableKey);
-  }
+export const FormTable = props => (
+  <Table
+    tableKey={props.tableKey}
+    components={{
+      ...props.components,
+    }}
+    data={dataSource({
+      kappSlug: props.kappSlug,
+      datastore: props.datastore,
+    })}
+    columns={columns}
+    alterColumns={props.alterColumns}
+    addColumns={props.addColumns}
+    columnSet={props.columnSet}
+    pageSize={props.pageSize}
+  >
+    {props.children}
+  </Table>
+);
 
-  componentWillUnmount() {
-    Table.unmount(tableKey);
-  }
-
-  render() {
-    return (
-      <Table
-        tableKey={tableKey}
-        components={{
-          ...this.props.components,
-        }}
-        data={dataSource({
-          kappSlug: this.props.kappSlug,
-          datastore: this.props.datastore,
-        })}
-        columns={columns}
-        alterColumns={this.props.alterColumns}
-        addColumns={this.props.addColumns}
-        columnSet={this.props.columnSet}
-        pageSize={this.props.pageSize}
-      >
-        {this.props.children}
-      </Table>
-    );
-  }
-}
+export default FormTable;
 
 FormTable.defaultProps = {};
 

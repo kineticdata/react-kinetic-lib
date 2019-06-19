@@ -36,9 +36,7 @@ export class I18n extends React.Component {
             const context = submission
               ? !!this.props.datastore
                 ? `datastore.forms.${submission.form.slug}`
-                : `kapps.${submission.form.kapp.slug}.forms.${
-                    submission.form.slug
-                  }`
+                : `kapps.${submission.form.kapp.slug}.forms.${submission.form.slug}`
               : null;
             // Store the context for the submissionId
             submissionContexts[this.props.submissionId] = context;
@@ -168,5 +166,7 @@ const trackKeys = (context, key) => {
   trackedKeys = trackedKeys.has(key)
     ? trackedKeys.set(key, trackedKeys.get(key).add(context))
     : trackedKeys.set(key, Set([context]));
+  window.bundle = window.bundle || {};
+  window.bundle.config = window.bundle.config || {};
   window.bundle.config.translationKeys = trackedKeys.toJS();
 };

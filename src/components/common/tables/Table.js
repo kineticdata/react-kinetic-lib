@@ -291,7 +291,7 @@ const TableImpl = compose(
 export const generateColumns = (columns, addColumns, alterColumns) =>
   List(addColumns)
     .concat(columns)
-    .map(c => Map({ ...c, ...alterColumns, value: c.value }));
+    .map(c => Map({ ...c, ...alterColumns[c.value], value: c.value }));
 
 export const extractColumnComponents = columns =>
   columns
@@ -460,7 +460,7 @@ const defaultProps = {
   rows: List([]),
   columns: [],
   addColumns: [],
-  emptyMessage: 'No data found.',
+  alterColumns: {},
 
   sortable: true,
   pageSize: 25,

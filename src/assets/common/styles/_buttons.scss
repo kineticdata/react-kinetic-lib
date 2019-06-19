@@ -37,10 +37,10 @@ input[type='button'],
 .btn-primary {
   @extend .btn;
   color: $white;
-  @include setButtonColorAndHover($primary);
+  @include set-button-color-and-hover($primary);
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active {
-    @include setButtonColorAndHover($primary);
+    @include set-button-color-and-hover($primary);
   }
   &.disabled,
   &[disabled] {
@@ -53,10 +53,10 @@ input[type='button'],
 .btn-secondary {
   @extend .btn;
   color: $white;
-  @include setButtonColorAndHover($secondary);
+  @include set-button-color-and-hover($secondary);
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active {
-    @include setButtonColorAndHover($secondary);
+    @include set-button-color-and-hover($secondary);
   }
   &.disabled,
   &[disabled] {
@@ -68,7 +68,7 @@ input[type='button'],
 // Button Link
 .btn-link {
   @extend .btn;
-  @include setButtonColorAndHover(transparent);
+  @include set-button-color-and-hover(transparent);
   color: $link-color;
   &:hover,
   &:focus,
@@ -85,7 +85,7 @@ input[type='button'],
   padding: 0;
   border: 0;
   vertical-align: baseline;
-  @include setButtonColorAndHover(transparent);
+  @include set-button-color-and-hover(transparent);
   color: $link-color;
   &:hover,
   &:focus,
@@ -98,7 +98,7 @@ input[type='button'],
 // Button Subtle
 .btn-subtle {
   @extend .btn;
-  @include setButtonColorAndHover($gray2);
+  @include set-button-color-and-hover($gray2);
   color: $black;
 
   &:hover,
@@ -166,7 +166,7 @@ input[type='button'],
 // Button groups for Next/Previous
 .btn-group {
   .btn-inverse {
-    @include setBgColorAndHover($white);
+    @include set-background-color-and-hover($white);
   }
 }
 
