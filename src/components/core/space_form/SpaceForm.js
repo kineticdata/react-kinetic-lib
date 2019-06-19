@@ -1,5 +1,5 @@
 import React from 'react';
-import { get } from 'immutable';
+import { get, getIn } from 'immutable';
 
 import { Form } from '../form/Form';
 import { updateSpace, fetchSpace } from '../../../apis/core';
@@ -13,7 +13,7 @@ const DISPLAY_TYPES = ['Display Page', 'Redirect', 'Single Page App'];
 const dataSources = () => ({
   space: [
     fetchSpace,
-    [{ include: 'attributesMap,securityPolicies,details' }],
+    [{ include: 'attributesMap,securityPolicies,details,filestore' }],
     { transform: result => result.space },
   ],
   locales: [
@@ -103,14 +103,14 @@ const fields = () => [
     label: 'After Logout Path',
     type: 'text',
     initialValue: ({ space }) => get(space, 'afterLogoutPath'),
-    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
+    placeholder: ({ space }) => `/${get(space, 'slug')}`,
+    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
   },
   {
     name: 'bundlePath',
     label: 'Bundle Path',
     type: 'text',
     initialValue: ({ space }) => get(space, 'bundlePath'),
-    // visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
   },
   {
     name: 'defaultDatastoreFormConfirmationPage',
@@ -118,14 +118,16 @@ const fields = () => [
     type: 'text',
     initialValue: ({ space }) =>
       get(space, 'defaultDatastoreFormConfirmationPage'),
-    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
+    placeholder: 'confirmation.jsp',
+    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
   },
   {
     name: 'defaultDatastoreFormDisplayPage',
     label: 'Default Datastore Form Display Page',
     type: 'text',
     initialValue: ({ space }) => get(space, 'defaultDatastoreFormDisplayPage'),
-    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
+    placeholder: 'form.jsp',
+    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
   },
   {
     name: 'defaultLocale',
@@ -160,22 +162,101 @@ const fields = () => [
     initialValue: ({ space }) => get(space, 'displayType') || 'Display Page',
   },
   {
-    name: 'displayValue',
-    label: ({ values }) =>
-      values.get('displayType') === 'Redirect'
-        ? 'Redirect URL'
-        : values.get('displayType') === 'Single Page App'
-        ? 'Location (see modes below)'
-        : 'Space Display Page',
+    name: 'displayValueJSP',
+    label: 'Space Display Page',
     type: 'text',
+    transient: true,
+    placeholder: 'space.jsp',
+    visible: ({ values }) => get(values, 'displayType') === 'Display Page',
+    required: ({ values }) => get(values, 'displayType') === 'Display Page',
+    initialValue: ({ space }) =>
+      get(space, 'displayType') === 'Display Page'
+        ? get(space, 'displayValue')
+        : '',
+  },
+  {
+    name: 'displayValueRedirect',
+    label: 'Redirect URL',
+    type: 'text',
+    transient: true,
+    visible: ({ values }) => get(values, 'displayType') === 'Redirect',
+    required: ({ values }) => get(values, 'displayType') === 'Redirect',
+    initialValue: ({ space }) =>
+      get(space, 'displayType') === 'Display Page'
+        ? get(space, 'displayValue')
+        : '',
+  },
+  {
+    name: 'displayValueSPA',
+    label: 'Location',
+    type: 'text',
+    transient: true,
+    visible: ({ values }) => get(values, 'displayType') === 'Single Page App',
+    required: ({ values }) => get(values, 'displayType') === 'Single Page App',
+    initialValue: ({ space }) =>
+      get(space, 'displayType') === 'Single Page App'
+        ? get(space, 'displayValue')
+        : '',
+  },
+  {
+    name: 'displayValue',
+    label: 'Dispaly Value',
+    type: 'text',
+    visible: false,
     initialValue: ({ space }) => get(space, 'displayValue'),
+  },
+  {
+    name: 'filestore',
+    label: 'File Store',
+    type: null,
+    visible: false,
+    serialize: ({ values }) => ({
+      filehubUrl: values.get('filehubUrl'),
+      key: values.get('filestoreKey'),
+      secret: values.get('filestoreSecret'),
+      slug: values.get('filestoreSlug'),
+    }),
+    initialValue: ({ space }) => get(space, 'filestore'),
+  },
+  {
+    name: 'filehubUrl',
+    label: 'Filehub URL',
+    type: 'text',
+    visible: true,
+    transient: true,
+    initialValue: ({ space }) => getIn(space, ['filestore', 'filehubUrl']),
+  },
+  {
+    name: 'filestoreKey',
+    label: 'Filestore Key',
+    type: 'text',
+    visible: true,
+    transient: true,
+    initialValue: ({ space }) => getIn(space, ['filestore', 'key']),
+  },
+  {
+    name: 'filestoreSecret',
+    label: 'Filestore Secret',
+    type: 'text',
+    visible: true,
+    transient: true,
+    initialValue: '',
+  },
+  {
+    name: 'filestoreSlug',
+    label: 'Filestore Slug',
+    type: 'text',
+    visible: true,
+    transient: true,
+    initialValue: ({ space }) => getIn(space, ['filestore', 'slug']),
   },
   {
     name: 'loginPage',
     label: 'Login Page',
     type: 'text',
     initialValue: ({ space }) => get(space, 'loginPage'),
-    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
+    placeholder: 'login.jsp',
+    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
   },
   {
     name: 'name',
@@ -194,7 +275,8 @@ const fields = () => [
     label: 'Reset Password Page',
     type: 'text',
     initialValue: ({ space }) => get(space, 'resetPasswordPage'),
-    visible: ({ space }) => get(space, 'displayType') !== 'Single Page App',
+    placeholder: 'resetPassword.jsp',
+    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
   },
   {
     name: 'oAuthSigningKey',
