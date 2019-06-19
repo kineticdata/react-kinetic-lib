@@ -5,7 +5,13 @@ import { fetchTeams } from '../../../apis/core';
 
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
-const STARTS_WITH_FIELDS = ['name', 'localName', 'updatedAt', 'createdAt'];
+const STARTS_WITH_FIELDS = [
+  'createdAt',
+  'localName',
+  'name',
+  'updatedAt',
+  'parentName',
+];
 
 const teamFilter = filters => {
   const q = Map(filters)
@@ -76,6 +82,7 @@ export const TeamTable = props => (
     }}
     data={data}
     columns={columns}
+    alterColumns={props.alterColumns}
     addColumns={props.addColumns}
     columnSet={props.columnSet}
     pageSize={props.pageSize}
@@ -85,5 +92,9 @@ export const TeamTable = props => (
 );
 
 export default TeamTable;
+
+TeamTable.defaultProps = {
+  columns,
+};
 
 TeamTable.STARTS_WITH_FIELDS = STARTS_WITH_FIELDS;
