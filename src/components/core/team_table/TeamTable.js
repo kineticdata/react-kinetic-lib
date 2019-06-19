@@ -1,11 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Map } from 'immutable';
 import Table from '../../common/tables/Table';
 import { fetchTeams } from '../../../apis/core';
 
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
-const STARTS_WITH_FIELDS = ['username']; // Needs to be changed
+const STARTS_WITH_FIELDS = [
+  'createdAt',
+  'localNname',
+  'name',
+  'updatedAt',
+  'parentName',
+];
 
 const teamFilter = filters => {
   const q = Map(filters)
@@ -38,7 +44,7 @@ const data = {
 const columns = [
   {
     value: 'name',
-    title: 'Team',
+    title: 'Name',
     filterable: true,
     sortable: false,
   },
@@ -52,6 +58,7 @@ export const TeamTable = props => (
     }}
     data={data}
     columns={columns}
+    alterColumns={props.alterColumns}
     addColumns={props.addColumns}
     columnSet={props.columnSet}
     pageSize={props.pageSize}
