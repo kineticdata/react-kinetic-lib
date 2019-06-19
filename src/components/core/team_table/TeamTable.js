@@ -48,6 +48,30 @@ const columns = [
     filterable: true,
     sortable: true,
   },
+  {
+    value: 'updatedAt',
+    title: 'Updated At',
+    filterable: true,
+    sortable: true,
+  },
+  {
+    value: 'createdAt',
+    title: 'Created At',
+    filterable: true,
+    sortable: true,
+  },
+  {
+    value: 'description',
+    title: 'Description',
+    filterable: true,
+    sortable: true,
+  },
+  {
+    value: 'slug',
+    title: 'Slug',
+    filterable: true,
+    sortable: true,
+  },
 ];
 
 export const TeamTable = props => (
