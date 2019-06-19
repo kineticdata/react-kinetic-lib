@@ -6,6 +6,7 @@ export { SpaceForm } from './space_form/SpaceForm';
 export { default as KappTable } from './kapp_table/KappTable';
 export { default as FormTable } from './form_table/FormTable';
 export { default as UserTable } from './user_table/UserTable';
+export { default as TeamTable } from './team_table/TeamTable';
 export { default as UserDetails } from './user_details/UserDetails';
 export { default as UserSelect } from './UserSelect';
 export { default as TeamSelect } from './TeamSelect';

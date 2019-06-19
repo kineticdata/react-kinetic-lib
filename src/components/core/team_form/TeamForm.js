@@ -7,17 +7,24 @@ import {
   fetchTeams,
 } from '../../../apis/core';
 import { splitTeamName } from '../../../helpers/splitTeamName';
+import { fetchAttributeDefinitions } from '../../../apis/core/attributeDefinitions';
+import { get, List, Map } from 'immutable';
 
 const dataSources = ({ teamSlug }) => ({
   team: [
     fetchTeam,
-    [{ teamSlug }],
+    [{ teamSlug, include: 'attributesMap,memberships' }],
     {
       transform: result => result.team,
       runIf: () => !!teamSlug,
     },
   ],
   teams: [fetchTeams, [], { transform: result => result.teams }],
+  attributeDefinitions: [
+    fetchAttributeDefinitions,
+    [{ attributeType: 'teamAttributeDefinitions' }],
+    { transform: result => result.attributeDefinitions },
+  ],
 });
 
 const handleSubmit = ({ teamSlug }) => values =>
@@ -36,18 +43,10 @@ const handleSubmit = ({ teamSlug }) => values =>
 
 const fields = ({ teamSlug }) => [
   {
-    name: 'localName',
-    label: 'Name',
-    type: 'text',
-    required: true,
-    transient: true,
-    initialValue: ({ team }) => (team ? splitTeamName(team)[1] : ''),
-  },
-  {
     name: 'parentTeam',
     label: 'Parent Team',
     type: 'team',
-    required: true,
+    required: false,
     transient: true,
     options: ({ teams }) => teams,
     initialValue: ({ team }) =>
@@ -58,11 +57,48 @@ const fields = ({ teamSlug }) => [
         : null,
   },
   {
+    name: 'localName',
+    label: 'Name',
+    type: 'text',
+    required: true,
+    transient: true,
+    initialValue: ({ team }) => (team ? splitTeamName(team)[1] : ''),
+  },
+  {
     name: 'name',
     type: 'text',
     visible: false,
+    serialize: ({ values }) => {
+      return !!values.get('parentTeam') && !!values.get('parentTeam').name
+        ? `${values.get('parentTeam').name}::${values.get('localName')}`
+        : values.get('localName');
+    },
+  },
+  {
+    name: 'description',
+    label: 'Description',
+    type: 'text',
+    required: false,
+    initialValue: ({ team }) => (team ? team.get('description') : ''),
+  },
+  {
+    name: 'attributesMap',
+    label: 'Attributes',
+    type: 'attributes',
+    required: false,
+    options: ({ attributeDefinitions }) => attributeDefinitions,
+    initialValue: ({ team }) => get(team, 'attributesMap'),
+  },
+  {
+    name: 'memberships',
+    label: 'Members',
+    type: 'user-multi',
+    required: false,
+    options: () => [],
+    initialValue: ({ team }) =>
+      get(team, 'memberships', List()).map(m => m.get('user')),
     serialize: ({ values }) =>
-      `${values.get('parentTeam').name}::${values.get('localName')}`,
+      values.get('memberships').map(user => Map({ user })),
   },
 ];
 
