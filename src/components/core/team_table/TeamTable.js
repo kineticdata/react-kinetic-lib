@@ -7,7 +7,7 @@ const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
 const STARTS_WITH_FIELDS = [
   'createdAt',
-  'localNname',
+  'localName',
   'name',
   'updatedAt',
   'parentName',
@@ -46,7 +46,7 @@ const columns = [
     value: 'name',
     title: 'Name',
     filterable: true,
-    sortable: false,
+    sortable: true,
   },
 ];
 
