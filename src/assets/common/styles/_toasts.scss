@@ -12,6 +12,7 @@
   flex-direction: column;
   width: 100%;
 }
+
 .toast {
   width: 75%;
   border: 1px solid $border-color;
@@ -76,6 +77,6 @@
   }
 
   &--normal {
-    background-color: #ffffff;
+    background-color: $white;
   }
 }

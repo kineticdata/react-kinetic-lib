@@ -1,27 +1,27 @@
 // Color with hover tint built in
 // -----------
-@mixin setColorAndHover($baseColor) {
-  color: $baseColor;
+@mixin set-color-and-hover($base-color) {
+  color: $base-color;
   &:hover {
-    color: darken($baseColor, 5%);
+    color: darken($base-color, 5%);
   }
 }
 // Background color with hover tint built in
 // -----------
-@mixin setBgColorAndHover($baseColor) {
-  background-color: $baseColor;
+@mixin set-background-color-and-hover($base-color) {
+  background-color: $base-color;
   &:hover {
-    background-color: darken($baseColor, 2%);
+    background-color: darken($base-color, 2%);
   }
 }
 
 // Button color with hover tint built in
 // -----------
-@mixin setButtonColorAndHover($baseColor) {
-  background-color: $baseColor;
-  border-color: $baseColor;
+@mixin set-button-color-and-hover($base-color) {
+  background-color: $base-color;
+  border-color: $base-color;
   &:hover {
-    background-color: darken($baseColor, 5%);
-    border-color: $baseColor;
+    background-color: darken($base-color, 5%);
+    border-color: $base-color;
   }
 }

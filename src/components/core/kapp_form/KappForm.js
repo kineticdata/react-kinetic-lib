@@ -201,7 +201,7 @@ const fields = ({ kappSlug }) => [
     label: 'Linked',
     type: 'checkbox',
     transient: true,
-    initialValue: true,
+    initialValue: ({ kapp }) => (get(kapp, 'slug') ? false : true),
     visible: false,
   },
   ...(kappSlug

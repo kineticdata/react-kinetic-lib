@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Map } from 'immutable';
 import Table from '../../common/tables/Table';
 import { fetchKapps } from '../../../apis/core';
-
-const tableKey = 'kapp-table';
 
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
@@ -61,7 +59,7 @@ const columns = [
   },
   {
     value: 'updatedAt',
-    title: 'Last Modified',
+    title: 'Updated At',
     sortable: true,
   },
   {
@@ -84,37 +82,27 @@ const columns = [
   { value: 'resetPasswordPage', title: 'Reset Password Page' },
 ];
 
-export default class KappTable extends Component {
-  componentDidMount() {
-    Table.mount(tableKey);
-  }
-
-  componentWillUnmount() {
-    Table.unmount(tableKey);
-  }
-
-  render() {
-    return (
-      <Table
-        tableKey={tableKey}
-        components={{
-          ...this.props.components,
-        }}
-        data={data}
-        columns={columns}
-        alterColumns={this.props.alterColumns}
-        addColumns={this.props.addColumns}
-        columnSet={this.props.columnSet}
-        pageSize={this.props.pageSize}
-      >
-        {this.props.children}
-      </Table>
-    );
-  }
-}
+export const KappTable = props => (
+  <Table
+    tableKey={props.tableKey}
+    components={{
+      ...props.components,
+    }}
+    data={data}
+    columns={columns}
+    alterColumns={props.alterColumns}
+    addColumns={props.addColumns}
+    columnSet={props.columnSet}
+    pageSize={props.pageSize}
+  >
+    {props.children}
+  </Table>
+);
 
 KappTable.defaultProps = {
   columns,
 };
 
 KappTable.STARTS_WITH_FIELDS = STARTS_WITH_FIELDS;
+
+export default KappTable;

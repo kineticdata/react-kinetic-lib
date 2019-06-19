@@ -86,3 +86,25 @@ export const updateForm = (options = {}) => {
     .then(response => ({ form: response.data.form }))
     .catch(handleErrors);
 };
+
+export const deleteForm = (options = {}) => {
+  const { kappSlug = bundle.kappSlug(), formSlug, datastore } = options;
+  if (!kappSlug && !datastore) {
+    throw new Error('deleteForm failed! The option "kappSlug" is required.');
+  }
+  if (!formSlug) {
+    throw new Error('deleteForm failed! The option "formSlug" is required.');
+  }
+
+  const path = datastore
+    ? `${bundle.apiLocation()}/datastore/forms/${formSlug}`
+    : `${bundle.apiLocation()}/kapps/${kappSlug}/forms/${formSlug}`;
+
+  return axios
+    .delete(path, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ form: response.data.form }))
+    .catch(handleErrors);
+};
