@@ -1,13 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Map } from 'immutable';
 import Table from '../../common/tables/Table';
 import { fetchTeams } from '../../../apis/core';
 
-const tableKey = 'team-table';
-
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;
-const STARTS_WITH_FIELDS = ['username']; // Needs to be changed
+const STARTS_WITH_FIELDS = ['name', 'localName', 'updatedAt', 'createdAt'];
 
 const teamFilter = filters => {
   const q = Map(filters)
@@ -40,42 +38,52 @@ const data = {
 const columns = [
   {
     value: 'name',
-    title: 'Team',
+    title: 'Name',
     filterable: true,
-    sortable: false,
+    sortable: true,
+  },
+  {
+    value: 'updatedAt',
+    title: 'Updated At',
+    filterable: true,
+    sortable: true,
+  },
+  {
+    value: 'createdAt',
+    title: 'Created At',
+    filterable: true,
+    sortable: true,
+  },
+  {
+    value: 'description',
+    title: 'Description',
+    filterable: true,
+    sortable: true,
+  },
+  {
+    value: 'slug',
+    title: 'Slug',
+    filterable: true,
+    sortable: true,
   },
 ];
 
-export default class TeamTable extends Component {
-  componentDidMount() {
-    Table.mount(tableKey);
-  }
+export const TeamTable = props => (
+  <Table
+    tableKey={props.tableKey}
+    components={{
+      ...props.components,
+    }}
+    data={data}
+    columns={columns}
+    addColumns={props.addColumns}
+    columnSet={props.columnSet}
+    pageSize={props.pageSize}
+  >
+    {props.children}
+  </Table>
+);
 
-  componentWillUnmount() {
-    Table.unmount(tableKey);
-  }
-
-  render() {
-    return (
-      <Table
-        tableKey={tableKey}
-        components={{
-          ...this.props.components,
-        }}
-        data={data}
-        columns={columns}
-        addColumns={this.props.addColumns}
-        columnSet={this.props.columnSet}
-        pageSize={this.props.pageSize}
-      >
-        {this.props.children}
-      </Table>
-    );
-  }
-}
-
-TeamTable.defaultProps = {
-  columns,
-};
+export default TeamTable;
 
 TeamTable.STARTS_WITH_FIELDS = STARTS_WITH_FIELDS;
