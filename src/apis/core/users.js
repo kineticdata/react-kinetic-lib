@@ -79,11 +79,12 @@ export const deleteUser = (options = {}) => {
     throw new Error('deleteUser failed! The option "username" is required.');
   }
 
-  // Build URL and fetch the space.
+  // Build URL and delete the user.
   return axios
     .delete(`${bundle.apiLocation()}/users/${username}`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
+    .then(response => ({ user: response.data.user }))
     .catch(handleErrors);
 };
