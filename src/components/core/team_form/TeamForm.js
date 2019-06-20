@@ -13,7 +13,7 @@ import { get, List, Map } from 'immutable';
 const dataSources = ({ teamSlug }) => ({
   team: [
     fetchTeam,
-    [{ teamSlug, include: 'attributesMap,memberships' }],
+    [{ teamSlug, include: 'attributesMap,memberships.user' }],
     {
       transform: result => result.team,
       runIf: () => !!teamSlug,
