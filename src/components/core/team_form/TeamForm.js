@@ -68,11 +68,10 @@ const fields = ({ teamSlug }) => [
     name: 'name',
     type: 'text',
     visible: false,
-    serialize: ({ values }) => {
-      return !!values.get('parentTeam') && !!values.get('parentTeam').name
+    serialize: ({ values }) =>
+      !!values.get('parentTeam') && !!values.get('parentTeam').name
         ? `${values.get('parentTeam').name}::${values.get('localName')}`
-        : values.get('localName');
-    },
+        : values.get('localName'),
   },
   {
     name: 'description',
