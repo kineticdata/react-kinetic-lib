@@ -230,7 +230,7 @@ const fields = () => [
       filehubUrl: values.get('filehubUrl'),
       key: values.get('filestoreKey'),
       slug: values.get('filestoreSlug'),
-      ...(!values.get('filestoreSecret') === '' && {
+      ...(values.get('filestoreSecret') !== '' && {
         secret: values.get('filestoreSecret'),
       }),
     }),
