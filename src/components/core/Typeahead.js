@@ -241,7 +241,10 @@ export default class Typeahead extends React.Component {
               onChange: this.onChange,
               placeholder,
             }}
-            theme={{ suggestionsContainerOpen: 'OPEN' }}
+            theme={{
+              suggestionsContainerOpen: 'OPEN',
+              container: 'typeahead-container',
+            }}
             highlightFirstSuggestion
             shouldRenderSuggestions={this.shouldRenderSuggestions}
             suggestions={suggestions}

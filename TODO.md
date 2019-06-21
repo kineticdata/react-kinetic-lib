@@ -3,20 +3,20 @@
 ## Started:
 - KappForm  (started by James)
 - KappTable (started by James)
-- TeamForm  (started for parent-name local-name)
+- TeamForm  (ready for review)
 - FormForm  (started for slugification)
 - UserForm  (ready for review)
 - UserTable (ready for review)
+- TeamTable (started by Chad: missing filter)
+- AttributeDefinitionsForm (ready for review)
+- AttributeDefinitionsTable (ready for review)
 
 ## Ready to Work On
-
-- TeamTable
 
 - FormTable
 - IndexDefinitionsTable
 
 - SecurityPolicyDefinitionsForm
-- AttributeDefinitionsForm
 
 - OAauthClientsForm
 - OAuthClientsTable
