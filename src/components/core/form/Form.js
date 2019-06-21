@@ -21,6 +21,7 @@ import {
 } from '../../../store';
 import { ComponentConfigContext } from '../../common/ComponentConfigContext';
 import { generateAttributesFieldProps } from './AttributesField';
+import { generateTextMultiFieldProps } from './TextMultiField';
 import { generateKey } from '../../../helpers';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
@@ -666,7 +667,11 @@ export const mapStateToProps = (state, props) =>
     .toObject();
 
 const generateFieldProps = props =>
-  props.type === 'attributes' ? generateAttributesFieldProps(props) : props;
+  props.type === 'attributes'
+    ? generateAttributesFieldProps(props)
+    : props.type === 'text-multi'
+    ? generateTextMultiFieldProps(props)
+    : props;
 
 const typeToComponent = {
   text: 'TextField',
