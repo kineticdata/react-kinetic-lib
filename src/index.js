@@ -169,6 +169,7 @@ export { K, bundle } from './helpers/coreHelpers';
 export { I18n } from './components/core/i18n/I18n';
 export { Moment, importLocale } from './components/core/i18n/Moment';
 export { mountForm, resetForm, unmountForm } from './components/core/form/Form';
+import AuthenticationContainer from './components/common/authentication/AuthenticationContainer';
 
 commitStore();
 
@@ -180,7 +181,9 @@ const KineticLib = props => (
           .merge(remove(props.components || {}, 'fields'))
           .merge(props.components && props.components.fields)}
       >
-        {props.children}
+        <AuthenticationContainer clientId={props.clientId}>
+          {props.children}
+        </AuthenticationContainer>
       </ComponentConfigContext.Provider>
     </I18nProvider>
   </Provider>
