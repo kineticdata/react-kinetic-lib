@@ -83,6 +83,10 @@ const processOAuthToken = token => {
 
 export class AuthenticationComponent extends Component {
   componentDidMount() {
+    const params = qs.parse(window.location.hash);
+    if (params['access_token']) {
+      return;
+    }
     dispatch('FETCH_META');
   }
 
@@ -97,7 +101,6 @@ export class AuthenticationComponent extends Component {
     const loggedIn = authenticated && token ? true : false;
     const loggingIn = authenticated && !token ? true : false;
 
-    console.log(initialized, authenticated, token, loggedIn, loggingIn);
     // First we need to check to see if this is a redirect with an OAuth token.
     // If it is we need to process the token and save it in Redux. Since this
     // is actually rendered in a popup or iframe, we will block further rendering.
