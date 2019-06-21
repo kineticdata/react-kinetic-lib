@@ -8,9 +8,7 @@ import { ComponentConfigContext } from './components/common/ComponentConfigConte
 import { createHashHistory } from 'history';
 import { DefaultTableConfig } from './components/common/tables/defaults';
 import { remove } from 'immutable';
-export {
-  default as AuthenticationContainer,
-} from './components/common/AuthenticationContainer';
+import AuthenticationContainer from './components/common/authentication/AuthenticationContainer';
 export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
@@ -171,7 +169,6 @@ export { K, bundle } from './helpers/coreHelpers';
 export { I18n } from './components/core/i18n/I18n';
 export { Moment, importLocale } from './components/core/i18n/Moment';
 export { mountForm, resetForm, unmountForm } from './components/core/form/Form';
-import AuthenticationContainer from './components/common/authentication/AuthenticationContainer';
 
 commitStore();
 
