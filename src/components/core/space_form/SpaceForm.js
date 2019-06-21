@@ -335,13 +335,13 @@ const fields = () => [
   {
     name: 'trustedFrameDomains',
     label: 'Trusted Frame Domains',
-    type: 'text',
+    type: 'text-multi',
     initialValue: ({ space }) => get(space, 'trustedFrameDomains'),
   },
   {
     name: 'trustedResourceDomains',
     label: 'Trusted Resource Domains',
-    type: 'text',
+    type: 'text-multi',
     initialValue: ({ space }) => get(space, 'trustedResourceDomains'),
   },
   ...Object.entries(securityEndpoints).map(([endpointFieldName, endpoint]) => ({

@@ -26,7 +26,7 @@ const remove = (name, values, onChange) => index => () => {
   });
 };
 
-export const TextMultiFieldDefault = props => (
+export const TextMultiField = props => (
   <div className="field">
     {props.label}
     {props.value.map((v, i) => (
@@ -61,21 +61,16 @@ export const TextMultiFieldDefault = props => (
   </div>
 );
 
-export const TextMultiField = ({
-  component: TextMultiFieldImpl = TextMultiFieldDefault,
-  ...props
-}) => (
-  <TextMultiFieldImpl
-    {...props}
-    inputValue={get(props.custom, 'input', '')}
-    inputChange={onInputChange(props.setCustom)}
-    remove={remove(props.name, props.value, props.onChange)}
-    add={add(
-      props.name,
-      props.value,
-      props.onChange,
-      get(props.custom, 'input', ''),
-      props.setCustom,
-    )}
-  />
-);
+export const generateTextMultiFieldProps = props => ({
+  ...props,
+  inputValue: props.custom.get('input', ''),
+  inputChange: onInputChange(props.setCustom),
+  remove: remove(props.name, props.value, props.onChange),
+  add: add(
+    props.name,
+    props.value,
+    props.onChange,
+    get(props.custom, 'input', ''),
+    props.setCustom,
+  ),
+});
