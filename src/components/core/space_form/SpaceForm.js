@@ -111,6 +111,9 @@ const fields = () => [
     label: 'Bundle Path',
     type: 'text',
     initialValue: ({ space }) => get(space, 'bundlePath'),
+    required: ({ values }) =>
+      get(values, 'sharedBundleBase') !== '' &&
+      get(values, 'displayType') === 'Display Page',
   },
   {
     name: 'defaultDatastoreFormConfirmationPage',
@@ -182,7 +185,7 @@ const fields = () => [
     visible: ({ values }) => get(values, 'displayType') === 'Redirect',
     required: ({ values }) => get(values, 'displayType') === 'Redirect',
     initialValue: ({ space }) =>
-      get(space, 'displayType') === 'Display Page'
+      get(space, 'displayType') === 'Redirect'
         ? get(space, 'displayValue')
         : '',
   },
@@ -195,7 +198,9 @@ const fields = () => [
     required: ({ values }) => get(values, 'displayType') === 'Single Page App',
     initialValue: ({ space }) =>
       get(space, 'displayType') === 'Single Page App'
-        ? get(space, 'displayValue')
+        ? (get(space, 'displayValue') || '')
+            .replace('spa.jsp', '')
+            .replace('?location=', '')
         : '',
   },
   {
@@ -204,6 +209,17 @@ const fields = () => [
     type: 'text',
     visible: false,
     initialValue: ({ space }) => get(space, 'displayValue'),
+    serialize: ({ values }) => {
+      const displayType = values.get('displayType');
+      const displayValueSPA = values.get('displayValueSPA');
+      const displayValueJSP = values.get('displayValueJSP');
+      const displayValueRedirect = values.get('displayValueRedirect');
+      return displayType === 'Single Page App'
+        ? `spa.jsp${displayValueSPA && '?location=' + displayValueSPA}`
+        : displayType === 'Redirect'
+        ? displayValueRedirect
+        : displayValueJSP;
+    },
   },
   {
     name: 'filestore',
@@ -213,8 +229,10 @@ const fields = () => [
     serialize: ({ values }) => ({
       filehubUrl: values.get('filehubUrl'),
       key: values.get('filestoreKey'),
-      secret: values.get('filestoreSecret'),
       slug: values.get('filestoreSlug'),
+      ...(!values.get('filestoreSecret') === '' && {
+        secret: values.get('filestoreSecret'),
+      }),
     }),
     initialValue: ({ space }) => get(space, 'filestore'),
   },
