@@ -16,16 +16,16 @@ const dataSources = () => ({
     [{ include: 'attributesMap,securityPolicies,details,filestore' }],
     { transform: result => result.space },
   ],
-  locales: [
-    fetchLocales,
-    [],
-    { shared: true, cache: true, transform: result => result.data.locales },
-  ],
-  timezones: [
-    fetchTimezones,
-    [],
-    { shared: true, cache: true, transform: result => result.data.timezones },
-  ],
+  // locales: [
+  //   fetchLocales,
+  //   [],
+  //   { shared: true, cache: true, transform: result => result.data.locales },
+  // ],
+  // timezones: [
+  //   fetchTimezones,
+  //   [],
+  //   { shared: true, cache: true, transform: result => result.data.timezones },
+  // ],
   attributeDefinitions: [
     fetchAttributeDefinitions,
     [{ attributeType: 'spaceAttributeDefinitions' }],
@@ -132,28 +132,28 @@ const fields = () => [
     placeholder: 'form.jsp',
     visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
   },
-  {
-    name: 'defaultLocale',
-    label: 'Default Locale',
-    type: 'select',
-    options: ({ locales }) =>
-      locales.map(locale => ({
-        value: locale.get('code'),
-        label: locale.get('name'),
-      })),
-    initialValue: ({ space }) => get(space, 'defaultLocale'),
-  },
-  {
-    name: 'defaultTimezone',
-    label: 'Default Timezone',
-    type: 'select',
-    options: ({ timezones }) =>
-      timezones.map(timezone => ({
-        value: timezone.get('id'),
-        label: timezone.get('name'),
-      })),
-    initialValue: ({ space }) => get(space, 'defaultTimezone'),
-  },
+  // {
+  //   name: 'defaultLocale',
+  //   label: 'Default Locale',
+  //   type: 'select',
+  //   options: ({ locales }) =>
+  //     locales.map(locale => ({
+  //       value: locale.get('code'),
+  //       label: locale.get('name'),
+  //     })),
+  //   initialValue: ({ space }) => get(space, 'defaultLocale'),
+  // },
+  // {
+  //   name: 'defaultTimezone',
+  //   label: 'Default Timezone',
+  //   type: 'select',
+  //   options: ({ timezones }) =>
+  //     timezones.map(timezone => ({
+  //       value: timezone.get('id'),
+  //       label: timezone.get('name'),
+  //     })),
+  //   initialValue: ({ space }) => get(space, 'defaultTimezone'),
+  // },
   {
     name: 'displayType',
     label: 'Display Type',
@@ -184,6 +184,7 @@ const fields = () => [
     transient: true,
     visible: ({ values }) => get(values, 'displayType') === 'Redirect',
     required: ({ values }) => get(values, 'displayType') === 'Redirect',
+    requiredMessage: "This field is required, when display type is 'Redirect'",
     initialValue: ({ space }) =>
       get(space, 'displayType') === 'Redirect'
         ? get(space, 'displayValue')

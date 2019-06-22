@@ -53,18 +53,28 @@ const fields = ({ username }) => [
     required: true,
   },
   {
-    name: 'displayName',
-    label: 'Display Name',
-    type: 'text',
-    required: true,
-    initialValue: ({ user }) => get(user, 'displayName'),
-  },
-  {
     name: 'email',
     label: 'Email',
     type: 'text',
-    required: true,
     initialValue: ({ user }) => get(user, 'email', ''),
+  },
+  {
+    name: 'displayName',
+    label: 'Display Name',
+    type: 'text',
+    initialValue: ({ user }) => get(user, 'displayName'),
+  },
+  {
+    name: 'enabled',
+    label: 'Enabled?',
+    type: 'checkbox',
+    initialValue: ({ user }) => get(user, 'enabled', true),
+  },
+  {
+    name: 'spaceAdmin',
+    label: 'Space Admin?',
+    type: 'checkbox',
+    initialValue: ({ user }) => get(user, 'spaceAdmin'),
   },
   {
     name: 'password',
@@ -92,16 +102,12 @@ const fields = ({ username }) => [
     transient: true,
   },
   {
-    name: 'spaceAdmin',
-    label: 'Space Admin?',
-    type: 'checkbox',
-    initialValue: ({ user }) => get(user, 'spaceAdmin'),
-  },
-  {
-    name: 'enabled',
-    label: 'Enabled?',
-    type: 'checkbox',
-    initialValue: ({ user }) => get(user, 'enabled', true),
+    name: 'allowedIps',
+    label: 'Allowed IP Addresses',
+    placeholder: '*',
+    type: 'text',
+    required: false,
+    initialValue: ({ user }) => get(user, 'allowedIps'),
   },
   {
     name: 'preferredLocale',
@@ -146,6 +152,7 @@ const fields = ({ username }) => [
     label: 'Teams',
     type: 'team-multi',
     required: false,
+    placeholder: 'Select a team...',
     options: ({ teams }) => teams,
     initialValue: ({ user }) =>
       get(user, 'memberships', List()).map(m => m.get('team')),

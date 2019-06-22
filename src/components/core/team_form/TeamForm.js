@@ -48,6 +48,7 @@ const fields = ({ teamSlug }) => [
     type: 'team',
     required: false,
     transient: true,
+    placeholder: 'Select a parent team...',
     options: ({ teams }) => teams,
     initialValue: ({ team }) =>
       team
@@ -93,6 +94,7 @@ const fields = ({ teamSlug }) => [
     label: 'Members',
     type: 'user-multi',
     required: false,
+    placeholder: 'Select a user...',
     options: () => [],
     initialValue: ({ team }) =>
       get(team, 'memberships', List()).map(m => m.get('user')),

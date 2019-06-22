@@ -88,6 +88,7 @@ const UserSelect = props => (
     onChange={props.onChange}
     onFocus={props.onFocus}
     onBlur={props.onBlur}
+    placeholder={props.placeholder}
   />
 );
 

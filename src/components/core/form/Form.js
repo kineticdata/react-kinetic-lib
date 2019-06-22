@@ -102,6 +102,7 @@ const defaultFieldProps = fromJS({
   enabled: true,
   options: [],
   required: false,
+  placeholder: '',
   visible: true,
   dirty: false,
   focused: false,
@@ -116,6 +117,7 @@ const dynamicFieldProps = List([
   'initialValue',
   'options',
   'required',
+  'placeholder',
   'visible',
   'label',
 ]);
@@ -278,7 +280,14 @@ regHandlers({
       .updateIn(['forms', formKey, 'fields'], fields =>
         fields.map(
           evaluateFieldProps(
-            ['enabled', 'options', 'required', 'visible', 'label'],
+            [
+              'enabled',
+              'options',
+              'required',
+              'visible',
+              'label',
+              'placeholder',
+            ],
             bindings,
           ),
         ),
@@ -858,6 +867,7 @@ class FormImplComponent extends Component {
                             })}
                             visible={field.get('visible')}
                             required={field.get('required')}
+                            placeholder={field.get('placeholder')}
                             enabled={field.get('enabled')}
                             dirty={field.get('dirty')}
                             valid={field.get('valid')}
