@@ -191,6 +191,7 @@ const fields = ({ kappSlug }) => [
     label: 'Slug',
     type: 'text',
     required: true,
+    placeholder: 'Kapp Slug',
     initialValue: ({ kapp }) => get(kapp, 'slug'),
     onChange: (_bindings, { setValue }) => {
       setValue('linked', false);

@@ -84,5 +84,6 @@ export const deleteTeam = (options = {}) => {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
+    .then(response => ({ team: response.data.team }))
     .catch(handleErrors);
 };

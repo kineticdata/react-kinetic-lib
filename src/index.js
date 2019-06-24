@@ -8,9 +8,7 @@ import { ComponentConfigContext } from './components/common/ComponentConfigConte
 import { createHashHistory } from 'history';
 import { DefaultTableConfig } from './components/common/tables/defaults';
 import { remove } from 'immutable';
-export {
-  default as AuthenticationContainer,
-} from './components/common/AuthenticationContainer';
+import AuthenticationContainer from './components/common/authentication/AuthenticationContainer';
 export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
@@ -30,6 +28,8 @@ export {
   UserTable,
   SecurityDefinitionForm,
   SecurityDefinitionTable,
+  AttributeDefinitionsTable,
+  AttributeDefinitionForm,
   UserDetails,
   CoreForm,
   UserSelect,
@@ -182,7 +182,9 @@ const KineticLib = props => (
           .merge(remove(props.components || {}, 'fields'))
           .merge(props.components && props.components.fields)}
       >
-        {props.children}
+        <AuthenticationContainer clientId={props.clientId}>
+          {props.children}
+        </AuthenticationContainer>
       </ComponentConfigContext.Provider>
     </I18nProvider>
   </Provider>

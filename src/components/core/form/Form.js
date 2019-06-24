@@ -21,6 +21,7 @@ import {
 } from '../../../store';
 import { ComponentConfigContext } from '../../common/ComponentConfigContext';
 import { generateAttributesFieldProps } from './AttributesField';
+import { generateTextMultiFieldProps } from './TextMultiField';
 import { generateKey } from '../../../helpers';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
@@ -101,6 +102,7 @@ const defaultFieldProps = fromJS({
   enabled: true,
   options: [],
   required: false,
+  placeholder: '',
   visible: true,
   dirty: false,
   focused: false,
@@ -115,6 +117,7 @@ const dynamicFieldProps = List([
   'initialValue',
   'options',
   'required',
+  'placeholder',
   'visible',
   'label',
 ]);
@@ -277,7 +280,14 @@ regHandlers({
       .updateIn(['forms', formKey, 'fields'], fields =>
         fields.map(
           evaluateFieldProps(
-            ['enabled', 'options', 'required', 'visible', 'label'],
+            [
+              'enabled',
+              'options',
+              'required',
+              'visible',
+              'label',
+              'placeholder',
+            ],
             bindings,
           ),
         ),
@@ -666,7 +676,11 @@ export const mapStateToProps = (state, props) =>
     .toObject();
 
 const generateFieldProps = props =>
-  props.type === 'attributes' ? generateAttributesFieldProps(props) : props;
+  props.type === 'attributes'
+    ? generateAttributesFieldProps(props)
+    : props.type === 'text-multi'
+    ? generateTextMultiFieldProps(props)
+    : props;
 
 const typeToComponent = {
   text: 'TextField',
@@ -853,6 +867,7 @@ class FormImplComponent extends Component {
                             })}
                             visible={field.get('visible')}
                             required={field.get('required')}
+                            placeholder={field.get('placeholder')}
                             enabled={field.get('enabled')}
                             dirty={field.get('dirty')}
                             valid={field.get('valid')}

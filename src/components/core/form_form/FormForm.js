@@ -128,6 +128,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     name: 'description',
     label: 'Description',
     type: 'text',
+    placeholder: 'Description of Form',
     initialValue: ({ form }) => get(form, 'description'),
   },
   {
@@ -135,6 +136,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     label: 'Name',
     type: 'text',
     required: true,
+    placeholder: 'Form Title',
     onChange: ({ values }, { setValue }) => {
       if (values.get('linked')) {
         setValue('slug', slugify(values.get('name')), false);
@@ -153,6 +155,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     label: 'Slug',
     type: 'text',
     required: true,
+    placeholder: 'Form Slug',
     onChange: (_bindings, { setValue }) => {
       setValue('linked', false);
     },

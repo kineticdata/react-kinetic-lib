@@ -13,7 +13,7 @@ import { get, List, Map } from 'immutable';
 const dataSources = ({ teamSlug }) => ({
   team: [
     fetchTeam,
-    [{ teamSlug, include: 'attributesMap,memberships' }],
+    [{ teamSlug, include: 'attributesMap,memberships.user' }],
     {
       transform: result => result.team,
       runIf: () => !!teamSlug,
@@ -48,6 +48,7 @@ const fields = ({ teamSlug }) => [
     type: 'team',
     required: false,
     transient: true,
+    placeholder: 'Select a parent team...',
     options: ({ teams }) => teams,
     initialValue: ({ team }) =>
       team
@@ -68,11 +69,10 @@ const fields = ({ teamSlug }) => [
     name: 'name',
     type: 'text',
     visible: false,
-    serialize: ({ values }) => {
-      return !!values.get('parentTeam') && !!values.get('parentTeam').name
+    serialize: ({ values }) =>
+      !!values.get('parentTeam') && !!values.get('parentTeam').name
         ? `${values.get('parentTeam').name}::${values.get('localName')}`
-        : values.get('localName');
-    },
+        : values.get('localName'),
   },
   {
     name: 'description',
@@ -94,6 +94,7 @@ const fields = ({ teamSlug }) => [
     label: 'Members',
     type: 'user-multi',
     required: false,
+    placeholder: 'Select a user...',
     options: () => [],
     initialValue: ({ team }) =>
       get(team, 'memberships', List()).map(m => m.get('user')),
