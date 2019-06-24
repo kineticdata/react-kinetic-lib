@@ -66,7 +66,7 @@ const fields = () => [
     type: 'checkbox',
     required: false,
     initialValue: ({ attributeDefinition }) =>
-      attributeDefinition ? attributeDefinition.get('allowsMultiple') : '',
+      attributeDefinition ? attributeDefinition.get('allowsMultiple') : false,
   },
 ];
 
