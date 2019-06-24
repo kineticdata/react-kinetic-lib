@@ -35,16 +35,16 @@ const dataSources = ({ securityPolicyName }) => ({
 
 const handleSubmit = ({ securityPolicyName }) => values =>
   new Promise((resolve, reject) => {
-    const securityDefinition = values.toJS();
+    const securityPolicyDefinition = values.toJS();
     (securityPolicyName
       ? updateSecurityPolicyDefinition({
           securityPolicyName,
-          securityDefinition,
+          securityPolicyDefinition,
         })
-      : createSecurityPolicyDefinition({ securityDefinition })
-    ).then(({ securityDefinition, error }) => {
-      if (securityDefinition) {
-        resolve(securityDefinition);
+      : createSecurityPolicyDefinition({ securityPolicyDefinition })
+    ).then(({ securityPolicyDefinition, error }) => {
+      if (securityPolicyDefinition) {
+        resolve(securityPolicyDefinition);
       } else {
         reject(error);
       }
