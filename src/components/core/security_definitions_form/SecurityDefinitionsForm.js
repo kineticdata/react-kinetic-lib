@@ -6,7 +6,6 @@ import {
   createSecurityPolicyDefinition,
   updateSecurityPolicyDefinition,
 } from '../../../apis/core';
-import { get, List, Map } from 'immutable';
 
 const SECURITY_DEFINITION_TYPES = [
   'Space',
@@ -16,10 +15,10 @@ const SECURITY_DEFINITION_TYPES = [
   'User',
 ];
 
-const dataSources = ({ securityPolicyName }) => ({
+const dataSources = ({ securityPolicyName, kappSlug = null }) => ({
   securityPolicy: [
     fetchSecurityPolicyDefinition,
-    [{ securityPolicyName }],
+    [{ securityPolicyName, kappSlug }],
     {
       transform: result => result.securityPolicyDefinition,
       runIf: () => !!securityPolicyName,
@@ -33,15 +32,16 @@ const dataSources = ({ securityPolicyName }) => ({
   ],
 });
 
-const handleSubmit = ({ securityPolicyName }) => values =>
+const handleSubmit = ({ securityPolicyName, kappSlug = null }) => values =>
   new Promise((resolve, reject) => {
     const securityPolicyDefinition = values.toJS();
     (securityPolicyName
       ? updateSecurityPolicyDefinition({
           securityPolicyName,
           securityPolicyDefinition,
+          kappSlug,
         })
-      : createSecurityPolicyDefinition({ securityPolicyDefinition })
+      : createSecurityPolicyDefinition({ securityPolicyDefinition, kappSlug })
     ).then(({ securityPolicyDefinition, error }) => {
       if (securityPolicyDefinition) {
         resolve(securityPolicyDefinition);
@@ -89,7 +89,7 @@ const fields = () => [
   },
 ];
 
-export const SecurityDefinitionForm = ({
+export const SecurityDefinitionsForm = ({
   addFields,
   alterFields,
   fieldSet,

@@ -2,15 +2,16 @@ import React from 'react';
 import Table from '../../common/tables/Table';
 import { fetchSecurityPolicyDefinitions } from '../../../apis/core';
 
-const data = {
+const dataSource = ({ kappSlug = null }) => ({
   dataSource: fetchSecurityPolicyDefinitions,
   params: ({ pageSize, sortColumn, sortDirection, filters }) => ({
     include: 'details',
+    kappSlug,
   }),
   transform: result => ({
     data: result.securityPolicyDefinitions,
   }),
-};
+});
 
 const columns = [
   {
@@ -39,13 +40,15 @@ const columns = [
   },
 ];
 
-export const SecuityDefinitionTable = props => (
+export const SecuityDefinitionsTable = props => (
   <Table
     tableKey={props.tableKey}
     components={{
       ...props.components,
     }}
-    data={data}
+    data={dataSource({
+      kappSlug: props.kappSlug,
+    })}
     columns={columns}
     alterColumns={props.alterColumns}
     addColumns={props.addColumns}
@@ -55,8 +58,8 @@ export const SecuityDefinitionTable = props => (
   </Table>
 );
 
-export default SecuityDefinitionTable;
+export default SecuityDefinitionsTable;
 
-SecuityDefinitionTable.defaultProps = {
+SecuityDefinitionsTable.defaultProps = {
   columns,
 };
