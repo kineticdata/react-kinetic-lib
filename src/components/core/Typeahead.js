@@ -162,24 +162,27 @@ export default class Typeahead extends React.Component {
   };
 
   handleSearch = searchValue => ({ suggestions, error, nextPageToken }) => {
-    const custom = this.props.custom && fromJS(this.props.custom(searchValue));
-    const existing = (this.props.multiple ? this.props.value : []).map(
-      this.props.getSuggestionValue,
-    );
-    const filtered = suggestions
-      .map(suggestion => fromJS(suggestion))
-      .filter(
-        suggestion =>
-          !existing.includes(this.props.getSuggestionValue(suggestion)),
+    if (this.state.searchValue === searchValue) {
+      const custom =
+        this.props.custom && fromJS(this.props.custom(searchValue));
+      const existing = (this.props.multiple ? this.props.value : []).map(
+        this.props.getSuggestionValue,
       );
-    const newSuggestions =
-      custom && !this.props.textMode ? [...filtered, custom] : filtered;
-    return this.setState({
-      suggestions: newSuggestions,
-      error,
-      nextPageToken,
-      empty: newSuggestions.length === 0 && !custom,
-    });
+      const filtered = suggestions
+        .map(suggestion => fromJS(suggestion))
+        .filter(
+          suggestion =>
+            !existing.includes(this.props.getSuggestionValue(suggestion)),
+        );
+      const newSuggestions =
+        custom && !this.props.textMode ? [...filtered, custom] : filtered;
+      return this.setState({
+        suggestions: newSuggestions,
+        error,
+        nextPageToken,
+        empty: newSuggestions.length === 0 && !custom,
+      });
+    }
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
