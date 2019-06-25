@@ -1,7 +1,6 @@
 import React from 'react';
 import Typeahead from './Typeahead';
 import { fetchUsers } from '../../apis/core';
-import { get } from 'immutable';
 
 const emailPattern = /^.+@.+\..+$/;
 
@@ -24,7 +23,7 @@ const searchUsers = (searchField, value) =>
     nextPageToken,
   }));
 
-const userToValue = user => get(user, 'username') || get(user, 'email');
+const userToValue = user => user.get('username') || user.get('email');
 
 const valueToCustomUser = value =>
   value.match(emailPattern) && { email: value };
@@ -40,7 +39,7 @@ const getStatusProps = props => ({
         : props.empty && !props.custom
         ? 'No matching users.'
         : props.empty && props.custom
-        ? 'Not matching users. You may also enter a valid email.'
+        ? 'No matching users. You may also enter a valid email.'
         : 'There was an error fetching users.'
       : null,
   clearFilterField: props.searchField ? props.setSearchField(null) : null,
@@ -58,7 +57,7 @@ const getStatusProps = props => ({
 
 const Selection = ({ selection, edit, remove }) => (
   <tr>
-    <td>{get(selection, 'username')}</td>
+    <td>{selection.get('username') || selection.get('email')}</td>
     <td>
       <button onClick={edit || remove}>&times;</button>
     </td>
@@ -67,7 +66,7 @@ const Selection = ({ selection, edit, remove }) => (
 
 const Suggestion = ({ suggestion, active }) => (
   <div style={active ? { fontWeight: 'bold' } : {}}>
-    {get(suggestion, 'username')}
+    {suggestion.get('username') || suggestion.get('email')}
   </div>
 );
 

@@ -1,7 +1,6 @@
-import { get } from 'immutable';
-
 export const splitTeamName = team => {
-  const [local, ...parents] = get(team, 'name')
+  const [local, ...parents] = team
+    .get('name')
     .split('::')
     .reverse();
   return [parents.reverse().join('::'), local];
