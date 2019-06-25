@@ -216,7 +216,7 @@ export default class Typeahead extends React.Component {
     const { editing, newValue, suggestions } = this.state;
     return (
       <div className="kinetic-typeahead">
-        <SelectionsContainer>
+        <SelectionsContainer selections={value} multiple={multiple}>
           {multiple &&
             value.map((selection, i) => (
               <Fragment key={i}>
