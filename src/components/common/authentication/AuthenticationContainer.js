@@ -110,6 +110,7 @@ export class AuthenticationComponent extends Component {
       initialized,
       authenticated,
       token,
+      error,
       username,
       password,
     } = this.props;
@@ -145,6 +146,7 @@ export class AuthenticationComponent extends Component {
             onChangePassword,
             username,
             password,
+            error,
           },
         })}
       </Fragment>
