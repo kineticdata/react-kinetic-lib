@@ -2,6 +2,8 @@ import React, { Fragment } from 'react';
 import Autosuggest from 'react-autosuggest';
 import { fromJS } from 'immutable';
 
+const DEBOUNCE_DURATION = 150;
+
 const StatusDefault = props => (
   <div>
     {props.info && (
@@ -193,11 +195,16 @@ export default class Typeahead extends React.Component {
         searchValue !== prevState.searchValue ||
         !prevState.touched)
     ) {
-      searchValue
-        ? this.props
+      if (searchValue) {
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          this.props
             .search(searchField, searchValue)
-            .then(this.handleSearch(searchValue))
-        : this.onClearSuggestions();
+            .then(this.handleSearch(searchValue));
+        }, DEBOUNCE_DURATION);
+      } else {
+        this.onClearSuggestions();
+      }
     }
     if (this.state.editing && !prevState.editing) {
       this.autosuggest.input.focus();
