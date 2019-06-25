@@ -16,6 +16,8 @@ export const login = ({ username, password }) =>
     )
     .catch(handleErrors);
 
+export const logout = () => axios.get(`${bundle.spaceLocation()}/app/logout`);
+
 export const coreOauthAuthorizeUrl = clientId => {
   return `${bundle.spaceLocation()}/app/oauth/authorize?grant_type=implicit&client_id=${encodeURIComponent(
     clientId,

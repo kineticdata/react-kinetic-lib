@@ -1,8 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import t from 'prop-types';
 import qs from 'qs';
 import { regHandlers, connect, dispatch, regSaga } from '../../../store';
-import { login, fetchProfile } from '../../../apis/core';
+import { login, logout, fetchProfile } from '../../../apis/core';
 import { takeEvery, select, call, put } from 'redux-saga/effects';
 
 import { RetrieveJwtIframe } from './RetrieveJwtIframe';
@@ -23,6 +22,10 @@ regHandlers({
   SET_ERROR: (state, action) => state.setIn(['login', 'error'], action.payload),
 
   ATTEMPT_LOGIN: state => state.setIn(['login', 'error'], null),
+  LOGOUT: state =>
+    state
+      .setIn(['session', 'authenticated'], false)
+      .setIn(['session', 'token'], null),
 });
 
 regSaga(
@@ -48,11 +51,19 @@ regSaga(
   }),
 );
 
+regSaga(
+  takeEvery('LOGOUT', function*() {
+    yield call(logout);
+  }),
+);
+
 const mapStateToProps = state => ({
   initialized: state.getIn(['session', 'initialized'], false),
   authenticated: state.getIn(['session', 'authenticated'], false),
   token: state.getIn(['session', 'token'], null),
   error: state.getIn(['login', 'error'], null),
+  username: state.getIn(['login', 'username'], ''),
+  password: state.getIn(['login', 'password'], ''),
 });
 
 const onChangeUsername = e => {
@@ -66,6 +77,10 @@ const onChangePassword = e => {
 const onLogin = e => {
   e.preventDefault();
   dispatch('ATTEMPT_LOGIN');
+};
+
+const onLogout = () => {
+  dispatch('LOGOUT');
 };
 
 const processOAuthToken = token => {
@@ -143,4 +158,5 @@ const AuthenticationContainer = connect(mapStateToProps)(
 
 AuthenticationContainer.propTypes = {};
 
+export { AuthenticationContainer, onLogout };
 export default AuthenticationContainer;

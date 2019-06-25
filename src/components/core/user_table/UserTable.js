@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Map } from 'immutable';
 import Table from '../../common/tables/Table';
 import { fetchUsers } from '../../../apis/core';
-
-const tableKey = 'user-table';
 
 const startsWith = (field, value) => `${field} =* "${value}"`;
 const equals = (field, value) => `${field} = "${value}"`;

@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Table from '../../common/tables/Table';
 import { fetchAttributeDefinitions } from '../../../apis/core';
-
-const tableKey = 'attribute-definition-table';
 
 const dataSource = ({ attributeType }) => ({
   dataSource: fetchAttributeDefinitions,
@@ -33,28 +31,26 @@ const columns = [
   },
 ];
 
-export default class AttributeDefinitionsTable extends Component {
-  render() {
-    return (
-      <Table
-        tableKey={this.props.tableKey}
-        components={{
-          ...this.props.components,
-        }}
-        data={dataSource({
-          attributeType: this.props.attributeType,
-        })}
-        columns={columns}
-        addColumns={this.props.addColumns}
-        columnSet={this.props.columnSet}
-        pageSize={this.props.pageSize}
-      >
-        {this.props.children}
-      </Table>
-    );
-  }
-}
+const AttributeDefinitionsTable = props => (
+  <Table
+    tableKey={props.tableKey}
+    components={{
+      ...props.components,
+    }}
+    data={dataSource({
+      attributeType: props.attributeType,
+    })}
+    columns={columns}
+    addColumns={props.addColumns}
+    columnSet={props.columnSet}
+    pageSize={props.pageSize}
+  >
+    {props.children}
+  </Table>
+);
 
 AttributeDefinitionsTable.defaultProps = {
   columns,
 };
+
+export default AttributeDefinitionsTable;

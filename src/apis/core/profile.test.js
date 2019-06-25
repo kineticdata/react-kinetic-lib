@@ -20,7 +20,6 @@ describe('profile api', () => {
     describe('when successful', () => {
       let response;
       let testUser;
-      let username;
 
       beforeEach(() => {
         response = {
@@ -31,7 +30,6 @@ describe('profile api', () => {
           .stub()
           .withAttribute('Attribute', 'value')
           .build();
-        username = testUser.username;
         response.data = testUser;
         axios.get = resolvePromiseWith(response);
       });

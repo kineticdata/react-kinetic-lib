@@ -10,6 +10,9 @@ import { DefaultTableConfig } from './components/common/tables/defaults';
 import { remove } from 'immutable';
 import AuthenticationContainer from './components/common/authentication/AuthenticationContainer';
 export {
+  onLogout,
+} from './components/common/authentication/AuthenticationContainer';
+export {
   default as ContentEditable,
 } from './components/common/ContentEditable';
 export { default as Table } from './components/common/tables/Table';
@@ -78,6 +81,7 @@ export {
   fetchAttributeDefinitions,
   // Authentication exports,
   login,
+  logout,
   coreOauthAuthorizeUrl,
   // Bridged Resource exports
   bridgedResourceUrl,
@@ -180,9 +184,13 @@ const KineticLib = props => (
           .merge(remove(props.components || {}, 'fields'))
           .merge(props.components && props.components.fields)}
       >
-        <AuthenticationContainer clientId={props.clientId}>
-          {props.children}
-        </AuthenticationContainer>
+        {typeof props.children === 'function' ? (
+          <AuthenticationContainer clientId={props.clientId}>
+            {props.children}
+          </AuthenticationContainer>
+        ) : (
+          props.children
+        )}
       </ComponentConfigContext.Provider>
     </I18nProvider>
   </Provider>

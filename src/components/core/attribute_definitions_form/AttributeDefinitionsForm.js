@@ -6,7 +6,6 @@ import {
   fetchAttributeDefinition,
   fetchAttributeDefinitions,
 } from '../../../apis/core';
-import { get, List, Map } from 'immutable';
 
 const dataSources = ({ attributeType, attributeName }) => ({
   attributeDefinition: [
