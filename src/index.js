@@ -79,6 +79,8 @@ export {
   createInvite,
 } from './apis/discussions';
 export {
+  // Activity exports
+  fetchActivity,
   // Attribute Definition exports
   fetchAttributeDefinitions,
   // Authentication exports,

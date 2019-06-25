@@ -60,6 +60,7 @@ export const paramBuilder = options => {
   if (options.orderBy) params.orderBy = options.orderBy;
   if (options.manage) params.manage = options.manage;
   if (options.export) params.export = options.export;
+  if (options.days) params.days = options.days;
 
   return params;
 };
