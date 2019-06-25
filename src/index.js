@@ -26,6 +26,8 @@ export {
   TeamTable,
   UserForm,
   UserTable,
+  SecurityDefinitionForm,
+  SecurityDefinitionTable,
   AttributeDefinitionsTable,
   AttributeDefinitionForm,
   UserDetails,
