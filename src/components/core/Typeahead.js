@@ -2,6 +2,8 @@ import React, { Fragment } from 'react';
 import Autosuggest from 'react-autosuggest';
 import { fromJS } from 'immutable';
 
+const DEBOUNCE_DURATION = 150;
+
 const StatusDefault = props => (
   <div>
     {props.info && (
@@ -162,24 +164,27 @@ export default class Typeahead extends React.Component {
   };
 
   handleSearch = searchValue => ({ suggestions, error, nextPageToken }) => {
-    const custom = this.props.custom && fromJS(this.props.custom(searchValue));
-    const existing = (this.props.multiple ? this.props.value : []).map(
-      this.props.getSuggestionValue,
-    );
-    const filtered = suggestions
-      .map(suggestion => fromJS(suggestion))
-      .filter(
-        suggestion =>
-          !existing.includes(this.props.getSuggestionValue(suggestion)),
+    if (this.state.searchValue === searchValue) {
+      const custom =
+        this.props.custom && fromJS(this.props.custom(searchValue));
+      const existing = (this.props.multiple ? this.props.value : []).map(
+        this.props.getSuggestionValue,
       );
-    const newSuggestions =
-      custom && !this.props.textMode ? [...filtered, custom] : filtered;
-    return this.setState({
-      suggestions: newSuggestions,
-      error,
-      nextPageToken,
-      empty: newSuggestions.length === 0 && !custom,
-    });
+      const filtered = suggestions
+        .map(suggestion => fromJS(suggestion))
+        .filter(
+          suggestion =>
+            !existing.includes(this.props.getSuggestionValue(suggestion)),
+        );
+      const newSuggestions =
+        custom && !this.props.textMode ? [...filtered, custom] : filtered;
+      return this.setState({
+        suggestions: newSuggestions,
+        error,
+        nextPageToken,
+        empty: newSuggestions.length === 0 && !custom,
+      });
+    }
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -190,11 +195,16 @@ export default class Typeahead extends React.Component {
         searchValue !== prevState.searchValue ||
         !prevState.touched)
     ) {
-      searchValue
-        ? this.props
+      if (searchValue) {
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          this.props
             .search(searchField, searchValue)
-            .then(this.handleSearch(searchValue))
-        : this.onClearSuggestions();
+            .then(this.handleSearch(searchValue));
+        }, DEBOUNCE_DURATION);
+      } else {
+        this.onClearSuggestions();
+      }
     }
     if (this.state.editing && !prevState.editing) {
       this.autosuggest.input.focus();
