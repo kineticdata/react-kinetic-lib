@@ -1,5 +1,4 @@
 import React from 'react';
-import { get } from 'immutable';
 import Typeahead from './Typeahead';
 import { fetchTeams } from '../../apis/core';
 
@@ -21,7 +20,7 @@ const searchTeams = (field, value) =>
     nextPageToken,
   }));
 
-const teamToValue = team => get(team, 'name');
+const teamToValue = team => team.get('name');
 
 const getStatusProps = props => ({
   info: props.searchField ? `Find Teams by ${fields[props.searchField]}` : null,
@@ -51,7 +50,7 @@ const getStatusProps = props => ({
 
 const Selection = ({ selection, edit, remove }) => (
   <tr>
-    <td>{get(selection, 'name')}</td>
+    <td>{selection.get('name')}</td>
     <td>
       <button onClick={edit || remove}>&times;</button>
     </td>
@@ -60,7 +59,7 @@ const Selection = ({ selection, edit, remove }) => (
 
 const Suggestion = ({ suggestion, active }) => (
   <div style={active ? { fontWeight: 'bold' } : {}}>
-    {get(suggestion, 'name')}
+    {suggestion.get('name')}
   </div>
 );
 

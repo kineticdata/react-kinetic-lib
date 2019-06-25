@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import Autosuggest from 'react-autosuggest';
+import { fromJS } from 'immutable';
 
 const StatusDefault = props => (
   <div>
@@ -72,7 +73,7 @@ export default class Typeahead extends React.Component {
     const match = suggestions.find(
       suggestion => getSuggestionValue(suggestion) === newValue,
     );
-    const customValue = custom && custom(newValue);
+    const customValue = custom && fromJS(custom(newValue));
     this.setState({
       newValue:
         !touched || (textMode && (match || customValue)) ? newValue : '',
@@ -161,14 +162,16 @@ export default class Typeahead extends React.Component {
   };
 
   handleSearch = searchValue => ({ suggestions, error, nextPageToken }) => {
-    const custom = this.props.custom ? this.props.custom(searchValue) : null;
+    const custom = this.props.custom && fromJS(this.props.custom(searchValue));
     const existing = (this.props.multiple ? this.props.value : []).map(
       this.props.getSuggestionValue,
     );
-    const filtered = suggestions.filter(
-      suggestion =>
-        !existing.includes(this.props.getSuggestionValue(suggestion)),
-    );
+    const filtered = suggestions
+      .map(suggestion => fromJS(suggestion))
+      .filter(
+        suggestion =>
+          !existing.includes(this.props.getSuggestionValue(suggestion)),
+      );
     const newSuggestions =
       custom && !this.props.textMode ? [...filtered, custom] : filtered;
     return this.setState({
@@ -216,7 +219,7 @@ export default class Typeahead extends React.Component {
     const { editing, newValue, suggestions } = this.state;
     return (
       <div className="kinetic-typeahead">
-        <SelectionsContainer>
+        <SelectionsContainer selections={value} multiple={multiple}>
           {multiple &&
             value.map((selection, i) => (
               <Fragment key={i}>
