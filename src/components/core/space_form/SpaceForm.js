@@ -16,16 +16,16 @@ const dataSources = () => ({
     [{ include: 'attributesMap,securityPolicies,details,filestore' }],
     { transform: result => result.space },
   ],
-  // locales: [
-  //   fetchLocales,
-  //   [],
-  //   { shared: true, cache: true, transform: result => result.data.locales },
-  // ],
-  // timezones: [
-  //   fetchTimezones,
-  //   [],
-  //   { shared: true, cache: true, transform: result => result.data.timezones },
-  // ],
+  locales: [
+    fetchLocales,
+    [],
+    { shared: true, cache: true, transform: result => result.data.locales },
+  ],
+  timezones: [
+    fetchTimezones,
+    [],
+    { shared: true, cache: true, transform: result => result.data.timezones },
+  ],
   attributeDefinitions: [
     fetchAttributeDefinitions,
     [{ attributeType: 'spaceAttributeDefinitions' }],

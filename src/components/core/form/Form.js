@@ -75,7 +75,9 @@ const resolveAncestorDependencies = (
     if (!nextAncestorsMap.equals(ancestorsMap)) {
       return resolveAncestorDependencies(dataSources, nextAncestorsMap);
     } else {
-      throw 'Could not resolve dependency graph due to missing or cyclic dependencies';
+      throw new Error(
+        'Could not resolve dependency graph due to missing or cyclic dependencies',
+      );
     }
   }
 };

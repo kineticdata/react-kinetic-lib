@@ -1,3 +1,5 @@
+export { fetchActivity } from './activity';
+
 export {
   fetchAttributeDefinition,
   fetchAttributeDefinitions,
