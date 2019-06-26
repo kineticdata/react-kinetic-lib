@@ -5,6 +5,8 @@ export {
   updateAttributeDefinition,
 } from './attributeDefinitions';
 
+export * from './oauthClients';
+
 export { login, logout, coreOauthAuthorizeUrl } from './authentication';
 
 export {

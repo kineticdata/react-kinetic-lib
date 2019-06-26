@@ -20,25 +20,7 @@ export {
   mountTable,
   unmountTable,
 } from './components/common/tables/Table.redux';
-export {
-  AttributeDefinitionsTable,
-  AttributeDefinitionForm,
-  CoreForm,
-  FormForm,
-  FormTable,
-  KappForm,
-  KappTable,
-  SecurityDefinitionsForm,
-  SecurityDefinitionsTable,
-  SpaceForm,
-  TeamForm,
-  TeamSelect,
-  TeamTable,
-  UserDetails,
-  UserForm,
-  UserSelect,
-  UserTable,
-} from './components/core';
+export * from './components/core';
 export {
   DateBanner,
   DiscussionForm,
@@ -58,119 +40,9 @@ export {
   getGroupedDiscussions,
   sortByLastMessageAt,
 } from './models/discussions';
-export {
-  fetchDiscussions,
-  createDiscussion,
-  sendInvites,
-  createRelatedItem,
-  updateDiscussion,
-  resendInvite,
-  removeInvite,
-  removeParticipant,
-  updateParticipant,
-  sendMessage,
-  updateMessage,
-  fetchMessage,
-  fetchMessages,
-  fetchMessageHistory,
-  fetchDiscussion,
-  fetchInvites,
-  fetchParticipants,
-  createInvite,
-} from './apis/discussions';
-export {
-  // Attribute Definition exports
-  fetchAttributeDefinitions,
-  // Authentication exports,
-  login,
-  logout,
-  coreOauthAuthorizeUrl,
-  // Bridged Resource exports
-  bridgedResourceUrl,
-  convertMultipleBridgeRecords,
-  fetchBridgedResource,
-  countBridgedResource,
-  // Bridge Model exports
-  fetchBridgeModels,
-  fetchBridgeModel,
-  createBridgeModel,
-  updateBridgeModel,
-  // Category exports
-  fetchCategories,
-  fetchCategory,
-  createCategory,
-  updateCategory,
-  // Form exports
-  fetchForms,
-  fetchForm,
-  createForm,
-  updateForm,
-  deleteForm,
-  // Kapp exports
-  fetchKapps,
-  fetchKapp,
-  updateKapp,
-  deleteKapp,
-  // Membership exports
-  createMembership,
-  deleteMembership,
-  // Profile exports
-  fetchProfile,
-  updateProfile,
-  // Security Policy Definition exports
-  fetchSecurityPolicyDefinitions,
-  fetchSecurityPolicyDefinition,
-  createSecurityPolicyDefinition,
-  updateSecurityPolicyDefinition,
-  // Space exports
-  fetchSpace,
-  updateSpace,
-  // Submission exports
-  SubmissionSearch,
-  searchSubmissions,
-  fetchSubmission,
-  createSubmission,
-  updateSubmission,
-  deleteSubmission,
-  // Team exports
-  fetchTeams,
-  fetchTeam,
-  updateTeam,
-  createTeam,
-  deleteTeam,
-  // Translations exports
-  fetchAvailableLocales,
-  clearTranslationsCache,
-  fetchStagedTranslations,
-  fetchDefaultLocale,
-  setDefaultLocale,
-  fetchEnabledLocales,
-  enableLocale,
-  disableLocale,
-  fetchContexts,
-  createContext,
-  updateContext,
-  deleteContext,
-  fetchContextKeys,
-  updateContextKey,
-  fetchTranslations,
-  upsertTranslations,
-  deleteTranslations,
-  // User exports
-  fetchUsers,
-  fetchUser,
-  updateUser,
-  createUser,
-  deleteUser,
-  // Version exports
-  fetchVersion,
-  // Webhook exports
-  fetchWebhooks,
-  fetchWebhook,
-  createWebhook,
-  updateWebhook,
-} from './apis/core';
-export { socket, socketIdentify } from './apis/socket';
+export * from './apis/discussions';
+export * from './apis/core';
+export * from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';
 export { I18n } from './components/core/i18n/I18n';
 export { Moment, importLocale } from './components/core/i18n/Moment';
