@@ -2,7 +2,6 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { context, commitStore, configure, store } from './store';
 import { I18nProvider } from './components/core/i18n/I18nProvider';
-import './redux/meta';
 import { DefaultFieldConfig } from './components/core/form/DefaultFieldConfig';
 import { ComponentConfigContext } from './components/common/ComponentConfigContext';
 import { createHashHistory } from 'history';
