@@ -298,10 +298,10 @@ const fields = () => [
     visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
   },
   {
-    name: 'oAuthSigningKey',
-    label: 'oAuth Signing Key',
+    name: 'oauthSigningKey',
+    label: 'OAuth Signing Key',
     type: 'password',
-    initialValue: ({ space }) => get(space, 'oAuthSigningKey'),
+    initialValue: ({ space }) => get(space, 'oauthSigningKey'),
   },
   {
     name: 'sessionInactiveLimitInSeconds',
