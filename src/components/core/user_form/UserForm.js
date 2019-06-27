@@ -82,6 +82,7 @@ const fields = ({ username }) => [
     type: 'password',
     required: ({ values }) => values.get('changePassword'),
     visible: ({ values }) => values.get('changePassword'),
+    transient: ({ values }) => !values.get('changePassword'),
   },
   {
     name: 'passwordConfirmation',
@@ -89,6 +90,7 @@ const fields = ({ username }) => [
     type: 'password',
     required: ({ values }) => values.get('changePassword'),
     visible: ({ values }) => values.get('changePassword'),
+    transient: ({ values }) => !values.get('changePassword'),
     constraint: ({ values }) =>
       values.get('passwordConfirmation') === values.get('password'),
     constraintMessage: 'Password Confirmation does not match',

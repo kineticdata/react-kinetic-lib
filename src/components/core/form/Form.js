@@ -122,6 +122,7 @@ const dynamicFieldProps = List([
   'placeholder',
   'visible',
   'label',
+  'transient',
 ]);
 
 const selectDataSourcesData = formKey => state =>
@@ -289,6 +290,7 @@ regHandlers({
               'visible',
               'label',
               'placeholder',
+              'transient',
             ],
             bindings,
           ),
@@ -477,31 +479,32 @@ const dependsOn = (name, includeAncestors) => dataSource =>
     )
     .includes(name);
 
-regSaga(
-  takeEvery('RESOLVE_DATA_SOURCE', function*({ payload }) {
-    const { formKey, name } = payload;
-    const [dataSources, valuesInitialized] = yield select(state => [
-      state.getIn(['forms', formKey, 'dataSources']),
-      state.getIn(['forms', formKey, 'valuesInitialized']),
-    ]);
-    yield all(
-      dataSources
-        .filter(dependsOn(name))
-        .keySeq()
-        .map(name => put(action('CHECK_DATA_SOURCE', { formKey, name })))
-        .toArray(),
-    );
-    if (
-      dataSources.filterNot(dependsOn('values', true)).every(isResolved) &&
-      !valuesInitialized
-    ) {
-      yield put(action('EVAL_INITIAL_VALUES', { formKey }));
-    }
-    if (dataSources.every(isResolved) && valuesInitialized) {
-      yield put(action('EVAL_FIELDS', { formKey }));
-    }
-  }),
-);
+function* dataSourceSaga({ payload }) {
+  const { formKey, name } = payload;
+  const [dataSources, valuesInitialized] = yield select(state => [
+    state.getIn(['forms', formKey, 'dataSources']),
+    state.getIn(['forms', formKey, 'valuesInitialized']),
+  ]);
+  yield all(
+    dataSources
+      .filter(dependsOn(name))
+      .keySeq()
+      .map(name => put(action('CHECK_DATA_SOURCE', { formKey, name })))
+      .toArray(),
+  );
+  if (
+    dataSources.filterNot(dependsOn('values', true)).every(isResolved) &&
+    !valuesInitialized
+  ) {
+    yield put(action('EVAL_INITIAL_VALUES', { formKey }));
+  }
+  if (dataSources.every(isResolved) && valuesInitialized) {
+    yield put(action('EVAL_FIELDS', { formKey }));
+  }
+}
+
+regSaga(takeEvery('RESOLVE_DATA_SOURCE', dataSourceSaga));
+regSaga(takeEvery('IGNORE_DATA_SOURCE', dataSourceSaga));
 
 regSaga(
   takeEvery('EVAL_INITIAL_VALUES', function*({ payload: { formKey } }) {
@@ -688,6 +691,7 @@ const typeToComponent = {
   text: 'TextField',
   'text-multi': 'TextMultiField',
   checkbox: 'CheckboxField',
+  password: 'PasswordField',
   select: 'SelectField',
   attributes: 'AttributesField',
   team: 'TeamField',
