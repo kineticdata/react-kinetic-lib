@@ -122,6 +122,7 @@ const dynamicFieldProps = List([
   'placeholder',
   'visible',
   'label',
+  'transient',
 ]);
 
 const selectDataSourcesData = formKey => state =>
@@ -289,6 +290,7 @@ regHandlers({
               'visible',
               'label',
               'placeholder',
+              'transient',
             ],
             bindings,
           ),
@@ -689,6 +691,7 @@ const typeToComponent = {
   text: 'TextField',
   'text-multi': 'TextMultiField',
   checkbox: 'CheckboxField',
+  password: 'PasswordField',
   select: 'SelectField',
   attributes: 'AttributesField',
   team: 'TeamField',
