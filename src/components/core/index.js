@@ -4,6 +4,7 @@ export {
 } from './attribute_definitions_form/AttributeDefinitionsForm';
 export { FormForm } from './form_form/FormForm';
 export { KappForm } from './kapp_form/KappForm';
+export { OAuthClientForm } from './oauth_client_form/OAuthClientForm';
 export {
   SecurityDefinitionsForm,
 } from './security_definitions_form/SecurityDefinitionsForm';
@@ -17,6 +18,9 @@ export {
 } from './attribute_definitions_table/AttributeDefinitionsTable';
 export { default as FormTable } from './form_table/FormTable';
 export { default as KappTable } from './kapp_table/KappTable';
+export {
+  default as OAuthClientTable,
+} from './oauth_clients_table/OAuthClientsTable';
 export {
   default as SecurityDefinitionsTable,
 } from './security_definitions_table/SecurityDefinitionsTable';
