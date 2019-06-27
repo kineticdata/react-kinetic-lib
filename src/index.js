@@ -100,6 +100,10 @@ export {
   deleteMembership,
   // OAuth Exports
   fetchOAuthClients,
+  fetchOAuthClient,
+  updateOAuthClient,
+  createOAuthClient,
+  deleteOAuthClient,
   // Profile exports
   fetchProfile,
   updateProfile,
