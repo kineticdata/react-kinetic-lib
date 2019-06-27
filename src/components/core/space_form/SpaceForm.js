@@ -301,7 +301,17 @@ const fields = () => [
     name: 'oauthSigningKey',
     label: 'OAuth Signing Key',
     type: 'password',
+    required: ({ values }) => values.get('changeOAuthSigningKey'),
+    enabled: ({ values }) => values.get('changeOAuthSigningKey'),
+    transient: ({ values }) => !values.get('changeOAuthSigningKey'),
     initialValue: ({ space }) => get(space, 'oauthSigningKey'),
+  },
+  {
+    name: 'changeOAuthSigningKey',
+    label: 'Change OAuth Signing Key',
+    type: 'checkbox',
+    initialValue: false,
+    transient: true,
   },
   {
     name: 'sessionInactiveLimitInSeconds',
