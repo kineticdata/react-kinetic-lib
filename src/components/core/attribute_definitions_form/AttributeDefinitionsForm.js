@@ -26,7 +26,10 @@ const handleSubmit = ({ attributeType, attributeName }) => values =>
     ).then(({ attributeDefinition, error }) =>
       attributeDefinition
         ? resolve(attributeDefinition)
-        : reject(error.message || 'Error saving attribute definition'),
+        : reject(
+            error.message ||
+              'There was an error saving the attribute definition',
+          ),
     );
   });
 

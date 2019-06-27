@@ -1,6 +1,5 @@
 import React from 'react';
 import { Form } from '../form/Form';
-import { fetchSpace } from '../../../apis/core';
 import {
   fetchSecurityPolicyDefinition,
   createSecurityPolicyDefinition,
@@ -24,12 +23,6 @@ const dataSources = ({ securityPolicyName, kappSlug = null }) => ({
       runIf: () => !!securityPolicyName,
     },
   ],
-  // Fetching space to trigger a rerender.  This is a bug work around.
-  space: [
-    fetchSpace,
-    [{ include: 'details' }],
-    { transform: result => result.space },
-  ],
 });
 
 const handleSubmit = ({ securityPolicyName, kappSlug = null }) => values =>
@@ -46,7 +39,10 @@ const handleSubmit = ({ securityPolicyName, kappSlug = null }) => values =>
       if (securityPolicyDefinition) {
         resolve(securityPolicyDefinition);
       } else {
-        reject(error);
+        reject(
+          error.message ||
+            'There was an error saving the security policy definition',
+        );
       }
     });
   });
@@ -62,8 +58,9 @@ const fields = () => [
   },
   {
     name: 'type',
-    type: 'select',
     label: 'Type',
+    type: 'select',
+    required: true,
     options: SECURITY_DEFINITION_TYPES.map(ele => ({
       value: ele,
       label: ele,
