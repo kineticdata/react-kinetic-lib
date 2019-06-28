@@ -4,7 +4,6 @@ import {
   createAttributeDefinition,
   updateAttributeDefinition,
   fetchAttributeDefinition,
-  fetchAttributeDefinitions,
 } from '../../../apis/core';
 
 const dataSources = ({ attributeType, attributeName }) => ({
@@ -16,30 +15,22 @@ const dataSources = ({ attributeType, attributeName }) => ({
       runIf: () => !!attributeName,
     },
   ],
-  attributeDefinitions: [
-    fetchAttributeDefinitions,
-    [{ attributeType, include: 'details' }],
-    { transform: result => result.attributeDefinitions },
-  ],
 });
 
 const handleSubmit = ({ attributeType, attributeName }) => values =>
   new Promise((resolve, reject) => {
-    const attributeDefinition = values.toJS();
+    const options = { attributeDefinition: values.toJS(), attributeType };
     (attributeName
-      ? updateAttributeDefinition({
-          attributeType,
-          attributeName,
-          attributeDefinition,
-        })
-      : createAttributeDefinition({ attributeType, attributeDefinition })
-    ).then(({ attributeDefinition, error }) => {
-      if (attributeDefinition) {
-        resolve(attributeDefinition);
-      } else {
-        reject(error);
-      }
-    });
+      ? updateAttributeDefinition({ ...options, attributeName })
+      : createAttributeDefinition(options)
+    ).then(({ attributeDefinition, error }) =>
+      attributeDefinition
+        ? resolve(attributeDefinition)
+        : reject(
+            error.message ||
+              'There was an error saving the attribute definition',
+          ),
+    );
   });
 
 const fields = () => [

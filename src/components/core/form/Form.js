@@ -157,8 +157,10 @@ const defaultMap = Map({
   attributes: Map(),
   checkbox: false,
   'checkbox-multi': List(),
+  'select-multi': List(),
   team: null,
   'team-multi': List(),
+  'text-multi': List(),
   user: null,
   'user-multi': List(),
 });
@@ -640,14 +642,24 @@ export const onBlur = ({ formKey, field }) => () => {
 };
 
 export const onChange = ({ formKey, type, name }) => event => {
-  actions.setValue(formKey)(
-    name,
-    type === 'checkbox'
-      ? event.target.checked
-      : event && event.target
-      ? event.target.value
-      : event,
-  );
+  let value;
+  if (type === 'checkbox' && event && event.target) {
+    value = event.target.checked;
+  } else if (
+    type === 'select-multi' &&
+    event &&
+    event.target &&
+    event.target.options
+  ) {
+    value = List(event.target.options)
+      .filter(o => o.selected)
+      .map(o => o.value);
+  } else if (event && event.target && event.target.value) {
+    value = event.target.value;
+  } else {
+    value = event;
+  }
+  actions.setValue(formKey)(name, value);
 };
 
 export const onSubmit = (formKey, fieldSet) => event => {
@@ -693,6 +705,7 @@ const typeToComponent = {
   checkbox: 'CheckboxField',
   password: 'PasswordField',
   select: 'SelectField',
+  'select-multi': 'SelectMultiField',
   attributes: 'AttributesField',
   team: 'TeamField',
   'team-multi': 'TeamMultiField',

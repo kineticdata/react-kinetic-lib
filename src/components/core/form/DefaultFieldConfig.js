@@ -5,6 +5,7 @@ import { PasswordField } from './PasswordField';
 import { TeamField } from './TeamField';
 import { TeamMultiField } from './TeamMultiField';
 import { SelectField } from './SelectField';
+import { SelectMultiField } from './SelectMultiField';
 import { TextField } from './TextField';
 import { TextMultiField } from './TextMultiField';
 import { UserField } from './UserField';
@@ -17,6 +18,7 @@ export const DefaultFieldConfig = Map({
   TeamField,
   TeamMultiField,
   SelectField,
+  SelectMultiField,
   TextField,
   TextMultiField,
   UserField,
