@@ -35,7 +35,7 @@ const handleSubmit = ({ teamSlug }) => values =>
         if (team) {
           resolve(team);
         } else {
-          reject(error);
+          reject(error.message || 'There was an error saving the team');
         }
       },
     );
@@ -70,7 +70,7 @@ const fields = ({ teamSlug }) => [
     type: 'text',
     visible: false,
     serialize: ({ values }) =>
-      values.hasIn(['parentTeam', 'name'])
+      values.getIn(['parentTeam', 'name']) !== ''
         ? `${values.getIn(['parentTeam', 'name'])}::${values.get('localName')}`
         : values.get('localName'),
   },
