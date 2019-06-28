@@ -5,6 +5,7 @@ export {
 export { FormForm } from './form_form/FormForm';
 export { KappForm } from './kapp_form/KappForm';
 export { OAuthClientForm } from './oauth_client_form/OAuthClientForm';
+export { default as IndexJobTable } from './index_job_table/IndexJobTable';
 export {
   SecurityDefinitionsForm,
 } from './security_definitions_form/SecurityDefinitionsForm';

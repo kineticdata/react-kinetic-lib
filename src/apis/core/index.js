@@ -11,6 +11,8 @@ export * from './oauthClients';
 
 export { login, logout, coreOauthAuthorizeUrl } from './authentication';
 
+export { fetchBackgroundJobs, updateBackgroundJob } from './backgroundJobs';
+
 export {
   bridgedResourceUrl,
   convertMultipleBridgeRecords,

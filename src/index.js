@@ -68,6 +68,9 @@ export {
   login,
   logout,
   coreOauthAuthorizeUrl,
+  // Background Jobs
+  fetchBackgroundJobs,
+  updateBackgroundJob,
   // Bridged Resource exports
   bridgedResourceUrl,
   convertMultipleBridgeRecords,
