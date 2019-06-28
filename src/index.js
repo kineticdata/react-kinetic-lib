@@ -18,6 +18,7 @@ export { default as Table } from './components/common/tables/Table';
 export {
   mountTable,
   unmountTable,
+  refetchTable,
 } from './components/common/tables/Table.redux';
 export * from './components/core';
 export {

@@ -161,6 +161,7 @@ regSaga(takeEvery('PREV_PAGE', calculateRowsTask));
 regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
 regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
+regSaga(takeEvery('REFECTH_TABLE_DATA', calculateRowsTask));
 
 const generateSortParams = tableData =>
   tableData.get('sortColumn')
@@ -230,3 +231,5 @@ const calculateRows = tableData => {
 export const mountTable = tableKey => dispatch('MOUNT_TABLE', { tableKey });
 export const unmountTable = tableKey => dispatch('UNMOUNT_TABLE', { tableKey });
 export const configureTable = payload => dispatch('CONFIGURE_TABLE', payload);
+export const refetchTable = tableKey =>
+  dispatch('REFECTH_TABLE_DATA', { tableKey });
