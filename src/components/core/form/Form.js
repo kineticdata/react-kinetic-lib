@@ -654,7 +654,7 @@ export const onChange = ({ formKey, type, name }) => event => {
     value = List(event.target.options)
       .filter(o => o.selected)
       .map(o => o.value);
-  } else if (event && event.target && event.target.value) {
+  } else if (event && event.target) {
     value = event.target.value;
   } else {
     value = event;
