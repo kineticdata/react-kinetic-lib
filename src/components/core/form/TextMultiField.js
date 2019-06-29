@@ -1,76 +1,54 @@
-import React from 'react';
-import { get } from 'immutable';
+import React, { Component } from 'react';
 
-const onInputChange = setCustom => event => {
-  setCustom(['input'], event.target.value);
-};
+export class TextMultiField extends Component {
+  onEdit = index => event => {
+    this.props.onChange(
+      event.target.value
+        ? this.props.value.set(index, event.target.value)
+        : this.props.value.delete(index),
+    );
+  };
 
-const add = (name, values, onChange, value, setCustom) => () => {
-  onChange({
-    target: {
-      name,
-      type: 'text-multi',
-      value: values.push(value),
-    },
-  });
-  setCustom(['input'], '');
-};
+  onAdd = event => {
+    this.props.onChange(this.props.value.push(event.target.value));
+  };
 
-const remove = (name, values, onChange) => index => () => {
-  onChange({
-    target: {
-      name,
-      type: 'text-multi',
-      value: values.filter((v, i) => i !== index),
-    },
-  });
-};
+  onRemove = index => () => {
+    this.props.onChange(this.props.value.delete(index));
+  };
 
-export const TextMultiField = props => (
-  <div className="field">
-    {props.label}
-    {props.value.map((v, i) => (
-      <span key={i}>
-        {v}
-        <button
-          type="button"
-          onFocus={props.onFocus}
-          onBlur={props.onBlur}
-          onClick={props.remove(i)}
-        >
-          x
-        </button>
-      </span>
-    ))}
-    <input
-      type="text"
-      value={props.inputValue}
-      onFocus={props.onFocus}
-      onBlur={props.onBlur}
-      onChange={props.inputChange}
-    />
-    <button
-      type="button"
-      disabled={!props.inputValue}
-      onFocus={props.onFocus}
-      onBlur={props.onBlur}
-      onClick={props.add}
-    >
-      +
-    </button>
-  </div>
-);
-
-export const generateTextMultiFieldProps = props => ({
-  ...props,
-  inputValue: props.custom.get('input', ''),
-  inputChange: onInputChange(props.setCustom),
-  remove: remove(props.name, props.value, props.onChange),
-  add: add(
-    props.name,
-    props.value,
-    props.onChange,
-    get(props.custom, 'input', ''),
-    props.setCustom,
-  ),
-});
+  // When rendering the inputs we append an empty string to the list of values,
+  // this is helpful because then the "new" input is in the keyed collection so
+  // when text is entered there we get a smooth addition of another new input.
+  render() {
+    return (
+      this.props.visible && (
+        <div className="field">
+          <h5>{this.props.label}</h5>
+          {this.props.value.push('').map((selection, i) => (
+            <div key={i}>
+              <input
+                type="text"
+                onBlur={this.props.onBlur}
+                onChange={selection ? this.onEdit(i) : this.onAdd}
+                onFocus={this.props.onFocus}
+                placeholder={this.props.placeholder}
+                value={selection}
+              />
+              {selection && (
+                <button
+                  type="button"
+                  onFocus={this.props.onFocus}
+                  onBlur={this.props.onBlur}
+                  onClick={this.onRemove(i)}
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )
+    );
+  }
+}

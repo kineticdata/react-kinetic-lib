@@ -693,11 +693,7 @@ export const mapStateToProps = (state, props) =>
     .toObject();
 
 const generateFieldProps = props =>
-  props.type === 'attributes'
-    ? generateAttributesFieldProps(props)
-    : props.type === 'text-multi'
-    ? generateTextMultiFieldProps(props)
-    : props;
+  props.type === 'attributes' ? generateAttributesFieldProps(props) : props;
 
 const typeToComponent = {
   text: 'TextField',
