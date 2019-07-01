@@ -256,10 +256,11 @@ const fields = () => [
   {
     name: 'filestoreSecret',
     label: 'Filestore Secret',
-    type: 'text',
+    type: 'password',
     visible: true,
     transient: true,
     initialValue: '',
+    placeholder: '********',
   },
   {
     name: 'filestoreSlug',

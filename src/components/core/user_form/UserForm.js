@@ -140,6 +140,7 @@ const fields = ({ username }) => [
     required: false,
     options: ({ attributeDefinitions }) => attributeDefinitions,
     initialValue: ({ user }) => get(user, 'attributesMap'),
+    placeholder: 'There are no attributes configured',
   },
   {
     name: 'profileAttributesMap',
@@ -148,6 +149,7 @@ const fields = ({ username }) => [
     required: false,
     options: ({ profileAttributeDefinitions }) => profileAttributeDefinitions,
     initialValue: ({ user }) => get(user, 'profileAttributesMap'),
+    placeholder: 'There are no profile attributes configured',
   },
   {
     name: 'memberships',
