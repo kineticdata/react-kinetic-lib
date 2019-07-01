@@ -20,8 +20,6 @@ import {
   regSaga,
 } from '../../../store';
 import { ComponentConfigContext } from '../../common/ComponentConfigContext';
-import { generateAttributesFieldProps } from './AttributesField';
-import { generateTextMultiFieldProps } from './TextMultiField';
 import { generateKey } from '../../../helpers';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
@@ -110,7 +108,6 @@ const defaultFieldProps = fromJS({
   focused: false,
   touched: false,
   errors: [],
-  custom: {},
   renderAttributes: {},
 });
 
@@ -309,8 +306,6 @@ regHandlers({
         dirty: !is(value, field.get('initialValue')),
       }),
     ),
-  SET_FIELD_CUSTOM: (state, { payload: { formKey, name, path, value } }) =>
-    state.setIn(['forms', formKey, 'fields', name, 'custom', ...path], value),
   FOCUS_FIELD: (state, { payload: { formKey, field } }) =>
     state.setIn(['forms', formKey, 'fields', field, 'focused'], true),
   BLUR_FIELD: (state, { payload: { formKey, field } }) =>
@@ -675,10 +670,6 @@ export const clearError = formKey => event => {
   dispatch('CLEAR_ERROR', { formKey });
 };
 
-export const setFieldCustom = ({ formKey, name }) => (path, value) => {
-  dispatch('SET_FIELD_CUSTOM', { formKey, name, path, value });
-};
-
 export const mountForm = formKey => dispatch('MOUNT_FORM', { formKey });
 export const unmountForm = formKey => dispatch('UNMOUNT_FORM', { formKey });
 export const resetForm = formKey => dispatch('RESET', { formKey });
@@ -691,9 +682,6 @@ export const mapStateToProps = (state, props) =>
     .getIn(['forms', props.formKey], Map())
     .set('bindings', selectBindings(props.formKey)(state))
     .toObject();
-
-const generateFieldProps = props =>
-  props.type === 'attributes' ? generateAttributesFieldProps(props) : props;
 
 const typeToComponent = {
   text: 'TextField',
@@ -715,7 +703,7 @@ export const Field = props => {
     props.components.field ||
     props.components.form[componentName] ||
     props.components.context.get(componentName);
-  return <FieldImpl {...generateFieldProps(props)} />;
+  return <FieldImpl {...props} />;
 };
 
 const extractFieldComponents = ({ fields, addFields, alterFields }) =>
@@ -889,11 +877,6 @@ class FormImplComponent extends Component {
                             focused={field.get('focused')}
                             touched={field.get('touched')}
                             errors={field.get('errors')}
-                            custom={field.get('custom')}
-                            setCustom={setFieldCustom({
-                              formKey: this.props.formKey,
-                              name: field.get('name'),
-                            })}
                             components={{
                               context: config,
                               form: components,

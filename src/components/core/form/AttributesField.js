@@ -1,154 +1,159 @@
-import { get, List, setIn } from 'immutable';
-import React from 'react';
+import React, { Component, Fragment } from 'react';
+import { List, Map, Repeat } from 'immutable';
 
-const onSelectChange = setCustom => event => {
-  setCustom(['select'], event.target.value);
-};
+export class AttributesField extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { added: List(), adding: '' };
+  }
 
-const onEditInputChange = (name, value, onChange) => (
-  attrName,
-  index,
-) => event => {
-  onChange({
-    target: {
-      type: 'attributes',
-      name,
-      value: setIn(value, [attrName, index], event.target.value),
-    },
-  });
-};
+  // returns the number of attribute values that were previously set
+  countPrevious = name =>
+    this.props.value.get(name).size - this.countAdded(name);
 
-const onNewInputChange = setCustom => event => {
-  setCustom(['input'], event.target.value);
-};
+  // returns the number of attribute values that have been added
+  countAdded = name => this.state.added.filter(n => n === name).size;
 
-const remove = (name, value, onChange) => (attrName, index) => () => {
-  onChange({
-    target: {
-      type: 'attributes',
-      name,
-      value: value.deleteIn([attrName, index]),
-    },
-  });
-};
+  onRemove = (name, index) => () => {
+    const addedIndex = index - this.countPrevious(name);
+    if (addedIndex >= 0) {
+      this.setState(state => ({
+        added: filterWithOccurrences(
+          state.added,
+          (n, i) => n !== name || i !== addedIndex,
+        ),
+      }));
+    }
+    this.props.onChange(this.props.value.deleteIn([name, index]));
+  };
 
-const add = (name, value, onChange, setCustom, attrName, attrValue) => () => {
-  onChange({
-    target: {
-      type: 'attributes',
-      name,
-      value: value.update(attrName, List(), values => values.push(attrValue)),
-    },
-  });
-  setCustom(['select'], '');
-  setCustom(['input'], '');
-};
+  onInputChange = (name, index) => event => {
+    if (!this.props.value.hasIn([name, index])) {
+      this.setState(state => ({
+        added: state.added.push(state.adding),
+        adding: '',
+      }));
+    }
+    this.props.onChange(
+      this.props.value.setIn([name, index], event.target.value),
+    );
+  };
 
-export const AttributesField = props => (
-  <div className="field">
-    {props.label}
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Value</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {props.value
-          .entrySeq()
-          .sortBy(([name]) => name)
-          .flatMap(([name, values]) =>
-            values.map((value, index) => ({ name, value, index })),
-          )
-          .map(({ name, value, index }) => (
-            <tr key={`${name}-${index}`}>
-              <td>{name}</td>
-              <td>
-                <input
-                  type="text"
-                  value={value}
-                  onFocus={props.onFocus}
-                  onBlur={props.onBlur}
-                  onChange={props.editInputChange(name, index)}
-                />
-              </td>
-              <td>
-                <button
-                  type="button"
-                  onFocus={props.onFocus}
-                  onBlur={props.onBlur}
-                  onClick={props.remove(name, index)}
-                >
-                  x
-                </button>
-              </td>
-            </tr>
-          ))}
-        <tr>
-          <td>
-            <select
-              value={props.selectValue}
-              onFocus={props.onFocus}
-              onBlur={props.onBlur}
-              onChange={props.selectChange}
-            >
-              <option />
-              {props.selectableAttributes.map(name => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
+  onSelectChange = event => {
+    this.setState({ adding: event.target.value });
+  };
+
+  render() {
+    const attributes = mapWithOccurrences(
+      this.props.value
+        .keySeq()
+        .sort()
+        .flatMap(name => Repeat(name, this.countPrevious(name)))
+        .concat(this.state.added.push(this.state.adding)),
+      (name, index) => ({
+        name,
+        index,
+        value: this.props.value.getIn([name, index], ''),
+      }),
+    );
+    return (
+      this.props.visible && (
+        <Fragment>
+          <h5>{this.props.label}</h5>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {attributes.size === 1 && this.props.placeholder && (
+                <tr>
+                  <td colSpan={3}>
+                    <em>{this.props.placeholder}</em>
+                  </td>
+                </tr>
+              )}
+              {attributes.map(({ name, value, index }, i) => (
+                <tr key={i}>
+                  <td>
+                    {i < attributes.size - 1 ? (
+                      name
+                    ) : (
+                      <select onChange={this.onSelectChange} value={name}>
+                        <option hidden />
+                        {availableAttributes(
+                          this.props.options,
+                          this.props.value,
+                        ).map(option => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={value}
+                      onFocus={this.props.onFocus}
+                      onBlur={this.props.onBlur}
+                      onChange={this.onInputChange(name, index)}
+                    />
+                  </td>
+                  <td>
+                    {i < attributes.size - 1 && (
+                      <button
+                        type="button"
+                        onFocus={this.props.onFocus}
+                        onBlur={this.props.onBlur}
+                        onClick={this.onRemove(name, index)}
+                      >
+                        &times;
+                      </button>
+                    )}
+                  </td>
+                </tr>
               ))}
-            </select>
-          </td>
-          <td>
-            <input
-              type="text"
-              onFocus={props.onFocus}
-              onBlur={props.onBlur}
-              onChange={props.newInputChange}
-              value={props.newInputValue}
-            />
-          </td>
-          <td>
-            <button
-              type="button"
-              disabled={!props.selectValue || !props.newInputValue}
-              onFocus={props.onFocus}
-              onBlur={props.onBlur}
-              onClick={props.add}
-            >
-              +
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-);
+            </tbody>
+          </table>
+        </Fragment>
+      )
+    );
+  }
+}
 
-export const generateAttributesFieldProps = props => ({
-  ...props,
-  editInputChange: onEditInputChange(props.name, props.value, props.onChange),
-  newInputChange: onNewInputChange(props.setCustom),
-  newInputValue: props.custom.get('input', ''),
-  selectChange: onSelectChange(props.setCustom),
-  selectValue: props.custom.get('select', ''),
-  selectableAttributes: props.options
+// Helper function that maps for a List but instead of providing the index in
+// the overall list, it gives the lambda the count of the occurrences of current
+// value that have already occurred in the list.
+// For example: ['red', 'green', ''red',]
+// Would call: ['red,' 0], ['green', 0], ['red', 1], ['blue', 0]
+const mapWithOccurrences = (list, mapper) =>
+  list.reduce(
+    ([result, counts], current) => [
+      result.push(mapper(current, counts.get(current, 0))),
+      counts.update(current, 0, count => count + 1),
+    ],
+    [List(), Map()],
+  )[0];
+
+// Same idea as mapWithOccurrences above.
+const filterWithOccurrences = (list, pred) =>
+  list.reduce(
+    ([result, counts], current) => [
+      pred(current, counts.get(current, 0)) ? result.push(current) : result,
+      counts.update(current, 0, count => count + 1),
+    ],
+    [List(), Map()],
+  )[0];
+
+const availableAttributes = (options, value) =>
+  options
     .filter(
-      attrDef =>
-        attrDef.get('allowsMultiple') ||
-        get(props.value, attrDef.get('name'), List()).isEmpty(),
+      option =>
+        option.get('allowsMultiple') || value.get(option.get('name')).isEmpty(),
     )
-    .map(attrDef => attrDef.get('name')),
-  add: add(
-    props.name,
-    props.value,
-    props.onChange,
-    props.setCustom,
-    props.custom.get('select'),
-    props.custom.get('input'),
-  ),
-  remove: remove(props.name, props.value, props.onChange),
-});
+    .map(option => option.get('name'));
