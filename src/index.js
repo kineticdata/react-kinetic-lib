@@ -65,6 +65,10 @@ export {
   fetchActivity,
   // Attribute Definition exports
   fetchAttributeDefinitions,
+  fetchAttributeDefinition,
+  createAttributeDefinition,
+  updateAttributeDefinition,
+  deleteAttributeDefinition,
   // Authentication exports,
   login,
   logout,

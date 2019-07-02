@@ -5,6 +5,7 @@ export {
   fetchAttributeDefinitions,
   createAttributeDefinition,
   updateAttributeDefinition,
+  deleteAttributeDefinition,
 } from './attributeDefinitions';
 
 export * from './oauthClients';

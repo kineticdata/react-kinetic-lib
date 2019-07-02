@@ -37,16 +37,12 @@ const validateOptions = (functionName, requiredOptions, options) => {
   }
   if (kappSlugMissing) {
     throw new Error(
-      `${functionName} failed! A kappSlug is required when using ${
-        options.attributeType
-      }`,
+      `${functionName} failed! A kappSlug is required when using ${options.attributeType}`,
     );
   }
   if (invalidType) {
     throw new Error(
-      `${functionName} failed! The provided attributeType (${
-        options.attributeType
-      }) is not valid`,
+      `${functionName} failed! The provided attributeType (${options.attributeType}) is not valid`,
     );
   }
 };
@@ -126,6 +122,29 @@ export const updateAttributeDefinition = (options = {}) => {
   const responseEnvelope = attributeType.slice(0, -1);
   return axios
     .put(buildEndpoint(options), attributeDefinition, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({
+      attributeDefinition: response.data[responseEnvelope],
+    }))
+    .catch(handleErrors);
+};
+
+export const deleteAttributeDefinition = (options = {}) => {
+  const { attributeType } = options;
+  validateOptions(
+    'deleteAttributeDefinition',
+    ['attributeType', 'attributeName'],
+    options,
+  );
+
+  // The API returns the singular name of the attribute type, so we remove the "s"
+  const responseEnvelope = attributeType.slice(0, -1);
+
+  // Build URL and fetch the space.
+  return axios
+    .delete(buildEndpoint(options), {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
