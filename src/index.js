@@ -119,6 +119,7 @@ export {
   fetchSecurityPolicyDefinition,
   createSecurityPolicyDefinition,
   updateSecurityPolicyDefinition,
+  deleteSecurityPolicyDefinition,
   // Space exports
   fetchSpace,
   updateSpace,

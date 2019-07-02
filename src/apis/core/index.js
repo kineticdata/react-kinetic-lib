@@ -60,6 +60,7 @@ export {
   fetchSecurityPolicyDefinition,
   createSecurityPolicyDefinition,
   updateSecurityPolicyDefinition,
+  deleteSecurityPolicyDefinition,
 } from './securityPolicyDefinitions';
 
 export { fetchSpace, updateSpace } from './space';

@@ -19,9 +19,7 @@ const validateOptions = (functionName, requiredOptions, options) => {
   }
   if (kappSlugMissing) {
     throw new Error(
-      `${functionName} failed! A kappSlug is required when using type: ${
-        securityPolicyDefinition.type
-      }`,
+      `${functionName} failed! A kappSlug is required when using type: ${securityPolicyDefinition.type}`,
     );
   }
 };
@@ -95,6 +93,23 @@ export const updateSecurityPolicyDefinition = (options = {}) => {
   );
   return axios
     .put(buildEndpoint(options), securityPolicyDefinition, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({
+      securityPolicyDefinition: response.data.securityPolicyDefinition,
+    }))
+    .catch(handleErrors);
+};
+
+export const deleteSecurityPolicyDefinition = (options = {}) => {
+  validateOptions(
+    'deleteSecurityPolicyDefinition',
+    ['securityPolicyName'],
+    options,
+  );
+  return axios
+    .delete(buildEndpoint(options), {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
