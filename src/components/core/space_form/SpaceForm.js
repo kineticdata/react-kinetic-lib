@@ -1,6 +1,5 @@
 import React from 'react';
 import { get, getIn } from 'immutable';
-
 import { Form } from '../form/Form';
 import { updateSpace, fetchSpace } from '../../../apis/core';
 import { fetchLocales, fetchTimezones } from '../../../apis/core/meta';
@@ -42,12 +41,16 @@ const dataSources = () => ({
   ],
 });
 
-const handleSubmit = () => values => {
-  const space = values.toJS();
-  return updateSpace({
-    space,
+const handleSubmit = () => values =>
+  updateSpace({
+    space: values,
+  }).then(({ space, error }) => {
+    if (error) {
+      throw (error.statusCode === 400 && error.message) ||
+        'There was an error saving the space';
+    }
+    return space;
   });
-};
 
 const securityEndpoints = {
   discussionCreation: {
@@ -132,28 +135,28 @@ const fields = () => [
     placeholder: 'form.jsp',
     visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
   },
-  // {
-  //   name: 'defaultLocale',
-  //   label: 'Default Locale',
-  //   type: 'select',
-  //   options: ({ locales }) =>
-  //     locales.map(locale => ({
-  //       value: locale.get('code'),
-  //       label: locale.get('name'),
-  //     })),
-  //   initialValue: ({ space }) => get(space, 'defaultLocale'),
-  // },
-  // {
-  //   name: 'defaultTimezone',
-  //   label: 'Default Timezone',
-  //   type: 'select',
-  //   options: ({ timezones }) =>
-  //     timezones.map(timezone => ({
-  //       value: timezone.get('id'),
-  //       label: timezone.get('name'),
-  //     })),
-  //   initialValue: ({ space }) => get(space, 'defaultTimezone'),
-  // },
+  {
+    name: 'defaultLocale',
+    label: 'Default Locale',
+    type: 'select',
+    options: ({ locales }) =>
+      locales.map(locale => ({
+        value: locale.get('code'),
+        label: locale.get('name'),
+      })),
+    initialValue: ({ space }) => get(space, 'defaultLocale'),
+  },
+  {
+    name: 'defaultTimezone',
+    label: 'Default Timezone',
+    type: 'select',
+    options: ({ timezones }) =>
+      timezones.map(timezone => ({
+        value: timezone.get('id'),
+        label: timezone.get('name'),
+      })),
+    initialValue: ({ space }) => get(space, 'defaultTimezone'),
+  },
   {
     name: 'displayType',
     label: 'Display Type',
@@ -305,7 +308,8 @@ const fields = () => [
     required: ({ values }) => values.get('changeOAuthSigningKey'),
     enabled: ({ values }) => values.get('changeOAuthSigningKey'),
     transient: ({ values }) => !values.get('changeOAuthSigningKey'),
-    initialValue: ({ space }) => get(space, 'oauthSigningKey'),
+    initialValue: '',
+    placeholder: '********',
   },
   {
     name: 'changeOAuthSigningKey',
@@ -313,12 +317,19 @@ const fields = () => [
     type: 'checkbox',
     initialValue: false,
     transient: true,
+    onChange: ({ values }, { setValue }) => {
+      if (values.get('oauthSigningKey') !== '') {
+        setValue('oauthSigningKey', '');
+      }
+    },
   },
   {
     name: 'sessionInactiveLimitInSeconds',
     label: 'Inactive Session Limit (in seconds)',
     type: 'text',
     initialValue: ({ space }) => get(space, 'sessionInactiveLimitInSeconds'),
+    serialize: ({ values }) =>
+      parseInt(values.get('sessionInactiveLimitInSeconds')),
   },
   {
     name: 'sharedBundleBase',
