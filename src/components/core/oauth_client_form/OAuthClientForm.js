@@ -5,7 +5,6 @@ import {
   createOAuthClient,
   updateOAuthClient,
 } from '../../../apis/core';
-import { get, List, Map } from 'immutable';
 
 const dataSources = ({ clientId }) => ({
   client: [
@@ -19,18 +18,15 @@ const dataSources = ({ clientId }) => ({
 });
 
 const handleSubmit = ({ clientId }) => values =>
-  new Promise((resolve, reject) => {
-    const client = values.toJS();
-    (clientId
-      ? updateOAuthClient({ clientId, client })
-      : createOAuthClient({ client })
-    ).then(({ client, error }) => {
-      if (client) {
-        resolve(client);
-      } else {
-        reject(error);
-      }
-    });
+  (clientId ? updateOAuthClient : createOAuthClient)({
+    clientId,
+    client: values.toJS(),
+  }).then(({ client, error }) => {
+    if (error) {
+      throw (error.statusCode === 400 && error.message) ||
+        'There was an error saving the OAuth Client';
+    }
+    return client;
   });
 
 const getOrBlank = (from, what) => bindings =>
