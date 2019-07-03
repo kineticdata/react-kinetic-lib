@@ -26,25 +26,18 @@ const dataSources = ({ securityPolicyName, kappSlug = null }) => ({
 });
 
 const handleSubmit = ({ securityPolicyName, kappSlug = null }) => values =>
-  new Promise((resolve, reject) => {
-    const securityPolicyDefinition = values.toJS();
-    (securityPolicyName
-      ? updateSecurityPolicyDefinition({
-          securityPolicyName,
-          securityPolicyDefinition,
-          kappSlug,
-        })
-      : createSecurityPolicyDefinition({ securityPolicyDefinition, kappSlug })
-    ).then(({ securityPolicyDefinition, error }) => {
-      if (securityPolicyDefinition) {
-        resolve(securityPolicyDefinition);
-      } else {
-        reject(
-          error.message ||
-            'There was an error saving the security policy definition',
-        );
-      }
-    });
+  (securityPolicyName
+    ? updateSecurityPolicyDefinition
+    : createSecurityPolicyDefinition)({
+    securityPolicyName,
+    securityPolicyDefinition: values.toJS(),
+    kappSlug,
+  }).then(({ securityPolicyDefinition, error }) => {
+    if (error) {
+      throw (error.statusCode === 400 && error.message) ||
+        'There was an error saving the security definition';
+    }
+    return securityPolicyDefinition;
   });
 
 const fields = () => [

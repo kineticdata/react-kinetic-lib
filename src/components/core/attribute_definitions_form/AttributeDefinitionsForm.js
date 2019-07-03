@@ -18,19 +18,16 @@ const dataSources = ({ attributeType, attributeName }) => ({
 });
 
 const handleSubmit = ({ attributeType, attributeName }) => values =>
-  new Promise((resolve, reject) => {
-    const options = { attributeDefinition: values.toJS(), attributeType };
-    (attributeName
-      ? updateAttributeDefinition({ ...options, attributeName })
-      : createAttributeDefinition(options)
-    ).then(({ attributeDefinition, error }) =>
-      attributeDefinition
-        ? resolve(attributeDefinition)
-        : reject(
-            error.message ||
-              'There was an error saving the attribute definition',
-          ),
-    );
+  (attributeName ? updateAttributeDefinition : createAttributeDefinition)({
+    attributeDefinition: values.toJS(),
+    attributeType,
+    attributeName,
+  }).then(({ attributeDefinition, error }) => {
+    if (error) {
+      throw (error.statusCode === 400 && error.message) ||
+        'There was an error saving the attribute definition';
+    }
+    return attributeDefinition;
   });
 
 const fields = () => [
