@@ -81,7 +81,7 @@ export const deleteOAuthClient = (options = {}) => {
 
   if (!clientId) {
     throw new Error(
-      'updateOAuthClient failed! The option "clientId" is required.',
+      'deleteOAuthClient failed! The option "clientId" is required.',
     );
   }
 
