@@ -57,7 +57,7 @@ const fields = ({ clientId }) => [
   {
     name: 'clientSecret',
     label: 'Client Secret',
-    type: 'text',
+    type: 'password',
     required: !clientId,
     initialValue: getOrBlank('client', 'clientSecret'),
     transient: ({ values }) => !values.get('clientSecret'),
