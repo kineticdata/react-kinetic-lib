@@ -28,6 +28,7 @@ export class AttributesField extends Component {
   };
 
   onInputChange = (name, index) => event => {
+    const value = event.target.value;
     if (!this.props.value.hasIn([name, index])) {
       this.setState(state => ({
         added: state.added.push(state.adding),
@@ -35,7 +36,7 @@ export class AttributesField extends Component {
       }));
     }
     this.props.onChange(
-      this.props.value.setIn([name, index], event.target.value),
+      this.props.value.update(name, List(), values => values.set(index, value)),
     );
   };
 
@@ -154,6 +155,7 @@ const availableAttributes = (options, value) =>
   options
     .filter(
       option =>
-        option.get('allowsMultiple') || value.get(option.get('name')).isEmpty(),
+        option.get('allowsMultiple') ||
+        value.get(option.get('name'), List()).isEmpty(),
     )
     .map(option => option.get('name'));
