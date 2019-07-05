@@ -1,6 +1,5 @@
 import React from 'react';
 import { get } from 'immutable';
-
 import { Form } from '../form/Form';
 import { fetchKapp, fetchSpace } from '../../../apis/core';
 import { fetchAttributeDefinitions } from '../../../apis/core/attributeDefinitions';
@@ -47,17 +46,16 @@ const dataSources = ({ kappSlug }) => ({
   ],
 });
 
-const handleSubmit = ({ kappSlug }) => values => {
-  const kapp = values.toJS();
-  return kappSlug
-    ? updateKapp({
-        kappSlug,
-        kapp,
-      })
-    : createKapp({
-        kapp,
-      });
-};
+const handleSubmit = ({ kappSlug }) => values =>
+  (kappSlug ? updateKapp : createKapp)({ kappSlug, kapp: values.toJS() }).then(
+    ({ kapp, error }) => {
+      if (error) {
+        throw (error.statusCode === 400 && error.message) ||
+          'There was an error saving the kapp';
+      }
+      return kapp;
+    },
+  );
 
 const securityEndpoints = {
   kappDisplay: {
@@ -191,7 +189,6 @@ const fields = ({ kappSlug }) => [
     label: 'Slug',
     type: 'text',
     required: true,
-    placeholder: 'Kapp Slug',
     initialValue: ({ kapp }) => get(kapp, 'slug'),
     onChange: (_bindings, { setValue }) => {
       setValue('linked', false);
