@@ -1,6 +1,5 @@
 import React from 'react';
 import { get, Map } from 'immutable';
-
 import { Form } from '../form/Form';
 import {
   fetchForm,
@@ -10,7 +9,6 @@ import {
   fetchAttributeDefinitions,
   fetchSecurityPolicyDefinitions,
 } from '../../../apis/core';
-
 import { slugify } from '../../../helpers';
 
 const FORM_STATUSES = ['New', 'Active', 'Inactive', 'Delete'];
@@ -37,7 +35,7 @@ const dataSources = ({ formSlug, kappSlug, datastore }) => ({
         include: 'formTypes',
       },
     ],
-    { transform: result => result.form, runIf: () => !!kappSlug },
+    { transform: result => result.kapp, runIf: () => !!kappSlug },
   ],
   attributeDefinitions: [
     fetchAttributeDefinitions,
@@ -52,7 +50,6 @@ const dataSources = ({ formSlug, kappSlug, datastore }) => ({
     ],
     {
       transform: result => result.attributeDefinitions,
-      runIf: () => !!formSlug,
     },
   ],
   securityPolicyDefinitions: [
@@ -64,21 +61,19 @@ const dataSources = ({ formSlug, kappSlug, datastore }) => ({
   ],
 });
 
-const handleSubmit = ({ formSlug, kappSlug, datastore }) => values => {
-  const form = values.toJS();
-  return formSlug
-    ? updateForm({
-        datastore,
-        kappSlug,
-        formSlug,
-        form,
-      })
-    : createForm({
-        datastore,
-        kappSlug,
-        form,
-      });
-};
+const handleSubmit = ({ formSlug, kappSlug, datastore }) => values =>
+  (formSlug ? updateForm : createForm)({
+    datastore,
+    kappSlug,
+    formSlug,
+    form: values.toJS(),
+  }).then(({ form, error }) => {
+    if (error) {
+      throw (error.statusCode === 400 && error.message) ||
+        'There was an error saving the form';
+    }
+    return form;
+  });
 
 const securityEndpoints = {
   formDisplay: {
@@ -128,7 +123,6 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     name: 'description',
     label: 'Description',
     type: 'text',
-    placeholder: 'Description of Form',
     initialValue: ({ form }) => get(form, 'description'),
   },
   {
@@ -136,7 +130,6 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     label: 'Name',
     type: 'text',
     required: true,
-    placeholder: 'Form Title',
     onChange: ({ values }, { setValue }) => {
       if (values.get('linked')) {
         setValue('slug', slugify(values.get('name')), false);
@@ -155,7 +148,6 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     label: 'Slug',
     type: 'text',
     required: true,
-    placeholder: 'Form Slug',
     onChange: (_bindings, { setValue }) => {
       setValue('linked', false);
     },
@@ -230,7 +222,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
         }),
       )
     : []),
-  !!formSlug && {
+  {
     name: 'securityPolicies',
     label: 'Security Policies',
     type: null,
@@ -244,7 +236,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
         .filter(endpoint => endpoint.name !== ''),
     initialValue: ({ form }) => get(form, 'securityPolicies'),
   },
-  !!formSlug && {
+  {
     name: 'attributesMap',
     label: 'Attributes',
     type: 'attributes',
