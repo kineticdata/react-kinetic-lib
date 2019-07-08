@@ -53,7 +53,7 @@ export const updateBackgroundJob = (options = {}) => {
 };
 
 export const deleteBackgroundJob = (options = {}) => {
-  const { job, status } = options;
+  const { job } = options;
 
   const path = backgroundJobPath(job);
 
