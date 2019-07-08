@@ -2,6 +2,16 @@ import React from 'react';
 import { fetchForm, updateForm } from '../../../apis/core';
 import { Form } from '../form/Form';
 
+const staticParts = [
+  'createdAt',
+  'createdBy',
+  'handle',
+  'submittedAt',
+  'submittedBy',
+  'updatedAt',
+  'updatedBy',
+];
+
 const dataSources = ({ formSlug, indexName }) => ({
   form: [
     fetchForm,
@@ -19,26 +29,40 @@ const dataSources = ({ formSlug, indexName }) => ({
   ],
   fields: [
     fields => fields,
-    [({ form }) => form.fields],
-    { dependsOn: ['form'] },
+    ({ form }) => [form.get('fields')],
+    { dependencies: ['form'] },
   ],
   indexDefinition: [
-    indexDefinitions =>
-      indexDefinitions.find(
-        indexDefinition => indexDefinition.name === indexName,
-      ),
-    [({ form }) => form.indexDefinitions],
-    { runIf: () => !!indexName, dependsOn: ['form'] },
+    indexDefinition => indexDefinition,
+    ({ form }) => [
+      form
+        .get('indexDefinitions')
+        .find(indexDefinition => indexDefinition.get('name') === indexName),
+    ],
+    { runIf: () => !!indexName, dependencies: ['form'] },
   ],
 });
 
-const handleSubmit = ({ formSlug, indexName }) => values =>
-  console.log('handleSubmit...', formSlug, indexName, values.toJS()) ||
+const handleSubmit = ({ formSlug, indexName }) => (values, { form }) =>
   updateForm({
     datastore: true,
     kappSlug: null,
     formSlug,
-    form: {},
+    form: {
+      indexDefinitions: indexName
+        ? form
+            .get('indexDefinitions')
+            .map(indexDefinition =>
+              indexDefinition.get('name') === indexName
+                ? values
+                : indexDefinition,
+            )
+            .toJS()
+        : form
+            .get('indexDefinitions')
+            .push(values)
+            .toJS(),
+    },
   }).then(({ form, error }) => {
     if (error) {
       throw (error.statusCode === 400 && error.message) ||
@@ -53,12 +77,21 @@ const fields = (formSlug, indexName) => [
     label: 'Parts',
     type: 'select-multi',
     required: true,
-    options: [],
+    options: ({ fields }) =>
+      fields
+        .map(field => field.get('name'))
+        .sort()
+        .concat(staticParts)
+        .map(name => ({ label: name, value: name })),
+    initialValue: ({ indexDefinition }) =>
+      indexDefinition ? indexDefinition.get('parts') : [],
   },
   {
     name: 'unique',
     label: 'Unique',
     type: 'checkbox',
+    initialValue: ({ indexDefinition }) =>
+      indexDefinition ? indexDefinition.get('unique') : false,
   },
 ];
 

@@ -424,7 +424,7 @@ regSaga(
     const dependencies = dataSources
       .filter((ds, name) => options.get('dependencies', List()).contains(name))
       .map(ds => ds.get('data'))
-      .toJS();
+      .toObject();
 
     const bindings = { ...dependencies, values };
     const runIfResult = !options.get('runIf') || options.get('runIf')(bindings);
@@ -601,7 +601,7 @@ regSaga(
 
     if (errors.isEmpty()) {
       try {
-        const result = yield call(onSubmit, values);
+        const result = yield call(onSubmit, values, bindings);
         dispatch('SUBMIT_SUCCESS', { formKey });
         if (onSave) yield call(onSave, result);
       } catch (error) {
