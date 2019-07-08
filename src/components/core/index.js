@@ -3,9 +3,9 @@ export {
   AttributeDefinitionForm,
 } from './attribute_definitions_form/AttributeDefinitionsForm';
 export { FormForm } from './form_form/FormForm';
+export { IndexDefinitionForm } from './index_definitions/IndexDefinitionForm';
 export { KappForm } from './kapp_form/KappForm';
 export { OAuthClientForm } from './oauth_client_form/OAuthClientForm';
-export { default as IndexJobTable } from './index_job_table/IndexJobTable';
 export {
   SecurityDefinitionsForm,
 } from './security_definitions_form/SecurityDefinitionsForm';
@@ -18,6 +18,10 @@ export {
   default as AttributeDefinitionsTable,
 } from './attribute_definitions_table/AttributeDefinitionsTable';
 export { default as FormTable } from './form_table/FormTable';
+export {
+  default as IndexDefinitionTable,
+} from './index_definitions/IndexDefinitionTable';
+export { default as IndexJobTable } from './index_job_table/IndexJobTable';
 export { default as KappTable } from './kapp_table/KappTable';
 export {
   default as OAuthClientTable,
