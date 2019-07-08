@@ -2,9 +2,18 @@ import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
 import { handleErrors, paramBuilder, headerBuilder } from '../http';
 
+const backgroundJobPath = job =>
+  job
+    ? job.parentType === 'Datastore'
+      ? `${bundle.apiLocation()}/datastore/forms/${
+          job.parent.slug
+        }/backgroundJobs/${job.id}`
+      : null
+    : `${bundle.apiLocation()}/backgroundJobs`;
+
 export const fetchBackgroundJobs = (options = {}) =>
   axios
-    .get(`${bundle.apiLocation()}/backgroundJobs`, {
+    .get(backgroundJobPath(), {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -16,12 +25,11 @@ export const fetchBackgroundJobs = (options = {}) =>
 export const updateBackgroundJob = (options = {}) => {
   const { job, status } = options;
 
-  const path =
-    job.parentType === 'Datastore'
-      ? `${bundle.apiLocation()}/datastore/forms/${
-          job.parent.slug
-        }/backgroundJobs/${job.id}`
-      : null;
+  const path = backgroundJobPath(job);
+
+  if (job === null) {
+    throw new Error(`updateBackgroundJob failed! Property "job" is required.`);
+  }
 
   if (path === null) {
     throw new Error(
@@ -38,6 +46,32 @@ export const updateBackgroundJob = (options = {}) => {
         headers: headerBuilder(options),
       },
     )
+    .then(response => ({
+      backgroundJob: response.data.backgroundJob,
+    }))
+    .catch(handleErrors);
+};
+
+export const deleteBackgroundJob = (options = {}) => {
+  const { job, status } = options;
+
+  const path = backgroundJobPath(job);
+
+  if (job === null) {
+    throw new Error(`deleteBackgroundJob failed! Property "job" is required.`);
+  }
+
+  if (path === null) {
+    throw new Error(
+      `deleteBackgroundJob failed! Unsupported parentType: 'job.parentType'`,
+    );
+  }
+
+  return axios
+    .delete(path, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
     .then(response => ({
       backgroundJob: response.data.backgroundJob,
     }))

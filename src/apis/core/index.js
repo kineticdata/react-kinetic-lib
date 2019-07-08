@@ -12,7 +12,11 @@ export * from './oauthClients';
 
 export { login, logout, coreOauthAuthorizeUrl } from './authentication';
 
-export { fetchBackgroundJobs, updateBackgroundJob } from './backgroundJobs';
+export {
+  fetchBackgroundJobs,
+  updateBackgroundJob,
+  deleteBackgroundJob,
+} from './backgroundJobs';
 
 export {
   bridgedResourceUrl,

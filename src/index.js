@@ -76,6 +76,7 @@ export {
   // Background Jobs
   fetchBackgroundJobs,
   updateBackgroundJob,
+  deleteBackgroundJob,
   // Bridged Resource exports
   bridgedResourceUrl,
   convertMultipleBridgeRecords,
