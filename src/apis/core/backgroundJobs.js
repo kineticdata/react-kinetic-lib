@@ -7,7 +7,7 @@ const backgroundJobPath = job =>
     ? job.parentType === 'Datastore'
       ? `${bundle.apiLocation()}/datastore/forms/${
           job.parent.slug
-        }/backgroundJobs/${job.id}`
+        }/backgroundJobs/${job.id || ''}`
       : null
     : `${bundle.apiLocation()}/backgroundJobs`;
 
@@ -21,6 +21,25 @@ export const fetchBackgroundJobs = (options = {}) =>
       backgroundJobs: response.data.backgroundJobs,
     }))
     .catch(handleErrors);
+
+export const createBackgroundJob = (options = {}) => {
+  const { job, type, content } = options;
+  const path = backgroundJobPath(job);
+  if (job === null) {
+    throw new Error(`createBackgroundJob failed! Property "job" is required.`);
+  }
+  if (path === null) {
+    throw new Error(
+      `createBackgroundJob failed! Unsupported parentType: 'job.parentType'`,
+    );
+  }
+  return axios
+    .post(path, { type, content })
+    .then(response => ({
+      backgroundJob: response.data.backgroundJob,
+    }))
+    .catch(handleErrors);
+};
 
 export const updateBackgroundJob = (options = {}) => {
   const { job, status } = options;

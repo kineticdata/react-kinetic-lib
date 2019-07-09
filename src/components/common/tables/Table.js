@@ -19,7 +19,7 @@ const KeyWrapper = ({ children }) => children;
 
 const TableComponent = props => {
   if (props.configured) {
-    const { children, loading, initializing } = props;
+    const { children, loading, initializing, rows } = props;
     const table = buildTable(props);
     const filter = buildFilterControl(props);
     const pagination = buildPaginationControl(props);
@@ -30,6 +30,7 @@ const TableComponent = props => {
       pagination,
       initializing,
       loading,
+      rows,
     });
   }
   return null;

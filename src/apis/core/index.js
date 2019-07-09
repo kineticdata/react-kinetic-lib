@@ -13,6 +13,7 @@ export * from './oauthClients';
 export { login, logout, coreOauthAuthorizeUrl } from './authentication';
 
 export {
+  createBackgroundJob,
   fetchBackgroundJobs,
   updateBackgroundJob,
   deleteBackgroundJob,

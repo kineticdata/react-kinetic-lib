@@ -74,6 +74,7 @@ export {
   logout,
   coreOauthAuthorizeUrl,
   // Background Jobs
+  createBackgroundJob,
   fetchBackgroundJobs,
   updateBackgroundJob,
   deleteBackgroundJob,
