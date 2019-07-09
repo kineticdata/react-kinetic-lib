@@ -42,6 +42,7 @@ const AttributeDefinitionsTable = props => (
     })}
     columns={columns}
     addColumns={props.addColumns}
+    alterColumns={props.alterColumns}
     columnSet={props.columnSet}
     pageSize={props.pageSize}
   >
