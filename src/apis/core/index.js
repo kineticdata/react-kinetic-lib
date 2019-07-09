@@ -122,3 +122,5 @@ export {
   createWebhook,
   updateWebhook,
 } from './webhooks';
+
+export { fetchWebhookJobs } from './webhooksJobs';

@@ -31,7 +31,9 @@ export {
 } from './security_definitions_table/SecurityDefinitionsTable';
 export { default as TeamTable } from './team_table/TeamTable';
 export { default as UserTable } from './user_table/UserTable';
-
+export {
+  default as WebhookJobTable,
+} from './webhook_job_table/WebhookJobTable';
 // Fields
 export { default as UserDetails } from './user_details/UserDetails';
 export { default as UserSelect } from './UserSelect';
