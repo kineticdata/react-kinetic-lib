@@ -51,6 +51,7 @@ const IndexDefinitionTable = props => (
     sortable={false}
     columns={columns}
     addColumns={props.addColumns}
+    alterColumns={props.alterColumns}
     columnSet={props.columnSet}
     pageSize={props.pageSize}
   >
