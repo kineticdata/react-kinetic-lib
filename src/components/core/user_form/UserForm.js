@@ -48,7 +48,7 @@ const fields = ({ username }) => [
     label: 'Username',
     type: 'text',
     required: true,
-    enabled: false,
+    enabled: !username,
     initialValue: ({ user }) => get(user, 'username', ''),
   },
   {
