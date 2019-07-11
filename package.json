@@ -1,6 +1,6 @@
 {
   "name": "@kineticdata/react",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "A React library for the Kinetic Platform",
   "main": "lib/index.js",
   "module": "es/index.js",
