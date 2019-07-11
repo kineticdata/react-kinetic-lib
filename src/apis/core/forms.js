@@ -15,7 +15,10 @@ export const fetchForms = (options = {}) => {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
-    .then(response => ({ forms: response.data.forms }))
+    .then(response => ({
+      forms: response.data.forms,
+      nextPageToken: response.data.nextPageToken,
+    }))
     .catch(handleErrors);
 };
 
