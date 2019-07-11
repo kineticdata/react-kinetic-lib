@@ -68,7 +68,7 @@ const fields = ({ teamSlug }) => [
     type: 'text',
     visible: false,
     serialize: ({ values }) =>
-      values.getIn(['parentTeam', 'name']) !== ''
+      values.getIn(['parentTeam', 'name'], '') !== ''
         ? `${values.getIn(['parentTeam', 'name'])}::${values.get('localName')}`
         : values.get('localName'),
   },
