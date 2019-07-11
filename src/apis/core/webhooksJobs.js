@@ -24,3 +24,25 @@ export const fetchWebhookJobs = (options = {}) => {
     }))
     .catch(handleErrors);
 };
+
+export const updateWebhookJob = (options = {}) => {
+  const { id, kappSlug, scope, webhookJob } = options;
+
+  if (!id) {
+    throw new Error('updateWebhookJob failed! The option "id" is required.');
+  }
+
+  if (!webhookJob) {
+    throw new Error(
+      'updateWebhookJob failed! The option "webhookJob" is required.',
+    );
+  }
+
+  return axios
+    .put(`${buildEndpoint(kappSlug, scope)}/${id}`, webhookJob, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ webhookJob: response.data.webhookJob }))
+    .catch(handleErrors);
+};
