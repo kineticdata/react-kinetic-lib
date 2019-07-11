@@ -1,6 +1,6 @@
 {
   "name": "@kineticdata/react",
-  "version": "0.1.0-RC11",
+  "version": "0.1.0-alpha.0",
   "description": "Kinetic Data React component library.",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -11,7 +11,7 @@
     "umd"
   ],
   "scripts": {
-    "build": "yarn build:lib && build:styleguide",
+    "build": "yarn build:lib && yarn build:styleguide",
     "build:lib": "yarn dir && yarn lint && yarn assets && yarn js",
     "build:styleguide": "styleguidist build",
     "build:watch": "yarn dir && yarn assets && concurrently \"yarn lint:watch\" \"yarn assets:watch\" \"yarn js:watch\"",
