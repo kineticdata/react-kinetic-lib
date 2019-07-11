@@ -1,7 +1,7 @@
 {
   "name": "@kineticdata/react",
   "version": "0.1.0-alpha.1",
-  "description": "Kinetic Data React component library.",
+  "description": "A React library for the Kinetic Platform",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [
@@ -92,13 +92,16 @@
     "react-styleguidist": "^9.0.0"
   },
   "author": "Kinetic Data, Inc",
-  "homepage": "https://github.com/kineticdata/react-kinetic-lib",
+  "homepage": "https://kineticdata.github.io/react-kinetic-lib",
   "license": "MIT",
   "repository": "https://github.com/kineticdata/react-kinetic-lib",
   "keywords": [
     "react-component",
     "kinetic data",
-    "kinops"
+    "kinetic",
+    "kineticdata",
+    "react",
+    "bundle"
   ],
   "lint-staged": {
     "**": [
