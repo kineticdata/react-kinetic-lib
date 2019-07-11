@@ -5,6 +5,7 @@ module.exports = {
   components: 'src/**/[A-Z]*.js',
   skipComponentsWithoutExample: true,
   pagePerSection: true,
+  styleguideDir: 'docs',
   require: [
     'babel-polyfill',
   ],
