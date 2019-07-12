@@ -107,6 +107,11 @@ export {
   // Membership exports
   createMembership,
   deleteMembership,
+  //Meta
+  fetchKappWebhookEvents,
+  fetchLocales,
+  fetchSpaceWebhookEvents,
+  fetchTimezones,
   // OAuth Exports
   fetchOAuthClients,
   fetchOAuthClient,

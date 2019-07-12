@@ -125,3 +125,10 @@ export {
 } from './webhooks';
 
 export { fetchWebhookJobs, updateWebhookJob } from './webhooksJobs';
+
+export {
+  fetchKappWebhookEvents,
+  fetchLocales,
+  fetchSpaceWebhookEvents,
+  fetchTimezones,
+} from './meta';
