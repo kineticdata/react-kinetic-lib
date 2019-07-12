@@ -3,11 +3,10 @@ import { Form } from '../form/Form';
 import {
   createTeam,
   updateTeam,
+  fetchAttributeDefinitions,
   fetchTeam,
-  fetchTeams,
 } from '../../../apis/core';
 import { splitTeamName } from '../../../helpers/splitTeamName';
-import { fetchAttributeDefinitions } from '../../../apis/core/attributeDefinitions';
 import { get, List, Map } from 'immutable';
 
 const dataSources = ({ teamSlug }) => ({
@@ -19,7 +18,6 @@ const dataSources = ({ teamSlug }) => ({
       runIf: () => !!teamSlug,
     },
   ],
-  teams: [fetchTeams, [], { transform: result => result.teams }],
   attributeDefinitions: [
     fetchAttributeDefinitions,
     [{ attributeType: 'teamAttributeDefinitions' }],
@@ -49,7 +47,7 @@ const fields = ({ teamSlug }) => [
     required: false,
     transient: true,
     placeholder: 'Select a parent team...',
-    options: ({ teams }) => teams,
+    options: [],
     initialValue: ({ team }) =>
       team
         ? {
@@ -70,7 +68,7 @@ const fields = ({ teamSlug }) => [
     type: 'text',
     visible: false,
     serialize: ({ values }) =>
-      values.getIn(['parentTeam', 'name']) !== ''
+      values.getIn(['parentTeam', 'name'], '') !== ''
         ? `${values.getIn(['parentTeam', 'name'])}::${values.get('localName')}`
         : values.get('localName'),
   },

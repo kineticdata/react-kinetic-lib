@@ -9,7 +9,10 @@ export const fetchKapps = (options = {}) => {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
-    .then(response => ({ kapps: response.data.kapps }))
+    .then(response => ({
+      kapps: response.data.kapps,
+      nextPageToken: response.data.nextPageToken,
+    }))
     .catch(handleErrors);
 };
 

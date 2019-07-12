@@ -22,6 +22,13 @@
 
 - `yarn build` will build the component for publishing to npm and also bundle the demo app.
 
+## Publishing
+
+
+### Prereleases
+- `npm version prerelease --preid=alpha` will create a new pre-release with the tag "alpha" and increment the number after.
+    For example, if the current version is 0.1.0-alpha.1, running this command will bump the version to 0.1.0-alpha.2
+
 # Code Style
 
 The React component library project contains a Prettier config.

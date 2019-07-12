@@ -169,6 +169,9 @@ export {
   fetchWebhook,
   createWebhook,
   updateWebhook,
+  // Webhook Job exports
+  fetchWebhookJobs,
+  updateWebhookJob,
 } from './apis/core';
 export { socket, socketIdentify } from './apis/socket';
 export { K, bundle } from './helpers/coreHelpers';

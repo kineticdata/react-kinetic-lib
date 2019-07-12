@@ -1,17 +1,15 @@
 import React from 'react';
 import { Form } from '../form/Form';
-import { fetchSpace, fetchTeams, fetchUser } from '../../../apis/core';
+import {
+  createUser,
+  fetchAttributeDefinitions,
+  fetchUser,
+  updateUser,
+} from '../../../apis/core';
 import { fetchLocales, fetchTimezones } from '../../../apis/core/meta';
-import { fetchAttributeDefinitions } from '../../../apis/core/attributeDefinitions';
-import { createUser, updateUser } from '../../../apis/core/users';
 import { get, List, Map } from 'immutable';
 
 const dataSources = ({ username }) => ({
-  space: [
-    fetchSpace,
-    [{ include: 'attributesMap' }],
-    { shared: true, cache: 3600, transform: result => result.space },
-  ],
   locales: [
     fetchLocales,
     [],
@@ -37,7 +35,6 @@ const dataSources = ({ username }) => ({
     [{ attributeType: 'userProfileAttributeDefinitions' }],
     { transform: result => result.attributeDefinitions },
   ],
-  teams: [fetchTeams, [], { transform: result => result.teams }],
 });
 
 const handleSubmit = ({ username }) => values => {
@@ -46,11 +43,13 @@ const handleSubmit = ({ username }) => values => {
 };
 
 const fields = ({ username }) => [
-  !username && {
+  {
     name: 'username',
     label: 'Username',
     type: 'text',
     required: true,
+    enabled: !username,
+    initialValue: ({ user }) => get(user, 'username', ''),
   },
   {
     name: 'email',
@@ -102,6 +101,14 @@ const fields = ({ username }) => [
     visible: !!username,
     initialValue: !username,
     transient: true,
+    onChange: ({ values }, { setValue }) => {
+      if (values.get('password') !== '') {
+        setValue('password', '');
+      }
+      if (values.get('passwordConfirmation') !== '') {
+        setValue('passwordConfirmation', '');
+      }
+    },
   },
   {
     name: 'allowedIps',
@@ -157,7 +164,7 @@ const fields = ({ username }) => [
     type: 'team-multi',
     required: false,
     placeholder: 'Select a team...',
-    options: ({ teams }) => teams,
+    options: [],
     initialValue: ({ user }) =>
       get(user, 'memberships', List()).map(m => m.get('team')),
     serialize: ({ values }) =>

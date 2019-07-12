@@ -1,7 +1,7 @@
 {
   "name": "@kineticdata/react",
-  "version": "0.1.0-RC11",
-  "description": "Kinetic Data React component library.",
+  "version": "0.1.0-alpha.2",
+  "description": "A React library for the Kinetic Platform",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [
@@ -11,7 +11,9 @@
     "umd"
   ],
   "scripts": {
-    "build": "yarn dir && yarn lint && yarn assets && yarn js",
+    "build": "yarn build:lib && yarn build:styleguide",
+    "build:lib": "yarn dir && yarn lint && yarn assets && yarn js",
+    "build:styleguide": "styleguidist build",
     "build:watch": "yarn dir && yarn assets && concurrently \"yarn lint:watch\" \"yarn assets:watch\" \"yarn js:watch\"",
     "dir": "rimraf lib && mkdirp lib/assets",
     "js": "cross-env NODE_ENV=production babel src --out-dir lib --ignore \"**/*.test.js\"",
@@ -24,8 +26,10 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "styleguide:build": "styleguidist build",
-    "format": "prettier --write \"**\""
+    "format": "prettier --write \"**\"",
+    "preversion": "yarn test",
+    "version": "yarn build && git add -A docs",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "actiontyper": "^0.0.4",
@@ -88,13 +92,16 @@
     "react-styleguidist": "^9.0.0"
   },
   "author": "Kinetic Data, Inc",
-  "homepage": "https://github.com/kineticdata/react-kinetic-lib",
+  "homepage": "https://kineticdata.github.io/react-kinetic-lib",
   "license": "MIT",
   "repository": "https://github.com/kineticdata/react-kinetic-lib",
   "keywords": [
     "react-component",
     "kinetic data",
-    "kinops"
+    "kinetic",
+    "kineticdata",
+    "react",
+    "bundle"
   ],
   "lint-staged": {
     "**": [
