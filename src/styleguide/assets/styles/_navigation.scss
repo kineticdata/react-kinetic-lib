@@ -1,0 +1,226 @@
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *   Navbar & Subnav
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+.navbar {
+  background-color: $kinetic-orange * 2;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.logo {
+  @include border-radius(4px 0 0 0);
+  float: left;
+  padding: 0 0 0 1rem;
+
+  a {
+    text-decoration: none;
+
+    img {
+      margin-right: 0 !important;
+      float: none !important;
+      padding: 0 18px 0 0;
+    }
+  }
+}
+
+.return-index {
+  background-color: rgba($kinetic-gray, 0.5);
+  line-height: 48px;
+  margin: 0 -15px;
+
+  &:hover {
+    background-color: rgba($kinetic-gray, 1);
+  }
+
+  a {
+    padding: 0 15px;
+  }
+}
+
+.return-block {
+  @include border-radius(0);
+  background-color: rgba($white, 0.25);
+  float: left;
+  line-height: 60px;
+  padding: 0 18px;
+
+  &:hover {
+    background-color: #444;
+    background-color: rgba($white, 0.5);
+    color: $white;
+    text-decoration: none;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.space-title {
+  color: $black;
+  display: inline-block;
+  margin: 0 0 0 1rem;
+}
+
+.app-header .navbar-nav>.nav-item>.active,
+.app-header .navbar-nav>.nav-item>.active:hover,
+.app-header .navbar-nav>.nav-item>.active:focus {
+  background-color: rgba(55, 55, 55, 0.5);
+  color: $white;
+  position: relative;
+  transition: all 0.29s ease-in-out 0s;
+}
+
+.app-header .navbar-nav>.nav-item>.nav-link {
+  color: $black;
+
+  &:hover,
+  &:focus {
+    background-color: rgba(55, 55, 55, 0.25);
+    color: $white;
+    position: relative;
+    transition: all 0.29s ease-in-out 0s;
+  }
+}
+
+// navbar dropdown menus
+.navbar-nav {
+
+  .menu-dropdown,
+  .dropdown-menu {
+    background-color: $black;
+    border: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-top: 0;
+
+    .dropdown-item {
+      color: $gray-light;
+      line-height: 1.42857143;
+      text-align: left;
+
+      &:hover {
+        @include vertical-gradient(#292929, #191919);
+        color: $white;
+      }
+    }
+
+    .active a,
+    a.menu,
+    .dropdown-toggle {
+      color: $white;
+    }
+
+    .dropdown-divider {
+      border-color: #444;
+      background-color: #222;
+    }
+
+    a.menu.open,
+    .dropdown-toggle.open {
+      background: rgba($white, 0.05);
+    }
+  }
+
+  a.dropdown-toggle {
+    color: $black;
+  }
+}
+
+// Remove border radius from .nav-link
+.nav-pills>.nav-item>.nav-link {
+  border-radius: 0;
+}
+
+// Navbar Dropdown Toggles
+.navbar-nav>.nav-item {
+  line-height: 3.75rem;
+
+  >.dropdown-toggle {
+    font-size: 0.875rem;
+    line-height: inherit;
+    padding: 0 1rem;
+
+    >.account {
+      display: inline-block;
+      font-weight: bold;
+      line-height: 1;
+      margin: 0;
+      // min-width: 80px;
+      overflow: hidden;
+      padding: 0 6px;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    >.avatar {
+      display: inline-block;
+
+      img {
+        border-radius: 30px;
+      }
+    }
+  }
+}
+
+// Page tabs or subnavigation
+.nav-pills.sub-nav>.nav-item>.nav-link {
+  border-radius: 0;
+  color: $gray-dark;
+  padding: 10px 1em;
+
+  &.active,
+  &.active:hover,
+  &.active:focus {
+    color: #000;
+    background-color: transparent;
+    border-color: transparent;
+    border-bottom: 4px solid $yellow;
+  }
+
+  &:hover {
+    background-color: transparent;
+    border-bottom: 4px solid $kinetic-orange;
+    color: $kinetic-orange;
+  }
+}
+
+// Sidebar navigation
+.nav-pills .nav-link {
+
+  &.active,
+  &.active:focus {
+    background-color: $kinetic-blue;
+    border-radius: 0;
+  }
+
+  &:hover {
+    background-color: #eee;
+    border-radius: 0;
+  }
+}
+
+.content-tabs {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+
+    // Pads the bottom of the sub-nav so that the tab content doesn't touch the sub-nav bar.
+    margin-bottom: 2em;
+  }
+}
+
+.subnav-actions {
+  align-self: center;
+
+  .btn {
+    margin-right: 0.5em;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

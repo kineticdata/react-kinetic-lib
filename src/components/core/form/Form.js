@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
+import t from 'prop-types';
 import {
   fromJS,
   getIn,
@@ -726,6 +727,10 @@ const extractFieldComponents = ({ fields, addFields, alterFields }) =>
 // formKey then it generates one and stores it as component state and passes
 // that to FormImpl. That was FormImpl can always assume there is a formKey and
 // it can
+
+/**
+ * @component
+ */
 export class Form extends Component {
   constructor(props) {
     super(props);
@@ -923,6 +928,54 @@ class FormImplComponent extends Component {
     );
   }
 }
+
 const FormImpl = connect(mapStateToProps)(FormImplComponent);
+
+Form.propTypes = {
+  /** An object describing how a form fetches data. */
+  dataSources: t.object,
+  /** An array of the fields that will be rendered on the form. */
+  fields: t.arrayOf(
+    t.shape({
+      /** The name of the field. */
+      name: t.string,
+      /** The label of the field that will be shown. */
+      label: t.string,
+      /** Flag that determines if the column can be used as a filter. */
+      type: t.bool,
+      /** Flag that determines if the column is sortable.*/
+      sortable: t.bool,
+      /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
+      components: t.shape({
+        HeaderCell: t.func,
+        BodyCell: t.func,
+        FooterCell: t.func,
+      }),
+    }),
+  ).isRequired,
+  /** Add additional fields to a form. */
+  addFields: t.arrayOf(
+    t.shape({
+      /** The label that will be rendered for the field. */
+      label: t.string,
+      /** Allows overriding  */
+      components: t.shape({}),
+    }),
+  ),
+  /** Allow overriding the fields shown and in which order. */
+  fieldSet: t.oneOf([t.arrayOf(t.string), t.func]),
+  components: t.shape({}),
+
+  /** The Submit event called after the form is submitted. */
+  onSubmit: t.func,
+  /** The child of this component should be a function which renders the form layout. */
+  children: t.func.isRequired,
+};
+
+const defaultProps = {
+  visible: true,
+};
+
+Form.defaultProps = defaultProps;
 
 FormImpl.displayName = 'FormImpl';

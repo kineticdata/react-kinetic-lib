@@ -1,6 +1,7 @@
 # ignore everything that isn't in the `src` directory
 /*
 !/src
+!styleguide.config.js
 # ignore file types that prettier does not support
 *.png
 *.snap

@@ -1,0 +1,15 @@
+// Mixins ~ Common
+
+// Utilities
+@import 'mixins/typography';
+@import 'mixins/word-break';
+@import 'mixins/opacity';
+@import 'mixins/transition';
+@import 'mixins/box-shadow';
+
+// Skins
+@import 'mixins/border-radius';
+@import 'mixins/gradients';
+
+// Layout
+@import 'mixins/clearfix';

@@ -30,7 +30,7 @@ yarn add @kineticdata/react
 ### `KientcLib`
 The `KineticLib` Provider provides a global context to your site or applications connection to the Kinetic Platform.
 
-```js
+```js static
 import React from 'react';
 import { KineticLib } from '@kineticdata/react';
 import { Router, Route, Switch } from 'react-router-dom';
@@ -67,7 +67,7 @@ export default App;
 ### API's
 All Service API's are exposed as functions to perform CRUD operations within the platform.
 
-```js
+```js static
 import React from 'react';
 import { KineticLib } from '@kineticdata/react';
 

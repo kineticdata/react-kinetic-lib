@@ -1,4 +1,5 @@
 import React from 'react';
+import t from 'prop-types';
 
 export const PasswordField = props =>
   props.visible && (
@@ -15,3 +16,12 @@ export const PasswordField = props =>
       />
     </div>
   );
+
+PasswordField.propTypes = {
+  /** Flag that determines if the field is visible. */
+  visible: t.bool,
+  /** The id of the field. */
+  id: t.string,
+  /** The value of the field. */
+  value: t.string,
+};

@@ -2,6 +2,11 @@ import axios from 'axios';
 import { bundle } from '../../helpers/coreHelpers';
 import { handleErrors, paramBuilder, headerBuilder } from '../http';
 
+/**
+ * Fetch submission activity within the system.
+ * @param {object} options fetch parameters
+ * @param {string} options.kappSlug slug of the kapp to scope activity to
+ */
 export const fetchActivity = (options = {}) => {
   const { kappSlug } = options;
 
