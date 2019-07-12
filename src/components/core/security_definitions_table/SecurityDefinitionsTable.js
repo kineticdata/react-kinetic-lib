@@ -24,8 +24,8 @@ const columns = [
   {
     value: 'name',
     title: 'Name',
-    filterable: false,
-    sortable: false,
+    filterable: true,
+    sortable: true,
   },
   {
     value: 'rule',
@@ -37,7 +37,7 @@ const columns = [
     value: 'type',
     title: 'Type',
     filterable: false,
-    sortable: false,
+    sortable: true,
   },
 ];
 
