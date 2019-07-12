@@ -5,7 +5,8 @@ import { fetchForm } from '../../../apis/core';
 const BooleanYesNoCell = props => <td>{props.value ? 'Yes' : 'No'}</td>;
 
 const dataSource = ({ formSlug }) => ({
-  dataSource: fetchForm,
+  fn: fetchForm,
+  clientSideSearch: true,
   params: () => ({
     datastore: true,
     kappSlug: null,
@@ -45,7 +46,7 @@ const IndexDefinitionTable = props => (
     components={{
       ...props.components,
     }}
-    data={dataSource({
+    dataSource={dataSource({
       formSlug: props.formSlug,
     })}
     sortable={false}

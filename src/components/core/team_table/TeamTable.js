@@ -28,9 +28,9 @@ const teamFilter = filters => {
   return q.length > 0 ? { q } : {};
 };
 
-const data = {
-  dataSource: fetchTeams,
-  params: ({ pageSize, sortColumn, sortDirection, filters }) => ({
+const dataSource = {
+  fn: fetchTeams,
+  params: ({ pageSize, filters }) => ({
     include: 'details',
     limit: pageSize,
     ...teamFilter(filters),
@@ -80,7 +80,7 @@ export const TeamTable = props => (
     components={{
       ...props.components,
     }}
-    data={data}
+    dataSource={dataSource}
     columns={columns}
     alterColumns={props.alterColumns}
     addColumns={props.addColumns}

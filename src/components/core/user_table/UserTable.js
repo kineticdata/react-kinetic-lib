@@ -22,9 +22,9 @@ const userFilter = filters => {
   return q.length > 0 ? { q } : {};
 };
 
-const data = {
-  dataSource: fetchUsers,
-  params: ({ pageSize, sortColumn, sortDirection, filters }) => ({
+const dataSource = {
+  fn: fetchUsers,
+  params: ({ pageSize, filters }) => ({
     include: 'details',
     limit: pageSize,
     ...userFilter(filters),
@@ -94,7 +94,7 @@ export const UserTable = props => (
     components={{
       ...props.components,
     }}
-    data={data}
+    dataSource={dataSource}
     columns={columns}
     addColumns={props.addColumns}
     alterColumns={props.alterColumns}

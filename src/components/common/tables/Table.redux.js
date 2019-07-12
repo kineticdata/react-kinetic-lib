@@ -3,7 +3,17 @@ import isarray from 'isarray';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { dispatch, regHandlers, regSaga } from '../../../store';
 
-export const isClientSide = data => isarray(data) || data instanceof List;
+export const hasData = data => isarray(data) || data instanceof List;
+
+export const isClientSide = tableData => {
+  const data = tableData.get('data');
+  const dataSource = tableData.get('dataSource');
+
+  return (
+    hasData(data) &&
+    ((dataSource && dataSource.clientSideSearch === true) || !dataSource)
+  );
+};
 
 const clientSideNextPage = tableData =>
   tableData.update(
@@ -63,7 +73,7 @@ regHandlers({
   },
   CONFIGURE_TABLE: (
     state,
-    { payload: { tableKey, data = List(), columns, pageSize = 25 } },
+    { payload: { tableKey, data, dataSource, columns, pageSize = 25 } },
   ) =>
     !state.getIn(['tables', tableKey, 'mounted'])
       ? state
@@ -73,6 +83,7 @@ regHandlers({
           ['tables', tableKey],
           Map({
             data,
+            dataSource,
             columns,
             rows: List(),
 
@@ -97,10 +108,11 @@ regHandlers({
             initialize: true,
           }),
         ),
-  SET_ROWS: (state, { payload: { tableKey, rows, nextPageToken } }) =>
+  SET_ROWS: (state, { payload: { tableKey, rows, data, nextPageToken } }) =>
     state.updateIn(['tables', tableKey], table =>
       table
         .set('rows', rows)
+        .set('data', data)
         .set('currentPageToken', nextPageToken)
         .set('nextPageToken', null)
         .set('initializing', false)
@@ -108,13 +120,13 @@ regHandlers({
     ),
   NEXT_PAGE: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
-      isClientSide(tableData.get('data'))
+      isClientSide(tableData)
         ? clientSideNextPage(tableData)
         : serverSideNextPage(tableData),
     ),
   PREV_PAGE: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
-      isClientSide(tableData.get('data'))
+      isClientSide(tableData)
         ? clientSidePrevPage(tableData)
         : serverSidePrevPage(tableData),
     ),
@@ -151,8 +163,11 @@ function* calculateRowsTask({ payload }) {
   const { tableKey } = payload;
   const tableData = yield select(state => state.getIn(['tables', tableKey]));
 
-  const { rows, nextPageToken } = yield call(calculateRows, tableData);
-  yield put({ type: 'SET_ROWS', payload: { tableKey, rows, nextPageToken } });
+  const { rows, data, nextPageToken } = yield call(calculateRows, tableData);
+  yield put({
+    type: 'SET_ROWS',
+    payload: { tableKey, rows, data, nextPageToken },
+  });
 }
 
 regSaga(takeEvery('CONFIGURE_TABLE', calculateRowsTask));
@@ -188,43 +203,61 @@ export const clientSideRowFilter = filters => row => {
       }, false);
 };
 
-const calculateRows = tableData => {
+const applyClientSideFilters = (tableData, data) => {
   const pageOffset = tableData.get('pageOffset');
   const pageSize = tableData.get('pageSize');
   const sortColumn = tableData.get('sortColumn');
   const sortDirection = tableData.get('sortDirection');
   const filters = tableData.get('appliedFilters');
+  const startIndex = pageOffset;
+  const endIndex = Math.min(pageOffset + pageSize, data.size);
 
-  const data = isClientSide(tableData.get('data'))
-    ? List(tableData.get('data'))
-    : tableData.get('data');
+  return data
+    .update(d => d.filter(clientSideRowFilter(filters)))
+    .update(d => (sortColumn ? d.sortBy(r => r[sortColumn.value]) : d))
+    .update(d => (sortDirection === 'asc' ? d.reverse() : d))
+    .update(d => d.slice(startIndex, endIndex));
+};
 
-  if (isClientSide(tableData.get('data'))) {
-    const startIndex = pageOffset;
-    const endIndex = Math.min(pageOffset + pageSize, data.size);
+const calculateRows = tableData => {
+  const dataSource = tableData.get('dataSource');
+  const data = tableData.get('data');
 
-    const rows = data
-      .update(d => d.filter(clientSideRowFilter(filters)))
-      .update(d => (sortColumn ? d.sortBy(r => r[sortColumn.value]) : d))
-      .update(d => (sortDirection === 'asc' ? d.reverse() : d))
-      .update(d => d.slice(startIndex, endIndex));
+  if (isClientSide(tableData)) {
+    const rows = applyClientSideFilters(tableData, data);
 
-    return Promise.resolve({ rows });
-  } else {
-    const transform = data.transform || (result => result);
-    const params = {
-      ...data.params(tableData.toJS()),
-      ...generateSortParams(tableData),
-      pageToken: tableData.get('nextPageToken'),
-    };
+    return Promise.resolve({ rows, data });
+  } else if (dataSource) {
+    const transform = dataSource.transform || (result => result);
+    const params = dataSource.clientSideSearch
+      ? dataSource.params(tableData.toJS())
+      : {
+          ...dataSource.params(tableData.toJS()),
+          ...generateSortParams(tableData),
+          pageToken: tableData.get('nextPageToken'),
+        };
 
-    return data
-      .dataSource(params)
+    return dataSource
+      .fn(params)
       .then(transform)
-      .then(result => ({
-        nextPageToken: result.nextPageToken,
-        rows: List(result.data),
-      }));
+      .then(({ nextPageToken, data }) => ({
+        nextPageToken,
+        data: List(data),
+        rows: List(data),
+      }))
+      .then(result => {
+        if (dataSource.clientSideSearch) {
+          return {
+            ...result,
+            rows: applyClientSideFilters(tableData, result.rows),
+          };
+        }
+        return result;
+      });
+  } else {
+    throw new Error(
+      'Unable to calculate rows: Missing both data and a dataSource!',
+    );
   }
 };
 

@@ -3,7 +3,8 @@ import Table from '../../common/tables/Table';
 import { fetchOAuthClients } from '../../../apis/core';
 
 const dataSource = () => ({
-  dataSource: fetchOAuthClients,
+  fn: fetchOAuthClients,
+  clientSideSearch: true,
   params: () => ({}),
   transform: result => ({
     data: result.oauthClients,
@@ -43,7 +44,7 @@ export const OAuthClientTable = props => (
     components={{
       ...props.components,
     }}
-    data={dataSource()}
+    dataSource={dataSource()}
     columns={columns}
     alterColumns={props.alterColumns}
     addColumns={props.addColumns}

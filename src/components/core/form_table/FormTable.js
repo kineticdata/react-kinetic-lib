@@ -25,8 +25,8 @@ const formFilter = filters => {
 };
 
 const dataSource = ({ kappSlug = null, datastore }) => ({
-  dataSource: fetchForms,
-  params: ({ pageSize, sortColumn, sortDirection, filters }) => ({
+  fn: fetchForms,
+  params: ({ pageSize, filters }) => ({
     include: 'details',
     limit: pageSize,
     datastore,
@@ -88,7 +88,7 @@ export const FormTable = props => (
     components={{
       ...props.components,
     }}
-    data={dataSource({
+    dataSource={dataSource({
       kappSlug: props.kappSlug,
       datastore: props.datastore,
     })}

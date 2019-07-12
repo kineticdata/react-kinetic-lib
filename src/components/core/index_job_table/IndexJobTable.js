@@ -2,8 +2,9 @@ import React from 'react';
 import { fetchBackgroundJobs } from '../../../apis/core';
 import Table from '../../common/tables/Table';
 
-const data = {
-  dataSource: fetchBackgroundJobs,
+const dataSource = {
+  fn: fetchBackgroundJobs,
+  clientSideSearch: true,
   params: () => ({}),
   transform: result => ({ data: result.backgroundJobs }),
 };
@@ -45,7 +46,7 @@ const IndexJobTable = props => (
     components={{
       ...props.components,
     }}
-    data={data}
+    dataSource={dataSource}
     columns={columns}
     addColumns={props.addColumns}
     alterColumns={props.alterColumns}

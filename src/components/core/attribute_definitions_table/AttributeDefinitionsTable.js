@@ -3,10 +3,10 @@ import Table from '../../common/tables/Table';
 import { fetchAttributeDefinitions } from '../../../apis/core';
 
 const dataSource = ({ attributeType }) => ({
-  dataSource: fetchAttributeDefinitions,
-  params: ({ pageSize }) => ({
+  fn: fetchAttributeDefinitions,
+  clientSideSearch: true,
+  params: () => ({
     include: 'details',
-    limit: pageSize,
     attributeType,
   }),
   transform: result => {
@@ -37,7 +37,7 @@ const AttributeDefinitionsTable = props => (
     components={{
       ...props.components,
     }}
-    data={dataSource({
+    dataSource={dataSource({
       attributeType: props.attributeType,
     })}
     columns={columns}

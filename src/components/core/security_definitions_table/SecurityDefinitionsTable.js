@@ -3,8 +3,9 @@ import Table from '../../common/tables/Table';
 import { fetchSecurityPolicyDefinitions } from '../../../apis/core';
 
 const dataSource = ({ kappSlug = null }) => ({
-  dataSource: fetchSecurityPolicyDefinitions,
-  params: ({ pageSize, sortColumn, sortDirection, filters }) => ({
+  fn: fetchSecurityPolicyDefinitions,
+  clientSideSearch: true,
+  params: () => ({
     include: 'details',
     kappSlug,
   }),
@@ -46,7 +47,7 @@ export const SecuityDefinitionsTable = props => (
     components={{
       ...props.components,
     }}
-    data={dataSource({
+    dataSource={dataSource({
       kappSlug: props.kappSlug,
     })}
     columns={columns}

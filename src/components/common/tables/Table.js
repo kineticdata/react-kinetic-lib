@@ -66,13 +66,21 @@ const buildFilterControl = ({
   );
 };
 
-const hasPrevPage = (data, pageTokens, pageOffset) =>
-  isClientSide(data) ? pageOffset > 0 : pageTokens.size !== 0;
+const hasPrevPage = (data, dataSource, pageTokens, pageOffset) =>
+  isClientSide(Map({ data, dataSource }))
+    ? pageOffset > 0
+    : pageTokens.size !== 0;
 
-const hasNextPage = (data, pageOffset, pageSize, currentPageToken) =>
-  isClientSide(data)
+const hasNextPage = (
+  data,
+  dataSource,
+  pageOffset,
+  pageSize,
+  currentPageToken,
+) =>
+  isClientSide(Map({ data, dataSource }))
     ? data
-      ? pageOffset + pageSize < data.length
+      ? pageOffset + pageSize < data.size
       : false
     : !!currentPageToken;
 
@@ -80,6 +88,7 @@ const buildPaginationControl = props => {
   const {
     tableKey,
     data,
+    dataSource,
     pageTokens,
     pageSize,
     pageOffset,
@@ -88,11 +97,17 @@ const buildPaginationControl = props => {
     loading,
   } = props;
   const PaginationControl = components.PaginationControl;
-  const prevPage = hasPrevPage(data, pageTokens, pageOffset)
+  const prevPage = hasPrevPage(data, dataSource, pageTokens, pageOffset)
     ? onPrevPage(tableKey)
     : null;
 
-  const nextPage = hasNextPage(data, pageOffset, pageSize, currentPageToken)
+  const nextPage = hasNextPage(
+    data,
+    dataSource,
+    pageOffset,
+    pageSize,
+    currentPageToken,
+  )
     ? onNextPage(tableKey)
     : null;
 
@@ -364,8 +379,10 @@ class Table extends Component {
 }
 
 Table.propTypes = {
-  /** Either an array of data (for client-side tables) or an object providing datasource configuration. */
-  data: t.oneOfType([t.array, t.object]).isRequired,
+  /** An array or list of data. */
+  data: t.array,
+  /** An object describing how a table fetches remote data. */
+  dataSource: t.object,
   /**
    * Calculated row data from the datasource mechanism.
    * @ignore
@@ -472,8 +489,6 @@ const defaultProps = {
 Table.defaultProps = defaultProps;
 
 Table.configure = configureTable;
-// Table.mount = mountTable;
-// Table.unmount = unmountTable;
 
 /**
  * @component

@@ -3,7 +3,7 @@ import { fetchWebhookJobs } from '../../../apis/core';
 import Table from '../../common/tables/Table';
 
 const dataSource = ({ scope, kappSlug, status }) => ({
-  dataSource: fetchWebhookJobs,
+  fn: fetchWebhookJobs,
   params: ({ pageSize }) => ({
     include: 'details',
     limit: pageSize,
@@ -45,7 +45,7 @@ const WebhookJobTable = props => (
     components={{
       ...props.components,
     }}
-    data={dataSource(props)}
+    dataSource={dataSource(props)}
     columns={columns}
     addColumns={props.addColumns}
     alterColumns={props.alterColumns}

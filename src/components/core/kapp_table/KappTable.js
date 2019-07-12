@@ -22,9 +22,9 @@ const kappFilter = filters => {
   return q.length > 0 ? { q } : {};
 };
 
-const data = {
-  dataSource: fetchKapps,
-  params: ({ pageSize, sortColumn, sortDirection, filters }) => ({
+const dataSource = {
+  fn: fetchKapps,
+  params: ({ pageSize, filters }) => ({
     include: 'details',
     limit: pageSize,
     ...kappFilter(filters),
@@ -88,7 +88,7 @@ export const KappTable = props => (
     components={{
       ...props.components,
     }}
-    data={data}
+    dataSource={dataSource}
     columns={columns}
     alterColumns={props.alterColumns}
     addColumns={props.addColumns}

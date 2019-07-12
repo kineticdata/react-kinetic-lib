@@ -2,14 +2,13 @@ import React from 'react';
 import { fetchWebhooks } from '../../../apis/core';
 import Table from '../../common/tables/Table';
 
-const dataSource = ({ scope, kappSlug, status }) => ({
-  dataSource: fetchWebhooks,
-  params: ({ pageSize }) => ({
+const dataSource = ({ scope, kappSlug }) => ({
+  fn: fetchWebhooks,
+  clientSideSearch: true,
+  params: () => ({
     include: 'details',
-    limit: pageSize,
     scope,
     kappSlug,
-    status,
   }),
   transform: result => ({
     data: result.webhooks,
@@ -17,15 +16,15 @@ const dataSource = ({ scope, kappSlug, status }) => ({
 });
 
 const columns = [
-  { value: 'createdAt', title: 'Created At' },
-  { value: 'createdBy', title: 'Created By' },
+  { value: 'createdAt', title: 'Created At', filterable: true },
+  { value: 'createdBy', title: 'Created By', filterable: true },
   { value: 'authStrategy', title: 'Authentication Strategy' },
-  { value: 'event', title: 'Event' },
+  { value: 'event', title: 'Event', filterable: true },
   { value: 'filter', title: 'Filter' },
-  { value: 'name', title: 'Name' },
-  { value: 'type', title: 'Type' },
-  { value: 'updatedAt', title: 'Updated At' },
-  { value: 'updatedBy', title: 'Updated By' },
+  { value: 'name', title: 'Name', filterable: true },
+  { value: 'type', title: 'Type', filterable: true },
+  { value: 'updatedAt', title: 'Updated At', filterable: true },
+  { value: 'updatedBy', title: 'Updated By', filterable: true },
   { value: 'url', title: 'URL' },
 ];
 
@@ -35,13 +34,12 @@ const WebhookTable = props => (
     components={{
       ...props.components,
     }}
-    data={dataSource(props)}
+    dataSource={dataSource(props)}
     columns={columns}
     addColumns={props.addColumns}
     alterColumns={props.alterColumns}
     columnSet={props.columnSet}
     pageSize={props.pageSize}
-    sortable={false}
   >
     {props.children}
   </Table>
