@@ -16,7 +16,7 @@ export const fetchSpaceWebhookEvents = (options = {}) =>
     .then(response => response.data)
     .catch(handleErrors);
 
-export const fetchKappWebhookEvents = () =>
+export const fetchKappWebhookEvents = (options = {}) =>
   axios
     .get(`${bundle.apiLocation()}/meta/webhooks/events/kapp`, {
       headers: headerBuilder(options),

@@ -49,7 +49,7 @@ const fields = ({ kappSlug, name }) => [
         .keySeq()
         .sort()
         .map(type => ({ label: type, value: type })),
-    onChange: ({}, { setValue }) => {
+    onChange: (bindings, { setValue }) => {
       setValue('event', '');
     },
   },
