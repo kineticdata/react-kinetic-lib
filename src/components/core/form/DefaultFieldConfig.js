@@ -2,6 +2,7 @@ import { Map } from 'immutable';
 import { AttributesField } from './AttributesField';
 import { CheckboxField } from './CheckboxField';
 import { PasswordField } from './PasswordField';
+import { RadioField } from './RadioField';
 import { TeamField } from './TeamField';
 import { TeamMultiField } from './TeamMultiField';
 import { SelectField } from './SelectField';
@@ -15,6 +16,7 @@ export const DefaultFieldConfig = Map({
   AttributesField,
   CheckboxField,
   PasswordField,
+  RadioField,
   TeamField,
   TeamMultiField,
   SelectField,

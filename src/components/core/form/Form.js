@@ -688,6 +688,7 @@ const typeToComponent = {
   'text-multi': 'TextMultiField',
   checkbox: 'CheckboxField',
   password: 'PasswordField',
+  radio: 'RadioField',
   select: 'SelectField',
   'select-multi': 'SelectMultiField',
   attributes: 'AttributesField',

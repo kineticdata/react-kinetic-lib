@@ -12,6 +12,7 @@ export {
 export { SpaceForm } from './space_form/SpaceForm';
 export { TeamForm } from './team_form/TeamForm';
 export { UserForm } from './user_form/UserForm';
+export { WebhookForm } from './webhook_form/WebhookForm';
 
 // Tables
 export {
