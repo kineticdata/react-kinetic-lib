@@ -198,7 +198,9 @@ export const clientSideRowFilter = filters => row => {
         const currentValue = filter.get('currentValue');
 
         return value && typeof value === 'string' && value !== ''
-          ? currentValue.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+          ? currentValue
+              .toLocaleLowerCase()
+              .startsWith(value.toLocaleLowerCase())
           : has;
       }, false);
 };
