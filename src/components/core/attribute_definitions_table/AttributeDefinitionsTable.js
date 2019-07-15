@@ -2,11 +2,12 @@ import React from 'react';
 import Table from '../../common/tables/Table';
 import { fetchAttributeDefinitions } from '../../../apis/core';
 
-const dataSource = ({ attributeType }) => ({
+const dataSource = ({ kappSlug, attributeType }) => ({
   fn: fetchAttributeDefinitions,
   clientSideSearch: true,
   params: () => ({
     include: 'details',
+    kappSlug,
     attributeType,
   }),
   transform: result => {
@@ -38,6 +39,7 @@ const AttributeDefinitionsTable = props => (
       ...props.components,
     }}
     dataSource={dataSource({
+      kappSlug: props.kappSlug,
       attributeType: props.attributeType,
     })}
     columns={columns}

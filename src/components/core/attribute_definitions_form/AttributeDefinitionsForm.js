@@ -6,10 +6,10 @@ import {
   fetchAttributeDefinition,
 } from '../../../apis/core';
 
-const dataSources = ({ attributeType, attributeName }) => ({
+const dataSources = ({ kappSlug, attributeType, attributeName }) => ({
   attributeDefinition: [
     fetchAttributeDefinition,
-    [{ attributeType, attributeName, include: 'details' }],
+    [{ kappSlug, attributeType, attributeName, include: 'details' }],
     {
       transform: result => result.attributeDefinition,
       runIf: () => !!attributeName,
@@ -17,9 +17,10 @@ const dataSources = ({ attributeType, attributeName }) => ({
   ],
 });
 
-const handleSubmit = ({ attributeType, attributeName }) => values =>
+const handleSubmit = ({ kappSlug, attributeType, attributeName }) => values =>
   (attributeName ? updateAttributeDefinition : createAttributeDefinition)({
     attributeDefinition: values.toJS(),
+    kappSlug,
     attributeType,
     attributeName,
   }).then(({ attributeDefinition, error }) => {
