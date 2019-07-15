@@ -20,9 +20,7 @@ const validateOptions = (functionName, requiredOptions, options) => {
   }
   if (kappSlugMissing) {
     throw new Error(
-      `${functionName} failed! A kappSlug is required when using type: ${
-        webhook.type
-      }`,
+      `${functionName} failed! A kappSlug is required when using type: ${webhook.type}`,
     );
   }
 };
@@ -84,6 +82,19 @@ export const updateWebhook = (options = {}) => {
   validateOptions('updateWebhook', ['webhookName', 'webhook'], options);
   return axios
     .put(buildEndpoint(options), webhook, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({
+      webhook: response.data.webhook,
+    }))
+    .catch(handleErrors);
+};
+
+export const deleteWebhook = (options = {}) => {
+  validateOptions('deleteWebhook', ['webhookName'], options);
+  return axios
+    .delete(buildEndpoint(options), {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })

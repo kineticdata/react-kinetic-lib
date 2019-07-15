@@ -121,6 +121,7 @@ export {
   fetchWebhooks,
   fetchWebhook,
   createWebhook,
+  deleteWebhook,
   updateWebhook,
 } from './webhooks';
 

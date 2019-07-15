@@ -173,6 +173,7 @@ export {
   fetchWebhooks,
   fetchWebhook,
   createWebhook,
+  deleteWebhook,
   updateWebhook,
   // Webhook Job exports
   fetchWebhookJobs,
