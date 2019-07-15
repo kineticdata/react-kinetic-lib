@@ -912,6 +912,9 @@ class FormImplComponent extends Component {
                           )}
                         />
                       }
+                      meta={this.props.fields.map(field =>
+                        field.filter((value, key) => ['visible'].includes(key)),
+                      )}
                     />
                   </form>
                 }
