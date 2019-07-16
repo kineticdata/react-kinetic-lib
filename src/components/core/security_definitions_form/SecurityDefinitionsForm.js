@@ -14,7 +14,7 @@ const SECURITY_DEFINITION_TYPES = [
   'User',
 ];
 
-const dataSources = ({ securityPolicyName, kappSlug = null }) => ({
+const dataSources = ({ securityPolicyName, kappSlug }) => ({
   securityPolicy: [
     fetchSecurityPolicyDefinition,
     [{ securityPolicyName, kappSlug }],
@@ -25,7 +25,7 @@ const dataSources = ({ securityPolicyName, kappSlug = null }) => ({
   ],
 });
 
-const handleSubmit = ({ securityPolicyName, kappSlug = null }) => values =>
+const handleSubmit = ({ securityPolicyName, kappSlug }) => values =>
   (securityPolicyName
     ? updateSecurityPolicyDefinition
     : createSecurityPolicyDefinition)({
