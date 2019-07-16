@@ -3,6 +3,7 @@ export {
   AttributeDefinitionForm,
 } from './attribute_definitions_form/AttributeDefinitionsForm';
 export { FormForm } from './form_form/FormForm';
+export { FormTypeForm } from './form_type_form/FormTypeForm';
 export { IndexDefinitionForm } from './index_definitions/IndexDefinitionForm';
 export { KappForm } from './kapp_form/KappForm';
 export { OAuthClientForm } from './oauth_client_form/OAuthClientForm';
@@ -19,6 +20,7 @@ export {
   default as AttributeDefinitionsTable,
 } from './attribute_definitions_table/AttributeDefinitionsTable';
 export { default as FormTable } from './form_table/FormTable';
+export { default as FormTypeTable } from './form_type_table/FormTypeTable';
 export {
   default as IndexDefinitionTable,
 } from './index_definitions/IndexDefinitionTable';

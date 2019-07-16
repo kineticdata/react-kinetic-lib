@@ -153,7 +153,7 @@ const fields = () => [
     options: ({ timezones }) =>
       timezones.map(timezone => ({
         value: timezone.get('id'),
-        label: timezone.get('name'),
+        label: `${timezone.get('name')} (${timezone.get('id')})`,
       })),
     initialValue: ({ space }) => get(space, 'defaultTimezone'),
   },

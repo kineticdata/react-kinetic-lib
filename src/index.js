@@ -99,6 +99,12 @@ export {
   createForm,
   updateForm,
   deleteForm,
+  // Form Type exports
+  fetchFormTypes,
+  fetchFormType,
+  createFormType,
+  updateFormType,
+  deleteFormType,
   // Kapp exports
   fetchKapps,
   fetchKapp,

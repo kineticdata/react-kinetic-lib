@@ -49,6 +49,14 @@ export {
 } from './forms';
 
 export {
+  fetchFormTypes,
+  fetchFormType,
+  createFormType,
+  updateFormType,
+  deleteFormType,
+} from './formTypes';
+
+export {
   fetchKapps,
   fetchKapp,
   updateKapp,
