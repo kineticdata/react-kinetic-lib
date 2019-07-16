@@ -37,6 +37,7 @@ export {
   fetchCategories,
   fetchCategory,
   createCategory,
+  deleteCategory,
   updateCategory,
 } from './categories';
 

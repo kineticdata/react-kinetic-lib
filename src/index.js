@@ -92,6 +92,7 @@ export {
   fetchCategories,
   fetchCategory,
   createCategory,
+  deleteCategory,
   updateCategory,
   // Form exports
   fetchForms,
