@@ -97,6 +97,8 @@ export const FormTable = props => (
     addColumns={props.addColumns}
     columnSet={props.columnSet}
     pageSize={props.pageSize}
+    defaultSortDirection={props.defaultSortDirection}
+    defaultSortColumn={props.defaultSortColumn}
   >
     {props.children}
   </Table>

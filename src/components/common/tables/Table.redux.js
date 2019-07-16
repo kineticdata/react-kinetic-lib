@@ -64,6 +64,9 @@ export const generateFilters = (tableKey, columns) =>
       ),
   );
 
+export const generateInitialSortColumn = (sortColumn, columns) =>
+  sortColumn ? columns.find(col => col.get('value') === sortColumn) : null;
+
 regHandlers({
   MOUNT_TABLE: (state, { payload: { tableKey } }) => {
     return state.setIn(['tables', tableKey, 'mounted'], true);
@@ -73,7 +76,17 @@ regHandlers({
   },
   CONFIGURE_TABLE: (
     state,
-    { payload: { tableKey, data, dataSource, columns, pageSize = 25 } },
+    {
+      payload: {
+        tableKey,
+        data,
+        dataSource,
+        columns,
+        pageSize = 25,
+        defaultSortColumn = null,
+        defaultSortDirection = 'desc',
+      },
+    },
   ) =>
     !state.getIn(['tables', tableKey, 'mounted'])
       ? state
@@ -91,8 +104,8 @@ regHandlers({
             loading: true,
 
             pageSize,
-            sortColumn: null,
-            sortDirection: 'desc',
+            sortColumn: generateInitialSortColumn(defaultSortColumn, columns),
+            sortDirection: defaultSortDirection,
 
             // Pagination
             currentPageToken: null,
@@ -181,7 +194,7 @@ regSaga(takeEvery('REFECTH_TABLE_DATA', calculateRowsTask));
 const generateSortParams = tableData =>
   tableData.get('sortColumn')
     ? {
-        orderBy: tableData.get('sortColumn').value,
+        orderBy: tableData.getIn(['sortColumn', 'value']),
         direction: tableData.get('sortDirection'),
       }
     : {};

@@ -464,6 +464,12 @@ Table.propTypes = {
    * @ignore
    */
   sortable: t.bool,
+
+  /** The column to sort results by initially. */
+  defaultSortColumn: t.string,
+  /** The initial sort direction of results. */
+  defaultSortDirection: t.string,
+
   /** The child of this component should be a function which renders the table layout. */
   children: t.func.isRequired,
 
