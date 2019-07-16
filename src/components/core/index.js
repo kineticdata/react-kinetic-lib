@@ -2,6 +2,7 @@
 export {
   AttributeDefinitionForm,
 } from './attribute_definitions_form/AttributeDefinitionsForm';
+export { CategoryForm } from './categories/CategoryForm';
 export { FormForm } from './form_form/FormForm';
 export { IndexDefinitionForm } from './index_definitions/IndexDefinitionForm';
 export { KappForm } from './kapp_form/KappForm';
@@ -18,6 +19,7 @@ export { WebhookForm } from './webhook_form/WebhookForm';
 export {
   default as AttributeDefinitionsTable,
 } from './attribute_definitions_table/AttributeDefinitionsTable';
+export { default as CategoryTable } from './categories/CategoryTable';
 export { default as FormTable } from './form_table/FormTable';
 export {
   default as IndexDefinitionTable,
