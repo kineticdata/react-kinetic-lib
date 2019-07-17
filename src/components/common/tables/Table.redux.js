@@ -82,7 +82,7 @@ regHandlers({
       : state.mergeIn(
           ['tables', tableKey],
           Map({
-            data,
+            data: hasData(data) ? List(data) : data,
             dataSource,
             columns,
             rows: List(),
@@ -157,6 +157,10 @@ regHandlers({
       ['tables', tableKey, 'appliedFilters'],
       state.getIn(['tables', tableKey, 'filters']),
     ),
+  REFECTH_TABLE_DATA: (state, { payload: { tableKey } }) =>
+    state.updateIn(['tables', tableKey], tableData =>
+      tableData.get('dataSource') ? tableData.set('data', null) : tableData,
+    ),
 });
 
 function* calculateRowsTask({ payload }) {
@@ -216,7 +220,7 @@ const applyClientSideFilters = (tableData, data) => {
 
   return data
     .update(d => d.filter(clientSideRowFilter(filters)))
-    .update(d => (sortColumn ? d.sortBy(r => r[sortColumn.value]) : d))
+    .update(d => (sortColumn ? d.sortBy(r => r[sortColumn.get('value')]) : d))
     .update(d => (sortDirection === 'asc' ? d.reverse() : d))
     .update(d => d.slice(startIndex, endIndex));
 };
