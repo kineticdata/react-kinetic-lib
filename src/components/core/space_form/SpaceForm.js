@@ -153,7 +153,7 @@ const fields = () => [
     options: ({ timezones }) =>
       timezones.map(timezone => ({
         value: timezone.get('id'),
-        label: timezone.get('name'),
+        label: `${timezone.get('name')} (${timezone.get('id')})`,
       })),
     initialValue: ({ space }) => get(space, 'defaultTimezone'),
   },
@@ -234,7 +234,7 @@ const fields = () => [
       filehubUrl: values.get('filehubUrl'),
       key: values.get('filestoreKey'),
       slug: values.get('filestoreSlug'),
-      ...(values.get('filestoreSecret') !== '' && {
+      ...(values.get('changeFilestoreSecret') && {
         secret: values.get('filestoreSecret'),
       }),
     }),
@@ -260,10 +260,22 @@ const fields = () => [
     name: 'filestoreSecret',
     label: 'Filestore Secret',
     type: 'password',
-    visible: true,
+    visible: ({ values }) => values.get('changeFilestoreSecret'),
     transient: true,
-    initialValue: '',
-    placeholder: '********',
+  },
+  {
+    name: 'changeFilestoreSecret',
+    label: 'Change Filestore Secret',
+    type: 'checkbox',
+    transient: true,
+    // in "new" mode we do not show this toggle field and default it to true
+    visible: ({ space }) => !!space,
+    initialValue: ({ space }) => !space,
+    onChange: ({ values }, { setValue }) => {
+      if (values.get('filestoreSecret') !== '') {
+        setValue('filestoreSecret', '');
+      }
+    },
   },
   {
     name: 'filestoreSlug',
@@ -305,18 +317,17 @@ const fields = () => [
     name: 'oauthSigningKey',
     label: 'OAuth Signing Key',
     type: 'password',
-    required: ({ values }) => values.get('changeOAuthSigningKey'),
-    enabled: ({ values }) => values.get('changeOAuthSigningKey'),
+    visible: ({ values }) => values.get('changeOAuthSigningKey'),
     transient: ({ values }) => !values.get('changeOAuthSigningKey'),
-    initialValue: '',
-    placeholder: '********',
   },
   {
     name: 'changeOAuthSigningKey',
     label: 'Change OAuth Signing Key',
     type: 'checkbox',
-    initialValue: false,
     transient: true,
+    // in "new" mode we do not show this toggle field and default it to true
+    visible: ({ space }) => !!space,
+    initialValue: ({ space }) => !space,
     onChange: ({ values }, { setValue }) => {
       if (values.get('oauthSigningKey') !== '') {
         setValue('oauthSigningKey', '');

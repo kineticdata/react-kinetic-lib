@@ -92,6 +92,7 @@ export {
   fetchCategories,
   fetchCategory,
   createCategory,
+  deleteCategory,
   updateCategory,
   // Form exports
   fetchForms,
@@ -99,6 +100,12 @@ export {
   createForm,
   updateForm,
   deleteForm,
+  // Form Type exports
+  fetchFormTypes,
+  fetchFormType,
+  createFormType,
+  updateFormType,
+  deleteFormType,
   // Kapp exports
   fetchKapps,
   fetchKapp,

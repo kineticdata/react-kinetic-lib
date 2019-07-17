@@ -66,15 +66,6 @@
 
 -   `options`   (optional, default `{}`)
 
-## fetchActivity
-
-Fetch submission activity within the system.
-
-### Parameters
-
--   `options` **[object][1]** fetch parameters (optional, default `{}`)
-    -   `options.kappSlug` **[string][2]** slug of the kapp to scope activity to
-
 ## fetchWebhookJobs
 
 ### Parameters
@@ -104,6 +95,26 @@ Fetch submission activity within the system.
 ### Parameters
 
 -   `options`   (optional, default `{}`)
+
+## fetchActivity
+
+Type: [Object][1]
+
+### Properties
+
+-   `submissionBreakdown` **[object][1]** The submission breakdown
+-   `submissionVolume` **[object][1]** The submission volume
+
+## fetchActivity
+
+Fetch submission activity within the system.
+
+### Parameters
+
+-   `options` **[object][1]** fetch parameters (optional, default `{}`)
+    -   `options.kappSlug` **[string][2]** slug of the kapp to scope activity to
+
+Returns **[object][1]** 
 
 ## logout
 

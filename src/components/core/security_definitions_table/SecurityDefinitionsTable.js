@@ -2,7 +2,7 @@ import React from 'react';
 import Table from '../../common/tables/Table';
 import { fetchSecurityPolicyDefinitions } from '../../../apis/core';
 
-const dataSource = ({ kappSlug = null }) => ({
+const dataSource = ({ kappSlug }) => ({
   fn: fetchSecurityPolicyDefinitions,
   clientSideSearch: true,
   params: () => ({

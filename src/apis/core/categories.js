@@ -86,3 +86,31 @@ export const updateCategory = (options = {}) => {
     .then(response => ({ category: response.data.category }))
     .catch(handleErrors);
 };
+
+export const deleteCategory = (options = {}) => {
+  const { kappSlug, categorySlug } = options;
+
+  if (!kappSlug) {
+    throw new Error(
+      'deleteCategory failed! The option "kappSlug" is required.',
+    );
+  }
+
+  if (!categorySlug) {
+    throw new Error(
+      'deleteCategory failed! The option "categorySlug" is required.',
+    );
+  }
+
+  // Build URL and fetch the category.
+  return axios
+    .delete(
+      `${bundle.apiLocation()}/kapps/${kappSlug}/categories/${categorySlug}`,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => ({ category: response.data.category }))
+    .catch(handleErrors);
+};

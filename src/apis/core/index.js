@@ -37,6 +37,7 @@ export {
   fetchCategories,
   fetchCategory,
   createCategory,
+  deleteCategory,
   updateCategory,
 } from './categories';
 
@@ -47,6 +48,14 @@ export {
   updateForm,
   deleteForm,
 } from './forms';
+
+export {
+  fetchFormTypes,
+  fetchFormType,
+  createFormType,
+  updateFormType,
+  deleteFormType,
+} from './formTypes';
 
 export {
   fetchKapps,
