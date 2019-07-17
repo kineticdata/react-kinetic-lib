@@ -58,9 +58,23 @@ const fields = ({ clientId }) => [
     name: 'clientSecret',
     label: 'Client Secret',
     type: 'password',
-    required: !clientId,
-    initialValue: getOrBlank('client', 'clientSecret'),
-    transient: ({ values }) => !values.get('clientSecret'),
+    visible: ({ values }) => values.get('changeClientSecret'),
+    required: ({ values }) => values.get('changeClientSecret'),
+    transient: ({ values }) => !values.get('changeClientSecret'),
+  },
+  {
+    name: 'changeClientSecret',
+    label: 'Change Client Secret',
+    type: 'checkbox',
+    transient: true,
+    // in "new" mode we do not show this toggle field and default it to true
+    visible: !!clientId,
+    initialValue: !clientId,
+    onChange: ({ values }, { setValue }) => {
+      if (values.get('clientSecret') !== '') {
+        setValue('clientSecret', '');
+      }
+    },
   },
   {
     name: 'redirectUri',
