@@ -8,6 +8,7 @@ export { FormTypeForm } from './form_type_form/FormTypeForm';
 export { IndexDefinitionForm } from './index_definitions/IndexDefinitionForm';
 export { KappForm } from './kapp_form/KappForm';
 export { OAuthClientForm } from './oauth_client_form/OAuthClientForm';
+export { ProfileForm } from './profile_form/ProfileForm';
 export {
   SecurityDefinitionsForm,
 } from './security_definitions_form/SecurityDefinitionsForm';
