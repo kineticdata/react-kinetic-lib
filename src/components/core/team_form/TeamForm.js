@@ -92,7 +92,7 @@ const fields = ({ teamSlug }) => [
     label: 'Members',
     type: 'user-multi',
     required: false,
-    placeholder: 'Select a user...',
+    placeholder: 'Start typing to select a user...',
     options: () => [],
     initialValue: ({ team }) =>
       get(team, 'memberships', List()).map(m => m.get('user')),
