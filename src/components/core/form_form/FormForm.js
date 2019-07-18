@@ -264,8 +264,10 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
       })),
     initialValue: ({ form }) =>
       form
-        .get('categorizations')
-        .map(categorization => categorization.getIn(['category', 'slug'])),
+        ? form
+            .get('categorizations')
+            .map(categorization => categorization.getIn(['category', 'slug']))
+        : [],
     serialize: ({ values }) =>
       values.get('categorizations').map(slug => ({ category: { slug } })),
   },
