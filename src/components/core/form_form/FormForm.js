@@ -8,6 +8,7 @@ import {
   createForm,
   fetchAttributeDefinitions,
   fetchSecurityPolicyDefinitions,
+  fetchCategories,
 } from '../../../apis/core';
 import { slugify } from '../../../helpers';
 
@@ -22,7 +23,7 @@ const dataSources = ({ formSlug, kappSlug, datastore }) => ({
         formSlug,
         kappSlug,
         include:
-          'details,attributesMap,securityPolicies,indexDefinitions,backgroundJobs,fields',
+          'details,attributesMap,securityPolicies,indexDefinitions,backgroundJobs,fields,categorizations',
       },
     ],
     { transform: result => result.form, runIf: () => !!formSlug },
@@ -57,6 +58,14 @@ const dataSources = ({ formSlug, kappSlug, datastore }) => ({
     [{ kappSlug }],
     {
       transform: result => result.securityPolicyDefinitions,
+    },
+  ],
+  categories: [
+    fetchCategories,
+    [{ kappSlug }],
+    {
+      transform: result => result.categories,
+      runIf: () => !!kappSlug,
     },
   ],
 });
@@ -243,6 +252,22 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
     required: false,
     options: ({ attributeDefinitions }) => attributeDefinitions,
     initialValue: ({ form }) => get(form, 'attributesMap'),
+  },
+  !!kappSlug && {
+    name: 'categorizations',
+    label: 'Categories',
+    type: 'select-multi',
+    options: ({ categories }) =>
+      categories.map(category => ({
+        label: category.get('name'),
+        value: category.get('slug'),
+      })),
+    initialValue: ({ form }) =>
+      form
+        .get('categorizations')
+        .map(categorization => categorization.getIn(['category', 'slug'])),
+    serialize: ({ values }) =>
+      values.get('categorizations').map(slug => ({ category: { slug } })),
   },
 ];
 
