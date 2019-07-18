@@ -36,7 +36,7 @@ const columns = [
   {
     value: 'type',
     title: 'Type',
-    filterable: false,
+    filterable: true,
     sortable: true,
   },
 ];
