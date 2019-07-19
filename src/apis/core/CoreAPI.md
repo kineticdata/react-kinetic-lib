@@ -20,6 +20,12 @@
 
 -   `options`   (optional, default `{}`)
 
+## fetchFormTypes
+
+### Parameters
+
+-   `options`   (optional, default `{}`)
+
 ## fetchKapps
 
 ### Parameters
@@ -66,6 +72,15 @@
 
 -   `options`   (optional, default `{}`)
 
+## fetchActivity
+
+Fetch submission activity within the system.
+
+### Parameters
+
+-   `options` **[object][1]** fetch parameters (optional, default `{}`)
+    -   `options.kappSlug` **[string][2]** slug of the kapp to scope activity to
+
 ## fetchWebhookJobs
 
 ### Parameters
@@ -96,26 +111,6 @@
 
 -   `options`   (optional, default `{}`)
 
-## fetchActivity
-
-Type: [Object][1]
-
-### Properties
-
--   `submissionBreakdown` **[object][1]** The submission breakdown
--   `submissionVolume` **[object][1]** The submission volume
-
-## fetchActivity
-
-Fetch submission activity within the system.
-
-### Parameters
-
--   `options` **[object][1]** fetch parameters (optional, default `{}`)
-    -   `options.kappSlug` **[string][2]** slug of the kapp to scope activity to
-
-Returns **[object][1]** 
-
 ## logout
 
 ## fetchKapp
@@ -143,6 +138,12 @@ Returns **[object][1]**
 -   `options`   (optional, default `{}`)
 
 ## fetchCategory
+
+### Parameters
+
+-   `options`   (optional, default `{}`)
+
+## fetchFormType
 
 ### Parameters
 
@@ -399,6 +400,12 @@ Returns **[string][2]**
 
 -   `options`   (optional, default `{}`)
 
+## fetchWebhooks
+
+### Parameters
+
+-   `options`   (optional, default `{}`)
+
 ## updateTeam
 
 ### Parameters
@@ -411,13 +418,13 @@ Returns **[string][2]**
 
 -   `options`   (optional, default `{}`)
 
-## updateUser
+## createFormType
 
 ### Parameters
 
 -   `options`   (optional, default `{}`)
 
-## fetchWebhooks
+## updateUser
 
 ### Parameters
 
@@ -459,6 +466,12 @@ Returns **[string][2]**
 
 -   `options`   (optional, default `{}`)
 
+## fetchWebhook
+
+### Parameters
+
+-   `options`   (optional, default `{}`)
+
 ## createKapp
 
 ### Parameters
@@ -471,7 +484,7 @@ Returns **[string][2]**
 
 -   `options`   (optional, default `{}`)
 
-## fetchWebhook
+## updateFormType
 
 ### Parameters
 
@@ -555,13 +568,19 @@ Returns **[string][2]**
 
 -   `options`   (optional, default `{}`)
 
+## updateWebhook
+
+### Parameters
+
+-   `options`   (optional, default `{}`)
+
 ## setDefaultLocale
 
 ### Parameters
 
 -   `options`   (optional, default `{}`)
 
-## updateWebhook
+## deleteFormType
 
 ### Parameters
 
@@ -579,7 +598,19 @@ Returns **[string][2]**
 
 -   `options`   (optional, default `{}`)
 
+## deleteCategory
+
+### Parameters
+
+-   `options`   (optional, default `{}`)
+
 ## deleteForm
+
+### Parameters
+
+-   `options`   (optional, default `{}`)
+
+## deleteWebhook
 
 ### Parameters
 
