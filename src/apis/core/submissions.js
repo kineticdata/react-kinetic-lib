@@ -317,9 +317,7 @@ export class SubmissionSearch {
             break;
           default:
             throw new Error(
-              `Unexpected operator type "${
-                op.op
-              }" encountered. Expected: eq, in, or, and.`,
+              `Unexpected operator type "${op.op}" encountered. Expected: eq, in, or, and.`,
             );
         }
       });
@@ -332,13 +330,16 @@ export class SubmissionSearch {
 }
 
 export const searchSubmissions = options => {
-  const { kapp, form, search, datastore = false } = options;
+  const {
+    kapp: kappSlug = bundle.kappSlug(),
+    form,
+    search,
+    datastore = false,
+  } = options;
 
   if (datastore && !form) {
     throw new Error('Datastore searches must be scoped to a form.');
   }
-
-  const kappSlug = kapp || bundle.kappSlug();
 
   const path = datastore
     ? `${bundle.apiLocation()}/datastore/forms/${form}/submissions`
