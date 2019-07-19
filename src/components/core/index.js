@@ -35,6 +35,7 @@ export {
 export {
   default as SecurityDefinitionsTable,
 } from './security_definitions_table/SecurityDefinitionsTable';
+export { default as SubmissionTable } from './submission_table/SubmissionTable';
 export { default as TeamTable } from './team_table/TeamTable';
 export { default as UserTable } from './user_table/UserTable';
 export { default as WebhookTable } from './webhook_table/WebhookTable';
