@@ -3,13 +3,13 @@
 @mixin horizontal-gradient($start-color: $gray-dark, $end-color: $black) {
   background-color: $end-color;
   background-repeat: repeat-x;
-  background: linear-gradient(left, $start-color, $end-color);
+  background: linear-gradient(to left, $start-color, $end-color);
 }
 
 @mixin vertical-gradient($start-color: $gray-dark, $end-color: $black) {
   background-color: $end-color;
   background-repeat: repeat-x;
-  background: linear-gradient(top, $start-color, $end-color);
+  background: linear-gradient(to top, $start-color, $end-color);
 }
 
 @mixin directional-gradient(
