@@ -13,35 +13,39 @@ input[type='button'],
 
 // Basic Button
 .btn {
+  @include border-radius();
   display: inline-block;
   font-family: $font-family-base;
   font-size: 0.75rem;
   font-weight: 400;
-  @include border-radius();
+
   line-height: 1.75rem;
   padding: 0.1875rem 0.75rem;
+
   &:hover,
   &:focus,
   &:active {
-    text-decoration: none;
     outline: none;
+    text-decoration: none;
   }
   &.disabled,
   &[disabled] {
-    pointer-events: none;
     opacity: 0.65;
+    pointer-events: none;
   }
 }
 
 // Primary Button
 .btn-primary {
   @extend .btn;
-  color: $white;
   @include set-button-color-and-hover($primary);
+  color: $white;
+
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active {
     @include set-button-color-and-hover($primary);
   }
+
   &.disabled,
   &[disabled] {
     background-color: lighten($primary, 5%);
@@ -52,12 +56,14 @@ input[type='button'],
 // Secondary Button
 .btn-secondary {
   @extend .btn;
-  color: $white;
   @include set-button-color-and-hover($secondary);
+  color: $white;
+
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active {
     @include set-button-color-and-hover($secondary);
   }
+
   &.disabled,
   &[disabled] {
     background-color: lighten($secondary, 5%);
@@ -69,7 +75,9 @@ input[type='button'],
 .btn-link {
   @extend .btn;
   @include set-button-color-and-hover(transparent);
+
   color: $link-color;
+
   &:hover,
   &:focus,
   &:active {
@@ -81,12 +89,14 @@ input[type='button'],
 // Button Text
 .btn-text {
   @extend .btn;
+  @include set-button-color-and-hover(transparent);
+
+  border: 0;
+  color: $link-color;
   font: inherit;
   padding: 0;
-  border: 0;
   vertical-align: baseline;
-  @include set-button-color-and-hover(transparent);
-  color: $link-color;
+
   &:hover,
   &:focus,
   &:active {
@@ -104,31 +114,34 @@ input[type='button'],
   &:hover,
   &:focus,
   &:active {
+    box-shadow: 0 1px 2px 0 rgba($black, 0.1);
     color: $link-color;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
   }
+
   &:disabled {
     cursor: not-allowed;
   }
 }
 // Button Inverse
 .btn-inverse {
-  color: $primary;
-  background-color: white;
+  background-color: $white;
   border-color: $gray3;
+  color: $primary;
+
   &:hover {
+    background-color: $white;
     border-color: $gray2;
+    box-shadow: 0 1px 2px 0 rgba($black, 0.1);
     color: $primary;
-    background-color: white;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
   }
 }
 
 // Buttons with icons
 .btn-icon {
-  border: 0;
   background-color: transparent;
+  border: 0;
   color: $gray;
+
   &:hover {
     color: $primary;
   }
@@ -137,6 +150,7 @@ input[type='button'],
     background-color: $blue3;
     color: $blue1;
   }
+
   &.btn-expand {
     padding-left: 0;
     padding-right: 0;
@@ -147,6 +161,7 @@ input[type='button'],
 .btn-outline-primary {
   border-color: $primary;
   color: $primary;
+
   &:hover {
     background-color: $primary;
     border-color: $primary;
@@ -157,6 +172,7 @@ input[type='button'],
 .btn-outline-secondary {
   border-color: $secondary;
   color: $secondary;
+
   &:hover {
     background-color: $secondary;
     border-color: $secondary;
@@ -173,49 +189,53 @@ input[type='button'],
 // Button Large
 .btn-lg,
 .btn-group-lg > .btn {
-  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
   font-size: 1.25rem;
   line-height: 1.5;
-  border-radius: 0.3rem;
+  padding: 0.5rem 1rem;
 }
 
 // Button Small
 .btn-sm,
 .btn-group-sm > .btn {
-  padding: 0.25rem 0.5rem;
+  border-radius: 0.2rem;
   font-size: 0.6125rem;
   line-height: 1.5;
-  border-radius: 0.2rem;
+  padding: 0.25rem 0.5rem;
 }
 
 // Discussion Button
 .btn-discussion {
+  align-items: center;
   display: flex;
   flex: 1 0 auto;
   justify-content: center;
-  align-items: center;
   margin-bottom: 1.25rem;
+
   @media (max-width: 768px) {
-    width: 100%;
     display: block;
+    width: 100%;
   }
 }
 //
 .input-group-addon:not(:first-child):not(:last-child) {
-  border-right: 0;
   border-left: 0;
+  border-right: 0;
 }
 
 // Kinetic Form Buttons
 button[data-element-type='button'] {
   @extend .btn-primary;
+
   &[data-button-type='submit-page'],
   &[data-button-type='custom'] {
     @extend .btn-primary;
   }
+
   &[data-button-type='custom'].btn-link {
     @extend .btn-link;
   }
+
   &[data-button-type='custom'].btn-subtle {
     @extend .btn-subtle;
   }
@@ -223,17 +243,21 @@ button[data-element-type='button'] {
   &[data-button-type='previous-page'] {
     @extend .btn-secondary;
     float: left;
-    position: relative;
     padding-left: 2.4rem;
-    &:before {
+    position: relative;
+
+    &::before {
+      content: '\f053';
       font-family: 'FontAwesome';
       font-weight: 400;
-      content: '\f053';
+
       position: absolute;
       top: 50%;
       left: 0.5rem;
+
       width: 1.4rem;
       height: 1.4rem;
+
       line-height: 1;
       margin-top: -0.4rem;
     }
@@ -241,30 +265,36 @@ button[data-element-type='button'] {
 
   &[data-button-type='save'] {
     @extend .btn-subtle;
-    position: relative;
     padding-left: 2rem;
+    position: relative;
+
     // Save Icon
-    &:before {
+    &::before {
       font-family: 'FontAwesome';
       font-weight: 400;
       content: '\f0c7';
+
       position: absolute;
       top: 50%;
       left: 0.5rem;
+
       width: 1rem;
       height: 1rem;
+
       line-height: 1;
       margin-top: -0.4rem;
     }
   }
+
   &[disabled] {
     cursor: not-allowed;
-    filter: alpha(opacity=65);
+    filter: alpha(opacity = 65);
     -webkit-box-shadow: none;
     box-shadow: none;
     opacity: 0.65;
   }
 }
+
 .fileinput-button {
   @extend .btn-subtle;
 }

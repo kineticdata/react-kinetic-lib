@@ -2,6 +2,7 @@
 // -----------
 @mixin set-color-and-hover($base-color) {
   color: $base-color;
+
   &:hover {
     color: darken($base-color, 5%);
   }
@@ -10,6 +11,7 @@
 // -----------
 @mixin set-background-color-and-hover($base-color) {
   background-color: $base-color;
+
   &:hover {
     background-color: darken($base-color, 2%);
   }
@@ -20,6 +22,7 @@
 @mixin set-button-color-and-hover($base-color) {
   background-color: $base-color;
   border-color: $base-color;
+
   &:hover {
     background-color: darken($base-color, 5%);
     border-color: $base-color;
