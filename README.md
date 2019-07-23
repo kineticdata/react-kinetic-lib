@@ -27,7 +27,7 @@ yarn add @kineticdata/react
 ```
 
 ## Quick Start
-### `KientcLib`
+### `KineticLib`
 The `KineticLib` Provider provides a global context to your site or applications connection to the Kinetic Platform.
 
 ```js static
