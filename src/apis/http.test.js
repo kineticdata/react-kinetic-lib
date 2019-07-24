@@ -6,7 +6,7 @@ import {
   paramBuilder,
 } from './http';
 
-jest.mock('../helpers/coreHelpers', () => ({
+jest.mock('../helpers', () => ({
   bundle: {
     spaceLocation: () => '/kinetic/acme',
     kappSlug: () => 'catalog',

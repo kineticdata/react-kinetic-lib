@@ -1,196 +1,19 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { context, commitStore, configure, store } from './store';
-import { I18nProvider } from './components/core/i18n/I18nProvider';
-import { DefaultFieldConfig } from './components/core/form/DefaultFieldConfig';
-import { ComponentConfigContext } from './components/common/ComponentConfigContext';
 import { createHashHistory } from 'history';
-import { DefaultTableConfig } from './components/common/tables/defaults';
 import { remove } from 'immutable';
-import AuthenticationContainer from './components/common/authentication/AuthenticationContainer';
-export {
-  onLogout,
-} from './components/common/authentication/AuthenticationContainer';
-export {
-  default as ContentEditable,
-} from './components/common/ContentEditable';
-export { default as Table } from './components/common/tables/Table';
-export {
-  mountTable,
-  unmountTable,
-  refetchTable,
-} from './components/common/tables/Table.redux';
-export * from './components/core';
-export {
-  DateBanner,
-  DiscussionForm,
-  InvitationForm,
-  Discussion,
-  MessageHistory,
-  UserMessageGroup,
-} from './components/discussions';
-export { partitionListBy } from './helpers';
-export {
-  addRequestInterceptor,
-  addResponseInterceptor,
-  setDefaultAuthAssumed,
-} from './apis/http';
-export {
-  createDiscussionList,
-  getGroupedDiscussions,
-  sortByLastMessageAt,
-} from './models/discussions';
-export {
-  fetchDiscussions,
-  createDiscussion,
-  sendInvites,
-  createRelatedItem,
-  updateDiscussion,
-  resendInvite,
-  removeInvite,
-  removeParticipant,
-  updateParticipant,
-  sendMessage,
-  updateMessage,
-  fetchMessage,
-  fetchMessages,
-  fetchMessageHistory,
-  fetchDiscussion,
-  fetchInvites,
-  fetchParticipants,
-  createInvite,
-} from './apis/discussions';
-export {
-  // Activity exports
-  fetchActivity,
-  // Attribute Definition exports
-  fetchAttributeDefinitions,
-  fetchAttributeDefinition,
-  createAttributeDefinition,
-  updateAttributeDefinition,
-  deleteAttributeDefinition,
-  // Authentication exports,
-  login,
-  logout,
-  coreOauthAuthorizeUrl,
-  // Background Jobs
-  createBackgroundJob,
-  fetchBackgroundJobs,
-  updateBackgroundJob,
-  deleteBackgroundJob,
-  // Bridged Resource exports
-  bridgedResourceUrl,
-  convertMultipleBridgeRecords,
-  fetchBridgedResource,
-  countBridgedResource,
-  // Bridge Model exports
-  fetchBridgeModels,
-  fetchBridgeModel,
-  createBridgeModel,
-  updateBridgeModel,
-  // Category exports
-  fetchCategories,
-  fetchCategory,
-  createCategory,
-  deleteCategory,
-  updateCategory,
-  // Form exports
-  fetchForms,
-  fetchForm,
-  createForm,
-  updateForm,
-  deleteForm,
-  // Form Type exports
-  fetchFormTypes,
-  fetchFormType,
-  createFormType,
-  updateFormType,
-  deleteFormType,
-  // Kapp exports
-  fetchKapps,
-  fetchKapp,
-  updateKapp,
-  deleteKapp,
-  // Membership exports
-  createMembership,
-  deleteMembership,
-  //Meta
-  fetchKappWebhookEvents,
-  fetchLocales,
-  fetchSpaceWebhookEvents,
-  fetchTimezones,
-  // OAuth Exports
-  fetchOAuthClients,
-  fetchOAuthClient,
-  updateOAuthClient,
-  createOAuthClient,
-  deleteOAuthClient,
-  // Profile exports
-  fetchProfile,
-  updateProfile,
-  // Security Policy Definition exports
-  fetchSecurityPolicyDefinitions,
-  fetchSecurityPolicyDefinition,
-  createSecurityPolicyDefinition,
-  updateSecurityPolicyDefinition,
-  deleteSecurityPolicyDefinition,
-  // Space exports
-  fetchSpace,
-  updateSpace,
-  // Submission exports
-  SubmissionSearch,
-  searchSubmissions,
-  fetchSubmission,
-  createSubmission,
-  updateSubmission,
-  deleteSubmission,
-  // Team exports
-  fetchTeams,
-  fetchTeam,
-  updateTeam,
-  createTeam,
-  deleteTeam,
-  // Translations exports
-  fetchAvailableLocales,
-  clearTranslationsCache,
-  fetchStagedTranslations,
-  fetchDefaultLocale,
-  setDefaultLocale,
-  fetchEnabledLocales,
-  enableLocale,
-  disableLocale,
-  fetchContexts,
-  createContext,
-  updateContext,
-  deleteContext,
-  fetchContextKeys,
-  updateContextKey,
-  fetchTranslations,
-  upsertTranslations,
-  deleteTranslations,
-  // User exports
-  fetchUsers,
-  fetchUser,
-  updateUser,
-  createUser,
-  deleteUser,
-  // Version exports
-  fetchVersion,
-  // Webhook exports
-  fetchWebhooks,
-  fetchWebhook,
-  createWebhook,
-  deleteWebhook,
-  updateWebhook,
-  // Webhook Job exports
-  fetchWebhookJobs,
-  updateWebhookJob,
-} from './apis/core';
-export { socket, socketIdentify } from './apis/socket';
-export { K, bundle } from './helpers/coreHelpers';
-export { I18n } from './components/core/i18n/I18n';
-export { Moment, importLocale } from './components/core/i18n/Moment';
-export { mountForm, resetForm, unmountForm } from './components/core/form/Form';
+
+import { context, commitStore, configure, store } from './store';
+import { I18nProvider } from './components';
+import { DefaultFieldConfig } from './components/form/defaults';
+import { DefaultTableConfig } from './components/table/defaults';
+import { ComponentConfigContext } from './components/common/ComponentConfigContext';
+import { AuthenticationContainer } from './components/common/authentication/AuthenticationContainer';
+
+export * from './apis';
+export * from './components';
+export * from './helpers';
+export * from './models';
 
 commitStore();
 
@@ -214,6 +37,6 @@ const KineticLib = props => (
   </Provider>
 );
 
-const history = createHashHistory();
+const history = typeof window !== 'undefined' ? createHashHistory() : null;
 
 export { configure, KineticLib, history };

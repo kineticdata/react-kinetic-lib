@@ -1,0 +1,71 @@
+---
+name: Attribute Definitions
+menu: Core
+route: /core/AttributeDefinitions
+---
+
+import { Playground, Props } from 'docz';
+import { AttributeDefinitionForm } from './AttributeDefinitionForm';
+import { AttributeDefinitionTable } from './AttributeDefinitionTable';
+
+# Attribute Definition Form
+
+## Props
+
+<Props of={AttributeDefinitionForm} />
+
+## Examples
+
+### Simple implementation of a `AttributeDefinitionForm`.
+
+<Playground>
+  <AttributeDefinitionForm attributeType="spaceAttributeDefinitions" />
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+### Control the Layout of a `AttributeDefinitionForm`.
+
+<Playground>
+  <AttributeDefinitionForm attributeType="spaceAttributeDefinitions">
+    {({ form }) => (
+      <div>
+        <h5>My Form Header</h5>
+        {form}
+      </div>
+    )}
+  </AttributeDefinitionForm>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+# Attribute Definition Table
+
+## Props
+
+<Props of={AttributeDefinitionTable} />
+
+## Examples
+
+### Simple implementation of a `AttributeDefinitionTable`.
+
+<Playground>
+  <AttributeDefinitionTable attributeType="spaceAttributeDefinitions" />
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+### Control the Layout of a `AttributeDefinitionTable`.
+
+<Playground>
+  <AttributeDefinitionTable attributeType="spaceAttributeDefinitions">
+    {({ table }) => (
+      <div>
+        <h5>My Form Header</h5>
+        {table}
+      </div>
+    )}
+  </AttributeDefinitionTable>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition

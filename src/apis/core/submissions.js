@@ -1,6 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
-import { bundle } from '../../helpers/coreHelpers';
+import { bundle } from '../../helpers';
 import { handleErrors, headerBuilder, paramBuilder } from '../http';
 
 const VALID_TIMELINES = ['closedAt', 'createdAt', 'submittedAt', 'updatedAt'];

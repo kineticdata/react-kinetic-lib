@@ -23,7 +23,7 @@ import {
 jest.mock('axios');
 
 // Mock out the bundle object from a dependency.
-jest.mock('../../helpers/coreHelpers', () => ({
+jest.mock('../../helpers', () => ({
   bundle: {
     apiLocation: () => 'space/app/api/v1',
   },

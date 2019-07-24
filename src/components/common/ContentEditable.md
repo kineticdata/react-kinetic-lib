@@ -1,3 +1,8 @@
+---
+name: Content Editable
+menu: Common
+---
+
 ```js static
 import { ContentEditable } from 'react-kinetic-lib';
 

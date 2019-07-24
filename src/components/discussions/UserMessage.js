@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { bundle } from '../../helpers/coreHelpers';
+import { bundle } from '../../helpers';
 import Markdown from 'react-markdown';
 import classnames from 'classnames';
 

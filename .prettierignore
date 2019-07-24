@@ -2,6 +2,8 @@
 /*
 !/src
 !styleguide.config.js
+!gatsby-*
+!doczrc.js
 # ignore file types that prettier does not support
 *.png
 *.snap

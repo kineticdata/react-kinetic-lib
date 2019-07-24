@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`<UserDetails /> should render correctly 1`] = `
-<div
-  className="user-details"
->
-  User Details
-</div>
-`;

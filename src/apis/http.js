@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { bundle } from '../helpers/coreHelpers';
+import { bundle } from '../helpers';
 
 // The `X-Kinetic-AuthAssumed` header was added in version 2.2 of Kinetic Core.
 // You can add this if you are expecting to be authenticated for a request to

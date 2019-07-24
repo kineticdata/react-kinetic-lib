@@ -24,7 +24,7 @@
 import React, { Component } from 'react';
 import t from 'prop-types';
 
-export default class ContentEditable extends Component {
+export class ContentEditable extends Component {
   constructor(props) {
     super(props);
     this._onChange = this._onChange.bind(this);

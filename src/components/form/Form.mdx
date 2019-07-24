@@ -1,0 +1,20 @@
+---
+name: Form
+---
+
+import { Playground } from 'docz'
+import { Form } from './Form'
+
+# Simple implementation of a `Form` with one field.
+<Playground>
+
+<Form fields={[
+  {
+    name: 'Field1',
+    label: 'Field 1',
+    type: 'text',
+  },
+]} onSubmit={props => alert('It Worked!')}>
+  {({ form }) => <div>{form}</div>}
+</Form>;
+</Playground>

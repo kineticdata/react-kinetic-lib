@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import qs from 'qs';
 import { regHandlers, connect, dispatch, regSaga } from '../../../store';
-import { login, logout, fetchProfile } from '../../../apis/core';
+import { login, logout, fetchProfile } from '../../../apis';
 import { takeEvery, select, call, put } from 'redux-saga/effects';
 
 import { RetrieveJwtIframe } from './RetrieveJwtIframe';
@@ -161,4 +161,3 @@ const AuthenticationContainer = connect(mapStateToProps)(
 AuthenticationContainer.propTypes = {};
 
 export { AuthenticationContainer, onLogout };
-export default AuthenticationContainer;

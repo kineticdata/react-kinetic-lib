@@ -1,7 +1,7 @@
 import React from 'react';
 import { Map, Set } from 'immutable';
 import isarray from 'isarray';
-import { fetchSubmission } from '../../../apis/core/submissions';
+import { fetchSubmission } from '../../../apis';
 import { I18nContext } from './I18nContext';
 
 const submissionContexts = {};
