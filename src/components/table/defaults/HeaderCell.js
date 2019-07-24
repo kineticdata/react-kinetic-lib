@@ -29,7 +29,7 @@ HeaderCell.propTypes = {
   /** The column's human friendly title string. */
   title: t.string,
   /** Is the direction this column is sorting or `undefined` if not sorting by this column. */
-  sorting: t.oneOf(['asc', 'desc']),
+  sorting: t.bool,
   /** A flag denoting whether this column can be sorted. */
   sortable: t.bool,
 };

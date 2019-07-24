@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React from 'react';
+import React, { Fragment } from 'react';
 import { jsx } from 'theme-ui';
 import { Link } from 'gatsby';
 import { useDocs, useCurrentDoc } from 'docz';
@@ -22,7 +22,7 @@ export const NavLink = ({ item, ...props }) => {
   const showHeadings = isCurrent && headings && headings.length > 0;
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Link {...props} to={to} sx={styles.link} activeClassName="active" />
       {showHeadings &&
         headings.map(heading => (
@@ -35,6 +35,6 @@ export const NavLink = ({ item, ...props }) => {
             {heading.value}
           </Link>
         ))}
-    </React.Fragment>
+    </Fragment>
   );
 };

@@ -939,7 +939,7 @@ Form.propTypes = {
       /** The label of the field that will be shown. */
       label: t.string,
       /** Flag that determines if the column can be used as a filter. */
-      type: t.bool,
+      type: t.string,
       /** Flag that determines if the column is sortable.*/
       sortable: t.bool,
       /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
@@ -966,7 +966,7 @@ Form.propTypes = {
   /** The Submit event called after the form is submitted. */
   onSubmit: t.func,
   /** The child of this component should be a function which renders the form layout. */
-  children: t.func.isRequired,
+  children: t.func,
 };
 
 const defaultProps = {

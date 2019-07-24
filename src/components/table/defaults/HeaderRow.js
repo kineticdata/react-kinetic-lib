@@ -5,7 +5,7 @@ const HeaderRow = ({ columnHeaders }) => <tr>{columnHeaders}</tr>;
 
 HeaderRow.propTypes = {
   // Contains the rendered column headers.
-  columnHeaders: t.arrayOf(t.object).isRequired,
+  columnHeaders: t.object.isRequired,
 };
 
 export default HeaderRow;

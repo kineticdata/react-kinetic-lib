@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 import { compose, lifecycle } from 'recompose';
 import { List, Map } from 'immutable';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
@@ -380,103 +380,106 @@ export class Table extends Component {
 
 Table.propTypes = {
   /** An array or list of data. */
-  data: t.array,
+  data: PropTypes.array,
   /** An object describing how a table fetches remote data. */
-  dataSource: t.object,
+  dataSource: PropTypes.object,
   /**
    * Calculated row data from the datasource mechanism.
    * @ignore
    */
-  rows: t.instanceOf(List),
+  rows: PropTypes.instanceOf(List),
   /** An array of the columns that will be rendered on the table. */
-  columns: t.arrayOf(
-    t.shape({
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
       /** The title that will be rendered in the header. */
-      title: t.string,
+      title: PropTypes.string,
       /** The value key that will be used to map the column to the data object. */
-      value: t.string,
+      value: PropTypes.string,
       /** Flag that determines if the column can be used as a filter. */
-      filterable: t.bool,
+      filterable: PropTypes.bool,
       /** Flag that determines if the column is sortable.*/
-      sortable: t.bool,
+      sortable: PropTypes.bool,
       /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
-      components: t.shape({
-        HeaderCell: t.func,
-        BodyCell: t.func,
-        FooterCell: t.func,
+      components: PropTypes.shape({
+        HeaderCell: PropTypes.func,
+        BodyCell: PropTypes.func,
+        FooterCell: PropTypes.func,
       }),
     }),
   ).isRequired,
   /** Add additional columns to a table. */
-  addColumns: t.arrayOf(
-    t.shape({
+  addColumns: PropTypes.arrayOf(
+    PropTypes.shape({
       /** The title that will be rendered in the header. */
-      title: t.string,
+      title: PropTypes.string,
       /** The value key that will be used to map the column to the data object. */
-      value: t.string,
+      value: PropTypes.string,
       /** Flag that determines if the column can be used as a filter. */
-      filterable: t.bool,
+      filterable: PropTypes.bool,
       /** Flag that determines if the column is sortable.*/
-      sortable: t.bool,
+      sortable: PropTypes.bool,
       /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
-      components: t.shape({
-        HeaderCell: t.func,
-        BodyCell: t.func,
-        FooterCell: t.func,
+      components: PropTypes.shape({
+        HeaderCell: PropTypes.func,
+        BodyCell: PropTypes.func,
+        FooterCell: PropTypes.func,
       }),
     }),
   ),
   /** Allow overriding the columns shown and in which order. */
-  columnSet: t.oneOf([t.arrayOf(t.string), t.func]),
-  components: t.shape({
+  columnSet: PropTypes.oneOf([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.func,
+  ]),
+  components: PropTypes.shape({
     /** Override the default table layout, analogous to `<table>`. */
-    TableLayout: t.func,
+    TableLayout: PropTypes.func,
 
     /** Override the table header, analogous to `<thead>`. */
-    Header: t.func,
+    Header: PropTypes.func,
     /** Override the table header row, analogous to the `<tr>` in `<thead>`. */
-    HeaderRow: t.func,
+    HeaderRow: PropTypes.func,
     /** Override the table header cells, analogous to `<th>`. */
-    HeaderCell: t.func,
+    HeaderCell: PropTypes.func,
 
     /** Override the table body, analogous to `<tbody>`. */
-    Body: t.func,
+    Body: PropTypes.func,
     /** Override the table rows, analogous to `<tr>`. */
-    BodyRow: t.func,
+    BodyRow: PropTypes.func,
     /** Override the table body row when there is no data. */
-    EmptyBodyRow: t.func,
+    EmptyBodyRow: PropTypes.func,
     /** Override the table cells, analogous to `<td>`. */
-    BodyCell: t.func,
+    BodyCell: PropTypes.func,
 
     /** Override the table footer, analogous to `<tfoot>`. */
-    Footer: t.func,
+    Footer: PropTypes.func,
     /** Override the table footer row, analogous to the `<tr>` in `<tfoot>`. */
-    FooterRow: t.func,
+    FooterRow: PropTypes.func,
     /** Override the table footer cells, analogous to `<td>`. */
-    FooterCell: t.func,
+    FooterCell: PropTypes.func,
   }),
 
   /** Set the page size when paginating data. */
-  pageSize: t.number,
+  pageSize: PropTypes.number,
 
   /**
    * Flag to enable/disable sorting support.
    * @ignore
    */
-  sortable: t.bool,
+  sortable: PropTypes.bool,
 
   /** The column to sort results by initially. */
-  defaultSortColumn: t.string,
+  defaultSortColumn: PropTypes.string,
   /** The initial sort direction of results. */
-  defaultSortDirection: t.string,
+  defaultSortDirection: PropTypes.string,
 
   /** The child of this component should be a function which renders the table layout. */
-  children: t.func.isRequired,
+  children: PropTypes.func.isRequired,
 
   /** A flag used to suppress the rendering of the table header. */
-  omitHeader: t.bool,
+  omitHeader: PropTypes.bool,
   /** A flag used to enable to rendering of the table footer. */
-  includeFooter: t.bool,
+  includeFooter: PropTypes.bool,
 };
 
 const defaultProps = {

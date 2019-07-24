@@ -8,15 +8,15 @@ import { Playground, Props } from 'docz';
 import { AttributeDefinitionForm } from './AttributeDefinitionForm';
 import { AttributeDefinitionTable } from './AttributeDefinitionTable';
 
-# Attribute Definition Form
+## Attribute Definition Form
 
-## Props
+### Props
 
 <Props of={AttributeDefinitionForm} />
 
-## Examples
+### Examples
 
-### Simple implementation of a `AttributeDefinitionForm`.
+#### Simple implementation of a `AttributeDefinitionForm`.
 
 <Playground>
   <AttributeDefinitionForm attributeType="spaceAttributeDefinitions" />
@@ -24,7 +24,7 @@ import { AttributeDefinitionTable } from './AttributeDefinitionTable';
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 
-### Control the Layout of a `AttributeDefinitionForm`.
+#### Control the Layout of a `AttributeDefinitionForm`.
 
 <Playground>
   <AttributeDefinitionForm attributeType="spaceAttributeDefinitions">
@@ -39,29 +39,28 @@ Because no name was passed, submitting this form will create a new Space Attribu
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 
-# Attribute Definition Table
+## Attribute Definition Table
 
-## Props
+### Props
 
 <Props of={AttributeDefinitionTable} />
 
-## Examples
+### Examples
 
-### Simple implementation of a `AttributeDefinitionTable`.
-
-<Playground>
-  <AttributeDefinitionTable attributeType="spaceAttributeDefinitions" />
-</Playground>
+#### Simple implementation of a `AttributeDefinitionTable`.
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 
-### Control the Layout of a `AttributeDefinitionTable`.
+#### Control the Layout of a `AttributeDefinitionTable`.
 
 <Playground>
-  <AttributeDefinitionTable attributeType="spaceAttributeDefinitions">
+  <AttributeDefinitionTable
+    columnSet={['name', 'description', 'actions']}
+    attributeType="spaceAttributeDefinitions"
+  >
     {({ table }) => (
       <div>
-        <h5>My Form Header</h5>
+        <h5>My Table Header</h5>
         {table}
       </div>
     )}

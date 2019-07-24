@@ -1,18 +1,27 @@
+---
+name: Table
+menu: Table
+route: /table
+---
+
+import { Table } from './Table';
+import { Playground, Props } from 'docz';
+
 ## Examples
 
 ### With no data provided
 
 When the data passed into the `Table` is empty it will display the empty message.
 
-```js
-<Table
-  data={[]}
-  columns={[{ value: 'username', title: 'Username' }]}
-  emptyMessage="There are no data rows."
->
-  {({ table }) => <div>{table}</div>}
-</Table>
-```
+<Playground>
+  <Table
+    data={[]}
+    columns={[{ value: 'username', title: 'Username' }]}
+    emptyMessage="There are no data rows."
+  >
+    {({ table }) => <div>{table}</div>}
+  </Table>
+</Playground>
 
 ### With basic data
 
