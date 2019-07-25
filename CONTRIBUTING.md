@@ -75,7 +75,7 @@ All of the following are installed together (see the babel-preset-react-app link
 to transpile our React/ES6 code into browser-friendly code. These should likely
 be upgraded together.
 
-```javascript
+```javascript static
 "@babel/cli": "^7.2.3",
 "babel-preset-react-app": "^7.0.2",
 ```
@@ -85,7 +85,7 @@ be upgraded together.
 All of the following are installed together (see the eslint-config-react-app link)
 to enable linting and should be upgraded together as well.
 
-```javascript
+```javascript static
 "babel-eslint": "9.x",
 "eslint": "5.x",
 "eslint-config-react-app": "^3.0.8",
@@ -97,7 +97,7 @@ to enable linting and should be upgraded together as well.
 
 ##### testing
 
-```javascript
+```javascript static
 "babel-jest": "^24.5.0",
 "enzyme": "^3.9.0",
 "enzyme-adapter-react-16": "^1.9.1",
@@ -108,7 +108,7 @@ to enable linting and should be upgraded together as well.
 
 ##### scripting
 
-```javascript
+```javascript static
 "concurrently": "^4.1.0",
 "cross-env": "^5.2.0",
 "lint-staged": "^8.1.3",
@@ -120,13 +120,13 @@ to enable linting and should be upgraded together as well.
 
 We are using the Styleguidist project to render our components as a styleguide.
 
-```javascript
+```javascript static
 "react-styleguidist": "^9.0.0"
 ```
 
 The following are dependencies used solely to run the styleguide.
 
-```
+```javascript static
 "babel-polyfill": "^6.26.0",
 "bootstrap": "4.1.3",
 "documentation": "^9.1.1",
@@ -142,6 +142,6 @@ place. Fortunately they support using create-react-app out of the box, so by add
 react-scripts as a development dependency we can get styleguide to use their
 webpack config and we can avoid adding all of those dependencies and config files.
 
-```javascript
+```javascript static
 "react-scripts": "^2.1.8",
 ```

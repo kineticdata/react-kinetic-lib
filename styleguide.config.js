@@ -37,6 +37,7 @@ module.exports = {
   usageMode: 'expand',
   sections: [
     { name: 'Getting Started', content: 'README.md' },
+    { name: 'Contributing', content: 'CONTRIBUTING.md' },
     {
       name: 'Components',
       sectionDepth: 3,
@@ -49,19 +50,25 @@ module.exports = {
         {
           name: 'Core',
           components: ['src/components/core/!(form)/*.js'],
+          ignore: [
+            'src/components/core/form/*',
+            'src/components/core/i18n/I18nContext.js',
+          ],
           sectionDepth: 2,
         },
         {
           name: 'Discussions',
           components: ['src/components/discussions/!(sagas|redux).js'],
           sectionDepth: 2,
+          ignore: ['src/components/discussions/index.js'],
         },
         {
           name: 'Forms',
           content: 'src/components/common/tables/Tables.md',
-          components: [
-            'src/components/core/form/Form.js',
-            'src/components/core/form/!(Form|SampleTeamsRolesFIeld|DefaultFieldConfig).js',
+          components: ['src/components/core/form/Form.js'],
+          ignore: [
+            'src/components/core/form/SampleTeamsRolesFIeld.js',
+            'src/components/core/form/DefaultFieldConfig.js',
           ],
           sectionDepth: 2,
         },
@@ -72,7 +79,10 @@ module.exports = {
             'src/components/common/tables/*.js',
             'src/components/common/tables/defaults/*.js',
           ],
-          ignore: ['src/components/common/tables/Table.redux.js'],
+          ignore: [
+            'src/components/common/tables/Table.redux.js',
+            'src/components/common/tables/defaults/index.js',
+          ],
           sectionDepth: 2,
         },
       ],

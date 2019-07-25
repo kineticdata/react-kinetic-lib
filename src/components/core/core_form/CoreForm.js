@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import isPlainObject from 'lodash.isplainobject';
 import isString from 'lodash.isstring';
 import deepEqual from 'deepequal';
-import { K } from '../../../helpers/coreHelpers';
+import { K } from '../../../helpers';
 import { corePath } from '../../../apis/http';
 
 export const queryString = ({ review, values }) => {

@@ -8,7 +8,7 @@ import {
 } from './bridgedresources';
 
 // Mock out the bundle object from a dependency.
-jest.mock('../../helpers/coreHelpers', () => ({
+jest.mock('../../helpers', () => ({
   bundle: {
     apiLocation: () => 'user/app/api/v1',
     spaceLocation: () => 'user',

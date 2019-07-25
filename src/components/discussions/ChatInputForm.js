@@ -10,10 +10,10 @@ import {
   PopoverBody,
 } from 'reactstrap';
 import classNames from 'classnames';
-import ContentEditable from '../common/ContentEditable';
+import { ContentEditable } from '../common/ContentEditable';
 import { connect } from '../../store';
 
-import { bundle } from '../../helpers/coreHelpers';
+import { bundle } from '../../helpers';
 import { SEND_MESSAGE_UPDATE, SEND_MESSAGE } from './redux';
 
 const VALID_IMG_TYPES = [

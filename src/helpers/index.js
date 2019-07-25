@@ -2,6 +2,23 @@
 // returns a different value.
 import { List } from 'immutable/dist/immutable';
 
+export const K = typeof window !== `undefined` ? window.K : () => {};
+export const bundle =
+  typeof window !== `undefined` && window.bundle
+    ? window.bundle
+    : {
+        apiLocation: () => '/app/api/v1',
+        spaceLocation: () => '',
+      };
+
+export const splitTeamName = team => {
+  const [local, ...parents] = team
+    .get('name')
+    .split('::')
+    .reverse();
+  return [parents.reverse().join('::'), local];
+};
+
 export const partitionListBy = (fn, list) =>
   list.isEmpty()
     ? List()

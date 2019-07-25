@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { bundle } from '../../helpers/coreHelpers';
+import { bundle } from '../../helpers';
 import { handleErrors, paramBuilder, headerBuilder } from '../http';
 
 export const fetchForms = (options = {}) => {

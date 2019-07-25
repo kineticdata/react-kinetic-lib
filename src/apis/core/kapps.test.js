@@ -10,7 +10,7 @@ import {
 jest.mock('axios');
 
 // Mock out the bundle object from a dependency.
-jest.mock('../../helpers/coreHelpers', () => ({
+jest.mock('../../helpers', () => ({
   bundle: {
     apiLocation: () => 'kapp/app/api/v1',
     kappSlug: () => 'mock-kapp',

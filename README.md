@@ -16,18 +16,18 @@ To use this styleguide simply run `yarn start` and connect to `http://localhost:
 ## Install
 Via [npm](https://npmjs.com/package/@kineticdata/react)
 
-```sh
+```bash
 npm install @kineticdata/react
 ```
 
 Via [Yarn](http://yarn.fyi/@kineticdata/react)
 
-```sh
+```bash
 yarn add @kineticdata/react
 ```
 
 ## Quick Start
-### `KientcLib`
+### `KineticLib`
 The `KineticLib` Provider provides a global context to your site or applications connection to the Kinetic Platform.
 
 ```js static
@@ -104,7 +104,7 @@ export default Kapp;
 
 ## Development / Contributing
 
-See the [Contributing](CONTRIBUTING.md) for information on developing the component library.
+See the [Contributing](/#/Contributing) page for information on developing the component library.
 
 ## License
 MIT © [Kinetic Data](https://kineticdata.com)

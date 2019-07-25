@@ -21,9 +21,10 @@ axios.interceptors.request.use(request => {
   return request;
 });
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-  ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ name: 'react-kinetic-lib' })
-  : compose;
+const composeEnhancers =
+  typeof window !== `undefined` && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ name: 'react-kinetic-lib' })
+    : compose;
 
 const store = createStore(
   reducer,

@@ -5,5 +5,8 @@
 /node_modules
 /umd
 npm-debug.log*
+.cache
+.docz
+/public
 
 .idea

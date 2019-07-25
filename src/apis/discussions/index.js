@@ -1,5 +1,5 @@
 import { axios } from '../../store';
-import { bundle } from '../../helpers/coreHelpers';
+import { bundle } from '../../helpers';
 import { List } from 'immutable';
 
 /**

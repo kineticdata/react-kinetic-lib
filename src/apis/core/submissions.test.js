@@ -13,7 +13,7 @@ import {
 } from '../../../tests/utils/promises';
 
 // Mock out the bundle object from a dependency.
-jest.mock('../../helpers/coreHelpers', () => ({
+jest.mock('../../helpers', () => ({
   bundle: {
     spaceLocation: () => 'mock-space',
     apiLocation: () => 'mock-space/app/api/v1',

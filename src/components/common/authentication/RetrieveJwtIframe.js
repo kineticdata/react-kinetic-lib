@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, lifecycle, withHandlers } from 'recompose';
-import { coreOauthAuthorizeUrl } from '../../../apis/core';
+import { coreOauthAuthorizeUrl } from '../../../apis';
 import { dispatch } from '../../../store';
 
 const setToken = token => dispatch('SET_TOKEN', token);

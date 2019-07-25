@@ -1,6 +1,6 @@
 import { Socket, SOCKET_STATUS } from './socket';
 import { dispatch, dispatcher, regHandlers } from '../../store';
-import { bundle } from '../../helpers/coreHelpers';
+import { bundle } from '../../helpers';
 
 regHandlers({
   SET_SOCKET_STATUS: (state, action) =>

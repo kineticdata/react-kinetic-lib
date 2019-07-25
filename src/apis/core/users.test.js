@@ -14,7 +14,7 @@ import {
 } from '../../../tests/utils/promises';
 
 // Mock out the bundle object from a dependency.
-jest.mock('../../helpers/coreHelpers', () => ({
+jest.mock('../../helpers', () => ({
   bundle: {
     apiLocation: () => 'user/app/api/v1',
     kappSlug: () => 'mock-kapp',
