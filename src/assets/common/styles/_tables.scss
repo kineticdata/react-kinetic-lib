@@ -4,21 +4,24 @@
 
 /* Attachment files
  *-------------------------------------- */
+
 .empty > .file-table > .file-header {
   display: none;
 }
 
 .file-table {
   display: table;
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
 }
 
 .file-row {
   display: table-row;
+
   > span {
     display: table-cell;
     padding: 0.5rem;
+
     > a {
       padding: 0 0.5rem;
     }
@@ -28,6 +31,7 @@
 .file-header {
   display: table-header-group;
   font-weight: 700;
+
   span {
     border-bottom: 1px solid $gray;
   }
@@ -46,22 +50,27 @@ table.table--settings {
         > a {
           font-weight: 600;
         }
+
         > small {
           color: $gray;
         }
+
         > .list-dropdown {
           & > button {
             padding: 0;
             color: $black-50;
+
             &:hover {
               color: darken($black-50, 5%);
             }
           }
         }
+
         > .dropdown .btn {
+          padding: 0 0.25rem;
           background-color: transparent;
-          padding: 0rem 0.25rem;
         }
+
         & .dropdown-item {
           padding: 0.25rem 1rem;
         }
@@ -71,17 +80,19 @@ table.table--settings {
 
   &.table-draggable {
     border-collapse: separate;
-    border-spacing: 0px;
+    border-spacing: 0;
 
     tbody {
       tr {
         &.dragging {
           background-color: $blue3;
+
           td {
             border: 0;
-          }
-          td + td {
-            display: none;
+
+            + td {
+              display: none;
+            }
           }
         }
       }
@@ -91,29 +102,31 @@ table.table--settings {
 
 thead.sortable {
   th:not(.sort-disabled) {
-    cursor: pointer;
     position: relative;
     padding-right: 1.1rem;
     vertical-align: initial;
+    cursor: pointer;
 
-    &:before {
-      font-family: 'FontAwesome';
-      font-weight: 400;
-      content: '\f0dc';
+    &::before {
       position: absolute;
       right: 0.3rem;
+      font-weight: 400;
+      font-family: 'FontAwesome';
       opacity: 0.3;
+      content: '\f0dc';
     }
 
-    &.sort-asc:before,
-    &.sort-desc:before {
-      opacity: 0.8;
+    &.sort-asc::before,
+    &.sort-desc::before {
       color: $link-color;
+      opacity: 0.8;
     }
-    &.sort-asc:before {
+
+    &.sort-asc::before {
       content: '\f0de';
     }
-    &.sort-desc:before {
+
+    &.sort-desc::before {
       content: '\f0dd';
     }
   }
@@ -126,8 +139,8 @@ thead.sortable {
 }
 
 tfoot {
-  border-top: 1px solid $black-50;
-  background: $black-3;
-  padding: 1rem;
   position: relative;
+  padding: 1rem;
+  background: $black-3;
+  border-top: 1px solid $black-50;
 }

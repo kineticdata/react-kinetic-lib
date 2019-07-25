@@ -18,8 +18,8 @@
     text-decoration: none;
 
     img {
-      margin-right: 0 !important;
       float: none !important;
+      margin-right: 0 !important;
       padding: 0 18px 0 0;
     }
   }
@@ -64,21 +64,21 @@
   margin: 0 0 0 1rem;
 }
 
-.app-header .navbar-nav>.nav-item>.active,
-.app-header .navbar-nav>.nav-item>.active:hover,
-.app-header .navbar-nav>.nav-item>.active:focus {
-  background-color: rgba(55, 55, 55, 0.5);
+.app-header .navbar-nav > .nav-item > .active,
+.app-header .navbar-nav > .nav-item > .active:hover,
+.app-header .navbar-nav > .nav-item > .active:focus {
+  background-color: rgba($black, 0.5);
   color: $white;
   position: relative;
   transition: all 0.29s ease-in-out 0s;
 }
 
-.app-header .navbar-nav>.nav-item>.nav-link {
+.app-header .navbar-nav > .nav-item > .nav-link {
   color: $black;
 
   &:hover,
   &:focus {
-    background-color: rgba(55, 55, 55, 0.25);
+    background-color: rgba($black, 0.25);
     color: $white;
     position: relative;
     transition: all 0.29s ease-in-out 0s;
@@ -87,7 +87,6 @@
 
 // navbar dropdown menus
 .navbar-nav {
-
   .menu-dropdown,
   .dropdown-menu {
     background-color: $black;
@@ -118,32 +117,32 @@
       background-color: #222;
     }
 
-    a.menu.open,
+    .menu.open,
     .dropdown-toggle.open {
       background: rgba($white, 0.05);
     }
   }
 
-  a.dropdown-toggle {
+  .dropdown-toggle {
     color: $black;
   }
 }
 
 // Remove border radius from .nav-link
-.nav-pills>.nav-item>.nav-link {
+.nav-pills > .nav-item > .nav-link {
   border-radius: 0;
 }
 
 // Navbar Dropdown Toggles
-.navbar-nav>.nav-item {
+.navbar-nav > .nav-item {
   line-height: 3.75rem;
 
-  >.dropdown-toggle {
+  > .dropdown-toggle {
     font-size: 0.875rem;
     line-height: inherit;
     padding: 0 1rem;
 
-    >.account {
+    > .account {
       display: inline-block;
       font-weight: bold;
       line-height: 1;
@@ -156,7 +155,7 @@
       white-space: nowrap;
     }
 
-    >.avatar {
+    > .avatar {
       display: inline-block;
 
       img {
@@ -167,7 +166,7 @@
 }
 
 // Page tabs or subnavigation
-.nav-pills.sub-nav>.nav-item>.nav-link {
+.nav-pills.sub-nav > .nav-item > .nav-link {
   border-radius: 0;
   color: $gray-dark;
   padding: 10px 1em;
@@ -175,10 +174,10 @@
   &.active,
   &.active:hover,
   &.active:focus {
-    color: #000;
     background-color: transparent;
-    border-color: transparent;
     border-bottom: 4px solid $yellow;
+    border-color: transparent;
+    color: $black;
   }
 
   &:hover {
@@ -190,7 +189,6 @@
 
 // Sidebar navigation
 .nav-pills .nav-link {
-
   &.active,
   &.active:focus {
     background-color: $kinetic-blue;

@@ -5,38 +5,45 @@
 // Nav-tabs
 .nav-tabs {
   > li {
-    margin-bottom: 0.5rem;
     margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+
     a {
-      text-decoration: none;
+      padding-right: 1.5rem;
       padding-bottom: 0.5rem;
       padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-    a.active {
-      border-bottom: 2px solid $orange;
+      text-decoration: none;
+
+      &.active {
+        border-bottom: 2px solid $orange;
+      }
     }
   }
+
   .badge {
     margin-left: 0.25rem;
-  }
-  .badge-primary {
-    background-color: $blue;
+
+    &-primary {
+      background-color: $blue;
+    }
   }
 }
 
 // Return Nav
 .nav-return {
-  border-bottom: 1px solid $black-16;
-  font-size: 0.875rem;
   padding: 0.8125rem 1rem;
+  font-size: 0.875rem;
   text-decoration: none;
+  border-bottom: 1px solid $black-16;
+
   &:hover {
     text-decoration: none;
   }
+
   .icon {
     margin-right: 0.5em;
   }
+
   .sidebar & {
     background-color: $white;
   }
