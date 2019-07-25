@@ -5,28 +5,28 @@
 
 // Font Stacks
 @mixin shorthand-font($weight: normal, $size: 14px, $line-height: 20px) {
-  font-size: $size;
   font-weight: $weight;
+  font-size: $size;
   line-height: $line-height;
 }
 
 @mixin sans-serif-font($weight: normal, $size: 14px, $line-height: 20px) {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: $size;
   font-weight: $weight;
+  font-size: $size;
+  font-family: "Source Sans Pro", sans-serif;
   line-height: $line-height;
 }
 
 @mixin serif-font($weight: normal, $size: 14px, $line-height: 20px) {
-  font-family: 'Georgia', Times New Roman, Times, serif;
-  font-size: $size;
   font-weight: $weight;
+  font-size: $size;
+  font-family: "Georgia", Times New Roman, Times, serif;
   line-height: $line-height;
 }
 
 @mixin monospace-font($weight: normal, $size: 12px, $line-height: 20px) {
-  font-family: 'Monaco', Courier New, monospace;
-  font-size: $size;
   font-weight: $weight;
+  font-size: $size;
+  font-family: "Monaco", Courier New, monospace;
   line-height: $line-height;
 }

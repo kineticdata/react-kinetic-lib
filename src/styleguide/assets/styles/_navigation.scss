@@ -1,16 +1,18 @@
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *   Navbar & Subnav
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
 .navbar {
+  margin-bottom: 0;
+  padding: 0;
   background-color: $kinetic-yellow;
   border: 0;
   border-radius: 0;
-  margin-bottom: 0;
-  padding: 0;
 }
 
 .logo {
   @include border-radius(4px 0 0 0);
+
   float: left;
   padding: 0 0 0 1rem;
 
@@ -26,9 +28,9 @@
 }
 
 .return-index {
-  background-color: rgba($kinetic-gray, 0.5);
-  line-height: 48px;
   margin: 0 -15px;
+  line-height: 48px;
+  background-color: rgba($kinetic-gray, 0.5);
 
   &:hover {
     background-color: rgba($kinetic-gray, 1);
@@ -41,16 +43,17 @@
 
 .return-block {
   @include border-radius(0);
-  background-color: rgba($white, 0.25);
+
   float: left;
-  line-height: 60px;
   padding: 0 18px;
+  line-height: 60px;
+  background-color: rgba($white, 0.25);
 
   &:hover {
-    background-color: #444;
-    background-color: rgba($white, 0.5);
     color: $white;
     text-decoration: none;
+    background-color: #444;
+    background-color: rgba($white, 0.5);
   }
 
   a {
@@ -59,17 +62,17 @@
 }
 
 .space-title {
-  color: $black;
   display: inline-block;
   margin: 0 0 0 1rem;
+  color: $black;
 }
 
 .app-header .navbar-nav > .nav-item > .active,
 .app-header .navbar-nav > .nav-item > .active:hover,
 .app-header .navbar-nav > .nav-item > .active:focus {
-  background-color: rgba($black, 0.5);
-  color: $white;
   position: relative;
+  color: $white;
+  background-color: rgba($black, 0.5);
   transition: all 0.29s ease-in-out 0s;
 }
 
@@ -78,9 +81,9 @@
 
   &:hover,
   &:focus {
-    background-color: rgba($black, 0.25);
-    color: $white;
     position: relative;
+    color: $white;
+    background-color: rgba($black, 0.25);
     transition: all 0.29s ease-in-out 0s;
   }
 }
@@ -89,11 +92,11 @@
 .navbar-nav {
   .menu-dropdown,
   .dropdown-menu {
+    margin-top: 0;
     background-color: $black;
     border: 0;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    margin-top: 0;
 
     .dropdown-item {
       color: $gray-light;
@@ -102,6 +105,7 @@
 
       &:hover {
         @include vertical-gradient(#292929, #191919);
+
         color: $white;
       }
     }
@@ -113,8 +117,8 @@
     }
 
     .dropdown-divider {
-      border-color: #444;
       background-color: #222;
+      border-color: #444;
     }
 
     .menu.open,
@@ -138,21 +142,20 @@
   line-height: 3.75rem;
 
   > .dropdown-toggle {
+    padding: 0 1rem;
     font-size: 0.875rem;
     line-height: inherit;
-    padding: 0 1rem;
 
     > .account {
       display: inline-block;
+      margin: 0;
+      padding: 0 6px;
+      overflow: hidden;
       font-weight: bold;
       line-height: 1;
-      margin: 0;
-      // min-width: 80px;
-      overflow: hidden;
-      padding: 0 6px;
+      white-space: nowrap;
       text-overflow: ellipsis;
       vertical-align: middle;
-      white-space: nowrap;
     }
 
     > .avatar {
@@ -166,24 +169,24 @@
 }
 
 // Page tabs or subnavigation
-.nav-pills.sub-nav > .nav-item > .nav-link {
-  border-radius: 0;
-  color: $gray-dark;
+.sub-nav > .nav-item > .nav-link {
   padding: 10px 1em;
+  color: $gray-dark;
+  border-radius: 0;
 
   &.active,
   &.active:hover,
   &.active:focus {
-    background-color: transparent;
-    border-bottom: 4px solid $yellow;
-    border-color: transparent;
     color: $black;
+    background-color: transparent;
+    border-color: transparent;
+    border-bottom: 4px solid $yellow;
   }
 
   &:hover {
+    color: $kinetic-orange;
     background-color: transparent;
     border-bottom: 4px solid $kinetic-orange;
-    color: $kinetic-orange;
   }
 }
 

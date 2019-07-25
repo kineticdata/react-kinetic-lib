@@ -3,10 +3,10 @@ html {
 }
 
 body {
-  background: $kinetic-gray;
-  font-family: 'Open Sans', sans-serif;
   font-size: $basefont;
+  font-family: "Open Sans", sans-serif;
   line-height: $baseline;
+  background: $kinetic-gray;
 }
 
 body,
@@ -23,8 +23,8 @@ a {
 
   color: $link-color;
   line-height: inherit;
-  outline: none;
   text-decoration: none;
+  outline: none;
 
   &:hover,
   &:focus {
@@ -43,22 +43,24 @@ a {
 
 noscript {
   .container .row {
-    background-color: $white;
-    border-radius: 6px;
-    color: $black;
-    line-height: 140%;
+    position: relative;
     margin: 2em 0;
     padding: 1em;
-    position: relative;
+    color: $black;
+    line-height: 140%;
+    background-color: $white;
+    border-radius: 6px;
   }
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *   Wrappers
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
 .app-wrapper,
 #rsg-root {
   @include transition(margin-top 0.1s ease);
+
   margin: 0 auto;
   // min-width: 980px;
   // max-width: 1300px;
@@ -78,13 +80,11 @@ noscript {
   #rsg-root {
     @include box-shadow(0 0 0 2px rgba(0, 0, 0, 0.03));
   }
-
 }
 
 .app-body__main {
-  background-color: lighten($kinetic-gray, 10%);
-  border-left: 1px solid #ddd;
   background-color: $white;
+  border-left: 1px solid #ddd;
 }
 
 .main__content {
@@ -94,9 +94,10 @@ noscript {
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *  Page Header
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
 .page-header {
-  margin-bottom: 0.5rem;
   margin-top: 1rem;
+  margin-bottom: 0.5rem;
   border-bottom: 1px solid #eee;
 
   h1 {
