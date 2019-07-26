@@ -1,0 +1,32 @@
+---
+name: Space
+menu: Core
+route: /core/space
+---
+
+import { Playground, Props } from 'docz';
+import { SpaceForm } from './SpaceForm';
+export const name = 'Space';
+
+## Form
+
+<p>The {name} Form can be used for creating or editing a space.</p>
+
+### Props
+
+<Props of={SpaceForm} />
+
+### Example
+
+```javascript
+import React from 'react';
+import { SpaceForm } from '@kineticdata/react';
+
+const MyPage = () => {
+    return(
+        <SpaceForm slug={'mySlug'} />;
+    )
+}
+
+export default MyPage;
+```

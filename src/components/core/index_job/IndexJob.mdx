@@ -1,0 +1,33 @@
+---
+name: Index Job
+menu: Core
+route: /core/indexjob
+---
+
+import { Playground, Props } from 'docz';
+import { IndexJobTable } from './IndexJobTable';
+
+## Index Job Table
+
+### Props
+
+<Props of={IndexJobTable} />
+
+### Examples
+
+#### Simple implementation of a `IndexJobTable`.
+
+Because no name was passed, submitting this form will create a new Index Definition
+
+#### Control the Layout of a `IndexJobTable`.
+
+<Playground>
+  <IndexJobTable columnSet={['name']} formSlug="alerts">
+    {({ table }) => (
+      <div>
+        <h5>My Table Header</h5>
+        {table}
+      </div>
+    )}
+  </IndexJobTable>
+</Playground>

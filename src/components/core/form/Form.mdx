@@ -1,0 +1,67 @@
+---
+name: Form
+menu: Core
+route: /core/form
+---
+
+import { Playground, Props } from 'docz';
+import { FormForm } from './FormForm';
+import { FormTable } from './FormTable';
+
+## Form
+
+### Props
+
+<Props of={FormForm} />
+
+### Examples
+
+#### Simple implementation of a `FormForm`.
+
+<Playground>
+  <FormForm kappSlug="services" />
+</Playground>
+
+Because no name was passed, submitting this form will create a new Form
+
+#### Control the Layout of a `FormForm`.
+
+<Playground>
+  <FormForm kappSlug="services">
+    {({ form }) => (
+      <div>
+        <h5>My Form Header</h5>
+        {form}
+      </div>
+    )}
+  </FormForm>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+## Form Table
+
+### Props
+
+<Props of={FormTable} />
+
+### Examples
+
+#### Simple implementation of a `FormTable`.
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+#### Control the Layout of a `FormTable`.
+
+<Playground>
+  <FormTable columnSet={['name', 'slug']} kappSlug="services">
+    {({ table }) => (
+      <div>
+        <h5>My Table Header</h5>
+        {table}
+      </div>
+    )}
+  </FormTable>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition

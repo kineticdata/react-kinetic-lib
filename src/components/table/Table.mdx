@@ -6,6 +6,17 @@ route: /table
 
 import { Table } from './Table';
 import { Playground, Props } from 'docz';
+import { users } from '../../gatsby-theme-docz/fixtures';
+
+# Table
+
+The `<Table />` component provides a generic way of rendering tables. Follow
+this is a definition of all of the properties that can be passed to the table
+and examples of wiring the table up.
+
+## Props
+
+<Props of={Table} />
 
 ## Examples
 
@@ -25,24 +36,40 @@ When the data passed into the `Table` is empty it will display the empty message
 
 ### With basic data
 
-```js
-import { users } from '@kineticdata/fixtures';
+The data property should be an array of objects, where the key is matches the value of a column.
 
-const data = users(2);
-const columns = [
+For example:
+
+```javascript
+const data = [
   {
-    value: 'username',
-    title: 'Username',
-  },
-  {
-    value: 'displayName',
-    title: 'Display Name',
+    username: 'wally@kineticdata.com',
+    displayName: 'Wally User',
   },
 ];
-<Table emptyMessage="There are no data rows." data={data} columns={columns}>
-  {({ table }) => <div>{table}</div>}
-</Table>;
 ```
+
+<Playground>
+  {() => {
+    const data = users(5);
+    const columns = [
+      {
+        value: 'displayName',
+        title: 'Display Name',
+      },
+      {
+        value: 'username',
+        title: 'Username',
+      }
+  ];
+  return (
+    <Table emptyMessage="There are no data rows." data={data} columns={columns}>
+      {({ table }) => <div>{table}</div>}
+    </Table>
+  );
+}}
+
+</Playground>
 
 ### If you need to custom render a field
 

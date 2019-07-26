@@ -1,7 +1,7 @@
 ---
-name: Attribute Definitions
+name: Attribute Definition
 menu: Core
-route: /core/AttributeDefinitions
+route: /core/attributedefinition
 ---
 
 import { Playground, Props } from 'docz';
@@ -18,24 +18,24 @@ import { AttributeDefinitionTable } from './AttributeDefinitionTable';
 
 #### Simple implementation of a `AttributeDefinitionForm`.
 
-<Playground>
-  <AttributeDefinitionForm attributeType="spaceAttributeDefinitions" />
-</Playground>
+```javascript
+<AttributeDefinitionForm attributeType="spaceAttributeDefinitions" />
+```
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 
 #### Control the Layout of a `AttributeDefinitionForm`.
 
-<Playground>
-  <AttributeDefinitionForm attributeType="spaceAttributeDefinitions">
-    {({ form }) => (
-      <div>
-        <h5>My Form Header</h5>
-        {form}
-      </div>
-    )}
-  </AttributeDefinitionForm>
-</Playground>
+```javascript
+<AttributeDefinitionForm attributeType="spaceAttributeDefinitions">
+  {({ form }) => (
+    <div>
+      <h5>My Form Header</h5>
+      {form}
+    </div>
+  )}
+</AttributeDefinitionForm>
+```
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 

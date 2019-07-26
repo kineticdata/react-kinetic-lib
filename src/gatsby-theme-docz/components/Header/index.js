@@ -11,7 +11,6 @@ export const Header = () => {
   const currentDoc = useCurrentDoc();
   const edit = currentDoc ? currentDoc.edit : true;
   const link = currentDoc ? currentDoc.link : '/';
-  //const { edit = true, ...doc } = useCurrentDoc();
   const [colorMode, setColorMode] = useColorMode();
 
   const toggleColorMode = () => {
@@ -21,7 +20,8 @@ export const Header = () => {
   return (
     <div sx={styles.wrapper}>
       <div sx={styles.innerContainer}>
-        <Logo />
+        <Logo title={config.title} />
+        <strong>Kinetic React Components</strong>
         <Flex>
           {config.repository && (
             <Box sx={{ mr: 2 }}>

@@ -1,8 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { KineticLib } from '../index';
 
-export default ({ children }) => (
-  <Fragment>
-    <KineticLib>{children}</KineticLib>
-  </Fragment>
-);
+export default ({ children }) => <KineticLib>{children}</KineticLib>;

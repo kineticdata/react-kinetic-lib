@@ -1,0 +1,67 @@
+---
+name: Kapp
+menu: Core
+route: /core/kapp
+---
+
+import { Playground, Props } from 'docz';
+import { KappForm } from './KappForm';
+import { KappTable } from './KappTable';
+
+## Kapp Form
+
+### Props
+
+<Props of={KappForm} />
+
+### Examples
+
+#### Simple implementation of a `KappForm`.
+
+<Playground>
+  <KappForm kappSlug="services" />
+</Playground>
+
+Because no name was passed, submitting this form will create a new Form
+
+#### Control the Layout of a `KappForm`.
+
+<Playground>
+  <KappForm kappSlug="services">
+    {({ form }) => (
+      <div>
+        <h5>My Form Header</h5>
+        {form}
+      </div>
+    )}
+  </KappForm>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+## Kapp Table
+
+### Props
+
+<Props of={KappTable} />
+
+### Examples
+
+#### Simple implementation of a `KappTable`.
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+#### Control the Layout of a `FormTable`.
+
+<Playground>
+  <KappTable columnSet={['name', 'slug']} kappSlug="services">
+    {({ table }) => (
+      <div>
+        <h5>My Table Header</h5>
+        {table}
+      </div>
+    )}
+  </KappTable>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition

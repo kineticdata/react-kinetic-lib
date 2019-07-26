@@ -1,0 +1,65 @@
+---
+name: oAuth Client
+menu: Core
+route: /core/oauthclient
+---
+
+import { Playground, Props } from 'docz';
+import { OAuthClientForm } from './OAuthClientForm';
+import { OAuthClientTable } from './OAuthClientTable';
+
+## oAuth Client Form
+
+### Props
+
+<Props of={OAuthClientForm} />
+
+### Examples
+
+#### Simple implementation of a `OAuthClientForm`.
+
+<Playground>
+  <OAuthClientForm formSlug="alerts" />
+</Playground>
+
+Because no name was passed, submitting this form will create a new oAuth Client
+
+#### Control the Layout of a `OAuthClientForm`.
+
+<Playground>
+  <OAuthClientForm formSlug="alerts">
+    {({ form }) => (
+      <div>
+        <h5>My Form Header</h5>
+        {form}
+      </div>
+    )}
+  </OAuthClientForm>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+## oAuth Client Table
+
+### Props
+
+<Props of={OAuthClientTable} />
+
+### Examples
+
+#### Simple implementation of a `OAuthClientTable`.
+
+Because no name was passed, submitting this form will create a new Index Definition
+
+#### Control the Layout of a `OAuthClientTable`.
+
+<Playground>
+  <OAuthClientTable columnSet={['name']}>
+    {({ table }) => (
+      <div>
+        <h5>My Table Header</h5>
+        {table}
+      </div>
+    )}
+  </OAuthClientTable>
+</Playground>

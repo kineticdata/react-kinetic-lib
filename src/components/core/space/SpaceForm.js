@@ -1,5 +1,7 @@
 import React from 'react';
 import { get, getIn } from 'immutable';
+import t from 'prop-types';
+
 import { Form } from '../../form/Form';
 import {
   updateSpace,
@@ -456,3 +458,26 @@ export const SpaceForm = ({
     {children}
   </Form>
 );
+
+SpaceForm.propTypes = {
+  /**
+   * A unique identifier for this form.
+   * If none is provided, one will be automatically generated and
+   * the form will be automatically mounted.
+   *
+   * If a formKey is provided, the form won't render until the
+   * `mountForm` action is dispatched.
+   */
+  formKey: t.string,
+  /**
+   * A set of fields that should be added to the form
+   */
+  addFields: t.array,
+  /**
+   * The layout of the form.
+   * - @param {Node} form The react `Node` of the rendered form
+   * - @param {Object} bindings all bindings fetched when the form was loaded
+   * - @param {Boolean} initialized If the form has been initialized
+   */
+  children: t.func,
+};

@@ -1,0 +1,32 @@
+---
+name: Discussion
+menu: Discussions
+route: /discussions/discussion
+---
+
+import { Playground, Props } from 'docz';
+import { Discussion } from './Discussion';
+
+# Discussion
+
+## Props
+
+<Props of={Discussion} />
+
+## Example
+
+```js static
+import { Discussion } from './Discussion';
+
+const discussion = {
+  id: 'id',
+};
+const renderDiscussion = ({ elements, discussion, canManage }) => (
+  <div>
+    {elements.viewUnreadButton}
+    {elements.chatInput}
+  </div>
+);
+
+<Discussion id={discussion.id} render={renderDiscussion} />;
+```

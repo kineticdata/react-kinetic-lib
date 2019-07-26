@@ -1,0 +1,65 @@
+---
+name: Index Definition
+menu: Core
+route: /core/indexdefinition
+---
+
+import { Playground, Props } from 'docz';
+import { IndexDefinitionForm } from './IndexDefinitionForm';
+import { IndexDefinitionTable } from './IndexDefinitionTable';
+
+## IndexDefinitions
+
+### Props
+
+<Props of={IndexDefinitionForm} />
+
+### Examples
+
+#### Simple implementation of a `IndexDefinitionForm`.
+
+<Playground>
+  <IndexDefinitionForm formSlug="alerts" />
+</Playground>
+
+Because no name was passed, submitting this form will create a new IndexDefinition
+
+#### Control the Layout of a `IndexDefinitionForm`.
+
+<Playground>
+  <IndexDefinitionForm formSlug="alerts">
+    {({ form }) => (
+      <div>
+        <h5>My Form Header</h5>
+        {form}
+      </div>
+    )}
+  </IndexDefinitionForm>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+## Index Definition Table
+
+### Props
+
+<Props of={IndexDefinitionTable} />
+
+### Examples
+
+#### Simple implementation of a `IndexDefinitionTable`.
+
+Because no name was passed, submitting this form will create a new Index Definition
+
+#### Control the Layout of a `IndexDefinitionTable`.
+
+<Playground>
+  <IndexDefinitionTable columnSet={['name', 'slug']} kappSlug="services">
+    {({ table }) => (
+      <div>
+        <h5>My Table Header</h5>
+        {table}
+      </div>
+    )}
+  </IndexDefinitionTable>
+</Playground>

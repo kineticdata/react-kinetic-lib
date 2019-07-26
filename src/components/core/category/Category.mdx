@@ -1,0 +1,67 @@
+---
+name: Category
+menu: Core
+route: /core/category
+---
+
+import { Playground, Props } from 'docz';
+import { CategoryForm } from './CategoryForm';
+import { CategoryTable } from './CategoryTable';
+
+## Category Form
+
+### Props
+
+<Props of={CategoryForm} />
+
+### Examples
+
+#### Simple implementation of a `CategoryForm`.
+
+<Playground>
+  <CategoryForm kappSlug="services" />
+</Playground>
+
+Because no name was passed, submitting this form will create a new Category
+
+#### Control the Layout of a `CategoryForm`.
+
+<Playground>
+  <CategoryForm kappSlug="services">
+    {({ form }) => (
+      <div>
+        <h5>My Form Header</h5>
+        {form}
+      </div>
+    )}
+  </CategoryForm>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+## Category Table
+
+### Props
+
+<Props of={CategoryTable} />
+
+### Examples
+
+#### Simple implementation of a `CategoryTable`.
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition
+
+#### Control the Layout of a `CategoryTable`.
+
+<Playground>
+  <CategoryTable columnSet={['name', 'slug']} kappSlug="services">
+    {({ table }) => (
+      <div>
+        <h5>My Table Header</h5>
+        {table}
+      </div>
+    )}
+  </CategoryTable>
+</Playground>
+
+Because no name was passed, submitting this form will create a new Space Attribute Definition

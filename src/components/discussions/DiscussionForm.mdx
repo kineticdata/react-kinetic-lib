@@ -1,9 +1,24 @@
-### Usage
+---
+name: Discussion Form
+menu: Discussions
+route: /discussions/discussionform
+---
+
+import { Playground, Props } from 'docz';
+import { DiscussionForm } from './DiscussionForm';
+
+# Discussion Form
+
+## Props
+
+<Props of={DiscussionForm} />
+
+## Usage
 
 The `DiscussionForm` component is used to render a form for editing discussions. It takes a few render props that allow you to
 customize the behavior of certain fields. Understanding how to use these is important.
 
-#### Owning Usera and Teams Input
+### Owning Usera and Teams Input
 
 The owning users and teams render functions are used to provide a input for these fields. Both render props take the same function signature.
 The function receives three props:
@@ -12,7 +27,7 @@ The function receives three props:
 function({ id, onChange, value })
 ```
 
-### Example
+## Example
 
 ```js static
 import { DiscussionForm } from 'react-kinetic-lib';

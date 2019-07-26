@@ -8,15 +8,10 @@ import {
   fetchAttributeDefinition,
 } from '../../../apis';
 
-const dataSources = ({
-  kappSlug,
-  attributeType,
-  attributeName,
-  include = 'details',
-}) => ({
+const dataSources = ({ kappSlug, attributeType, attributeName }) => ({
   attributeDefinition: [
     fetchAttributeDefinition,
-    [{ kappSlug, attributeType, attributeName, include }],
+    [{ kappSlug, attributeType, attributeName, include: 'details' }],
     {
       transform: result => result.attributeDefinition,
       runIf: () => !!attributeName,
@@ -100,7 +95,6 @@ export const AttributeDefinitionForm = ({
 AttributeDefinitionForm.defaultProps = {
   attributeName: null,
   kappSlug: null,
-  include: 'details',
 };
 
 AttributeDefinitionForm.propTypes = {
@@ -117,8 +111,6 @@ AttributeDefinitionForm.propTypes = {
   ]).isRequired,
   /** The name of the attribute (assumes new if not null). */
   attributeName: t.string,
-  /** The include parameter passed to the API when fetching the attribute definition. */
-  include: t.string,
   /**
    * If the attribute definition is for a Kapp
    * (Kapp Attributes, Form Attributes, Category Attributes, ...etc)
