@@ -1,4 +1,5 @@
 // Common
+export { CodeInput } from './common/CodeInput';
 export { ContentEditable } from './common/ContentEditable';
 export { UserSelect } from './common/UserSelect';
 export { TeamSelect } from './common/TeamSelect';
