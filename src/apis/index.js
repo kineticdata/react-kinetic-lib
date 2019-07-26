@@ -31,6 +31,7 @@ export {
   addRequestInterceptor,
   addResponseInterceptor,
   setDefaultAuthAssumed,
+  generateCESearchParams,
 } from './http';
 
 // Sockets

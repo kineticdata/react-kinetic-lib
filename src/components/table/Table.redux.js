@@ -41,22 +41,14 @@ const serverSidePrevPage = tableData =>
 export const generateFilters = (tableKey, columns) =>
   Map(
     columns
-      .filter(c => c.get('filterable'))
+      .filter(c => c.get('filter'))
       .reduce(
         (filters, column) =>
           filters.set(
             column.get('value'),
             Map({
-              value: '',
-              column: column.get('value'),
-              title: column.get('title'),
-              onChange: value => {
-                dispatch('SET_FILTER', {
-                  tableKey,
-                  filter: column.get('value'),
-                  value,
-                });
-              },
+              value: List(['', '']),
+              column,
             }),
           ),
 
@@ -163,8 +155,8 @@ regHandlers({
           .set('sortColumn', column)
       );
     }),
-  SET_FILTER: (state, { payload: { tableKey, filter, value } }) =>
-    state.setIn(['tables', tableKey, 'filters', filter, 'value'], value),
+  SET_FILTER: (state, { payload: { tableKey, filter, value, pos = 0 } }) =>
+    state.setIn(['tables', tableKey, 'filters', filter, 'value', pos], value),
   APPLY_FILTERS: (state, { payload: { tableKey } }) =>
     state.setIn(
       ['tables', tableKey, 'appliedFilters'],
@@ -194,14 +186,6 @@ regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
 regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
 regSaga(takeEvery('REFECTH_TABLE_DATA', calculateRowsTask));
-
-const generateSortParams = tableData =>
-  tableData.get('sortColumn')
-    ? {
-        orderBy: tableData.getIn(['sortColumn', 'value']),
-        direction: tableData.get('sortDirection'),
-      }
-    : {};
 
 export const clientSideRowFilter = filters => row => {
   const usableFilters = filters
@@ -248,16 +232,16 @@ const calculateRows = tableData => {
     return Promise.resolve({ rows, data });
   } else if (dataSource) {
     const transform = dataSource.transform || (result => result);
-    const params = dataSource.clientSideSearch
-      ? dataSource.params(tableData.toJS())
-      : {
-          ...dataSource.params(tableData.toJS()),
-          ...generateSortParams(tableData),
-          pageToken: tableData.get('nextPageToken'),
-        };
+    const params = dataSource.params({
+      pageSize: tableData.get('pageSize'),
+      filters: tableData.get('filters'),
+      sortColumn: tableData.getIn(['sortColumn', 'value']),
+      sortDirection: tableData.get('sortDirection'),
+      nextPageToken: tableData.get('nextPageToken'),
+    });
 
     return dataSource
-      .fn(params)
+      .fn(...params)
       .then(transform)
       .then(({ nextPageToken, data }) => ({
         nextPageToken,

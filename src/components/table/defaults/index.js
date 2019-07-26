@@ -10,7 +10,9 @@ import BodyCell from './BodyCell';
 import Footer from './Footer';
 import FooterRow from './FooterRow';
 import FooterCell from './FooterCell';
-import FilterControl from './FilterControl';
+import FilterLayout from './FilterLayout';
+import BooleanFilter from './BooleanFilter';
+import TextFilter from './TextFilter';
 import PaginationControl from './PaginationControl';
 
 export const DefaultTableConfig = Map({
@@ -25,6 +27,9 @@ export const DefaultTableConfig = Map({
   Footer,
   FooterRow,
   FooterCell,
-  FilterControl,
+
+  FilterLayout,
+  TextFilter,
+  BooleanFilter,
   PaginationControl,
 });

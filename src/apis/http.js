@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Map } from 'immutable';
 import { bundle } from '../helpers';
 
 // The `X-Kinetic-AuthAssumed` header was added in version 2.2 of Kinetic Core.
@@ -103,3 +104,44 @@ export const corePath = ({ submission, kapp, form, datastore = false }) =>
   submission
     ? submissionPath({ submission, datastore })
     : formPath({ form, kapp, datastore });
+
+const startsWith = (field, value) => `${field} =* "${value}"`;
+const equals = (field, value) => `${field} = "${value}"`;
+
+const searchFilters = filters => {
+  const q = Map(filters)
+    .filter(filter => filter.getIn(['value', 0], '') !== '')
+    .map((filter, key) => {
+      const mode = filter.getIn(['column', 'filter']);
+
+      return mode === 'startsWith'
+        ? startsWith(key, filter.getIn(['value', 0]))
+        : equals(key, filter.getIn(['value', 0]));
+    })
+    .toIndexedSeq()
+    .toList()
+    .join(' AND ');
+
+  return q.length > 0 ? { q } : {};
+};
+
+const generateSortParams = (sortColumn, sortDirection) =>
+  sortColumn
+    ? {
+        orderBy: sortColumn,
+        direction: sortDirection,
+      }
+    : {};
+
+export const generateCESearchParams = ({
+  pageSize,
+  filters,
+  sortColumn,
+  sortDirection,
+  nextPageToken,
+}) => ({
+  limit: pageSize,
+  nextPageToken,
+  ...searchFilters(filters),
+  ...generateSortParams(sortColumn, sortDirection),
+});
