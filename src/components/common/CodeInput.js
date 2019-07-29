@@ -17,6 +17,7 @@ export class CodeInput extends Component {
     this.newLine = detectNewLine(props.value) || '\n';
     this.indentation = detectIndent(props.value).indent || '  ';
     this.tokenTypes = {};
+    this.editor = null;
     this.state = {
       editorState: EditorState.createWithContent(
         convertFromRaw({
@@ -111,6 +112,24 @@ export class CodeInput extends Component {
     return 'handled';
   };
 
+  handleRef = el => (this.editor = el);
+
+  focus = () => {
+    if (this.editor) {
+      this.editor.focus();
+    }
+  };
+
+  handleDroppedFiles = (selection, [file]) => {
+    if (typeof this.props.onChange === 'function') {
+      const fileReader = new FileReader();
+      fileReader.onloadend = () => {
+        this.props.onChange(fileReader.result);
+      };
+      fileReader.readAsText(file);
+    }
+  };
+
   render() {
     return (
       <Editor
@@ -119,6 +138,8 @@ export class CodeInput extends Component {
         onChange={this.onChange}
         handleReturn={this.handleReturn}
         onTab={this.handleTab}
+        ref={this.handleRef}
+        handleDroppedFiles={this.handleDroppedFiles}
       />
     );
   }
