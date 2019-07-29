@@ -55,23 +55,59 @@ export class CodeInput extends Component {
     };
   }
 
-  onChange = editorState =>
-    this.setState(
-      typeof editorState === 'function' ? editorState : { editorState },
-    );
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (
+      this.props.value !== prevProps.value &&
+      this.props.value !==
+        this.state.editorState
+          .getCurrentContent()
+          .getFirstBlock()
+          .getText()
+    ) {
+      this.onChange(
+        EditorState.push(
+          this.state.editorState,
+          convertFromRaw({
+            entityMap: {},
+            blocks: [
+              {
+                text: this.props.value,
+              },
+            ],
+          }),
+          'insert-characters',
+        ),
+      );
+    }
+  }
+
+  onChange = editorState => {
+    this.setState({ editorState }, () => {
+      if (typeof this.props.onChange === 'function') {
+        this.props.onChange(
+          editorState
+            .getCurrentContent()
+            .getFirstBlock()
+            .getText(),
+        );
+      }
+    });
+  };
 
   handleReturn = event => {
     const currentIndentation = getCurrentIndentation(
       this.newLine,
       this.state.editorState,
     );
-    this.onChange(insert(this.newLine + currentIndentation));
+    this.onChange(
+      insert(this.newLine + currentIndentation, this.state.editorState),
+    );
     return 'handled';
   };
 
   handleTab = event => {
     event.preventDefault();
-    this.onChange(insert(this.indentation));
+    this.onChange(insert(this.indentation, this.state.editorState));
     return 'handled';
   };
 
@@ -88,8 +124,8 @@ export class CodeInput extends Component {
   }
 }
 
-const insert = text => ({ editorState }) => ({
-  editorState: EditorState.push(
+const insert = (text, editorState) =>
+  EditorState.push(
     editorState,
     editorState.getSelection().isCollapsed()
       ? Modifier.insertText(
@@ -103,8 +139,7 @@ const insert = text => ({ editorState }) => ({
           text,
         ),
     'insert-characters',
-  ),
-});
+  );
 
 const getCurrentIndentation = (newLine, editorState) => {
   const text = editorState
