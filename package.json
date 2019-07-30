@@ -96,7 +96,6 @@
     "react-addons-test-utils": "^15.6.2",
     "react-dom": "^16.8.1",
     "react-scripts": "^2.1.8",
-    "react-styleguidist": "^9.1.11",
     "stylelint": "^10.1.0",
     "stylelint-config-rational-order": "^0.1.2",
     "stylelint-order": "^3.0.1"
