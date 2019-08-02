@@ -98,6 +98,7 @@ export const buildBindings = ({ space, kapp, form, scope }) =>
   Map({
     Values:
       ['Submission', 'Datastore Submission'].includes(scope) &&
+      (form || kapp) &&
       OrderedMap(
         (form ? form.get('fields') : kapp.get('fields')).map(field => [
           field.get('name'),
