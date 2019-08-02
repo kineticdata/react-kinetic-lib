@@ -96,6 +96,14 @@ const bindify = (fnName, staticMap, attributeDefinitions = List()) =>
 
 export const buildBindings = ({ space, kapp, form, scope }) =>
   Map({
+    Values:
+      ['Submission', 'Datastore Submission'].includes(scope) &&
+      OrderedMap(
+        (form ? form.get('fields') : kapp.get('fields')).map(field => [
+          field.get('name'),
+          `values('${field.get('name')}')`,
+        ]),
+      ),
     Submission:
       ['Submission', 'Datastore Submission'].includes(scope) &&
       bindify('submission', SUBMISSION_STATIC_BINDINGS),
@@ -117,13 +125,11 @@ export const buildBindings = ({ space, kapp, form, scope }) =>
         KAPP_STATIC_BINDINGS,
         kapp.get('kappAttributeDefinitions'),
       ),
-    Space:
-      scope &&
-      bindify(
-        'space',
-        SPACE_STATIC_BINDINGS,
-        space.get('spaceAttributeDefinitions'),
-      ),
+    Space: bindify(
+      'space',
+      SPACE_STATIC_BINDINGS,
+      space.get('spaceAttributeDefinitions'),
+    ),
     Team:
       scope === 'Team' &&
       bindify(

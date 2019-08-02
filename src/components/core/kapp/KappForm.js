@@ -10,14 +10,14 @@ import {
   updateKapp,
 } from '../../../apis';
 
-import { slugify } from '../../../helpers';
+import { buildBindings, slugify } from '../../../helpers';
 
 const DISPLAY_TYPES = ['Display Page', 'Redirect'];
 
 const dataSources = ({ kappSlug }) => ({
   space: [
     fetchSpace,
-    [{ include: 'details' }],
+    [{ include: 'details,spaceAttributeDefinitions' }],
     { transform: result => result.space },
   ],
   kapp: [
@@ -25,7 +25,8 @@ const dataSources = ({ kappSlug }) => ({
     [
       {
         kappSlug,
-        include: 'attributesMap,securityPolicies,details,fields.details',
+        include:
+          'attributesMap,securityPolicies,details,fields.details,formAttributeDefinitions',
       },
     ],
     {
@@ -137,8 +138,14 @@ const fields = ({ kappSlug }) => [
   {
     name: 'defaultSubmissionLabelExpression',
     label: 'Submission Label',
-    type: 'text',
+    type: 'code-template',
     initialValue: ({ kapp }) => get(kapp, 'defaultSubmissionLabelExpression'),
+    options: ({ space, kapp, attributeDefinitions }) =>
+      buildBindings({
+        space,
+        kapp: kapp.set('kappAttributeDefinitions', attributeDefinitions),
+        scope: 'Submission',
+      }),
   },
   {
     name: 'displayType',

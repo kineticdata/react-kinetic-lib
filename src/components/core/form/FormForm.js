@@ -9,8 +9,9 @@ import {
   fetchAttributeDefinitions,
   fetchSecurityPolicyDefinitions,
   fetchCategories,
+  fetchSpace,
 } from '../../../apis';
-import { slugify } from '../../../helpers';
+import { buildBindings, slugify } from '../../../helpers';
 
 const FORM_STATUSES = ['New', 'Active', 'Inactive', 'Delete'];
 
@@ -33,10 +34,19 @@ const dataSources = ({ formSlug, kappSlug, datastore }) => ({
     [
       {
         kappSlug,
-        include: 'formTypes',
+        include: 'formTypes,formAttributeDefinitions,kappAttributeDefinitions',
       },
     ],
     { transform: result => result.kapp, runIf: () => !!kappSlug },
+  ],
+  space: [
+    fetchSpace,
+    [
+      {
+        include: 'spaceAttributeDefinitions,datastoreFormAttributeDefinitions',
+      },
+    ],
+    { transform: result => result.space },
   ],
   attributeDefinitions: [
     fetchAttributeDefinitions,
@@ -183,8 +193,15 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
   {
     name: 'submissionLabelExpression',
     label: 'Submission Label',
-    type: 'text',
+    type: 'code-template',
     initialValue: ({ form }) => get(form, 'submissionLabelExpression'),
+    options: ({ space, kapp, form }) =>
+      buildBindings({
+        space,
+        kapp,
+        form,
+        scope: kappSlug ? 'Submission' : 'Datastore Submission',
+      }),
   },
   !!kappSlug && {
     name: 'type',

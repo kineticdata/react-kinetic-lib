@@ -27,7 +27,7 @@ const dataSources = ({ kappSlug, name }) => ({
     [
       {
         kappSlug,
-        include: 'formAttributeDefinitions,kappAttributeDefinitions',
+        include: 'formAttributeDefinitions,kappAttributeDefinitions,fields',
       },
     ],
     { transform: result => result.kapp, runIf: () => !!kappSlug },
