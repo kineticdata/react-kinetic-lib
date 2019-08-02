@@ -18,24 +18,24 @@ import { CategoryTable } from './CategoryTable';
 
 #### Simple implementation of a `CategoryForm`.
 
-<Playground>
-  <CategoryForm kappSlug="services" />
-</Playground>
+```javascript
+<CategoryForm kappSlug="services" />
+```
 
 Because no name was passed, submitting this form will create a new Category
 
 #### Control the Layout of a `CategoryForm`.
 
-<Playground>
-  <CategoryForm kappSlug="services">
-    {({ form }) => (
-      <div>
-        <h5>My Form Header</h5>
-        {form}
-      </div>
-    )}
-  </CategoryForm>
-</Playground>
+```javascript
+<CategoryForm kappSlug="services">
+  {({ form }) => (
+    <div>
+      <h5>My Form Header</h5>
+      {form}
+    </div>
+  )}
+</CategoryForm>
+```
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 
@@ -49,19 +49,19 @@ Because no name was passed, submitting this form will create a new Space Attribu
 
 #### Simple implementation of a `CategoryTable`.
 
-Because no name was passed, submitting this form will create a new Space Attribute Definition
+```javascript
+<CategoryTable columnSet={['name', 'slug']} kappSlug="services" />
+```
 
 #### Control the Layout of a `CategoryTable`.
 
-<Playground>
-  <CategoryTable columnSet={['name', 'slug']} kappSlug="services">
-    {({ table }) => (
-      <div>
-        <h5>My Table Header</h5>
-        {table}
-      </div>
-    )}
-  </CategoryTable>
-</Playground>
-
-Because no name was passed, submitting this form will create a new Space Attribute Definition
+```javascript
+<CategoryTable columnSet={['name', 'slug']} kappSlug="services">
+  {({ table }) => (
+    <div>
+      <h5>My Table Header</h5>
+      {table}
+    </div>
+  )}
+</CategoryTable>
+```

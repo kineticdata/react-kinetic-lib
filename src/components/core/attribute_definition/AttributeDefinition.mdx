@@ -5,8 +5,9 @@ route: /core/attributedefinition
 ---
 
 import { Playground, Props } from 'docz';
+import { ColumnsTable } from '../../../docz/ColumnsTable';
 import { AttributeDefinitionForm } from './AttributeDefinitionForm';
-import { AttributeDefinitionTable } from './AttributeDefinitionTable';
+import { AttributeDefinitionTable, columns } from './AttributeDefinitionTable';
 
 ## Attribute Definition Form
 
@@ -44,6 +45,10 @@ Because no name was passed, submitting this form will create a new Space Attribu
 ### Props
 
 <Props of={AttributeDefinitionTable} />
+
+### Default Columns
+
+<ColumnsTable columns={columns} />
 
 ### Examples
 
