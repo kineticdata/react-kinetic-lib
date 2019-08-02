@@ -215,13 +215,20 @@ export class CodeInput extends Component {
   };
 
   keyBindingFn = event => {
-    if (event.keyCode === 52 && event.shiftKey) {
+    if (
+      event.keyCode === 52 &&
+      event.shiftKey &&
+      !this.props.bindings.isEmpty()
+    ) {
       return 'open-variable-menu';
     } else if (event.keyCode === 27) {
       event.preventDefault();
       event.stopPropagation();
       return 'close-variable-menu';
-    } else if (event.keyCode === 9) {
+    } else if (
+      event.keyCode === 9 &&
+      this.props.value.indexOf(this.newLine) > -1
+    ) {
       event.preventDefault();
       return 'insert-tab';
     }
@@ -248,6 +255,8 @@ export class CodeInput extends Component {
         <Editor
           readOnly={this.props.disabled}
           editorState={this.state.editorState}
+          onFocus={this.props.onFocus}
+          onBlur={this.props.onBlur}
           onChange={this.onChange}
           handleReturn={this.handleReturn}
           ref={this.handleRef}
