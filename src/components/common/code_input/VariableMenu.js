@@ -34,15 +34,17 @@ export class VariableMenu extends Component {
           contentEditable={false}
         >
           <ul>
-            {Object.entries(getIn(bindings, selected)).map(([label, value]) => (
-              <li
-                key={label}
-                onClick={onSelect(label)}
-                style={{ userSelect: 'none' }}
-              >
-                {label}
-              </li>
-            ))}
+            {getIn(bindings, selected)
+              .keySeq()
+              .map(label => (
+                <li
+                  key={label}
+                  onClick={onSelect(label)}
+                  style={{ userSelect: 'none' }}
+                >
+                  {label}
+                </li>
+              ))}
           </ul>
         </div>
       )
