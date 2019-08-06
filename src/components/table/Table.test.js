@@ -2,7 +2,7 @@ import React from 'react';
 import { KineticLib } from '@kineticdata/react';
 import { render } from 'enzyme';
 import { List, Map } from 'immutable';
-import { users } from '../../gatsby-theme-docz/fixtures';
+import { users } from '../../docz/fixtures';
 import { DefaultTableConfig } from './defaults';
 import {
   buildTable,
