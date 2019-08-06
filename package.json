@@ -1,6 +1,6 @@
 {
   "name": "@kineticdata/react",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.6",
   "description": "A React library for the Kinetic Platform",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -29,7 +29,7 @@
     "format": "prettier --write \"**\"",
     "preversion": "yarn test",
     "version": "yarn build",
-    "postversion": "git push && gh-pages -d docs",
+    "postversion": "git push && gh-pages -d docs --git git",
     "deploy": "gh-pages -d docs --git git"
   },
   "dependencies": {
