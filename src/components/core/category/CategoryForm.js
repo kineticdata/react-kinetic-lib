@@ -1,4 +1,5 @@
 import React from 'react';
+import t from 'prop-types';
 import {
   createCategory,
   fetchAttributeDefinitions,
@@ -105,3 +106,10 @@ export const CategoryForm = ({
     {children}
   </Form>
 );
+
+CategoryForm.propTypes = {
+  /** The Slug of the kapp the category exists in, or should be created in */
+  kappSlug: t.string.isRequired,
+  /** The slug of the category being edited. Leave blank if creating a new category */
+  categorySlug: t.string,
+};

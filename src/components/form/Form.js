@@ -17,6 +17,8 @@ import { action, connect, dispatch, regHandlers, regSaga } from '../../store';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { generateKey } from '../../helpers';
 
+import { Field } from './Field';
+
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
 const identity = it => it;
 
@@ -677,32 +679,6 @@ export const mapStateToProps = (state, props) =>
     .getIn(['forms', props.formKey], Map())
     .set('bindings', selectBindings(props.formKey)(state))
     .toObject();
-
-const typeToComponent = {
-  text: 'TextField',
-  'text-multi': 'TextMultiField',
-  checkbox: 'CheckboxField',
-  code: 'CodeField',
-  'code-template': 'CodeTemplateField',
-  password: 'PasswordField',
-  radio: 'RadioField',
-  select: 'SelectField',
-  'select-multi': 'SelectMultiField',
-  attributes: 'AttributesField',
-  team: 'TeamField',
-  'team-multi': 'TeamMultiField',
-  user: 'UserField',
-  'user-multi': 'UserMultiField',
-};
-
-export const Field = props => {
-  const componentName = typeToComponent[props.type] || 'TextField';
-  const FieldImpl =
-    props.components.field ||
-    props.components.form[componentName] ||
-    props.components.context.get(componentName);
-  return <FieldImpl {...props} />;
-};
 
 const extractFieldComponents = ({ fields, addFields, alterFields }) =>
   Seq(addFields)

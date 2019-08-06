@@ -4,7 +4,7 @@ menu: Core
 route: /core/oauthclient
 ---
 
-import { Playground, Props } from 'docz';
+import { Props } from 'docz';
 import { OAuthClientForm } from './OAuthClientForm';
 import { OAuthClientTable } from './OAuthClientTable';
 
@@ -18,24 +18,24 @@ import { OAuthClientTable } from './OAuthClientTable';
 
 #### Simple implementation of a `OAuthClientForm`.
 
-<Playground>
-  <OAuthClientForm formSlug="alerts" />
-</Playground>
+```javascript
+<OAuthClientForm formSlug="alerts" />
+```
 
 Because no name was passed, submitting this form will create a new oAuth Client
 
 #### Control the Layout of a `OAuthClientForm`.
 
-<Playground>
-  <OAuthClientForm formSlug="alerts">
-    {({ form }) => (
-      <div>
-        <h5>My Form Header</h5>
-        {form}
-      </div>
-    )}
-  </OAuthClientForm>
-</Playground>
+```javascript
+<OAuthClientForm formSlug="alerts">
+  {({ form }) => (
+    <div>
+      <h5>My Form Header</h5>
+      {form}
+    </div>
+  )}
+</OAuthClientForm>
+```
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 
@@ -53,13 +53,13 @@ Because no name was passed, submitting this form will create a new Index Definit
 
 #### Control the Layout of a `OAuthClientTable`.
 
-<Playground>
-  <OAuthClientTable columnSet={['name']}>
-    {({ table }) => (
-      <div>
-        <h5>My Table Header</h5>
-        {table}
-      </div>
-    )}
-  </OAuthClientTable>
-</Playground>
+```javascript
+<OAuthClientTable columnSet={['name']}>
+  {({ table }) => (
+    <div>
+      <h5>My Table Header</h5>
+      {table}
+    </div>
+  )}
+</OAuthClientTable>
+```

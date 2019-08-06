@@ -4,7 +4,7 @@ menu: Core
 route: /core/indexjob
 ---
 
-import { Playground, Props } from 'docz';
+import { Props } from 'docz';
 import { IndexJobTable } from './IndexJobTable';
 
 ## Index Job Table
@@ -21,13 +21,13 @@ Because no name was passed, submitting this form will create a new Index Definit
 
 #### Control the Layout of a `IndexJobTable`.
 
-<Playground>
-  <IndexJobTable columnSet={['name']} formSlug="alerts">
-    {({ table }) => (
-      <div>
-        <h5>My Table Header</h5>
-        {table}
-      </div>
-    )}
-  </IndexJobTable>
-</Playground>
+```javascript
+<IndexJobTable columnSet={['name']} formSlug="alerts">
+  {({ table }) => (
+    <div>
+      <h5>My Table Header</h5>
+      {table}
+    </div>
+  )}
+</IndexJobTable>
+```

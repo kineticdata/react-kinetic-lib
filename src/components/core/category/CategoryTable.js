@@ -1,4 +1,5 @@
 import React from 'react';
+import t from 'prop-types';
 import { Table } from '../../table/Table';
 import { fetchCategories } from '../../../apis';
 
@@ -63,3 +64,8 @@ export const CategoryTable = props => (
     {props.children}
   </Table>
 );
+
+CategoryTable.propTypes = {
+  /** The Slug of the kapp to display categories for */
+  kappSlug: t.string.isRequired,
+};
