@@ -258,7 +258,15 @@ export const buildTableBodyRows = props => {
 };
 
 export const buildTableBodyCells = (props, row, _rowIndex) => {
-  const { components, rows, columns, columnSet, columnComponents } = props;
+  const {
+    tableKey,
+    components,
+    rows,
+    columns,
+    columnSet,
+    columnComponents,
+    tableOptions,
+  } = props;
 
   return fromColumnSet(columns, columnSet).map((column, index) => {
     const BodyCell = columnComponents.getIn(
@@ -271,11 +279,13 @@ export const buildTableBodyCells = (props, row, _rowIndex) => {
     return (
       <KeyWrapper key={`column-${index}`}>
         <BodyCell
+          tableKey={tableKey}
           row={row}
           index={index}
           value={value}
           rows={rows.toJS()}
           column={column}
+          tableOptions={tableOptions}
         />
       </KeyWrapper>
     );
@@ -377,7 +387,11 @@ export const generateTable = ({ tableOptions, ...setObjects }) => props => {
     defaultSortDirection: props.defaultSortDirection,
   };
 
-  return <Table {...setProps}>{props.children}</Table>;
+  return (
+    <Table {...props} {...setProps}>
+      {props.children}
+    </Table>
+  );
 };
 
 export class Table extends Component {

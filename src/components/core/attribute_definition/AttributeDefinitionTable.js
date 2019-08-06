@@ -8,7 +8,7 @@ const dataSource = ({ kappSlug, attributeType }) => ({
     {
       include: 'details',
       kappSlug,
-      attributeType,
+      attributeType: attributeType + 'AttributeDefinitions',
     },
   ],
   transform: result => {
