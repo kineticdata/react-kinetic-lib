@@ -4,7 +4,7 @@ menu: Core
 route: /core/formtype
 ---
 
-import { Playground, Props } from 'docz';
+import { Props } from 'docz';
 import { FormTypeForm } from './FormTypeForm';
 import { FormTypeTable } from './FormTypeTable';
 
@@ -18,24 +18,24 @@ import { FormTypeTable } from './FormTypeTable';
 
 #### Simple implementation of a `FormTypeForm`.
 
-<Playground>
-  <FormTypeForm kappSlug="services" />
-</Playground>
+```javascript
+<FormTypeForm kappSlug="services" />
+```
 
 Because no name was passed, submitting this form will create a new Form
 
 #### Control the Layout of a `FormTypeForm`.
 
-<Playground>
-  <FormTypeForm kappSlug="services">
-    {({ form }) => (
-      <div>
-        <h5>My Form Header</h5>
-        {form}
-      </div>
-    )}
-  </FormTypeForm>
-</Playground>
+```javascript
+<FormTypeForm kappSlug="services">
+  {({ form }) => (
+    <div>
+      <h5>My Form Header</h5>
+      {form}
+    </div>
+  )}
+</FormTypeForm>
+```
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 
@@ -53,13 +53,17 @@ Because no name was passed, submitting this form will create a new Form Type
 
 #### Control the Layout of a `FormTypeTable`.
 
-<Playground>
-  <FormTypeTable columnSet={['name', 'slug']} kappSlug="services">
-    {({ table }) => (
-      <div>
-        <h5>My Table Header</h5>
-        {table}
-      </div>
-    )}
-  </FormTypeTable>
-</Playground>
+```javascript
+<FormTypeTable columnSet={['name', 'slug']} kappSlug="services">
+  {({ table }) => (
+    <div>
+      <h5>My Table Header</h5>
+      {table}
+    </div>
+  )}
+</FormTypeTable>
+```
+
+```
+
+```

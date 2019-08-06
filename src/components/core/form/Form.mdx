@@ -4,7 +4,7 @@ menu: Core
 route: /core/form
 ---
 
-import { Playground, Props } from 'docz';
+import { Props } from 'docz';
 import { FormForm } from './FormForm';
 import { FormTable } from './FormTable';
 
@@ -18,24 +18,24 @@ import { FormTable } from './FormTable';
 
 #### Simple implementation of a `FormForm`.
 
-<Playground>
-  <FormForm kappSlug="services" />
-</Playground>
+```javascript
+<FormForm kappSlug="services" />
+```
 
 Because no name was passed, submitting this form will create a new Form
 
 #### Control the Layout of a `FormForm`.
 
-<Playground>
-  <FormForm kappSlug="services">
-    {({ form }) => (
-      <div>
-        <h5>My Form Header</h5>
-        {form}
-      </div>
-    )}
-  </FormForm>
-</Playground>
+```javascript
+<FormForm kappSlug="services">
+  {({ form }) => (
+    <div>
+      <h5>My Form Header</h5>
+      {form}
+    </div>
+  )}
+</FormForm>
+```
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition
 
@@ -47,21 +47,21 @@ Because no name was passed, submitting this form will create a new Space Attribu
 
 ### Examples
 
-#### Simple implementation of a `FormTable`.
+#### Simple implementation of a `FormTable` that is a datastore.
 
-Because no name was passed, submitting this form will create a new Space Attribute Definition
+```javascript
+<FormTable columnSet={['name', 'slug']} datastore />
+```
 
 #### Control the Layout of a `FormTable`.
 
-<Playground>
-  <FormTable columnSet={['name', 'slug']} kappSlug="services">
-    {({ table }) => (
-      <div>
-        <h5>My Table Header</h5>
-        {table}
-      </div>
-    )}
-  </FormTable>
-</Playground>
-
-Because no name was passed, submitting this form will create a new Space Attribute Definition
+```javascript
+<FormTable columnSet={['name', 'slug']} kappSlug="services">
+  {({ table }) => (
+    <div>
+      <h5>My Table Header</h5>
+      {table}
+    </div>
+  )}
+</FormTable>
+```

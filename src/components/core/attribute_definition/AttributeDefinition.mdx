@@ -4,7 +4,7 @@ menu: Core
 route: /core/attributedefinition
 ---
 
-import { Playground, Props } from 'docz';
+import { Props } from 'docz';
 import { ColumnsTable } from '../../../docz/ColumnsTable';
 import { AttributeDefinitionForm } from './AttributeDefinitionForm';
 import { AttributeDefinitionTable, columns } from './AttributeDefinitionTable';
@@ -58,18 +58,18 @@ Because no name was passed, submitting this form will create a new Space Attribu
 
 #### Control the Layout of a `AttributeDefinitionTable`.
 
-<Playground>
-  <AttributeDefinitionTable
-    columnSet={['name', 'description', 'actions']}
-    attributeType="spaceAttributeDefinitions"
-  >
-    {({ table }) => (
-      <div>
-        <h5>My Table Header</h5>
-        {table}
-      </div>
-    )}
-  </AttributeDefinitionTable>
-</Playground>
+```javascript
+<AttributeDefinitionTable
+  columnSet={['name', 'description', 'actions']}
+  attributeType="spaceAttributeDefinitions"
+>
+  {({ table }) => (
+    <div>
+      <h5>My Table Header</h5>
+      {table}
+    </div>
+  )}
+</AttributeDefinitionTable>
+```
 
 Because no name was passed, submitting this form will create a new Space Attribute Definition

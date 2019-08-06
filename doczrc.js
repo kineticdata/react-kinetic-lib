@@ -1,5 +1,5 @@
 export default {
-  title: 'Kinetic Reacat Components',
+  title: 'Kinetic React Components',
   dest: '/docs',
   src: 'src',
   wrapper: 'src/docz/wrapper',

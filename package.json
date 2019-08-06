@@ -13,7 +13,7 @@
   "scripts": {
     "build": "yarn build:lib && yarn build:docs",
     "build:lib": "yarn dir && yarn lint && yarn assets && yarn js",
-    "build:docs": "gatsby build --prefix-paths",
+    "build:docs": "docz build --prefix-paths",
     "build:watch": "yarn dir && yarn assets && concurrently \"yarn lint:watch\" \"yarn assets:watch\" \"yarn js:watch\"",
     "dir": "rimraf lib && mkdirp lib/assets",
     "js": "cross-env NODE_ENV=production babel src --out-dir lib --ignore \"**/*.test.js\"",
@@ -29,7 +29,8 @@
     "format": "prettier --write \"**\"",
     "preversion": "yarn test",
     "version": "yarn build",
-    "postversion": "git push && gh-pages -d public"
+    "postversion": "git push && gh-pages -d docs",
+    "deploy": "gh-pages -d docs"
   },
   "dependencies": {
     "actiontyper": "^0.0.4",
