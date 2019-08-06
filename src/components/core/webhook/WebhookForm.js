@@ -2,13 +2,36 @@ import React from 'react';
 import {
   createWebhook,
   fetchWebhook,
+  fetchKapp,
   fetchKappWebhookEvents,
+  fetchSpace,
   fetchSpaceWebhookEvents,
   updateWebhook,
 } from '../../../apis';
 import { Form } from '../../form/Form';
+import { buildBindings } from '../../../helpers';
 
 const dataSources = ({ kappSlug, name }) => ({
+  space: [
+    fetchSpace,
+    [
+      {
+        include:
+          'datastoreFormAttributeDefinitions,spaceAttributeDefinitions,teamAttributeDefinitions,userAttributeDefinitions,userProfileAttributeDefinitions',
+      },
+    ],
+    { transform: result => result.space },
+  ],
+  kapp: [
+    fetchKapp,
+    [
+      {
+        kappSlug,
+        include: 'formAttributeDefinitions,kappAttributeDefinitions,fields',
+      },
+    ],
+    { transform: result => result.kapp, runIf: () => !!kappSlug },
+  ],
   webhook: [
     fetchWebhook,
     [{ kappSlug, webhookName: name }],
@@ -67,15 +90,19 @@ const fields = ({ kappSlug, name }) => [
   {
     name: 'filter',
     label: 'Filter',
-    type: 'text',
+    type: 'code',
     initialValue: ({ webhook }) => (webhook ? webhook.get('filter') : ''),
+    options: ({ space, kapp, values }) =>
+      buildBindings({ space, kapp, scope: values.get('type') }),
   },
   {
     name: 'url',
     label: 'URL',
-    type: 'text',
+    type: 'code-template',
     required: true,
     initialValue: ({ webhook }) => (webhook ? webhook.get('url') : ''),
+    options: ({ space, kapp, values }) =>
+      buildBindings({ space, kapp, scope: values.get('type') }),
   },
   {
     name: 'authStrategy',

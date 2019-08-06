@@ -5,6 +5,8 @@ const typeToComponent = {
   text: 'TextField',
   'text-multi': 'TextMultiField',
   checkbox: 'CheckboxField',
+  code: 'CodeField',
+  'code-template': 'CodeTemplateField',
   password: 'PasswordField',
   radio: 'RadioField',
   select: 'SelectField',

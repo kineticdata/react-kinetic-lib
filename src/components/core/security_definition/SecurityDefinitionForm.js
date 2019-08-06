@@ -4,9 +4,12 @@ import {
   fetchSecurityPolicyDefinition,
   createSecurityPolicyDefinition,
   updateSecurityPolicyDefinition,
+  fetchSpace,
+  fetchKapp,
 } from '../../../apis';
+import { buildBindings } from '../../../helpers';
 
-const SECURITY_DEFINITION_TYPES = [
+const SPACE_SECURITY_DEFINITION_TYPES = [
   'Space',
   'Datastore Form',
   'Datastore Submission',
@@ -14,7 +17,29 @@ const SECURITY_DEFINITION_TYPES = [
   'User',
 ];
 
+const KAPP_SECURITY_DEFINITION_TYPES = ['Kapp', 'Form', 'Submission'];
+
 const dataSources = ({ securityPolicyName, kappSlug }) => ({
+  space: [
+    fetchSpace,
+    [
+      {
+        include:
+          'datastoreFormAttributeDefinitions,spaceAttributeDefinitions,teamAttributeDefinitions,userAttributeDefinitions,userProfileAttributeDefinitions',
+      },
+    ],
+    { transform: result => result.space },
+  ],
+  kapp: [
+    fetchKapp,
+    [
+      {
+        kappSlug,
+        include: 'formAttributeDefinitions,kappAttributeDefinitions,fields',
+      },
+    ],
+    { transform: result => result.kapp, runIf: () => !!kappSlug },
+  ],
   securityPolicy: [
     fetchSecurityPolicyDefinition,
     [{ securityPolicyName, kappSlug }],
@@ -40,7 +65,7 @@ const handleSubmit = ({ securityPolicyName, kappSlug }) => values =>
     return securityPolicyDefinition;
   });
 
-const fields = () => [
+const fields = ({ kappSlug }) => [
   {
     name: 'name',
     label: 'Name',
@@ -54,7 +79,10 @@ const fields = () => [
     label: 'Type',
     type: 'select',
     required: true,
-    options: SECURITY_DEFINITION_TYPES.map(ele => ({
+    options: (kappSlug
+      ? KAPP_SECURITY_DEFINITION_TYPES
+      : SPACE_SECURITY_DEFINITION_TYPES
+    ).map(ele => ({
       value: ele,
       label: ele,
     })),
@@ -72,10 +100,12 @@ const fields = () => [
   {
     name: 'rule',
     label: 'Rule',
-    type: 'text',
+    type: 'code',
     required: true,
     initialValue: ({ securityPolicy }) =>
       securityPolicy ? securityPolicy.get('rule') : '',
+    options: ({ space, kapp, values }) =>
+      buildBindings({ space, kapp, scope: values.get('type') }),
   },
 ];
 
