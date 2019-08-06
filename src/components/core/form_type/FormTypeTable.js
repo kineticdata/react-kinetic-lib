@@ -1,13 +1,14 @@
-import React from 'react';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 import { fetchFormTypes } from '../../../apis';
 
 const dataSource = ({ kappSlug }) => ({
   fn: fetchFormTypes,
   clientSideSearch: true,
-  params: () => ({
-    kappSlug,
-  }),
+  params: () => [
+    {
+      kappSlug,
+    },
+  ],
   transform: result => {
     return {
       data: result.formTypes,
@@ -24,26 +25,13 @@ const columns = [
   },
 ];
 
-export const FormTypeTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource({
-      kappSlug: props.kappSlug,
-      attributeType: props.attributeType,
-    })}
-    columns={columns}
-    addColumns={props.addColumns}
-    alterColumns={props.alterColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-  >
-    {props.children}
-  </Table>
-);
+export const FormTypeTable = generateTable({
+  tableOptions: ['kappSlug'],
+  columns,
+  dataSource,
+});
 
+FormTypeTable.displayName = 'FormTypeTable';
 FormTypeTable.defaultProps = {
   columns,
 };

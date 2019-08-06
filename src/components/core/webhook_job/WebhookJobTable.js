@@ -1,16 +1,17 @@
-import React from 'react';
 import { fetchWebhookJobs } from '../../../apis';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 
 const dataSource = ({ scope, kappSlug, status }) => ({
   fn: fetchWebhookJobs,
-  params: ({ pageSize }) => ({
-    include: 'details',
-    limit: pageSize,
-    scope,
-    kappSlug,
-    status,
-  }),
+  params: ({ pageSize }) => [
+    {
+      include: 'details',
+      limit: pageSize,
+      scope,
+      kappSlug,
+      status,
+    },
+  ],
   transform: result => ({
     data: result.webhookJobs,
     nextPageToken: result.nextPageToken,
@@ -39,20 +40,11 @@ const columns = [
   { value: 'webhookId', title: 'Webhook ID' },
 ];
 
-export const WebhookJobTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource(props)}
-    columns={columns}
-    addColumns={props.addColumns}
-    alterColumns={props.alterColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-    sortable={false}
-  >
-    {props.children}
-  </Table>
-);
+export const WebhookJobTable = generateTable({
+  tableOptions: ['scope', 'kappSlug', 'status'],
+  columns,
+  dataSource,
+  sortable: false,
+});
+
+WebhookJobTable.displayName = 'WebhookJobTable';

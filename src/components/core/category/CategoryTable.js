@@ -1,11 +1,10 @@
-import React from 'react';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 import { fetchCategories } from '../../../apis';
 
 const dataSource = ({ kappSlug }) => ({
   fn: fetchCategories,
   clientSideSearch: true,
-  params: () => ({ include: 'details', kappSlug }),
+  params: () => [{ include: 'details', kappSlug }],
   transform: result => ({ data: result.categories }),
 });
 
@@ -48,18 +47,10 @@ const columns = [
   },
 ];
 
-export const CategoryTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    addColumns={props.addColumns}
-    alterColumns={props.alterColumns}
-    columns={columns}
-    columnSet={props.columnSet}
-    components={props.components}
-    dataSource={dataSource({
-      kappSlug: props.kappSlug,
-    })}
-  >
-    {props.children}
-  </Table>
-);
+export const CategoryTable = generateTable({
+  tableOptions: ['kappSlug'],
+  columns,
+  dataSource,
+});
+
+CategoryTable.displayName = 'CategoryTable';

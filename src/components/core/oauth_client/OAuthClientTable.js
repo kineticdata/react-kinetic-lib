@@ -1,11 +1,10 @@
-import React from 'react';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 import { fetchOAuthClients } from '../../../apis';
 
 const dataSource = () => ({
   fn: fetchOAuthClients,
   clientSideSearch: true,
-  params: () => ({}),
+  params: () => [],
   transform: result => ({
     data: result.oauthClients,
   }),
@@ -38,23 +37,12 @@ const columns = [
   },
 ];
 
-export const OAuthClientTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource()}
-    columns={columns}
-    alterColumns={props.alterColumns}
-    addColumns={props.addColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-  >
-    {props.children}
-  </Table>
-);
+export const OAuthClientTable = generateTable({
+  columns,
+  dataSource,
+});
 
+OAuthClientTable.displayName = 'OAuthClientTable';
 OAuthClientTable.defaultProps = {
   columns,
 };

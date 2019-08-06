@@ -1,5 +1,4 @@
-import React from 'react';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 import { fetchForms, generateCESearchParams } from '../../../apis';
 import t from 'prop-types';
 
@@ -84,30 +83,14 @@ const columns = [
   { value: 'submissionLabelExpression', title: 'Submission Label' },
 ];
 
-export const FormTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource({
-      kappSlug: props.kappSlug,
-      datastore: props.datastore,
-    })}
-    columns={columns}
-    alterColumns={props.alterColumns}
-    addColumns={props.addColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-    defaultSortDirection={props.defaultSortDirection}
-    defaultSortColumn={props.defaultSortColumn}
-  >
-    {props.children}
-  </Table>
-);
+export const FormTable = generateTable({
+  tableOptions: ['kappSlug', 'datastore'],
+  columns,
+  dataSource,
+});
 
 FormTable.defaultProps = {};
-
+FormTable.displayName = 'FormTable';
 FormTable.propTypes = {
   /** Kapp Slug of associated forms to render.  */
   kappSlug: t.string,

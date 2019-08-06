@@ -77,6 +77,7 @@ regHandlers({
         pageSize = 25,
         defaultSortColumn = null,
         defaultSortDirection = 'desc',
+        tableOptions,
       },
     },
   ) =>
@@ -89,6 +90,7 @@ regHandlers({
           Map({
             data: hasData(data) ? List(data) : data,
             dataSource,
+            tableOptions,
             columns,
             rows: List(),
 
@@ -223,7 +225,7 @@ const applyClientSideFilters = (tableData, data) => {
 };
 
 const calculateRows = tableData => {
-  const dataSource = tableData.get('dataSource');
+  const dataSource = tableData.get('dataSource')(tableData.get('tableOptions'));
   const data = tableData.get('data');
 
   if (isClientSide(tableData)) {

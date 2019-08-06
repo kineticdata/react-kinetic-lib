@@ -1,8 +1,8 @@
 import React from 'react';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 import { fetchUsers, generateCESearchParams } from '../../../apis';
 
-const dataSource = {
+const dataSource = () => ({
   fn: fetchUsers,
   params: paramData => [
     {
@@ -14,7 +14,7 @@ const dataSource = {
     data: result.users,
     nextPageToken: result.nextPageToken,
   }),
-};
+});
 
 const BooleanYesNoCell = props => <td>{props.value ? 'Yes' : 'No'}</td>;
 
@@ -76,19 +76,6 @@ const columns = [
   },
 ];
 
-export const UserTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource}
-    columns={columns}
-    addColumns={props.addColumns}
-    alterColumns={props.alterColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-  >
-    {props.children}
-  </Table>
-);
+export const UserTable = generateTable({ columns, dataSource });
+
+UserTable.displayName = 'UserTable';

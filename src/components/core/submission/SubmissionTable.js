@@ -1,11 +1,10 @@
-import React from 'react';
 // import { Map } from 'immutable';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 import { searchSubmissions, SubmissionSearch } from '../../../apis';
 
 // const startsWith = (field, value) => `${field} =* "${value}"`;
 // const equals = (field, value) => `${field} = "${value}"`;
-const STARTS_WITH_FIELDS = ['username', 'email', 'displayName'];
+// const STARTS_WITH_FIELDS = ['username', 'email', 'displayName'];
 
 const submissionsFilter = (filters, props) => {
   const {
@@ -35,14 +34,16 @@ const submissionsFilter = (filters, props) => {
 
 const dataSource = props => ({
   fn: searchSubmissions,
-  params: ({ pageSize, filters }) => ({
-    include: 'details',
-    limit: pageSize,
-    datastore: props.datastore,
-    kapp: props.kappSlug ? props.kappSlug : null,
-    form: props.formSlug,
-    ...submissionsFilter(filters, props),
-  }),
+  params: ({ pageSize, filters }) => [
+    {
+      include: 'details',
+      limit: pageSize,
+      datastore: props.datastore,
+      kapp: props.kappSlug ? props.kappSlug : null,
+      form: props.formSlug,
+      ...submissionsFilter(filters, props),
+    },
+  ],
   transform: result => ({
     data: result.submissions,
     nextPageToken: result.nextPageToken,
@@ -160,23 +161,11 @@ const columns = [
   },
 ];
 
-export const SubmissionTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource(props)}
-    columns={columns}
-    addColumns={props.addColumns}
-    alterColumns={props.alterColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-  >
-    {props.children}
-  </Table>
-);
+export const SubmissionTable = generateTable({
+  tableOptions: ['kappSlug', 'formSlug', 'datastore'],
+  columns,
+  dataSource,
+});
 
+SubmissionTable.displayName = 'SubmissionTable';
 export default SubmissionTable;
-
-SubmissionTable.STARTS_WITH_FIELDS = STARTS_WITH_FIELDS;

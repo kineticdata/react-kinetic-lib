@@ -1,8 +1,7 @@
-import React from 'react';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 import { fetchKapps, generateCESearchParams } from '../../../apis';
 
-const dataSource = {
+const dataSource = () => ({
   fn: fetchKapps,
   params: paramData => [
     {
@@ -14,7 +13,7 @@ const dataSource = {
     data: result.kapps,
     nextPageToken: result.nextPageToken,
   }),
-};
+});
 
 const columns = [
   {
@@ -65,23 +64,12 @@ const columns = [
   { value: 'resetPasswordPage', title: 'Reset Password Page' },
 ];
 
-export const KappTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource}
-    columns={columns}
-    alterColumns={props.alterColumns}
-    addColumns={props.addColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-  >
-    {props.children}
-  </Table>
-);
+export const KappTable = generateTable({
+  columns,
+  dataSource,
+});
 
+KappTable.displayName = 'KappTable';
 KappTable.defaultProps = {
   columns,
 };

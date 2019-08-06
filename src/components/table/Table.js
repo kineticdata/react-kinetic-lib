@@ -358,6 +358,28 @@ export const extractColumnComponents = columns =>
       Map(),
     );
 
+export const generateTable = ({ tableOptions, ...setObjects }) => props => {
+  const tableOptionProps = tableOptions
+    ? tableOptions.reduce((to, opt) => {
+        to[opt] = props[opt];
+        return to;
+      }, {})
+    : {};
+  const setProps = {
+    ...setObjects,
+    tableOptions: tableOptionProps,
+    tableKey: props.tableKey,
+    alterColumns: props.alterColumns,
+    addColumns: props.addColumns,
+    columnSet: props.columnSet,
+    pageSize: props.pageSize,
+    defaultSortColumn: props.defaultSortColumn,
+    defaultSortDirection: props.defaultSortDirection,
+  };
+
+  return <Table {...setProps}>{props.children}</Table>;
+};
+
 export class Table extends Component {
   constructor(props) {
     super(props);

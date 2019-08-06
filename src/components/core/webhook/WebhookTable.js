@@ -1,15 +1,16 @@
-import React from 'react';
 import { fetchWebhooks } from '../../../apis';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 
 const dataSource = ({ scope, kappSlug }) => ({
   fn: fetchWebhooks,
   clientSideSearch: true,
-  params: () => ({
-    include: 'details',
-    scope,
-    kappSlug,
-  }),
+  params: () => [
+    {
+      include: 'details',
+      scope,
+      kappSlug,
+    },
+  ],
   transform: result => ({
     data: result.webhooks,
   }),
@@ -28,19 +29,10 @@ const columns = [
   { value: 'url', title: 'URL' },
 ];
 
-export const WebhookTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource(props)}
-    columns={columns}
-    addColumns={props.addColumns}
-    alterColumns={props.alterColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-  >
-    {props.children}
-  </Table>
-);
+export const WebhookTable = generateTable({
+  tableOptions: ['scope', 'kappSlug'],
+  columns,
+  dataSource,
+});
+
+WebhookTable.displayName = 'WebhookTable';
