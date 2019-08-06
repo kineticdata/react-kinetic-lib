@@ -1,6 +1,6 @@
 {
   "name": "@kineticdata/react",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "description": "A React library for the Kinetic Platform",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -87,7 +87,6 @@
     "eslint-watch": "^5.1.2",
     "faker": "^4.1.0",
     "font-awesome": "4.7.0",
-    "gatsby-theme-docz": "^2.0.0-rc.1",
     "gh-pages": "^2.0.1",
     "jest": "^23.0.0",
     "lint-staged": "^8.1.3",
