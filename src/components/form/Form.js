@@ -849,6 +849,7 @@ class FormImplComponent extends Component {
                             visible={field.get('visible')}
                             required={field.get('required')}
                             placeholder={field.get('placeholder')}
+                            helpText={field.get('helpText')}
                             enabled={field.get('enabled')}
                             dirty={field.get('dirty')}
                             valid={field.get('valid')}
