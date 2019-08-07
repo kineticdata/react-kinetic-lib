@@ -3,8 +3,6 @@ import isarray from 'isarray';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { dispatch, regHandlers, regSaga } from '../../store';
 
-const SINGLE_ARG_OPS = ['startsWith', 'equals', 'lt', 'gt', 'lteq', 'gteq'];
-
 export const hasData = data => isarray(data) || data instanceof List;
 
 export const isClientSide = tableData => {

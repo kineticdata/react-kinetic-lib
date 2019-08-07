@@ -39,11 +39,17 @@ const TableComponent = props => {
 const filterComponentByType = (components, type = 'text') =>
   type === 'boolean' ? components.BooleanFilter : components.TextFilter;
 
-const buildField = ({ filter, components, columnComponents, tableKey }) => {
+const buildField = ({
+  filter,
+  components,
+  columnComponents,
+  tableKey,
+  tableOptions,
+}) => {
   const value = filter.get('value');
   const name = filter.getIn(['column', 'value']);
   const title = filter.getIn(['column', 'title']);
-  const options = filter.getIn(['column', 'options'], () => [])();
+  const options = filter.getIn(['column', 'options'], () => [])(tableOptions);
   const onChange = value => {
     dispatch('SET_FILTER', {
       tableKey,
@@ -76,6 +82,7 @@ const buildFilterLayout = ({
   columnSet,
   loading,
   initializing,
+  tableOptions,
 }) => {
   // Add an onChange to each filter and convert it to a list for looping.
   const f = filters.map(filter =>
@@ -84,6 +91,7 @@ const buildFilterLayout = ({
       components,
       columnComponents,
       tableKey,
+      tableOptions,
     }),
   );
 
@@ -476,6 +484,7 @@ Table.propTypes = {
         'startsWith',
         'in',
         'between',
+        'timeline',
         'lt',
         'lteq',
         'gt',
