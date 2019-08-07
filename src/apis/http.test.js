@@ -4,7 +4,9 @@ import {
   corePath,
   handleErrors,
   paramBuilder,
+  operations,
 } from './http';
+import { List } from 'immutable';
 
 jest.mock('../helpers', () => ({
   bundle: {
@@ -144,6 +146,43 @@ describe('http module', () => {
       expect(
         paramBuilder({ limit: 'limit', foobar: 'foobar' }),
       ).not.toMatchObject({ include: undefined });
+    });
+  });
+
+  describe('search operations', () => {
+    test('startsWith', () => {
+      const op = operations.get('startsWith');
+      expect(op('field', 'value')).toEqual('field =* "value"');
+    });
+    test('equals', () => {
+      const op = operations.get('equals');
+      expect(op('field', 'value')).toEqual('field = "value"');
+    });
+    test('lt', () => {
+      const op = operations.get('lt');
+      expect(op('field', 'value')).toEqual('field < "value"');
+    });
+    test('lteq', () => {
+      const op = operations.get('lteq');
+      expect(op('field', 'value')).toEqual('field <= "value"');
+    });
+    test('gt', () => {
+      const op = operations.get('gt');
+      expect(op('field', 'value')).toEqual('field > "value"');
+    });
+    test('gteq', () => {
+      const op = operations.get('gteq');
+      expect(op('field', 'value')).toEqual('field >= "value"');
+    });
+    test('between', () => {
+      const op = operations.get('between');
+      expect(op('field', List(['v1', 'v2']))).toEqual(
+        'field BETWEEN ("v1", "v2")',
+      );
+    });
+    test('in', () => {
+      const op = operations.get('in');
+      expect(op('field', List(['v1', 'v2']))).toEqual('field IN ("v1", "v2")');
     });
   });
 });

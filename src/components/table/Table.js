@@ -44,11 +44,10 @@ const buildField = ({ filter, components, columnComponents, tableKey }) => {
   const name = filter.getIn(['column', 'value']);
   const title = filter.getIn(['column', 'title']);
   const options = filter.getIn(['column', 'options'], () => [])();
-  const onChange = (value, pos) => {
+  const onChange = value => {
     dispatch('SET_FILTER', {
       tableKey,
       filter: name,
-      pos,
       value,
     });
   };
@@ -472,7 +471,18 @@ Table.propTypes = {
       /** The value key that will be used to map the column to the data object. */
       value: PropTypes.string,
       /** Flag that determines if the column can be used as a filter. */
-      filter: PropTypes.oneOf(['equals', 'startsWith', 'in', 'between']),
+      filter: PropTypes.oneOf([
+        'equals',
+        'startsWith',
+        'in',
+        'between',
+        'lt',
+        'lteq',
+        'gt',
+        'gteq',
+      ]),
+      /** Initial value for the filter. */
+      initial: PropTypes.any,
       /** The type of column this is, typically used for determining the filter component. */
       type: PropTypes.oneOf(['text', 'boolean']),
       /** A function that returns an array of objects with the keys `value` and `label`. */

@@ -11,7 +11,7 @@ const BooleanFilter = ({ value, name, title, onChange }) => (
       type="text"
       name="filter-input"
       id={`filter-input-${name}`}
-      value={value.get(0)}
+      value={value}
       onChange={e => onChange(e.target.value)}
     >
       <option />

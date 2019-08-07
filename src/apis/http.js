@@ -105,18 +105,26 @@ export const corePath = ({ submission, kapp, form, datastore = false }) =>
     ? submissionPath({ submission, datastore })
     : formPath({ form, kapp, datastore });
 
-const startsWith = (field, value) => `${field} =* "${value}"`;
-const equals = (field, value) => `${field} = "${value}"`;
+export const operations = Map({
+  startsWith: (field, value) => `${field} =* "${value}"`,
+  equals: (field, value) => `${field} = "${value}"`,
+  lt: (field, value) => `${field} < "${value}"`,
+  lteq: (field, value) => `${field} <= "${value}"`,
+  gt: (field, value) => `${field} > "${value}"`,
+  gteq: (field, value) => `${field} >= "${value}"`,
+  in: (field, value) => `${field} IN (${value.map(v => `"${v}"`).join(', ')})`,
+  between: (field, value) =>
+    `${field} BETWEEN ("${value.get(0)}", "${value.get(1)}")`,
+});
 
 const searchFilters = filters => {
   const q = Map(filters)
-    .filter(filter => filter.getIn(['value', 0], '') !== '')
+    .filter(filter => filter.getIn(['value'], '') !== '')
     .map((filter, key) => {
       const mode = filter.getIn(['column', 'filter']);
+      const op = operations.get(mode, operations.get('equals'));
 
-      return mode === 'startsWith'
-        ? startsWith(key, filter.getIn(['value', 0]))
-        : equals(key, filter.getIn(['value', 0]));
+      return op(key, filter.get('value'));
     })
     .toIndexedSeq()
     .toList()

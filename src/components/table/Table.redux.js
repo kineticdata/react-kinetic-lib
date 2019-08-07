@@ -3,6 +3,8 @@ import isarray from 'isarray';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { dispatch, regHandlers, regSaga } from '../../store';
 
+const SINGLE_ARG_OPS = ['startsWith', 'equals', 'lt', 'gt', 'lteq', 'gteq'];
+
 export const hasData = data => isarray(data) || data instanceof List;
 
 export const isClientSide = tableData => {
@@ -38,6 +40,16 @@ const serverSidePrevPage = tableData =>
     .update('pageTokens', pt => pt.pop())
     .update(t => t.set('nextPageToken', t.get('pageTokens').last()));
 
+// should be '' except if op is between, or in
+const getInitialFilterValue = column =>
+  column.has('initial')
+    ? column.get('initial')
+    : column.get('filter') === 'between'
+    ? List(['', ''])
+    : column.get('filter') === 'in'
+    ? List()
+    : '';
+
 export const generateFilters = (tableKey, columns) =>
   Map(
     columns
@@ -47,7 +59,7 @@ export const generateFilters = (tableKey, columns) =>
           filters.set(
             column.get('value'),
             Map({
-              value: List(['', '']),
+              value: getInitialFilterValue(column),
               column,
             }),
           ),
@@ -157,8 +169,8 @@ regHandlers({
           .set('sortColumn', column)
       );
     }),
-  SET_FILTER: (state, { payload: { tableKey, filter, value, pos = 0 } }) =>
-    state.setIn(['tables', tableKey, 'filters', filter, 'value', pos], value),
+  SET_FILTER: (state, { payload: { tableKey, filter, value } }) =>
+    state.setIn(['tables', tableKey, 'filters', filter, 'value'], value),
   APPLY_FILTERS: (state, { payload: { tableKey } }) =>
     state.setIn(
       ['tables', tableKey, 'appliedFilters'],
@@ -199,19 +211,12 @@ export const clientSideRowFilter = filters => row => {
     : usableFilters.reduce((has, filter) => {
         const currentValue = filter.get('currentValue');
         const op = filter.getIn(['column', 'filter']);
-        const SINGLE_ARGS = [
-          'startsWith',
-          'equals',
-          'lt',
-          'gt',
-          'lteq',
-          'gteq',
-        ];
-        const value = SINGLE_ARGS.includes(op)
+
+        const value = SINGLE_ARG_OPS.includes(op)
           ? filter.getIn(['value', 0])
           : filter.get('value');
 
-        if (SINGLE_ARGS.includes(op)) {
+        if (SINGLE_ARG_OPS.includes(op)) {
           if (value && typeof value === 'string' && value !== '') {
             return op === 'startsWith'
               ? currentValue
