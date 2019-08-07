@@ -17,15 +17,35 @@ const dataSource = ({ scope, kappSlug }) => ({
 });
 
 const columns = [
-  { value: 'createdAt', title: 'Created At', filterable: true },
-  { value: 'createdBy', title: 'Created By', filterable: true },
+  {
+    value: 'createdAt',
+    title: 'Created At',
+    filter: 'equals',
+    type: 'text',
+  },
+  {
+    value: 'createdBy',
+    title: 'Created By',
+    filter: 'startsWith',
+    type: 'text',
+  },
   { value: 'authStrategy', title: 'Authentication Strategy' },
-  { value: 'event', title: 'Event', filterable: true },
+  { value: 'event', title: 'Event', filter: 'startsWith', type: 'text' },
   { value: 'filter', title: 'Filter' },
-  { value: 'name', title: 'Name', filterable: true },
-  { value: 'type', title: 'Type', filterable: true },
-  { value: 'updatedAt', title: 'Updated At', filterable: true },
-  { value: 'updatedBy', title: 'Updated By', filterable: true },
+  { value: 'name', title: 'Name', filter: 'startsWith', type: 'text' },
+  { value: 'type', title: 'Type', filter: 'startsWith', type: 'text' },
+  {
+    value: 'updatedAt',
+    title: 'Updated At',
+    filter: 'startsWith',
+    type: 'text',
+  },
+  {
+    value: 'updatedBy',
+    title: 'Updated By',
+    filter: 'startsWith',
+    type: 'text',
+  },
   { value: 'url', title: 'URL' },
 ];
 

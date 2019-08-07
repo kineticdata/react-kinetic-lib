@@ -14,25 +14,23 @@ const columns = [
   {
     value: 'clientId',
     title: 'Client ID',
-    filterable: true,
     sortable: true,
   },
   {
     value: 'description',
     title: 'Description',
-    filterable: false,
     sortable: false,
   },
   {
     value: 'name',
     title: 'Name',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'redirectUri',
     title: 'Redirect URI',
-    filterable: false,
     sortable: true,
   },
 ];

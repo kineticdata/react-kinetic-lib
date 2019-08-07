@@ -197,15 +197,35 @@ export const clientSideRowFilter = filters => row => {
   return usableFilters.size === 0
     ? true
     : usableFilters.reduce((has, filter) => {
-        const value = filter.get('value');
         const currentValue = filter.get('currentValue');
+        const op = filter.getIn(['column', 'filter']);
+        const SINGLE_ARGS = [
+          'startsWith',
+          'equals',
+          'lt',
+          'gt',
+          'lteq',
+          'gteq',
+        ];
+        const value = SINGLE_ARGS.includes(op)
+          ? filter.getIn(['value', 0])
+          : filter.get('value');
 
-        return value && typeof value === 'string' && value !== ''
-          ? currentValue
-              .toLocaleLowerCase()
-              .startsWith(value.toLocaleLowerCase())
-          : has;
-      }, false);
+        if (SINGLE_ARGS.includes(op)) {
+          if (value && typeof value === 'string' && value !== '') {
+            return op === 'startsWith'
+              ? currentValue
+                  .toLocaleLowerCase()
+                  .startsWith(value.toLocaleLowerCase())
+              : currentValue === value;
+          } else {
+            return has;
+          }
+        } else {
+          // No support for multiple argument operations yet.
+          return has;
+        }
+      }, true);
 };
 
 const applyClientSideFilters = (tableData, data) => {

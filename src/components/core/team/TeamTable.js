@@ -1,39 +1,12 @@
-import { Map } from 'immutable';
 import { generateTable } from '../../table/Table';
-import { fetchTeams } from '../../../apis';
-
-const startsWith = (field, value) => `${field} =* "${value}"`;
-const equals = (field, value) => `${field} = "${value}"`;
-const STARTS_WITH_FIELDS = [
-  'createdAt',
-  'localName',
-  'name',
-  'updatedAt',
-  'parentName',
-];
-
-const teamFilter = filters => {
-  const q = Map(filters)
-    .filter(filter => filter.value !== '')
-    .map((filter, key) =>
-      STARTS_WITH_FIELDS.includes(key)
-        ? startsWith(key, filter.value)
-        : equals(key, filter.value),
-    )
-    .toIndexedSeq()
-    .toList()
-    .join(' AND ');
-
-  return q.length > 0 ? { q } : {};
-};
+import { fetchTeams, generateCESearchParams } from '../../../apis';
 
 const dataSource = () => ({
   fn: fetchTeams,
-  params: ({ pageSize, filters }) => [
+  params: paramData => [
     {
+      ...generateCESearchParams(paramData),
       include: 'details',
-      limit: pageSize,
-      ...teamFilter(filters),
     },
   ],
   transform: result => ({
@@ -46,31 +19,34 @@ const columns = [
   {
     value: 'name',
     title: 'Name',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'updatedAt',
     title: 'Updated At',
-    filterable: true,
+    filter: 'equals',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'createdAt',
     title: 'Created At',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'description',
     title: 'Description',
-    filterable: true,
     sortable: true,
   },
   {
     value: 'slug',
     title: 'Slug',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
 ];

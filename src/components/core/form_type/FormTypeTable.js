@@ -20,7 +20,8 @@ const columns = [
   {
     value: 'name',
     title: 'Form Type',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: false,
   },
 ];

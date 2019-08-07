@@ -19,25 +19,25 @@ const columns = [
   {
     value: 'message',
     title: 'Message',
-    filterable: false,
     sortable: false,
   },
   {
     value: 'name',
     title: 'Name',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'rule',
     title: 'Rule',
-    filterable: false,
     sortable: false,
   },
   {
     value: 'type',
     title: 'Type',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
 ];

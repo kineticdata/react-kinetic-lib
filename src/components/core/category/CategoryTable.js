@@ -12,37 +12,37 @@ const columns = [
   {
     value: 'name',
     title: 'Name',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'slug',
     title: 'Slug',
-    filterable: false,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'createdAt',
     title: 'Created At',
-    filterable: false,
+    filter: 'equals',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'createdBy',
     title: 'Created By',
-    filterable: false,
     sortable: true,
   },
   {
     value: 'updatedAt',
     title: 'Updated At',
-    filterable: false,
     sortable: true,
   },
   {
     value: 'updatedBy',
     title: 'Updated By',
-    filterable: false,
     sortable: true,
   },
 ];
