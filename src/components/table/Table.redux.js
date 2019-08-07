@@ -201,6 +201,40 @@ regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
 regSaga(takeEvery('REFECTH_TABLE_DATA', calculateRowsTask));
 
+export const operations = Map({
+  startsWith: (cv, v) =>
+    cv.toLocaleLowerCase().startsWith(v.toLocaleLowerCase()),
+  equals: (cv, v) =>
+    typeof cv === 'string'
+      ? cv.toLocaleLowerCase() === v.toLocaleLowerCase()
+      : cv === v,
+  lt: (cv, v) => cv < v,
+  lteq: (cv, v) => cv <= v,
+  gt: (cv, v) => cv > v,
+  gteq: (cv, v) => cv >= v,
+  between: (cv, v) => cv >= v.get(0) && cv < v.get(1),
+  in: (cv, v) =>
+    v.reduce(
+      (found, value) =>
+        found ||
+        (typeof value === 'string'
+          ? cv.toLocaleLowerCase() === value.toLocaleLowerCase()
+          : cv === value),
+      false,
+    ),
+});
+
+export const isValueEmpty = value =>
+  value === null ||
+  typeof value === 'undefined' ||
+  (value instanceof List
+    ? value.isEmpty()
+      ? true
+      : value.reduce((_empty, v) => !v || v === '', false)
+    : typeof value === 'string'
+    ? value === ''
+    : !value);
+
 export const clientSideRowFilter = filters => row => {
   const usableFilters = filters
     .filter(filter => filter.get('value') !== '')
@@ -212,24 +246,9 @@ export const clientSideRowFilter = filters => row => {
         const currentValue = filter.get('currentValue');
         const op = filter.getIn(['column', 'filter']);
 
-        const value = SINGLE_ARG_OPS.includes(op)
-          ? filter.getIn(['value', 0])
-          : filter.get('value');
+        const value = filter.get('value');
 
-        if (SINGLE_ARG_OPS.includes(op)) {
-          if (value && typeof value === 'string' && value !== '') {
-            return op === 'startsWith'
-              ? currentValue
-                  .toLocaleLowerCase()
-                  .startsWith(value.toLocaleLowerCase())
-              : currentValue === value;
-          } else {
-            return has;
-          }
-        } else {
-          // No support for multiple argument operations yet.
-          return has;
-        }
+        return has || (isValueEmpty(value) ? has : op(currentValue, value));
       }, true);
 };
 
