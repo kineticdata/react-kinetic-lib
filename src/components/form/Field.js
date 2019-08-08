@@ -1,7 +1,7 @@
 import React from 'react';
 import t from 'prop-types';
 
-const typeToComponent = {
+export const typeToComponent = {
   text: 'TextField',
   'text-multi': 'TextMultiField',
   checkbox: 'CheckboxField',
@@ -28,8 +28,6 @@ export const Field = props => {
 };
 
 Field.propTypes = {
-  /** The key of the field. */
-  key: t.string,
   /** The name of the field defined in the forms config. */
   name: t.string,
   /** The id of the field. `formKey-fieldName` */
@@ -37,7 +35,7 @@ Field.propTypes = {
   /** The label of the field defined in the forms config. */
   label: t.string,
   /** The options of the field defined in the forms config. Set if the field is a select, radio or checkbox */
-  options: t.array,
+  options: t.object,
   /** The type of the field defined in the forms config. */
   type: t.string,
   /** The value of the field. */
@@ -65,9 +63,9 @@ Field.propTypes = {
   /** If the field has been touched. */
   touched: t.bool,
   /** Errors pertaining to the field. */
-  errors: t.array,
+  errors: t.object,
   /** Components provided to the field */
-  components: t.objectOf(t.array),
+  components: t.objectOf(t.object),
   /** Any render attributes defined in the fields config. */
   renderAttributes: t.object,
 };

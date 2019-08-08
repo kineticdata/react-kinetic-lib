@@ -1,19 +1,13 @@
-# react-kinetic-lib
+---
+name: Getting Started
+route: /getting-started
+menu: Overview
+---
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![NPM Version](https://img.shields.io/npm/v/@kineticdata/react/latest.svg)](https://opensource.org/licenses/MIT)
-
-
-A reactJS library that makes it super simple to interact with the [Kinetic Platform](https://kineticdata.com/platform/) within your sites and applications.
-
-## [Docs](https://kineticdata.github.io/react-kinetic-lib)
-Embedded in the React component library is an interactive styleguide and 
-documentation system that allows you to see the components and manipulate them. 
-
-### Run and View Docs Locally
-To use this styleguide simply run `yarn start` and connect to `http://localhost:6060`.
+# Getting Started
 
 ## Install
+
 Via [npm](https://npmjs.com/package/@kineticdata/react)
 
 ```bash
@@ -26,16 +20,25 @@ Via [Yarn](http://yarn.fyi/@kineticdata/react)
 yarn add @kineticdata/react
 ```
 
-## Quick Start
-### `KineticLib`
-The `KineticLib` Provider provides a global context to your site or applications connection to the Kinetic Platform.
+## Usage
 
-```js static
+The `KineticLib` Provider provides a global context to your site or applications connection to the Kinetic Platform and
+is required in order to render components within this library.
+
+### Basic Example
+
+Below is an example of how you would wrap your project with the `KineticLib` provider.
+
+```javascript
+/**
+ * /src/App.js
+ */
+
 import React from 'react';
 import { KineticLib } from '@kineticdata/react';
 import { Router, Route, Switch } from 'react-router-dom';
-import Space from './Space';  
-import Kapp from './Kapp'; // @see the Kapp component defined in `Kapp` example below
+import Space from './Space';
+import Kapp from './Kapp'; // see the Kapp component defined in `API` example below
 
 export const clientId =
   process.env.NODE_ENV === 'development'
@@ -64,10 +67,11 @@ const App = () => (
 export default App;
 ```
 
-### API's
+### Example API Usage
+
 All Service API's are exposed as functions to perform CRUD operations within the platform.
 
-```js static
+```javascript
 import React from 'react';
 import { fetchKapp } from '@kineticdata/react';
 
@@ -101,10 +105,3 @@ class Kapp extends React.Component {
 
 export default Kapp;
 ```
-
-## Development / Contributing
-
-See the [Contributing](/#/Contributing) page for information on developing the component library.
-
-## License
-MIT © [Kinetic Data](https://kineticdata.com)

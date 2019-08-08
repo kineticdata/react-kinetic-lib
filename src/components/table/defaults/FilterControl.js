@@ -1,4 +1,5 @@
 import React from 'react';
+import t from 'prop-types';
 import { I18n } from '../../core/i18n/I18n';
 
 export const FilterControl = ({ filters, onSearch, columnSet }) => (
@@ -23,5 +24,14 @@ export const FilterControl = ({ filters, onSearch, columnSet }) => (
     <button type="submit">Search</button>
   </form>
 );
+
+FilterControl.propTypes = {
+  /** The overall rows object, representing visible data in the table. */
+  filters: t.object,
+  /** The onSearch action to refetch data based on filters. */
+  onSearch: t.func,
+  /** The table columns object. */
+  columnSet: t.object,
+};
 
 export default FilterControl;

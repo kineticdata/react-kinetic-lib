@@ -1,151 +1,24 @@
 ---
-name: Fields
+name: Default Components
 menu: Form
-route: /form/fields
+route: /form/default-components
 ---
 
 import { Props } from 'docz';
-import { Field } from '../Field';
-import { PasswordField } from './PasswordField';
+import { Field, typeToComponent } from '../Field';
 
-# Fields
+# Default Form Components
 
-## Props
+The following components are simply default components and cannot be imported.
+These are examples of components that you can override.
 
-<Props of={Field} />
+All fields receive the same props which are documented on the [Form Page](/react-kinetic-lib/form#field-props).
 
-## Usage
-
-### Changing the field within your entire app
-
-The Password Field can be customized by creating a component in your project and then passing it to the KineticLib Provider in the root of your app.
-
-```javascript
-/**
- *  myproject/src/components/fields/PasswordField.js
- */
-const hasErrors = props => props.touched && props.errors.size > 0;
-
-export const PasswordField = props => {
-  return props.visible ? (
-    <div className="form-group">
-      {props.label && (
-        <label className="col-form-label" htmlFor={props.id}>
-          {props.label}
-          {props.required && <abbr title="required">*</abbr>}
-        </label>
-      )}
-
-      <input
-        className={`form-control${hasErrors(props) ? ' is-invalid' : ''}`}
-        type="password"
-        id={props.id}
-        name={props.name}
-        value={props.value}
-        placeholder={props.placeholder}
-        onBlur={props.onBlur}
-        onChange={props.onChange}
-        onFocus={props.onFocus}
-        disabled={!props.enabled}
-      />
-
-      {hasErrors(props) &&
-        props.errors.map(error => (
-          <span className="help-block text-danger" key={error}>
-            {error}
-          </span>
-        ))}
-    </div>
-  ) : null;
-};
-
-/**
- *  myproject/src/App.js
- */
-import { PasswordField } from './components/common/forms/PasswordField';
-import { KineticLib } from '@kineticdata/react';
-
-export const App = props => (
-  <KineticLib
-    components={{
-      fields: {
-        PasswordField,
-      },
-    }}
-  >
-    {'...yourAppHere'}
-  </KineticLib>
-);
-```
-
-### Changing the field for a single form
-
-The Password Field can be customized by creating a component in your project and then passing it to the KineticLib Provider in the root of your app.
-
-```javascript
-/**
- *  myproject/src/components/MyForm.js
- */
-const hasErrors = props => props.touched && props.errors.size > 0;
-
-const PasswordField = props => {
-  return props.visible ? (
-    <div className="form-group">
-      {props.label && (
-        <label className="col-form-label" htmlFor={props.id}>
-          {props.label}
-          {props.required && <abbr title="required">*</abbr>}
-        </label>
-      )}
-
-      <input
-        className={`form-control${hasErrors(props) ? ' is-invalid' : ''}`}
-        type="password"
-        id={props.id}
-        name={props.name}
-        value={props.value}
-        placeholder={props.placeholder}
-        onBlur={props.onBlur}
-        onChange={props.onChange}
-        onFocus={props.onFocus}
-        disabled={!props.enabled}
-      />
-
-      {hasErrors(props) &&
-        props.errors.map(error => (
-          <span className="help-block text-danger" key={error}>
-            {error}
-          </span>
-        ))}
-    </div>
-  ) : null;
-};
-
-export const MyForm = () => (
-  <Form
-    fields={[
-      {
-        name: 'passwordField',
-        label: 'My Password Field',
-        type: 'password',
-      },
-    ]}
-    alterFields={{
-      passwordField: {
-        component: PasswordField,
-      },
-    }}
-  />
-);
-```
-
-## Default Fields
-
-### Attributes
+## Attributes
 
 The Default Attributes Field rendered when a field type is `attributes`
 
-```javascript
+```js static
 import React, { Component, Fragment } from 'react';
 import { List, Map, Repeat } from 'immutable';
 
@@ -309,7 +182,7 @@ const availableAttributes = (options, value) =>
     .map(option => option.get('name'));
 ```
 
-### Checkbox
+## Checkbox
 
 The Default Checkbox Field rendered when a field type is `checkbox`
 
@@ -331,7 +204,7 @@ export const CheckboxField = props =>
   );
 ```
 
-### Password
+## Password
 
 The Default Password Field rendered when a field type is `password`
 
@@ -353,7 +226,7 @@ export const PasswordField = props =>
   );
 ```
 
-### Radio
+## Radio
 
 The Default Radio Field rendered when a field type is `radio`
 
@@ -380,7 +253,7 @@ export const RadioField = props =>
   );
 ```
 
-### Select
+## Select
 
 The Default Select Field rendered when a field type is `select`
 
@@ -408,7 +281,7 @@ export const SelectField = props =>
   );
 ```
 
-### Team
+## Team
 
 The Default Team Field rendered when a field type is `team`
 
