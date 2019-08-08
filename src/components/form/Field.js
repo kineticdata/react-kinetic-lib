@@ -18,13 +18,18 @@ export const typeToComponent = {
   'user-multi': 'UserMultiField',
 };
 
-export const Field = props => {
+export const Field = ({ helpText, ...props }) => {
   const componentName = typeToComponent[props.type] || 'TextField';
   const FieldImpl =
     props.components.field ||
     props.components.form[componentName] ||
     props.components.context.get(componentName);
-  return <FieldImpl {...props} />;
+  return (
+    <FieldImpl
+      {...props}
+      helpText={typeof helpText === 'function' ? helpText({}) : helpText}
+    />
+  );
 };
 
 Field.propTypes = {
