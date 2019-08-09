@@ -9,6 +9,25 @@ import {
   VALID_KAPP_CORE_STATES,
 } from '../../../apis';
 
+const processValues = (q, op, field, value, datastore) => {
+  if (op === 'startsWith' && datastore) {
+    return q.sw(field, value);
+  } else if (op === 'gt' && datastore) {
+    q.gt(field, value);
+  } else if (op === 'gteq' && datastore) {
+    q.gteq(field, value);
+  } else if (op === 'lt' && datastore) {
+    q.lt(field, value);
+  } else if (op === 'lteq' && datastore) {
+    q.lteq(field, value);
+  } else if (op === 'between' && datastore) {
+    q.between(field, value.get(0), value.get(1));
+  } else if (op === 'equals') {
+    return q.eq(field, value);
+  }
+  return q;
+};
+
 const submissionsFilter = (paramData, props) => {
   const { filters, pageSize } = paramData;
   const { include = ['details'], datastore = false } = props;
@@ -28,6 +47,15 @@ const submissionsFilter = (paramData, props) => {
 
     if (isValueEmpty(value)) {
       return q;
+    } else if (field === 'coreState') {
+      q.coreState(value);
+    } else if (field === 'values') {
+      console.log('filtering the values field');
+      value.reduce(
+        (q, f) =>
+          processValues(q, 'equals', `values[${f.field}]`, f.value, datastore),
+        q,
+      );
     } else if (op === 'startsWith' && datastore) {
       return q.sw(field, value);
     } else if (op === 'gt' && datastore) {
@@ -59,20 +87,28 @@ const submissionsFilter = (paramData, props) => {
   return { search: query.build(), datastore };
 };
 
-const dataSource = props => ({
-  fn: searchSubmissions,
-  params: paramData => [
-    {
-      kapp: props.kappSlug ? props.kappSlug : null,
-      form: props.formSlug,
-      ...submissionsFilter(paramData, props),
+const dataSource = props => {
+  return {
+    fn: searchSubmissions,
+    params: paramData => {
+      const formSlug = paramData.filters.getIn(['form', 'value'], '')
+        ? paramData.filters.getIn(['form', 'value'])
+        : props.formSlug;
+
+      return [
+        {
+          kapp: props.kappSlug ? props.kappSlug : null,
+          form: formSlug,
+          ...submissionsFilter(paramData, props),
+        },
+      ];
     },
-  ],
-  transform: result => ({
-    data: result.submissions,
-    nextPageToken: result.nextPageToken,
-  }),
-});
+    transform: result => ({
+      data: result.submissions,
+      nextPageToken: result.nextPageToken,
+    }),
+  };
+};
 
 const columns = [
   {
@@ -185,9 +221,16 @@ const columns = [
     type: 'text',
     sortable: false,
   },
+  // Used for filtering by values on the fly
   {
     value: 'values',
     title: 'Values',
+    sortable: false,
+  },
+  // Used for filtering by form slug on the fly.
+  {
+    value: 'form',
+    title: 'Form',
     sortable: false,
   },
 ];
