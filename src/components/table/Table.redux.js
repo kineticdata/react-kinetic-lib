@@ -222,16 +222,22 @@ export const operations = Map({
     ),
 });
 
-export const isValueEmpty = value =>
-  value === null ||
-  typeof value === 'undefined' ||
-  (value instanceof List
-    ? value.isEmpty()
-      ? true
-      : value.reduce((_empty, v) => !v || v === '', false)
-    : typeof value === 'string'
-    ? value === ''
-    : !value);
+export const isValueEmpty = value => {
+  if (value === null) {
+    return true;
+  } else if (typeof value === 'undefined') {
+    return true;
+  } else if (List.isList(value)) {
+    if (value.isEmpty()) {
+      return true;
+    } else {
+      return value.reduce((_empty, v) => !v || v === '', false);
+    }
+  } else if (value === '') {
+    return true;
+  }
+  return !value;
+};
 
 export const clientSideRowFilter = filters => row => {
   const usableFilters = filters
