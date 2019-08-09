@@ -109,6 +109,7 @@ const buildFilterLayout = ({
       columnSet={columnSet}
       loading={loading}
       initializing={initializing}
+      tableOptions={tableOptions}
     />
   );
 };
@@ -384,7 +385,7 @@ export const generateTable = ({ tableOptions, ...setObjects }) => props => {
     : {};
   const setProps = {
     ...setObjects,
-    tableOptions: tableOptionProps,
+    tableOptions: { ...props.tableOptions, ...tableOptionProps },
     tableKey: props.tableKey,
     alterColumns: props.alterColumns,
     addColumns: props.addColumns,
