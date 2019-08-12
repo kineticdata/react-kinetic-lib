@@ -17,7 +17,7 @@ import {
   closeTypeahead,
   findByEntityType,
   getCurrentIndentation,
-  getEntities2,
+  getEntitiesImpl,
   insertText,
   selectTypeaheadItem,
   startTypeahead,
@@ -75,7 +75,7 @@ export class CodeInput extends Component {
           },
           {
             strategy: (contentBlock, callback, contentState) => {
-              const entities = getEntities2(contentBlock, contentState);
+              const entities = getEntitiesImpl(contentBlock, contentState);
               const typeaheadStart = entities.isEmpty()
                 ? null
                 : entities.first().start;

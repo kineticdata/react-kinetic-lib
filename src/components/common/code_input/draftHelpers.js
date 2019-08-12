@@ -119,12 +119,12 @@ export const selectTypeaheadItem = self => (label, value, isTemplate) => () => {
 };
 
 export const getEntities = editorState =>
-  getEntities2(
+  getEntitiesImpl(
     editorState.getCurrentContent().getFirstBlock(),
     editorState.getCurrentContent(),
   );
 
-export const getEntities2 = (block, content) => {
+export const getEntitiesImpl = (block, content) => {
   const text = block.getText();
   const ranges = [];
   block.findEntityRanges(
