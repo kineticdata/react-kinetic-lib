@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { getIn } from 'immutable';
 
 export class VariableMenu extends Component {
   constructor(props) {
@@ -24,7 +23,7 @@ export class VariableMenu extends Component {
   }
 
   render() {
-    const { bindings, selected, onSelect } = this.props;
+    const { onSelect, options } = this.props;
     const { top, left } = this.state.position || {};
     return (
       !!top && (
@@ -34,17 +33,15 @@ export class VariableMenu extends Component {
           contentEditable={false}
         >
           <ul>
-            {getIn(bindings, selected)
-              .keySeq()
-              .map(label => (
-                <li
-                  key={label}
-                  onClick={onSelect(label)}
-                  style={{ userSelect: 'none' }}
-                >
-                  {label}
-                </li>
-              ))}
+            {options.map(([label, value]) => (
+              <li
+                key={label}
+                onClick={onSelect(label, value, this.props.template)}
+                style={{ userSelect: 'none', MozUserSelect: 'none' }}
+              >
+                {label}
+              </li>
+            ))}
           </ul>
         </div>
       )

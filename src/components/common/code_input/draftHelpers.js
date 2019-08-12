@@ -1,163 +1,243 @@
 import { EditorState, Modifier } from 'draft-js';
-import { getIn } from 'immutable';
+import { List, Map } from 'immutable';
 
-const TYPEAHEAD_ENTITY_TYPE = 'TYPEAHEAD';
+// DOMAIN-SPECIFIC HELPERS
 
-export const selectVariable = (editorState, value, bindings, isTemplate) => {
-  const contentState = editorState.getCurrentContent();
-  const contentBlock = contentState.getFirstBlock();
-  const { start, end, entity } = findTypeaheadEntity(
-    contentBlock,
-    contentState,
-  );
-  const selected = [...entity.getData().selected, value];
-  const variable = getIn(bindings, selected);
-  if (typeof variable === 'string') {
-    return EditorState.push(
-      editorState,
-      Modifier.replaceText(
-        contentState,
-        editorState
-          .getSelection()
-          .set('anchorOffset', start)
-          .set('focusOffset', end),
-        isTemplate ? '${' + variable + '}' : variable,
-      ),
-      'insert-characters',
-    );
-  } else {
-    const editorState1 = EditorState.push(
-      editorState,
-      Modifier.insertText(contentState, editorState.getSelection(), value),
-      'insert-characters',
-    );
-    const selection = editorState1.getSelection();
-    const contentState1 = editorState1
-      .getCurrentContent()
-      .createEntity(TYPEAHEAD_ENTITY_TYPE, 'IMMUTABLE', { selected });
-    return EditorState.forceSelection(
-      EditorState.push(
-        editorState1,
-        Modifier.applyEntity(
-          contentState1,
-          selection.set('anchorOffset', start),
-          contentState1.getLastCreatedEntityKey(),
-        ),
-        'apply-entity',
-      ),
-      selection,
-    );
-  }
+const filterEntity = { type: 'typeahead-filter', mutability: 'MUTABLE' };
+const startEntity = { type: 'typeahead-start', mutability: 'IMMUTABLE' };
+const selectionEntity = {
+  type: 'typeahead-selection',
+  mutability: 'IMMUTABLE',
 };
 
-export const checkFocus = editorState =>
-  editorState.getSelection().getHasFocus()
-    ? editorState
-    : closeVariableMenu(editorState);
+const matches = (searcher, text) =>
+  text.toLowerCase().indexOf(searcher.toLowerCase()) > -1;
 
-// Helper responsible for clearing the typeahead entity based on the selection
-// state. We do this by checking to see whether the current selection is within
-// or immediately following the entity range. This works when the entity is a
-// single "$" character and should work (or be close) when we want to filter
-// menu items because the filter text should also be within that entity range.
-export const checkTypeaheadEntity = editorState => {
-  const contentState = editorState.getCurrentContent();
-  const contentBlock = contentState.getFirstBlock();
-  const selection = editorState.getSelection();
-  const { start, end } = findTypeaheadEntity(contentBlock, contentState);
-  if (
-    start === null ||
-    (selection.getStartOffset() > start && selection.getEndOffset() <= end)
-  ) {
-    return editorState;
-  } else {
-    return closeVariableMenu(editorState);
-  }
-};
-
-export const openVariableMenu = editorState => {
-  const editorState1 = insert('$', closeVariableMenu(editorState));
-  const selection = editorState1.getSelection();
-  const dollarSelection = selection.set(
-    'anchorOffset',
-    selection.getAnchorOffset() - 1,
-  );
-  const contentState = editorState1.getCurrentContent();
-  const contentState1 = contentState.createEntity(
-    TYPEAHEAD_ENTITY_TYPE,
-    'IMMUTABLE',
-    { selected: [] },
-  );
-  const contentState2 = Modifier.applyEntity(
-    contentState,
-    dollarSelection,
-    contentState1.getLastCreatedEntityKey(),
-  );
-  const editorState2 = EditorState.push(
-    editorState1,
-    contentState2,
-    'apply-entity',
-  );
-  return EditorState.forceSelection(editorState2, selection);
-};
-
-export const closeVariableMenu = editorState => {
-  const contentState = editorState.getCurrentContent();
-  const contentBlock = contentState.getFirstBlock();
-  const selection = editorState.getSelection();
-  const { start, end } = findTypeaheadEntity(contentBlock, contentState);
-  const entitySelection = selection
-    .set('anchorOffset', start)
-    .set('focusOffset', end);
-  if (start !== null) {
-    // If you don't force the selection after clearing the entity, the entity
-    // range will be selected.
-    return EditorState.forceSelection(
-      EditorState.push(
-        editorState,
-        Modifier.applyEntity(contentState, entitySelection, null),
-        'apply-entity',
-      ),
-      selection,
-    );
-  } else {
-    return editorState;
-  }
-};
-
-export const findTypeaheadEntity = (contentBlock, contentState) => {
-  let i = 0;
-  const chars = contentBlock.getCharacterList();
-  while (i < chars.size && !isTypeaheadEntity(chars.get(i), contentState)) {
-    i++;
-  }
-  if (i === chars.size) {
-    return { start: null, end: null };
-  } else {
-    const start = i;
-    const entity = contentState.getEntity(chars.get(i).getEntity());
-    while (i < chars.size && isTypeaheadEntity(chars.get(i), contentState)) {
-      i++;
+export const applyFilter = bindings => editorState => {
+  const entities = getEntities(editorState);
+  if (!entities.isEmpty()) {
+    const selections = entities
+      .rest()
+      .butLast()
+      .map(entity => entity.text);
+    const { end, start, text: filter } = entities.last();
+    const options = bindings
+      .getIn(selections, Map())
+      .entrySeq()
+      .toList()
+      .filter(([label]) => matches(filter, label))
+      .map(([label, value]) => [
+        label,
+        typeof value === 'string' ? value : null,
+      ]);
+    if (options.size === 0 && entities.size === 2) {
+      return closeTypeahead(editorState);
+    } else {
+      const data = { options };
+      return applyEntity({ start, end, ...filterEntity, data })(editorState);
     }
-    return { start, end: i, entity };
+  }
+  return editorState;
+};
+
+export const checkSelectionPosition = editorState => {
+  const entities = getEntities(editorState);
+  if (!entities.isEmpty()) {
+    const selection = editorState.getSelection();
+    const start = entities.first().start;
+    const end = entities.last().end;
+    if (
+      selection.getStartOffset() <= start ||
+      selection.getEndOffset() >= end
+    ) {
+      return closeTypeahead(editorState);
+    }
+  }
+  return editorState;
+};
+
+export const checkFocus = editorState => {
+  const entities = getEntities(editorState);
+  if (!entities.isEmpty()) {
+    return editorState.getSelection().getHasFocus()
+      ? editorState
+      : closeTypeahead(editorState);
+  }
+  return editorState;
+};
+
+export const startTypeahead = editorState => {
+  return apply(
+    editorState,
+    insertText({ text: '$', entity: startEntity }),
+    insertText({ text: ' ', entity: filterEntity }),
+    select({ anchor: offset => offset - 1, focus: offset => offset - 1 }),
+  );
+};
+
+export const closeTypeahead = editorState => {
+  const entities = getEntities(editorState);
+  const start = entities.first().start;
+  const end = entities.last().end;
+  const text =
+    entities.size === 1
+      ? entities.first().text
+      : entities.size === 2
+      ? `${entities.first().text}${entities.last().text}`
+      : '';
+  return apply(
+    editorState,
+    select({ anchor: start, focus: end }),
+    insertText({ text }),
+  );
+};
+
+export const selectTypeaheadItem = self => (label, value, isTemplate) => () => {
+  const entities = getEntities(self.state.editorState);
+  if (!value) {
+    const { start, end } = entities.last();
+    self.onChange(
+      apply(
+        self.state.editorState,
+        select({ anchor: start, focus: end }),
+        insertText({ text: label, entity: selectionEntity }),
+        insertText({ text: ' ', entity: filterEntity }),
+        select({ anchor: offset => offset - 1, focus: offset => offset - 1 }),
+      ),
+    );
+  } else {
+    const start = entities.first().start;
+    const end = entities.last().end;
+    self.onChange(
+      apply(
+        self.state.editorState,
+        select({ anchor: start, focus: end }),
+        insertText({ text: isTemplate ? `\${${value}}` : value }),
+      ),
+    );
   }
 };
 
-const isTypeaheadEntity = (character, contentState) =>
-  character.getEntity() &&
-  contentState.getEntity(character.getEntity()).getType() ===
-    TYPEAHEAD_ENTITY_TYPE;
+export const getEntities = editorState =>
+  getEntities2(
+    editorState.getCurrentContent().getFirstBlock(),
+    editorState.getCurrentContent(),
+  );
 
-export const insert = (text, editorState) => {
-  const selection = editorState.getSelection();
+export const getEntities2 = (block, content) => {
+  const text = block.getText();
+  const ranges = [];
+  block.findEntityRanges(
+    character => character.getEntity(),
+    (start, end) => {
+      const key = block.getEntityAt(start);
+      const type = content.getEntity(key).getType();
+      ranges.push({ start, end, key, text: text.slice(start, end), type });
+    },
+  );
+  return List(ranges).map((range, i) => {
+    if (range.type === 'typeahead-filter') {
+      const start = i === 0 ? range.start : ranges[i - 1].end;
+      return {
+        ...range,
+        start,
+        text: text.slice(start, range.end).replace(/\s$/, ''),
+      };
+    } else {
+      return range;
+    }
+  });
+};
+
+// SUPER GENERIC HELPERS
+
+export const apply = (editorState, ...operations) =>
+  operations.reduce((reduction, op) => op(reduction), editorState);
+
+export const select = ({ anchor, focus }) => editorState => {
+  const selection0 = editorState.getSelection();
+  const selection1 = selection0.set(
+    'anchorOffset',
+    typeof anchor === 'number'
+      ? anchor
+      : typeof anchor === 'function'
+      ? anchor(selection0.getAnchorOffset())
+      : selection0.getAnchorOffset(),
+  );
+  const selection2 = selection1.set(
+    'focusOffset',
+    typeof focus === 'number'
+      ? focus
+      : typeof focus === 'function'
+      ? focus(selection1.getFocusOffset())
+      : selection1.getFocusOffset(),
+  );
+  return EditorState.forceSelection(editorState, selection2);
+};
+
+export const insertText = ({ text, entity }) => editorState => {
+  const modifier = editorState.getSelection().isCollapsed()
+    ? Modifier.insertText
+    : Modifier.replaceText;
+  const contentState0 = editorState.getCurrentContent();
+  const contentState1 = entity
+    ? contentState0.createEntity(entity.type, entity.mutability, entity.data)
+    : contentState0;
+  const contentState2 = modifier(
+    contentState1,
+    editorState.getSelection(),
+    text,
+    null,
+    entity ? contentState1.getLastCreatedEntityKey() : null,
+  );
   return EditorState.push(
     editorState,
-    selection.isCollapsed()
-      ? Modifier.insertText(editorState.getCurrentContent(), selection, text)
-      : Modifier.replaceText(editorState.getCurrentContent(), selection, text),
+    contentState2,
     'insert-characters',
+    true,
   );
 };
+
+export const applyEntity = ({
+  data,
+  end,
+  key,
+  mutability,
+  start,
+  type,
+}) => editorState => {
+  const contentState0 = editorState.getCurrentContent();
+  const contentState1 = key
+    ? contentState0
+    : contentState0.createEntity(type, mutability, data);
+  const entityKey = key || contentState1.getLastCreatedEntityKey();
+  const selection = editorState
+    .getSelection()
+    .set('anchorOffset', start)
+    .set('focusOffset', end);
+  const contentState2 = Modifier.applyEntity(
+    contentState1,
+    selection,
+    entityKey,
+  );
+  return EditorState.forceSelection(
+    EditorState.push(editorState, contentState2, 'apply-entity'),
+    editorState.getSelection(),
+  );
+};
+
+export const findByEntityType = type => (
+  contentBlock,
+  callback,
+  contentState,
+) =>
+  contentBlock.findEntityRanges(
+    char =>
+      char.getEntity()
+        ? contentState.getEntity(char.getEntity()).getType() === type
+        : false,
+    callback,
+  );
 
 export const getCurrentIndentation = (newLine, editorState) => {
   const text = editorState

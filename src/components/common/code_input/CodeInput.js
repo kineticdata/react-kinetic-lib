@@ -10,14 +10,17 @@ import detectIndent from 'detect-indent';
 import detectNewLine from 'detect-newline';
 import classNames from 'classnames';
 import {
+  apply,
+  applyFilter,
   checkFocus,
-  checkTypeaheadEntity,
-  closeVariableMenu,
-  findTypeaheadEntity,
+  checkSelectionPosition,
+  closeTypeahead,
+  findByEntityType,
   getCurrentIndentation,
-  insert,
-  openVariableMenu,
-  selectVariable,
+  getEntities2,
+  insertText,
+  selectTypeaheadItem,
+  startTypeahead,
 } from './draftHelpers';
 import { processCode, processTemplate } from './languageHelpers';
 import { VariableMenu } from './VariableMenu';
@@ -40,41 +43,45 @@ export class CodeInput extends Component {
         }),
         new CompositeDecorator([
           {
-            strategy: (contentBlock, callback, contentState) => {
-              const { start, end } = findTypeaheadEntity(
-                contentBlock,
-                contentState,
-              );
-              if (start !== null) {
-                callback(start, end);
-              }
-            },
-            component: ({ children, entityKey, contentState }) => {
-              const entityData = contentState.getEntity(entityKey).getData();
-              return (
-                <Fragment>
-                  <span
-                    className="variable-typeahead"
-                    id="variable-typeahead-target"
-                  >
-                    {children}
-                  </span>
-                  <VariableMenu
-                    bindings={this.props.bindings}
-                    selected={entityData.selected}
-                    onSelect={this.handleSelect}
-                    target="variable-typeahead-target"
-                  />
-                </Fragment>
-              );
-            },
+            strategy: findByEntityType('typeahead-start'),
+            component: props => (
+              <span className="code typeahead-start">{props.children}</span>
+            ),
+          },
+          {
+            strategy: findByEntityType('typeahead-selection'),
+            component: props => (
+              <span className="code typeahead-selection">{props.children}</span>
+            ),
+          },
+          {
+            strategy: findByEntityType('typeahead-filter'),
+            component: ({ children, entityKey, contentState }) => (
+              <Fragment>
+                <VariableMenu
+                  options={contentState.getEntity(entityKey).getData().options}
+                  onSelect={selectTypeaheadItem(this)}
+                  target="variable-typeahead-target"
+                  template={this.props.template}
+                />
+                <span
+                  className="code typeahead-filter"
+                  id="variable-typeahead-target"
+                >
+                  {children}
+                </span>
+              </Fragment>
+            ),
           },
           {
             strategy: (contentBlock, callback, contentState) => {
-              const {
-                start: typeaheadStart,
-                end: typeaheadEnd,
-              } = findTypeaheadEntity(contentBlock, contentState);
+              const entities = getEntities2(contentBlock, contentState);
+              const typeaheadStart = entities.isEmpty()
+                ? null
+                : entities.first().start;
+              const typeaheadEnd = entities.isEmpty()
+                ? null
+                : entities.last().end;
               const text =
                 typeaheadStart !== null
                   ? contentBlock.getText().slice(0, typeaheadStart) +
@@ -150,22 +157,25 @@ export class CodeInput extends Component {
   }
 
   onChange = (editorState, focus) => {
-    this.setState(
-      { editorState: checkFocus(checkTypeaheadEntity(editorState)) },
-      () => {
-        if (typeof this.props.onChange === 'function') {
-          this.props.onChange(
-            editorState
-              .getCurrentContent()
-              .getFirstBlock()
-              .getText(),
-          );
-        }
-        if (focus) {
-          this.focus();
-        }
-      },
+    const nextEditorState = apply(
+      editorState,
+      checkFocus,
+      checkSelectionPosition,
+      applyFilter(this.props.bindings),
     );
+    this.setState({ editorState: nextEditorState }, () => {
+      if (typeof this.props.onChange === 'function') {
+        this.props.onChange(
+          nextEditorState
+            .getCurrentContent()
+            .getFirstBlock()
+            .getText(),
+        );
+      }
+      if (focus) {
+        this.focus();
+      }
+    });
   };
 
   handleReturn = event => {
@@ -174,7 +184,9 @@ export class CodeInput extends Component {
       this.state.editorState,
     );
     this.onChange(
-      insert(this.newLine + currentIndentation, this.state.editorState),
+      insertText({ text: this.newLine + currentIndentation })(
+        this.state.editorState,
+      ),
     );
     return 'handled';
   };
@@ -191,27 +203,17 @@ export class CodeInput extends Component {
 
   handleKeyCommand = (command, editorState) => {
     if (command === 'open-variable-menu') {
-      this.onChange(openVariableMenu(editorState));
+      this.onChange(startTypeahead(editorState));
     }
     if (command === 'close-variable-menu') {
-      this.onChange(closeVariableMenu(editorState));
+      this.onChange(closeTypeahead(editorState));
     }
     if (command === 'insert-tab') {
-      this.onChange(insert(this.indentation, this.state.editorState));
+      this.onChange(
+        insertText({ text: this.indentation })(this.state.editorState),
+      );
     }
     return 'not-handled';
-  };
-
-  handleSelect = value => () => {
-    this.onChange(
-      selectVariable(
-        this.state.editorState,
-        value,
-        this.props.bindings,
-        this.props.template,
-      ),
-      true,
-    );
   };
 
   keyBindingFn = event => {
