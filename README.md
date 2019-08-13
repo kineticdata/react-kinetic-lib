@@ -11,7 +11,7 @@ Embedded in the React component library is an interactive styleguide and
 documentation system that allows you to see the components and manipulate them. 
 
 ### Run and View Docs Locally
-To use this styleguide simply run `yarn start` and connect to `http://localhost:6060`.
+To use this styleguide simply run `yarn start` and connect to `http://localhost:8000`.
 
 ## Install
 Via [npm](https://npmjs.com/package/@kineticdata/react)
