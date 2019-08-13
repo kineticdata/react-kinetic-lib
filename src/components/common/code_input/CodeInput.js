@@ -17,8 +17,11 @@ import {
   closeTypeahead,
   findByEntityType,
   getCurrentIndentation,
+  getEntities,
   getEntitiesImpl,
   insertText,
+  nextTypeaheadItem,
+  previousTypeaheadItem,
   selectTypeaheadItem,
   startTypeahead,
 } from './draftHelpers';
@@ -45,7 +48,13 @@ export class CodeInput extends Component {
           {
             strategy: findByEntityType('typeahead-start'),
             component: props => (
-              <span className="code typeahead-start">{props.children}</span>
+              <span
+                className={classNames('code typeahead-start', {
+                  'typeahead-tentative': this.state.typeaheadTentative,
+                })}
+              >
+                {props.children}
+              </span>
             ),
           },
           {
@@ -60,13 +69,15 @@ export class CodeInput extends Component {
               <Fragment>
                 <VariableMenu
                   options={contentState.getEntity(entityKey).getData().options}
-                  onSelect={selectTypeaheadItem(this)}
+                  active={contentState.getEntity(entityKey).getData().active}
+                  onSelect={selectTypeaheadItem(this, this.props.template)}
                   target="variable-typeahead-target"
-                  template={this.props.template}
                 />
                 <span
-                  className="code typeahead-filter"
                   id="variable-typeahead-target"
+                  className={classNames('code typeahead-filter', {
+                    'typeahead-tentative': this.state.typeaheadTentative,
+                  })}
                 >
                   {children}
                 </span>
@@ -156,6 +167,10 @@ export class CodeInput extends Component {
     }
   }
 
+  onMetaChange = editorState => {
+    this.setState({ editorState });
+  };
+
   onChange = (editorState, focus) => {
     const nextEditorState = apply(
       editorState,
@@ -163,32 +178,27 @@ export class CodeInput extends Component {
       checkSelectionPosition,
       applyFilter(this.props.bindings),
     );
-    this.setState({ editorState: nextEditorState }, () => {
-      if (typeof this.props.onChange === 'function') {
-        this.props.onChange(
-          nextEditorState
-            .getCurrentContent()
-            .getFirstBlock()
-            .getText(),
-        );
-      }
-      if (focus) {
-        this.focus();
-      }
-    });
-  };
-
-  handleReturn = event => {
-    const currentIndentation = getCurrentIndentation(
-      this.newLine,
-      this.state.editorState,
+    const entities = getEntities(nextEditorState);
+    this.setState(
+      {
+        editorState: nextEditorState,
+        typeaheadOpen: !entities.isEmpty(),
+        typeaheadTentative: entities.size === 2,
+      },
+      () => {
+        if (typeof this.props.onChange === 'function') {
+          this.props.onChange(
+            nextEditorState
+              .getCurrentContent()
+              .getFirstBlock()
+              .getText(),
+          );
+        }
+        if (focus) {
+          this.focus();
+        }
+      },
     );
-    this.onChange(
-      insertText({ text: this.newLine + currentIndentation })(
-        this.state.editorState,
-      ),
-    );
-    return 'handled';
   };
 
   handleDroppedFiles = (selection, [file]) => {
@@ -202,10 +212,10 @@ export class CodeInput extends Component {
   };
 
   handleKeyCommand = (command, editorState) => {
-    if (command === 'open-variable-menu') {
+    if (command === 'start-typeahead') {
       this.onChange(startTypeahead(editorState));
     }
-    if (command === 'close-variable-menu') {
+    if (command === 'close-typeahead') {
       this.onChange(closeTypeahead(editorState));
     }
     if (command === 'insert-tab') {
@@ -213,26 +223,67 @@ export class CodeInput extends Component {
         insertText({ text: this.indentation })(this.state.editorState),
       );
     }
+    if (command === 'insert-newline') {
+      const currentIndentation = getCurrentIndentation(
+        this.newLine,
+        this.state.editorState,
+      );
+      this.onChange(
+        insertText({ text: this.newLine + currentIndentation })(
+          this.state.editorState,
+        ),
+      );
+    }
+    if (command === 'select-typeahead-option') {
+      const { options, active } = getEntities(
+        this.state.editorState,
+      ).last().data;
+      selectTypeaheadItem(this, this.props.template)(...options.get(active))();
+    }
+    if (command === 'next-typeahead-option') {
+      this.onMetaChange(nextTypeaheadItem(editorState));
+    }
+    if (command === 'previous-typeahead-option') {
+      this.onMetaChange(previousTypeaheadItem(editorState));
+    }
     return 'not-handled';
   };
 
   keyBindingFn = event => {
-    if (
-      event.keyCode === 52 &&
-      event.shiftKey &&
-      !this.props.bindings.isEmpty()
-    ) {
-      return 'open-variable-menu';
-    } else if (event.keyCode === 27) {
-      event.preventDefault();
-      event.stopPropagation();
-      return 'close-variable-menu';
-    } else if (
-      event.keyCode === 9 &&
-      this.props.value.indexOf(this.newLine) > -1
-    ) {
-      event.preventDefault();
-      return 'insert-tab';
+    if (this.state.typeaheadOpen) {
+      if (event.keyCode === 27) {
+        event.preventDefault();
+        event.stopPropagation();
+        return 'close-typeahead';
+      } else if (event.keyCode === 9 || event.keyCode === 13) {
+        return 'select-typeahead-option';
+      } else if (
+        event.keyCode === 38 ||
+        (event.keyCode === 80 && event.ctrlKey)
+      ) {
+        return 'previous-typeahead-option';
+      } else if (
+        event.keyCode === 40 ||
+        (event.keyCode === 78 && event.ctrlKey)
+      ) {
+        return 'next-typeahead-option';
+      }
+    } else {
+      if (
+        event.keyCode === 52 &&
+        event.shiftKey &&
+        !this.props.bindings.isEmpty()
+      ) {
+        return 'start-typeahead';
+      } else if (
+        event.keyCode === 9 &&
+        this.props.value.indexOf(this.newLine) > -1
+      ) {
+        event.preventDefault();
+        return 'insert-tab';
+      } else if (event.keyCode === 13) {
+        return 'insert-newline';
+      }
     }
     return getDefaultKeyBinding(event);
   };
@@ -260,7 +311,6 @@ export class CodeInput extends Component {
           onFocus={this.props.onFocus}
           onBlur={this.props.onBlur}
           onChange={this.onChange}
-          handleReturn={this.handleReturn}
           ref={this.handleRef}
           handleDroppedFiles={this.handleDroppedFiles}
           handleKeyCommand={this.handleKeyCommand}

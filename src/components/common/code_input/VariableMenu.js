@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 
 export class VariableMenu extends Component {
   constructor(props) {
@@ -23,7 +24,7 @@ export class VariableMenu extends Component {
   }
 
   render() {
-    const { onSelect, options } = this.props;
+    const { onSelect, options, active } = this.props;
     const { top, left } = this.state.position || {};
     return (
       !!top && (
@@ -33,10 +34,11 @@ export class VariableMenu extends Component {
           contentEditable={false}
         >
           <ul>
-            {options.map(([label, value]) => (
+            {options.map(([label, value], i) => (
               <li
+                className={classNames({ active: i === active })}
                 key={label}
-                onClick={onSelect(label, value, this.props.template)}
+                onClick={onSelect(label, value)}
                 style={{ userSelect: 'none', MozUserSelect: 'none' }}
               >
                 {label}

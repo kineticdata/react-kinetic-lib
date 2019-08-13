@@ -88,7 +88,7 @@ const bindify = (fnName, staticMap, attributeDefinitions = List()) =>
   attributeDefinitions.reduce(
     (reduction, attrDef) =>
       reduction.set(
-        `Attribute - ${attrDef.get('name')}`,
+        `${attrDef.get('name')}  Attribute`,
         `${fnName}('attribute:${attrDef.get('name')}')`,
       ),
     staticMap.map(value => `${fnName}('${value}')`),

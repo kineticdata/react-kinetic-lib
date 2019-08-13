@@ -13,6 +13,30 @@ const selectionEntity = {
 const matches = (searcher, text) =>
   text.toLowerCase().indexOf(searcher.toLowerCase()) > -1;
 
+export const nextTypeaheadItem = editorState => {
+  const filterEntity = getEntities(editorState).last();
+  const options = filterEntity.data.options;
+  const active = (filterEntity.data.active + 1) % options.size;
+  return applyEntity({
+    ...filterEntity,
+    key: undefined,
+    data: { options, active },
+  })(editorState);
+};
+
+export const previousTypeaheadItem = editorState => {
+  const filterEntity = getEntities(editorState).last();
+  const options = filterEntity.data.options;
+  const n = options.size;
+  // https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
+  const active = (((filterEntity.data.active - 1) % n) + n) % n;
+  return applyEntity({
+    ...filterEntity,
+    key: undefined,
+    data: { options, active },
+  })(editorState);
+};
+
 export const applyFilter = bindings => editorState => {
   const entities = getEntities(editorState);
   if (!entities.isEmpty()) {
@@ -33,7 +57,7 @@ export const applyFilter = bindings => editorState => {
     if (options.size === 0 && entities.size === 2) {
       return closeTypeahead(editorState);
     } else {
-      const data = { options };
+      const data = { options, active: 0 };
       return applyEntity({ start, end, ...filterEntity, data })(editorState);
     }
   }
@@ -92,7 +116,10 @@ export const closeTypeahead = editorState => {
   );
 };
 
-export const selectTypeaheadItem = self => (label, value, isTemplate) => () => {
+export const selectTypeaheadItem = (self, isTemplate) => (
+  label,
+  value,
+) => () => {
   const entities = getEntities(self.state.editorState);
   if (!value) {
     const { start, end } = entities.last();
@@ -131,8 +158,15 @@ export const getEntitiesImpl = (block, content) => {
     character => character.getEntity(),
     (start, end) => {
       const key = block.getEntityAt(start);
-      const type = content.getEntity(key).getType();
-      ranges.push({ start, end, key, text: text.slice(start, end), type });
+      ranges.push({
+        start,
+        end,
+        key,
+        text: text.slice(start, end),
+        data: content.getEntity(key).getData(),
+        type: content.getEntity(key).getType(),
+        mutability: content.getEntity(key).getMutability(),
+      });
     },
   );
   return List(ranges).map((range, i) => {
