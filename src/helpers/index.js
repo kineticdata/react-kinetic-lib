@@ -1,6 +1,6 @@
 // Applies fn to each value in list, splitting it into a new list each time fn
 // returns a different value.
-import { List, Map, OrderedMap } from 'immutable';
+import { List, OrderedMap } from 'immutable';
 
 export const K = typeof window !== `undefined` ? window.K : () => {};
 export const bundle =
@@ -56,7 +56,7 @@ export const slugify = text =>
     // Remove all non-word chars
     .replace(/[^A-Za-z0-9\u0080-\u00FF-]+/g, '');
 
-const SUBMISSION_STATIC_BINDINGS = OrderedMap([
+const SUBMISSION_STATIC_BINDINGS = [
   ['Anonymous', 'anonymous'],
   ['Closed At', 'closedAt'],
   ['Closed By', 'closedBy'],
@@ -71,78 +71,127 @@ const SUBMISSION_STATIC_BINDINGS = OrderedMap([
   ['Type', 'type'],
   ['Updated At', 'updatedAt'],
   ['Updated By', 'updatedBy'],
-]);
-const TEAM_STATIC_BINDINGS = OrderedMap([['Name', 'name'], ['Slug', 'slug']]);
-const USER_STATIC_BINDINGS = OrderedMap([
+];
+const TEAM_STATIC_BINDINGS = [['Name', 'name'], ['Slug', 'slug']];
+const USER_STATIC_BINDINGS = [
   ['Display Name', 'displayName'],
   ['Email', 'email'],
   ['Invited By', 'invitedBy'],
   ['Space Admin', 'spaceAdmin'],
   ['Username', 'username'],
-]);
-const FORM_STATIC_BINDINGS = OrderedMap([['Name', 'name'], ['Slug', 'slug']]);
-const KAPP_STATIC_BINDINGS = OrderedMap([['Name', 'name'], ['Slug', 'slug']]);
-const SPACE_STATIC_BINDINGS = OrderedMap([['Name', 'name'], ['Slug', 'slug']]);
+];
+const FORM_STATIC_BINDINGS = [['Name', 'name'], ['Slug', 'slug']];
+const KAPP_STATIC_BINDINGS = [['Name', 'name'], ['Slug', 'slug']];
+const SPACE_STATIC_BINDINGS = [['Name', 'name'], ['Slug', 'slug']];
 
-const bindify = (fnName, staticMap, attributeDefinitions = List()) =>
+const bindify = (
+  fnName,
+  staticMap,
+  attributeDefinitions = List(),
+  attributeTag = 'Attribute',
+) =>
   attributeDefinitions.reduce(
     (reduction, attrDef) =>
-      reduction.set(
-        `${attrDef.get('name')}  Attribute`,
-        `${fnName}('attribute:${attrDef.get('name')}')`,
-      ),
-    staticMap.map(value => `${fnName}('${value}')`),
+      reduction.set(attrDef.get('name'), {
+        value: `${fnName}('attribute:${attrDef.get('name')}')`,
+        tags: [attributeTag],
+      }),
+    OrderedMap(staticMap).map(value => ({
+      value: `${fnName}('${value}')`,
+      tags: [],
+    })),
   );
 
 export const buildBindings = ({ space, kapp, form, scope }) =>
-  Map({
-    Values:
-      ['Submission', 'Datastore Submission'].includes(scope) &&
-      (form || kapp) &&
-      OrderedMap(
-        (form ? form.get('fields') : kapp.get('fields')).map(field => [
-          field.get('name'),
-          `values('${field.get('name')}')`,
-        ]),
-      ),
-    Submission:
-      ['Submission', 'Datastore Submission'].includes(scope) &&
-      bindify('submission', SUBMISSION_STATIC_BINDINGS),
-    Form:
-      ['Datastore Form', 'Datastore Submission', 'Form', 'Submission'].includes(
-        scope,
-      ) &&
-      bindify(
-        'form',
-        FORM_STATIC_BINDINGS,
-        scope.startsWith('Datastore')
-          ? space.get('datastoreFormAttributeDefinitions')
-          : kapp.get('formAttributeDefinitions'),
-      ),
-    Kapp:
-      ['Kapp', 'Form', 'Submission'].includes(scope) &&
-      bindify(
-        'kapp',
-        KAPP_STATIC_BINDINGS,
-        kapp.get('kappAttributeDefinitions'),
-      ),
-    Space: bindify(
-      'space',
-      SPACE_STATIC_BINDINGS,
-      space.get('spaceAttributeDefinitions'),
-    ),
-    Team:
-      scope === 'Team' &&
-      bindify(
-        'team',
-        TEAM_STATIC_BINDINGS,
-        space.get('teamAttributeDefinitions'),
-      ),
-    User:
-      scope === 'User' &&
-      bindify(
-        'user',
-        USER_STATIC_BINDINGS,
-        space.get('userAttributeDefinitions'),
-      ),
-  }).filter(value => !!value);
+  OrderedMap([
+    [
+      'Form',
+      {
+        children:
+          [
+            'Datastore Form',
+            'Datastore Submission',
+            'Form',
+            'Submission',
+          ].includes(scope) &&
+          bindify(
+            'form',
+            FORM_STATIC_BINDINGS,
+            scope.startsWith('Datastore')
+              ? space.get('datastoreFormAttributeDefinitions')
+              : kapp.get('formAttributeDefinitions'),
+          ),
+      },
+    ],
+    [
+      'Kapp',
+      {
+        children:
+          ['Kapp', 'Form', 'Submission'].includes(scope) &&
+          bindify(
+            'kapp',
+            KAPP_STATIC_BINDINGS,
+            kapp.get('kappAttributeDefinitions'),
+          ),
+      },
+    ],
+    [
+      'Space',
+      {
+        children: bindify(
+          'space',
+          SPACE_STATIC_BINDINGS,
+          space.get('spaceAttributeDefinitions'),
+        ),
+      },
+    ],
+    [
+      'Submission',
+      {
+        children:
+          ['Submission', 'Datastore Submission'].includes(scope) &&
+          bindify('submission', SUBMISSION_STATIC_BINDINGS),
+      },
+    ],
+    [
+      'Team',
+      {
+        children:
+          scope === 'Team' &&
+          bindify(
+            'team',
+            TEAM_STATIC_BINDINGS,
+            space.get('teamAttributeDefinitions'),
+          ),
+      },
+    ],
+    [
+      'User',
+      {
+        children:
+          scope === 'User' &&
+          bindify(
+            'user',
+            USER_STATIC_BINDINGS,
+            space.get('userAttributeDefinitions'),
+          ),
+      },
+    ],
+    [
+      'Values',
+      {
+        children:
+          ['Submission', 'Datastore Submission'].includes(scope) &&
+          (form || kapp) &&
+          OrderedMap(
+            (form ? form.get('fields') : kapp.get('fields')).map(field => [
+              field.get('name'),
+              {
+                value: `values('${field.get('name')}')`,
+                tags: [],
+              },
+            ]),
+          ),
+      },
+    ],
+  ]).filter(o => o.children || o.value);

@@ -1,5 +1,5 @@
 import { EditorState, Modifier } from 'draft-js';
-import { List, Map } from 'immutable';
+import { List } from 'immutable';
 
 // DOMAIN-SPECIFIC HELPERS
 
@@ -37,6 +37,9 @@ export const previousTypeaheadItem = editorState => {
   })(editorState);
 };
 
+export const traverseBindings = (bindings, [head, ...tail]) =>
+  head ? traverseBindings(bindings.get(head).children, tail) : bindings;
+
 export const applyFilter = bindings => editorState => {
   const entities = getEntities(editorState);
   if (!entities.isEmpty()) {
@@ -45,15 +48,14 @@ export const applyFilter = bindings => editorState => {
       .butLast()
       .map(entity => entity.text);
     const { end, start, text: filter } = entities.last();
-    const options = bindings
-      .getIn(selections, Map())
+    const options = traverseBindings(bindings, selections.toArray())
       .entrySeq()
       .toList()
       .filter(([label]) => matches(filter, label))
-      .map(([label, value]) => [
+      .map(([label, value]) => ({
         label,
-        typeof value === 'string' ? value : null,
-      ]);
+        ...value,
+      }));
     if (options.size === 0 && entities.size === 2) {
       return closeTypeahead(editorState);
     } else {

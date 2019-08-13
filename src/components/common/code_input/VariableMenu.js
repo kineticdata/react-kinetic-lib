@@ -34,14 +34,23 @@ export class VariableMenu extends Component {
           contentEditable={false}
         >
           <ul>
-            {options.map(([label, value], i) => (
+            {options.map(({ label, children, value, tags }, i) => (
               <li
                 className={classNames({ active: i === active })}
                 key={label}
                 onClick={onSelect(label, value)}
                 style={{ userSelect: 'none', MozUserSelect: 'none' }}
               >
-                {label}
+                <span>{label}</span>
+                <span className="tags">
+                  {tags &&
+                    tags.map((tag, i) => (
+                      <span key={i} className="tag">
+                        {tag}
+                      </span>
+                    ))}
+                </span>
+                {children && <i className="fa fa-chevron-right"></i>}
               </li>
             ))}
           </ul>

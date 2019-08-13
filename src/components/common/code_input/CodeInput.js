@@ -238,7 +238,8 @@ export class CodeInput extends Component {
       const { options, active } = getEntities(
         this.state.editorState,
       ).last().data;
-      selectTypeaheadItem(this, this.props.template)(...options.get(active))();
+      const { label, value } = options.get(active);
+      selectTypeaheadItem(this, this.props.template)(label, value)();
     }
     if (command === 'next-typeahead-option') {
       this.onMetaChange(nextTypeaheadItem(editorState));
