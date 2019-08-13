@@ -21,7 +21,7 @@ const TableComponent = props => {
   if (props.configured) {
     const { children, loading, initializing, rows } = props;
     const table = buildTable(props);
-    const filter = buildFilterControl(props);
+    const filter = buildFilterLayout(props);
     const pagination = buildPaginationControl(props);
 
     return children({
@@ -36,33 +36,84 @@ const TableComponent = props => {
   return null;
 };
 
-const buildFilterControl = ({
+const filterComponentByType = (components, type = 'text') =>
+  type === 'boolean' ? components.BooleanFilter : components.TextFilter;
+
+const buildField = ({
+  filter,
   components,
+  columnComponents,
+  tableKey,
+  tableOptions,
+}) => {
+  const value = filter.get('value');
+  const name = filter.getIn(['column', 'value']);
+  const title = filter.getIn(['column', 'title']);
+  const options = filter.getIn(['column', 'options'], () => [])(tableOptions);
+  const onChange = value => {
+    dispatch('SET_FILTER', {
+      tableKey,
+      filter: name,
+      value,
+    });
+  };
+
+  const Filter = columnComponents.getIn(
+    [name, 'Filter'],
+    filterComponentByType(components, filter.getIn(['column', 'type'])),
+  );
+
+  return (
+    <Filter
+      value={value}
+      name={name}
+      title={title}
+      onChange={onChange}
+      options={options}
+    />
+  );
+};
+
+const buildFilterLayout = ({
+  components,
+  columnComponents,
   filters,
+  appliedFilters,
   tableKey,
   columnSet,
   loading,
   initializing,
+  tableOptions,
 }) => {
   // Add an onChange to each filter and convert it to a list for looping.
-  const f = filters.toIndexedSeq().toList();
+  const f = filters.map(filter =>
+    buildField({
+      appliedFilters,
+      filter,
+      components,
+      columnComponents,
+      tableKey,
+      tableOptions,
+    }),
+  );
 
   const onSearch = e => {
     e.preventDefault();
     dispatch('APPLY_FILTERS', { tableKey });
   };
 
-  const FilterControl = components.FilterControl;
+  const FilterLayout = components.FilterLayout;
+
   return (
-    FilterControl && (
-      <FilterControl
-        filters={f}
-        onSearch={onSearch}
-        columnSet={columnSet}
-        loading={loading}
-        initializing={initializing}
-      />
-    )
+    <FilterLayout
+      filters={f}
+      appliedFilters={appliedFilters}
+      onSearch={onSearch}
+      columnSet={columnSet}
+      loading={loading}
+      initializing={initializing}
+      tableOptions={tableOptions}
+    />
   );
 };
 
@@ -218,7 +269,15 @@ export const buildTableBodyRows = props => {
 };
 
 export const buildTableBodyCells = (props, row, _rowIndex) => {
-  const { components, rows, columns, columnSet, columnComponents } = props;
+  const {
+    tableKey,
+    components,
+    rows,
+    columns,
+    columnSet,
+    columnComponents,
+    tableOptions,
+  } = props;
 
   return fromColumnSet(columns, columnSet).map((column, index) => {
     const BodyCell = columnComponents.getIn(
@@ -231,11 +290,13 @@ export const buildTableBodyCells = (props, row, _rowIndex) => {
     return (
       <KeyWrapper key={`column-${index}`}>
         <BodyCell
+          tableKey={tableKey}
           row={row}
           index={index}
           value={value}
           rows={rows.toJS()}
           column={column}
+          tableOptions={tableOptions}
         />
       </KeyWrapper>
     );
@@ -318,6 +379,32 @@ export const extractColumnComponents = columns =>
       Map(),
     );
 
+export const generateTable = ({ tableOptions, ...setObjects }) => props => {
+  const tableOptionProps = tableOptions
+    ? tableOptions.reduce((to, opt) => {
+        to[opt] = props[opt];
+        return to;
+      }, {})
+    : {};
+  const setProps = {
+    ...setObjects,
+    tableOptions: { ...props.tableOptions, ...tableOptionProps },
+    tableKey: props.tableKey,
+    alterColumns: props.alterColumns,
+    addColumns: props.addColumns,
+    columnSet: props.columnSet,
+    pageSize: props.pageSize,
+    defaultSortColumn: props.defaultSortColumn,
+    defaultSortDirection: props.defaultSortDirection,
+  };
+
+  return (
+    <Table {...props} {...setProps}>
+      {props.children}
+    </Table>
+  );
+};
+
 export class Table extends Component {
   constructor(props) {
     super(props);
@@ -396,7 +483,23 @@ Table.propTypes = {
       /** The value key that will be used to map the column to the data object. */
       value: PropTypes.string,
       /** Flag that determines if the column can be used as a filter. */
-      filterable: PropTypes.bool,
+      filter: PropTypes.oneOf([
+        'equals',
+        'startsWith',
+        'in',
+        'between',
+        'timeline',
+        'lt',
+        'lteq',
+        'gt',
+        'gteq',
+      ]),
+      /** Initial value for the filter. */
+      initial: PropTypes.any,
+      /** The type of column this is, typically used for determining the filter component. */
+      type: PropTypes.oneOf(['text', 'boolean']),
+      /** A function that returns an array of objects with the keys `value` and `label`. */
+      options: PropTypes.func,
       /** Flag that determines if the column is sortable.*/
       sortable: PropTypes.bool,
       /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
@@ -404,6 +507,7 @@ Table.propTypes = {
         HeaderCell: PropTypes.func,
         BodyCell: PropTypes.func,
         FooterCell: PropTypes.func,
+        Filter: PropTypes.func,
       }),
     }),
   ).isRequired,
@@ -423,6 +527,7 @@ Table.propTypes = {
         HeaderCell: PropTypes.func,
         BodyCell: PropTypes.func,
         FooterCell: PropTypes.func,
+        Filter: PropTypes.func,
       }),
     }),
   ),
@@ -434,7 +539,12 @@ Table.propTypes = {
   components: PropTypes.shape({
     /** Override the default table layout, analogous to `<table>`. */
     TableLayout: PropTypes.func,
-
+    /** Overrides the default filter layout. */
+    FilterLayout: PropTypes.func,
+    /** Overrides the default text type filter input */
+    TextFilter: PropTypes.func,
+    /** Overrides the default boolean type filter input */
+    BooleanFilter: PropTypes.func,
     /** Override the table header, analogous to `<thead>`. */
     Header: PropTypes.func,
     /** Override the table header row, analogous to the `<tr>` in `<thead>`. */

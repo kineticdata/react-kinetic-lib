@@ -9,7 +9,12 @@ export { onLogout } from './common/authentication/AuthenticationContainer';
 export { mountForm, resetForm, unmountForm } from './form/Form';
 
 // Table
-export { mountTable, unmountTable, refetchTable } from './table/Table.redux';
+export {
+  mountTable,
+  unmountTable,
+  refetchTable,
+  isValueEmpty,
+} from './table/Table.redux';
 export { Table } from './table/Table';
 
 // Discussions

@@ -3,9 +3,14 @@ import qs from 'qs';
 import { bundle } from '../../helpers';
 import { handleErrors, headerBuilder, paramBuilder } from '../http';
 
-const VALID_TIMELINES = ['closedAt', 'createdAt', 'submittedAt', 'updatedAt'];
-const VALID_KAPP_CORE_STATES = ['Draft', 'Submitted', 'Closed'];
-const VALID_DS_CORE_STATES = ['Draft', 'Submitted'];
+export const VALID_TIMELINES = [
+  'closedAt',
+  'createdAt',
+  'submittedAt',
+  'updatedAt',
+];
+export const VALID_KAPP_CORE_STATES = ['Draft', 'Submitted', 'Closed'];
+export const VALID_DS_CORE_STATES = ['Draft', 'Submitted'];
 
 const getValidCoreStates = (datastore = false) =>
   datastore ? VALID_DS_CORE_STATES : VALID_KAPP_CORE_STATES;

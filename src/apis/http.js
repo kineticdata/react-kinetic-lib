@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Map } from 'immutable';
 import { bundle } from '../helpers';
 
 // The `X-Kinetic-AuthAssumed` header was added in version 2.2 of Kinetic Core.
@@ -103,3 +104,52 @@ export const corePath = ({ submission, kapp, form, datastore = false }) =>
   submission
     ? submissionPath({ submission, datastore })
     : formPath({ form, kapp, datastore });
+
+export const operations = Map({
+  startsWith: (field, value) => `${field} =* "${value}"`,
+  equals: (field, value) => `${field} = "${value}"`,
+  lt: (field, value) => `${field} < "${value}"`,
+  lteq: (field, value) => `${field} <= "${value}"`,
+  gt: (field, value) => `${field} > "${value}"`,
+  gteq: (field, value) => `${field} >= "${value}"`,
+  in: (field, value) => `${field} IN (${value.map(v => `"${v}"`).join(', ')})`,
+  between: (field, value) =>
+    `${field} BETWEEN ("${value.get(0)}", "${value.get(1)}")`,
+});
+
+const searchFilters = filters => {
+  const q = Map(filters)
+    .filter(filter => filter.getIn(['value'], '') !== '')
+    .map((filter, key) => {
+      const mode = filter.getIn(['column', 'filter']);
+      const op = operations.get(mode, operations.get('equals'));
+
+      return op(key, filter.get('value'));
+    })
+    .toIndexedSeq()
+    .toList()
+    .join(' AND ');
+
+  return q.length > 0 ? { q } : {};
+};
+
+const generateSortParams = (sortColumn, sortDirection) =>
+  sortColumn
+    ? {
+        orderBy: sortColumn,
+        direction: sortDirection,
+      }
+    : {};
+
+export const generateCESearchParams = ({
+  pageSize,
+  filters,
+  sortColumn,
+  sortDirection,
+  nextPageToken,
+}) => ({
+  limit: pageSize,
+  nextPageToken,
+  ...searchFilters(filters),
+  ...generateSortParams(sortColumn, sortDirection),
+});

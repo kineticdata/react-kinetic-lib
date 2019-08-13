@@ -1,51 +1,33 @@
-import React from 'react';
-import { Map } from 'immutable';
-import { Table } from '../../table/Table';
-import { fetchKapps } from '../../../apis';
+import { generateTable } from '../../table/Table';
+import { fetchKapps, generateCESearchParams } from '../../../apis';
 
-const startsWith = (field, value) => `${field} =* "${value}"`;
-const equals = (field, value) => `${field} = "${value}"`;
-const STARTS_WITH_FIELDS = ['slug', 'name'];
-
-const kappFilter = filters => {
-  const q = Map(filters)
-    .filter(filter => filter.value !== '')
-    .map((filter, key) =>
-      STARTS_WITH_FIELDS.includes(key)
-        ? startsWith(key, filter.value)
-        : equals(key, filter.value),
-    )
-    .toIndexedSeq()
-    .toList()
-    .join(' AND ');
-
-  return q.length > 0 ? { q } : {};
-};
-
-const dataSource = {
+const dataSource = () => ({
   fn: fetchKapps,
-  params: ({ pageSize, filters }) => ({
-    include: 'details',
-    limit: pageSize,
-    ...kappFilter(filters),
-  }),
+  params: paramData => [
+    {
+      include: 'details',
+      ...generateCESearchParams(paramData),
+    },
+  ],
   transform: result => ({
     data: result.kapps,
     nextPageToken: result.nextPageToken,
   }),
-};
+});
 
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'slug',
     title: 'Slug',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
@@ -82,25 +64,12 @@ const columns = [
   { value: 'resetPasswordPage', title: 'Reset Password Page' },
 ];
 
-export const KappTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource}
-    columns={columns}
-    alterColumns={props.alterColumns}
-    addColumns={props.addColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-  >
-    {props.children}
-  </Table>
-);
+export const KappTable = generateTable({
+  columns,
+  dataSource,
+});
 
+KappTable.displayName = 'KappTable';
 KappTable.defaultProps = {
   columns,
 };
-
-KappTable.STARTS_WITH_FIELDS = STARTS_WITH_FIELDS;

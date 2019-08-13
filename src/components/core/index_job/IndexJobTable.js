@@ -1,13 +1,13 @@
 import React from 'react';
 import { fetchBackgroundJobs } from '../../../apis';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 
-const dataSource = {
+const dataSource = () => ({
   fn: fetchBackgroundJobs,
   clientSideSearch: true,
-  params: () => ({}),
+  params: () => [],
   transform: result => ({ data: result.backgroundJobs }),
-};
+});
 
 const columns = [
   {
@@ -40,20 +40,9 @@ const columns = [
   { value: 'type', title: 'Type' },
 ];
 
-export const IndexJobTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource}
-    columns={columns}
-    addColumns={props.addColumns}
-    alterColumns={props.alterColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-    sortable={false}
-  >
-    {props.children}
-  </Table>
-);
+export const IndexJobTable = generateTable({
+  dataSource,
+  columns,
+  sortable: false,
+});
+IndexJobTable.displayName = 'IndexJobTable';

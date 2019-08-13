@@ -38,25 +38,27 @@ const serverSidePrevPage = tableData =>
     .update('pageTokens', pt => pt.pop())
     .update(t => t.set('nextPageToken', t.get('pageTokens').last()));
 
+// should be '' except if op is between, or in
+const getInitialFilterValue = column =>
+  column.has('initial')
+    ? column.get('initial')
+    : column.get('filter') === 'between'
+    ? List(['', ''])
+    : column.get('filter') === 'in'
+    ? List()
+    : '';
+
 export const generateFilters = (tableKey, columns) =>
   Map(
     columns
-      .filter(c => c.get('filterable'))
+      .filter(c => c.get('filter'))
       .reduce(
         (filters, column) =>
           filters.set(
             column.get('value'),
             Map({
-              value: '',
-              column: column.get('value'),
-              title: column.get('title'),
-              onChange: value => {
-                dispatch('SET_FILTER', {
-                  tableKey,
-                  filter: column.get('value'),
-                  value,
-                });
-              },
+              value: getInitialFilterValue(column),
+              column,
             }),
           ),
 
@@ -85,6 +87,7 @@ regHandlers({
         pageSize = 25,
         defaultSortColumn = null,
         defaultSortDirection = 'desc',
+        tableOptions,
       },
     },
   ) =>
@@ -97,6 +100,7 @@ regHandlers({
           Map({
             data: hasData(data) ? List(data) : data,
             dataSource,
+            tableOptions,
             columns,
             rows: List(),
 
@@ -195,13 +199,45 @@ regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
 regSaga(takeEvery('REFECTH_TABLE_DATA', calculateRowsTask));
 
-const generateSortParams = tableData =>
-  tableData.get('sortColumn')
-    ? {
-        orderBy: tableData.getIn(['sortColumn', 'value']),
-        direction: tableData.get('sortDirection'),
-      }
-    : {};
+export const operations = Map({
+  startsWith: (cv, v) =>
+    cv.toLocaleLowerCase().startsWith(v.toLocaleLowerCase()),
+  equals: (cv, v) =>
+    typeof cv === 'string'
+      ? cv.toLocaleLowerCase() === v.toLocaleLowerCase()
+      : cv === v,
+  lt: (cv, v) => cv < v,
+  lteq: (cv, v) => cv <= v,
+  gt: (cv, v) => cv > v,
+  gteq: (cv, v) => cv >= v,
+  between: (cv, v) => cv >= v.get(0) && cv < v.get(1),
+  in: (cv, v) =>
+    v.reduce(
+      (found, value) =>
+        found ||
+        (typeof value === 'string'
+          ? cv.toLocaleLowerCase() === value.toLocaleLowerCase()
+          : cv === value),
+      false,
+    ),
+});
+
+export const isValueEmpty = value => {
+  if (value === null) {
+    return true;
+  } else if (typeof value === 'undefined') {
+    return true;
+  } else if (List.isList(value)) {
+    if (value.isEmpty()) {
+      return true;
+    } else {
+      return value.reduce((_empty, v) => !v || v === '', false);
+    }
+  } else if (value === '') {
+    return true;
+  }
+  return !value;
+};
 
 export const clientSideRowFilter = filters => row => {
   const usableFilters = filters
@@ -211,15 +247,13 @@ export const clientSideRowFilter = filters => row => {
   return usableFilters.size === 0
     ? true
     : usableFilters.reduce((has, filter) => {
-        const value = filter.get('value');
         const currentValue = filter.get('currentValue');
+        const op = filter.getIn(['column', 'filter']);
 
-        return value && typeof value === 'string' && value !== ''
-          ? currentValue
-              .toLocaleLowerCase()
-              .startsWith(value.toLocaleLowerCase())
-          : has;
-      }, false);
+        const value = filter.get('value');
+
+        return has || (isValueEmpty(value) ? has : op(currentValue, value));
+      }, true);
 };
 
 const applyClientSideFilters = (tableData, data) => {
@@ -239,7 +273,7 @@ const applyClientSideFilters = (tableData, data) => {
 };
 
 const calculateRows = tableData => {
-  const dataSource = tableData.get('dataSource');
+  const dataSource = tableData.get('dataSource')(tableData.get('tableOptions'));
   const data = tableData.get('data');
 
   if (isClientSide(tableData)) {
@@ -248,16 +282,16 @@ const calculateRows = tableData => {
     return Promise.resolve({ rows, data });
   } else if (dataSource) {
     const transform = dataSource.transform || (result => result);
-    const params = dataSource.clientSideSearch
-      ? dataSource.params(tableData.toJS())
-      : {
-          ...dataSource.params(tableData.toJS()),
-          ...generateSortParams(tableData),
-          pageToken: tableData.get('nextPageToken'),
-        };
+    const params = dataSource.params({
+      pageSize: tableData.get('pageSize'),
+      filters: tableData.get('filters'),
+      sortColumn: tableData.getIn(['sortColumn', 'value']),
+      sortDirection: tableData.get('sortDirection'),
+      nextPageToken: tableData.get('nextPageToken'),
+    });
 
     return dataSource
-      .fn(params)
+      .fn(...params)
       .then(transform)
       .then(({ nextPageToken, data }) => ({
         nextPageToken,

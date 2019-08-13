@@ -1,11 +1,10 @@
-import React from 'react';
-import { Table } from '../../table/Table';
+import { generateTable } from '../../table/Table';
 import { fetchOAuthClients } from '../../../apis';
 
 const dataSource = () => ({
   fn: fetchOAuthClients,
   clientSideSearch: true,
-  params: () => ({}),
+  params: () => [],
   transform: result => ({
     data: result.oauthClients,
   }),
@@ -15,46 +14,33 @@ const columns = [
   {
     value: 'clientId',
     title: 'Client ID',
-    filterable: true,
     sortable: true,
   },
   {
     value: 'description',
     title: 'Description',
-    filterable: false,
     sortable: false,
   },
   {
     value: 'name',
     title: 'Name',
-    filterable: true,
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
   },
   {
     value: 'redirectUri',
     title: 'Redirect URI',
-    filterable: false,
     sortable: true,
   },
 ];
 
-export const OAuthClientTable = props => (
-  <Table
-    tableKey={props.tableKey}
-    components={{
-      ...props.components,
-    }}
-    dataSource={dataSource()}
-    columns={columns}
-    alterColumns={props.alterColumns}
-    addColumns={props.addColumns}
-    columnSet={props.columnSet}
-    pageSize={props.pageSize}
-  >
-    {props.children}
-  </Table>
-);
+export const OAuthClientTable = generateTable({
+  columns,
+  dataSource,
+});
 
+OAuthClientTable.displayName = 'OAuthClientTable';
 OAuthClientTable.defaultProps = {
   columns,
 };
