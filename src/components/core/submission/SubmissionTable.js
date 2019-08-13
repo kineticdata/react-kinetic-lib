@@ -50,10 +50,15 @@ const submissionsFilter = (paramData, props) => {
     } else if (field === 'coreState') {
       q.coreState(value);
     } else if (field === 'values') {
-      console.log('filtering the values field');
       value.reduce(
         (q, f) =>
-          processValues(q, 'equals', `values[${f.field}]`, f.value, datastore),
+          processValues(
+            q,
+            'equals',
+            `values[${f.get('field')}]`,
+            f.get('value'),
+            datastore,
+          ),
         q,
       );
     } else if (op === 'startsWith' && datastore) {

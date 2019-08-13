@@ -78,6 +78,7 @@ const buildFilterLayout = ({
   components,
   columnComponents,
   filters,
+  appliedFilters,
   tableKey,
   columnSet,
   loading,
@@ -87,6 +88,7 @@ const buildFilterLayout = ({
   // Add an onChange to each filter and convert it to a list for looping.
   const f = filters.map(filter =>
     buildField({
+      appliedFilters,
       filter,
       components,
       columnComponents,
@@ -105,6 +107,7 @@ const buildFilterLayout = ({
   return (
     <FilterLayout
       filters={f}
+      appliedFilters={appliedFilters}
       onSearch={onSearch}
       columnSet={columnSet}
       loading={loading}
