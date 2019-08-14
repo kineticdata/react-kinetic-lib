@@ -19,19 +19,21 @@ export class Scroller extends Component {
   scroll() {
     const parent = this.parent.current;
     const child = this.child.current;
-    if (child.offsetTop > this.lastTop) {
-      if (
-        child.offsetTop + child.clientHeight >
-        parent.scrollTop + parent.clientHeight
-      ) {
-        child.scrollIntoView(false);
+    if (child) {
+      if (child.offsetTop > this.lastTop) {
+        if (
+          child.offsetTop + child.clientHeight >
+          parent.scrollTop + parent.clientHeight
+        ) {
+          child.scrollIntoView(false);
+        }
+      } else if (child.offsetTop < this.lastTop) {
+        if (child.offsetTop < parent.scrollTop) {
+          child.scrollIntoView(true);
+        }
       }
-    } else if (child.offsetTop < this.lastTop) {
-      if (child.offsetTop < parent.scrollTop) {
-        child.scrollIntoView(true);
-      }
+      this.lastTop = child.offsetTop;
     }
-    this.lastTop = child.offsetTop;
   }
 
   render() {
