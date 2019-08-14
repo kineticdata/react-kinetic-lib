@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {
   CompositeDecorator,
   convertFromRaw,
@@ -9,6 +9,7 @@ import {
 import detectIndent from 'detect-indent';
 import detectNewLine from 'detect-newline';
 import classNames from 'classnames';
+import { Manager, Reference, Popper } from 'react-popper';
 import {
   apply,
   applyFilter,
@@ -26,7 +27,7 @@ import {
   startTypeahead,
 } from './draftHelpers';
 import { processCode, processTemplate } from './languageHelpers';
-import { VariableMenu } from './VariableMenu';
+import { Scroller } from '../Scroller';
 
 export class CodeInput extends Component {
   constructor(props) {
@@ -65,24 +66,77 @@ export class CodeInput extends Component {
           },
           {
             strategy: findByEntityType('typeahead-filter'),
-            component: ({ children, entityKey, contentState }) => (
-              <Fragment>
-                <VariableMenu
-                  options={contentState.getEntity(entityKey).getData().options}
-                  active={contentState.getEntity(entityKey).getData().active}
-                  onSelect={selectTypeaheadItem(this, this.props.template)}
-                  target="variable-typeahead-target"
-                />
-                <span
-                  id="variable-typeahead-target"
-                  className={classNames('code typeahead-filter', {
-                    'typeahead-tentative': this.state.typeaheadTentative,
-                  })}
-                >
-                  {children}
-                </span>
-              </Fragment>
-            ),
+            component: ({ children, entityKey, contentState }) => {
+              const { options, active } = contentState
+                .getEntity(entityKey)
+                .getData();
+              return (
+                <Manager>
+                  <Reference>
+                    {({ ref }) => (
+                      <span
+                        ref={ref}
+                        className={classNames('code typeahead-filter', {
+                          'typeahead-tentative': this.state.typeaheadTentative,
+                        })}
+                      >
+                        {children}
+                      </span>
+                    )}
+                  </Reference>
+                  <Popper placement="bottom-start">
+                    {({ ref, style, placement }) => (
+                      <div
+                        ref={ref}
+                        style={style}
+                        data-placement={placement}
+                        className="variable-typeahead-menu"
+                        contentEditable={false}
+                      >
+                        <Scroller>
+                          {({ parentRef, childRef }) => (
+                            <ul ref={parentRef}>
+                              {options.map(
+                                ({ label, children, value, tags }, i) => (
+                                  <li
+                                    className={classNames({
+                                      active: i === active,
+                                    })}
+                                    key={label}
+                                    onClick={selectTypeaheadItem(
+                                      this,
+                                      this.props.template,
+                                    )(label, value)}
+                                    style={{
+                                      userSelect: 'none',
+                                      MozUserSelect: 'none',
+                                    }}
+                                    ref={i === active ? childRef : null}
+                                  >
+                                    <span>{label}</span>
+                                    <span className="tags">
+                                      {tags &&
+                                        tags.map((tag, i) => (
+                                          <span key={i} className="tag">
+                                            {tag}
+                                          </span>
+                                        ))}
+                                    </span>
+                                    {children && (
+                                      <i className="fa fa-chevron-right" />
+                                    )}
+                                  </li>
+                                ),
+                              )}
+                            </ul>
+                          )}
+                        </Scroller>
+                      </div>
+                    )}
+                  </Popper>
+                </Manager>
+              );
+            },
           },
           {
             strategy: (contentBlock, callback, contentState) => {
