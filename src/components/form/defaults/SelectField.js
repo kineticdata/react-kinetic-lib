@@ -14,8 +14,8 @@ export const SelectField = props =>
       >
         <option />
         {props.options.map((option, i) => (
-          <option key={i} value={option.value}>
-            {option.label}
+          <option key={i} value={option.get('value')}>
+            {option.get('label')}
           </option>
         ))}
       </select>

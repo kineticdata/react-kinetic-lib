@@ -6,6 +6,7 @@ import {
   getIn,
   is,
   isImmutable,
+  isIndexed,
   List,
   Map,
   OrderedMap,
@@ -135,13 +136,19 @@ const selectBindings = formKey => state => ({
   values: selectValues(formKey)(state),
 });
 
+// If the value is already an immutable list but it contains native objects
+// fromJS will not convert those objects to Maps so we need this helper to
+// perform that conversion.
+const convertPropValue = value =>
+  isIndexed(value) ? value.map(entry => fromJS(entry)) : fromJS(value);
+
 const evaluateFieldProps = (props, bindings) => field =>
   props.reduce(
     (updatedField, prop) =>
       updatedField.hasIn(['functions', prop])
         ? updatedField.set(
             prop,
-            fromJS(updatedField.getIn(['functions', prop])(bindings)),
+            convertPropValue(updatedField.getIn(['functions', prop])(bindings)),
           )
         : updatedField,
     field,
@@ -169,6 +176,8 @@ const convertField = field =>
     (acc, prop) =>
       typeof field[prop] === 'function'
         ? acc.setIn(['functions', prop], field[prop]).set(prop, null)
+        : field[prop] !== undefined
+        ? acc.set(prop, convertPropValue(field[prop]))
         : acc,
     Map(defaultFieldProps).mergeDeep(field),
   );
