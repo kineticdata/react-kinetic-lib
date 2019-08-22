@@ -48,28 +48,9 @@ const getStatusProps = props => ({
       : null,
 });
 
-const Selection = ({ selection, edit, remove }) => (
-  <tr>
-    <td>{selection.get('name')}</td>
-    <td>
-      <button onClick={edit || remove}>&times;</button>
-    </td>
-  </tr>
-);
-
-const Suggestion = ({ suggestion, active }) => (
-  <div style={active ? { fontWeight: 'bold' } : {}}>
-    {suggestion.get('name')}
-  </div>
-);
-
 export const TeamSelect = props => (
   <Typeahead
-    components={{
-      Selection,
-      Suggestion,
-      ...props.components,
-    }}
+    components={props.components || {}}
     textMode={props.textMode}
     multiple={props.multiple}
     search={searchTeams}

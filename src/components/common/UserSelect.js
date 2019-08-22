@@ -55,28 +55,9 @@ const getStatusProps = props => ({
       : null,
 });
 
-const Selection = ({ selection, edit, remove }) => (
-  <tr>
-    <td>{selection.get('username') || selection.get('email')}</td>
-    <td>
-      <button onClick={edit || remove}>&times;</button>
-    </td>
-  </tr>
-);
-
-const Suggestion = ({ suggestion, active }) => (
-  <div style={active ? { fontWeight: 'bold' } : {}}>
-    {suggestion.get('username') || suggestion.get('email')}
-  </div>
-);
-
 export const UserSelect = props => (
   <Typeahead
-    components={{
-      Selection,
-      Suggestion,
-      ...props.components,
-    }}
+    components={props.components || {}}
     textMode={props.textMode}
     multiple={props.multiple}
     custom={props.allowNew && valueToCustomUser}

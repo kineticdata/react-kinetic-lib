@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import Autosuggest from 'react-autosuggest';
-import { fromJS } from 'immutable';
+import { fromJS, List } from 'immutable';
 
 const DEBOUNCE_DURATION = 150;
 
@@ -22,16 +22,19 @@ const StatusDefault = props => (
   </div>
 );
 
-const SelectionsContainerDefault = ({ children }) => (
-  <table className="selections">
-    <tbody>{children}</tbody>
+const SelectionsContainerDefault = ({ selections, input }) => (
+  <table>
+    <tbody>
+      {selections}
+      <tr>
+        <td>{input}</td>
+      </tr>
+    </tbody>
   </table>
 );
 
 const SuggestionsContainerDefault = ({ open, children, containerProps }) => (
-  <div {...containerProps} className={`suggestions ${open ? 'open' : ''}`}>
-    {children}
-  </div>
+  <div {...containerProps}>{children}</div>
 );
 
 const TypeaheadInputDefault = ({ inputProps }) => <input {...inputProps} />;
@@ -145,13 +148,27 @@ export class Typeahead extends React.Component {
     );
   };
 
-  renderSuggestion = (suggestion, { isHighlighted }) => {
-    const { Suggestion } = this.props.components;
-    return Suggestion ? (
-      <Suggestion suggestion={suggestion} active={isHighlighted} />
-    ) : (
-      this.props.getSuggestionValue(suggestion)
+  SelectionDefault = ({ selection, remove, edit }) => (
+    <tr>
+      <td>{this.props.getSuggestionValue(selection)}</td>
+      <td>
+        <button type="button" onClick={edit || remove}>
+          &times;
+        </button>
+      </td>
+    </tr>
+  );
+
+  SuggestionDefault = ({ active, suggestion }) => {
+    const suggestionValue = this.props.getSuggestionValue(suggestion);
+    return (
+      <div>{active ? <strong>{suggestionValue}</strong> : suggestionValue}</div>
     );
+  };
+
+  renderSuggestion = (suggestion, { isHighlighted }) => {
+    const { Suggestion = this.SuggestionDefault } = this.props.components;
+    return <Suggestion suggestion={suggestion} active={isHighlighted} />;
   };
 
   renderInput = inputProps => {
@@ -217,60 +234,61 @@ export class Typeahead extends React.Component {
 
   render() {
     const {
-      components: {
-        Selection,
-        SelectionsContainer = SelectionsContainerDefault,
-      } = {},
       multiple,
       placeholder,
       getSuggestionValue,
+      textMode,
       value,
+      components: {
+        Selection = this.SelectionDefault,
+        SelectionsContainer = SelectionsContainerDefault,
+      } = {},
     } = this.props;
     const { editing, newValue, suggestions } = this.state;
     return (
-      <div className="kinetic-typeahead">
-        <SelectionsContainer selections={value} multiple={multiple}>
-          {multiple &&
-            value.map((selection, i) => (
-              <Fragment key={i}>
-                {Selection ? (
-                  <Selection selection={selection} remove={this.remove(i)} />
-                ) : (
-                  getSuggestionValue(selection)
-                )}
-              </Fragment>
-            ))}
-          {!multiple && Selection && !editing && value && (
-            <Selection selection={value} edit={this.edit} />
-          )}
-        </SelectionsContainer>
-        {(!value || editing) && (
-          <Autosuggest
-            ref={el => (this.autosuggest = el)}
-            inputProps={{
-              value: newValue,
-              onBlur: this.onBlur,
-              onFocus: this.props.onFocus,
-              onChange: this.onChange,
-              placeholder,
-            }}
-            theme={{
-              suggestionsContainerOpen: 'OPEN',
-              container: 'typeahead-container',
-            }}
-            highlightFirstSuggestion
-            shouldRenderSuggestions={this.shouldRenderSuggestions}
-            suggestions={suggestions}
-            onSuggestionsFetchRequested={this.onSearch}
-            onSuggestionsClearRequested={this.onClearSuggestions}
-            onSuggestionSelected={this.onSelect}
-            renderSuggestion={this.renderSuggestion}
-            renderSuggestionsContainer={this.renderSuggestionContainer}
-            renderInputComponent={this.renderInput}
-            getSuggestionValue={getSuggestionValue}
-          />
-        )}
-      </div>
+      <SelectionsContainer
+        multiple={multiple}
+        selections={
+          multiple
+            ? value.map((selection, i) => (
+                <Selection
+                  key={i}
+                  selection={selection}
+                  remove={this.remove(i)}
+                />
+              ))
+            : !textMode && !editing && value
+            ? List.of(<Selection key={0} selection={value} edit={this.edit} />)
+            : List()
+        }
+        input={
+          !value || editing ? (
+            <Autosuggest
+              ref={el => (this.autosuggest = el)}
+              inputProps={{
+                value: newValue,
+                onBlur: this.onBlur,
+                onFocus: this.props.onFocus,
+                onChange: this.onChange,
+                placeholder,
+              }}
+              theme={{
+                suggestionsContainerOpen: 'OPEN',
+              }}
+              highlightFirstSuggestion
+              shouldRenderSuggestions={this.shouldRenderSuggestions}
+              suggestions={suggestions}
+              onSuggestionsFetchRequested={this.onSearch}
+              onSuggestionsClearRequested={this.onClearSuggestions}
+              onSuggestionSelected={this.onSelect}
+              renderSuggestion={this.renderSuggestion}
+              renderSuggestionsContainer={this.renderSuggestionContainer}
+              renderInputComponent={this.renderInput}
+              getSuggestionValue={getSuggestionValue}
+            />
+          ) : null
+        }
+      />
     );
   }
 }
