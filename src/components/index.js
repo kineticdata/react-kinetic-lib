@@ -41,7 +41,15 @@ export { FormTypeTable } from './core/form_type/FormTypeTable';
 export { I18n } from './core/i18n/I18n';
 export { Moment, importLocale } from './core/i18n/Moment';
 export { I18nProvider } from './core/i18n/I18nProvider';
-export { CoreForm } from './core/core_form/CoreForm';
+export {
+  CoreForm,
+  isLockable,
+  isLocked,
+  isLockedByMe,
+  getLockedBy,
+  getTimeLeft,
+  unlockSubmission,
+} from './core/core_form/CoreForm';
 export {
   IndexDefinitionForm,
 } from './core/index_definition/IndexDefinitionForm';
