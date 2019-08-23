@@ -1,4 +1,3 @@
-// import { Map } from 'immutable';
 import moment from 'moment';
 import { generateTable } from '../../table/Table';
 import { isValueEmpty } from '../../table/Table.redux';
@@ -104,7 +103,8 @@ const dataSource = props => {
         {
           kapp: props.kappSlug ? props.kappSlug : null,
           form: formSlug,
-          ...submissionsFilter(paramData, props),
+          pageToken: paramData.nextPageToken,
+          ...submissionsFilter(paramData, prsops),
         },
       ];
     },

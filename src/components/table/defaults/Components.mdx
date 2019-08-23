@@ -8,7 +8,6 @@ import { Props } from 'docz';
 import BodyCell from './BodyCell';
 import BodyRow from './BodyRow';
 import EmptyBodyRow from './EmptyBodyRow';
-import FilterControl from './FilterControl';
 import Footer from './Footer';
 import FooterCell from './FooterCell';
 import FooterRow from './FooterRow';
@@ -74,41 +73,6 @@ const EmptyBodyRow = ({ colSpan }) => (
       </em>
     </td>
   </tr>
-);
-```
-
-## FilterControl
-
-Controls how filters are rendered
-
-### Props
-
-<Props of={FilterControl} />
-
-### Default Component
-
-```js static
-export const FilterControl = ({ filters, onSearch, columnSet }) => (
-  <form onSubmit={onSearch}>
-    {filters
-      .filter(filter => columnSet.includes(filter.get('column')))
-      .map((filter, key) => (
-        <div key={key}>
-          <label htmlFor={`filter-input-${key}`}>
-            <I18n>{filter.get('title')}</I18n>:
-          </label>
-
-          <input
-            type="text"
-            name="filter-input"
-            id={`filter-input-${key}`}
-            value={filter.get('value')}
-            onChange={e => filter.get('onChange')(e.target.value)}
-          />
-        </div>
-      ))}
-    <button type="submit">Search</button>
-  </form>
 );
 ```
 

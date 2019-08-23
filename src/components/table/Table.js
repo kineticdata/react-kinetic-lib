@@ -41,6 +41,7 @@ const filterComponentByType = (components, type = 'text') =>
 
 const buildField = ({
   filter,
+  filters,
   components,
   columnComponents,
   tableKey,
@@ -50,10 +51,10 @@ const buildField = ({
   const name = filter.getIn(['column', 'value']);
   const title = filter.getIn(['column', 'title']);
   const options = filter.getIn(['column', 'options'], () => [])(tableOptions);
-  const onChange = value => {
+  const onChange = (value, filterName = name) => {
     dispatch('SET_FILTER', {
       tableKey,
-      filter: name,
+      filter: filterName,
       value,
     });
   };
@@ -70,6 +71,8 @@ const buildField = ({
       title={title}
       onChange={onChange}
       options={options}
+      tableOptions={tableOptions}
+      filters={filters}
     />
   );
 };
@@ -90,6 +93,7 @@ const buildFilterLayout = ({
     buildField({
       appliedFilters,
       filter,
+      filters,
       components,
       columnComponents,
       tableKey,

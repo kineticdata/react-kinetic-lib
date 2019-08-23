@@ -62,6 +62,9 @@ export {
 } from './core/security_definition/SecurityDefinitionTable';
 export { SpaceForm } from './core/space/SpaceForm';
 export { SubmissionTable } from './core/submission/SubmissionTable';
+export {
+  DatastoreSubmissionTable,
+} from './core/submission/DatastoreSubmissionTable';
 export { TeamForm } from './core/team/TeamForm';
 export { TeamTable } from './core/team/TeamTable';
 export { UserForm } from './core/user/UserForm';

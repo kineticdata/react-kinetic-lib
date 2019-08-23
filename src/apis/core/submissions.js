@@ -335,12 +335,8 @@ export class SubmissionSearch {
 }
 
 export const searchSubmissions = options => {
-  const {
-    kapp: kappSlug = bundle.kappSlug(),
-    form,
-    search,
-    datastore = false,
-  } = options;
+  const { kapp, form, search, datastore = false } = options;
+  const kappSlug = datastore ? null : kapp ? kapp : bundle.kappSlug();
 
   if (datastore && !form) {
     throw new Error('Datastore searches must be scoped to a form.');
