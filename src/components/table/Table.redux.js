@@ -170,9 +170,13 @@ regHandlers({
   SET_FILTER: (state, { payload: { tableKey, filter, value } }) =>
     state.setIn(['tables', tableKey, 'filters', filter, 'value'], value),
   APPLY_FILTERS: (state, { payload: { tableKey } }) =>
-    state.setIn(
-      ['tables', tableKey, 'appliedFilters'],
-      state.getIn(['tables', tableKey, 'filters']),
+    state.updateIn(['tables', tableKey], table =>
+      table
+        .set('appliedFilters', state.getIn(['tables', tableKey, 'filters']))
+        .set('pageOffset', 0)
+        .set('currentPageToken', null)
+        .set('nextPageToken', null)
+        .set('pageTokens', List()),
     ),
   REFECTH_TABLE_DATA: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
