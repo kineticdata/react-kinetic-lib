@@ -15,30 +15,59 @@ const matches = (searcher, text) =>
 
 export const nextTypeaheadItem = editorState => {
   const filterEntity = getEntities(editorState).last();
-  const options = filterEntity.data.options;
-  const active = (filterEntity.data.active + 1) % options.size;
+  const data = filterEntity.data;
+  const active = (data.active + 1) % data.options.size;
   return applyEntity({
     ...filterEntity,
     key: undefined,
-    data: { options, active },
+    data: { ...data, active },
   })(editorState);
 };
 
 export const previousTypeaheadItem = editorState => {
   const filterEntity = getEntities(editorState).last();
-  const options = filterEntity.data.options;
-  const n = options.size;
+  const data = filterEntity.data;
+  const n = data.options.size;
   // https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
-  const active = (((filterEntity.data.active - 1) % n) + n) % n;
+  const active = (((data.active - 1) % n) + n) % n;
   return applyEntity({
     ...filterEntity,
     key: undefined,
-    data: { options, active },
+    data: { ...data, active },
   })(editorState);
 };
 
 export const traverseBindings = (bindings, [head, ...tail]) =>
   head ? traverseBindings(bindings.get(head).children, tail) : bindings;
+
+export const checkSelectionEntities = editorState => {
+  const entities = getEntities(editorState);
+  if (!entities.isEmpty()) {
+    const validEntities = entities.reduce(
+      (reduction, entity) =>
+        reduction.isEmpty() ||
+        entity.data.index === reduction.last().data.index + 1
+          ? reduction.push(entity)
+          : reduction,
+      List(),
+    );
+    if (validEntities.last().end !== entities.last().end) {
+      const start = validEntities.last().end;
+      const end = entities.last().end;
+      const index = validEntities.last().data.index + 1;
+      return apply(
+        editorState,
+        select({ anchor: start, focus: end }),
+        insertText({
+          text: ' ',
+          entity: { ...filterEntity, data: { index } },
+        }),
+        select({ anchor: offset => offset - 1, focus: offset => offset - 1 }),
+      );
+    }
+  }
+  return editorState;
+};
 
 export const applyFilter = bindings => editorState => {
   const entities = getEntities(editorState);
@@ -47,7 +76,12 @@ export const applyFilter = bindings => editorState => {
       .rest()
       .butLast()
       .map(entity => entity.text);
-    const { end, start, text: filter } = entities.last();
+    const {
+      end,
+      start,
+      text: filter,
+      data: { index },
+    } = entities.last();
     const options = traverseBindings(bindings, selections.toArray())
       .entrySeq()
       .toList()
@@ -59,8 +93,8 @@ export const applyFilter = bindings => editorState => {
     if (options.size === 0 && entities.size === 2) {
       return closeTypeahead(editorState);
     } else {
-      const data = { options, active: 0 };
-      return applyEntity({ start, end, ...filterEntity, data })(editorState);
+      const data = { index, options, active: 0 };
+      return applyEntity({ ...filterEntity, start, end, data })(editorState);
     }
   }
   return editorState;
@@ -95,8 +129,8 @@ export const checkFocus = editorState => {
 export const startTypeahead = editorState => {
   return apply(
     editorState,
-    insertText({ text: '$', entity: startEntity }),
-    insertText({ text: ' ', entity: filterEntity }),
+    insertText({ text: '$', entity: { ...startEntity, data: { index: 0 } } }),
+    insertText({ text: ' ', entity: { ...filterEntity, data: { index: 1 } } }),
     select({ anchor: offset => offset - 1, focus: offset => offset - 1 }),
   );
 };
@@ -124,13 +158,19 @@ export const selectTypeaheadItem = (self, isTemplate) => (
 ) => () => {
   const entities = getEntities(self.state.editorState);
   if (!value) {
-    const { start, end } = entities.last();
+    const { start, end, data } = entities.last();
     self.onChange(
       apply(
         self.state.editorState,
         select({ anchor: start, focus: end }),
-        insertText({ text: label, entity: selectionEntity }),
-        insertText({ text: ' ', entity: filterEntity }),
+        insertText({
+          text: label,
+          entity: { ...selectionEntity, data: { index: data.index } },
+        }),
+        insertText({
+          text: ' ',
+          entity: { ...filterEntity, data: { index: data.index + 1 } },
+        }),
         select({ anchor: offset => offset - 1, focus: offset => offset - 1 }),
       ),
     );

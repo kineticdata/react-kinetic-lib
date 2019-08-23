@@ -14,6 +14,7 @@ import {
   apply,
   applyFilter,
   checkFocus,
+  checkSelectionEntities,
   checkSelectionPosition,
   closeTypeahead,
   findByEntityType,
@@ -229,6 +230,7 @@ export class CodeInput extends Component {
     const nextEditorState = apply(
       editorState,
       checkFocus,
+      checkSelectionEntities,
       checkSelectionPosition,
       applyFilter(this.props.bindings),
     );
@@ -292,8 +294,11 @@ export class CodeInput extends Component {
       const { options, active } = getEntities(
         this.state.editorState,
       ).last().data;
-      const { label, value } = options.get(active);
-      selectTypeaheadItem(this, this.props.template)(label, value)();
+      const activeOption = options.get(active);
+      if (activeOption) {
+        const { label, value } = activeOption;
+        selectTypeaheadItem(this, this.props.template)(label, value)();
+      }
     }
     if (command === 'next-typeahead-option') {
       this.onMetaChange(nextTypeaheadItem(editorState));
