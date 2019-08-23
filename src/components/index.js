@@ -13,6 +13,7 @@ export {
   mountTable,
   unmountTable,
   refetchTable,
+  clearFilters,
   isValueEmpty,
 } from './table/Table.redux';
 export { Table } from './table/Table';

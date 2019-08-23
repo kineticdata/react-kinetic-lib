@@ -178,6 +178,11 @@ regHandlers({
     state.updateIn(['tables', tableKey], tableData =>
       tableData.get('dataSource') ? tableData.set('data', null) : tableData,
     ),
+  CLEAR_TABLE_FILTERS: (state, { payload: { tableKey } }) =>
+    state.setIn(
+      ['tables', tableKey, 'filters'],
+      generateFilters(tableKey, state.getIn(['tables', tableKey, 'columns'])),
+    ),
 });
 
 function* calculateRowsTask({ payload }) {
@@ -319,3 +324,5 @@ export const unmountTable = tableKey => dispatch('UNMOUNT_TABLE', { tableKey });
 export const configureTable = payload => dispatch('CONFIGURE_TABLE', payload);
 export const refetchTable = tableKey =>
   dispatch('REFECTH_TABLE_DATA', { tableKey });
+export const clearFilters = tableKey =>
+  dispatch('CLEAR_TABLE_FILTERS', { tableKey });

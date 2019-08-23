@@ -104,7 +104,7 @@ const dataSource = props => {
           kapp: props.kappSlug ? props.kappSlug : null,
           form: formSlug,
           pageToken: paramData.nextPageToken,
-          ...submissionsFilter(paramData, prsops),
+          ...submissionsFilter(paramData, props),
         },
       ];
     },

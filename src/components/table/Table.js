@@ -117,6 +117,7 @@ const buildFilterLayout = ({
       loading={loading}
       initializing={initializing}
       tableOptions={tableOptions}
+      tableKey={tableKey}
     />
   );
 };
