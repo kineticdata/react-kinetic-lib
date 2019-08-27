@@ -32,7 +32,6 @@
     "postversion": "git push && gh-pages -d docs --git git"
   },
   "dependencies": {
-    "actiontyper": "^0.0.4",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "deepequal": "^0.0.1",
