@@ -240,7 +240,7 @@ export const isValueEmpty = value => {
     if (value.isEmpty()) {
       return true;
     } else {
-      return value.reduce((_empty, v) => !v || v === '', false);
+      return value.reduce((empty, v) => empty && (!v || v === ''), true);
     }
   } else if (value === '') {
     return true;
