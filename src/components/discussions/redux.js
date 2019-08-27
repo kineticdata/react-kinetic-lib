@@ -1,33 +1,30 @@
 import { List } from 'immutable';
-import actionTyper from 'actiontyper';
 
 import { regHandlers } from '../../store';
 
 import { createDiscussion, Discussion } from '../../models/discussions';
 
-export const {
-  JOIN_DISCUSSION,
-  ADD_DISCUSSION,
-  UPDATE_DISCUSSION,
-  LEAVE_DISCUSSION,
-  SET_DISCUSSION_ERROR,
-  FETCH_MORE_MESSAGES,
-  SET_MORE_MESSAGES,
-  ADD_PARTICIPANT,
-  REMOVE_PARTICIPANT,
-  UPDATE_PARTICIPANT,
-  ADD_INVITATION,
-  REMOVE_INVITATION,
-  UPDATE_INVITATION,
-  MESSAGE_UPDATE,
-  REMOVE_MESSAGE,
-  ADD_MESSAGE,
-  SEND_MESSAGE,
-  SEND_MESSAGE_UPDATE,
-  UPDATE_PRESENCE,
-  SET_TOPIC_STATUS,
-  UNSUBSCRIBED,
-} = actionTyper('@kd/discussions/');
+export const JOIN_DISCUSSION = '@kd/discussions/JOIN_DISCUSSION',
+  ADD_DISCUSSION = '@kd/discussions/ADD_DISCUSSION',
+  UPDATE_DISCUSSION = '@kd/discussions/UPDATE_DISCUSSION',
+  LEAVE_DISCUSSION = '@kd/discussions/LEAVE_DISCUSSION',
+  SET_DISCUSSION_ERROR = '@kd/discussions/SET_DISCUSSION_ERROR',
+  FETCH_MORE_MESSAGES = '@kd/discussions/FETCH_MORE_MESSAGES',
+  SET_MORE_MESSAGES = '@kd/discussions/SET_MORE_MESSAGES',
+  ADD_PARTICIPANT = '@kd/discussions/ADD_PARTICIPANT',
+  REMOVE_PARTICIPANT = '@kd/discussions/REMOVE_PARTICIPANT',
+  UPDATE_PARTICIPANT = '@kd/discussions/UPDATE_PARTICIPANT',
+  ADD_INVITATION = '@kd/discussions/ADD_INVITATION',
+  REMOVE_INVITATION = '@kd/discussions/REMOVE_INVITATION',
+  UPDATE_INVITATION = '@kd/discussions/UPDATE_INVITATION',
+  MESSAGE_UPDATE = '@kd/discussions/MESSAGE_UPDATE',
+  REMOVE_MESSAGE = '@kd/discussions/REMOVE_MESSAGE',
+  ADD_MESSAGE = '@kd/discussions/ADD_MESSAGE',
+  SEND_MESSAGE = '@kd/discussions/SEND_MESSAGE',
+  SEND_MESSAGE_UPDATE = '@kd/discussions/SEND_MESSAGE_UPDATE',
+  UPDATE_PRESENCE = '@kd/discussions/UPDATE_PRESENCE',
+  SET_TOPIC_STATUS = '@kd/discussions/SET_TOPIC_STATUS',
+  UNSUBSCRIBED = '@kd/discussions/UNSUBSCRIBED';
 
 const invitationsMatch = (i1, i2) =>
   (i1.user && i2.user && i1.user.username === i2.user.username) ||
