@@ -102,8 +102,18 @@ const buildFilterLayout = ({
   );
 
   const onSearch = e => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     dispatch('APPLY_FILTERS', { tableKey });
+  };
+
+  const onChangeFilter = (value, filterName) => {
+    dispatch('SET_FILTER', {
+      tableKey,
+      filter: filterName,
+      value,
+    });
   };
 
   const FilterLayout = components.FilterLayout;
@@ -113,6 +123,7 @@ const buildFilterLayout = ({
       filters={f}
       appliedFilters={appliedFilters}
       onSearch={onSearch}
+      onChangeFilter={onChangeFilter}
       columnSet={columnSet}
       loading={loading}
       initializing={initializing}
