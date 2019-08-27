@@ -35,8 +35,6 @@
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "deepequal": "^0.0.1",
-    "detect-indent": "^6.0.0",
-    "detect-newline": "^3.0.0",
     "draft-js": "^0.11.0",
     "history": "^4.9.0",
     "husky": "^1.3.1",

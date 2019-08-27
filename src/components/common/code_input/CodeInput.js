@@ -6,8 +6,6 @@ import {
   EditorState,
   getDefaultKeyBinding,
 } from 'draft-js';
-import detectIndent from 'detect-indent';
-import detectNewLine from 'detect-newline';
 import classNames from 'classnames';
 import { Manager, Reference, Popper } from 'react-popper';
 import {
@@ -33,8 +31,8 @@ import { Scroller } from '../Scroller';
 export class CodeInput extends Component {
   constructor(props) {
     super(props);
-    this.newLine = detectNewLine(props.value) || '\n';
-    this.indentation = detectIndent(props.value).indent || '  ';
+    this.newLine = '\n';
+    this.indentation = '  ';
     this.editor = null;
     this.state = {
       editorState: EditorState.createWithContent(
