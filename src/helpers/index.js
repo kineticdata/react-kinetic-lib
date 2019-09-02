@@ -191,10 +191,10 @@ export const buildBindings = ({ space, kapp, form, scope }) =>
           OrderedMap(
             (form ? form.get('fields') : kapp.get('fields')).map(field => [
               field.get('name'),
-              {
+              Map({
                 value: `values('${field.get('name')}')`,
                 tags: [],
-              },
+              }),
             ]),
           ),
       }),
