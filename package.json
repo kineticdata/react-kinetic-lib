@@ -1,6 +1,6 @@
 {
   "name": "@kineticdata/react",
-  "version": "0.1.0-alpha.7",
+  "version": "0.1.0-alpha.8",
   "description": "A React library for the Kinetic Platform",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -32,12 +32,9 @@
     "postversion": "git push && gh-pages -d docs --git git"
   },
   "dependencies": {
-    "actiontyper": "^0.0.4",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "deepequal": "^0.0.1",
-    "detect-indent": "^6.0.0",
-    "detect-newline": "^3.0.0",
     "draft-js": "^0.11.0",
     "history": "^4.9.0",
     "husky": "^1.3.1",
