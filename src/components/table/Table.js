@@ -284,7 +284,7 @@ export const buildTableBodyRows = props => {
   return tableRows;
 };
 
-export const buildTableBodyCells = (props, row, _rowIndex) => {
+export const buildTableBodyCells = (props, row, rowIndex) => {
   const {
     tableKey,
     components,
@@ -308,6 +308,7 @@ export const buildTableBodyCells = (props, row, _rowIndex) => {
         <BodyCell
           tableKey={tableKey}
           row={row}
+          rowIndex={rowIndex}
           index={index}
           value={value}
           rows={rows.toJS()}

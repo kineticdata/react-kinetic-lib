@@ -9,6 +9,7 @@ export * from './core/categories';
 export * from './core/forms';
 export * from './core/formTypes';
 export * from './core/kapps';
+export * from './core/logs';
 export * from './core/memberships';
 export * from './core/meta';
 export * from './core/oauthClients';
