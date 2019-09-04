@@ -1,6 +1,4 @@
-// Applies fn to each value in list, splitting it into a new list each time fn
-// returns a different value.
-import { List, OrderedMap } from 'immutable';
+import { get, List, Map, OrderedMap } from 'immutable';
 
 export const K = typeof window !== `undefined` ? window.K : () => {};
 export const bundle =
@@ -19,6 +17,8 @@ export const splitTeamName = team => {
   return [parents.reverse().join('::'), local];
 };
 
+// Applies fn to each value in list, splitting it into a new list each time fn
+// returns a different value.
 export const partitionListBy = (fn, list) =>
   list.isEmpty()
     ? List()
@@ -92,21 +92,26 @@ const bindify = (
 ) =>
   attributeDefinitions.reduce(
     (reduction, attrDef) =>
-      reduction.set(attrDef.get('name'), {
-        value: `${fnName}('attribute:${attrDef.get('name')}')`,
-        tags: [attributeTag],
+      reduction.set(
+        attrDef.get('name'),
+        Map({
+          value: `${fnName}('attribute:${attrDef.get('name')}')`,
+          tags: [attributeTag],
+        }),
+      ),
+    OrderedMap(staticMap).map(value =>
+      Map({
+        value: `${fnName}('${value}')`,
+        tags: [],
       }),
-    OrderedMap(staticMap).map(value => ({
-      value: `${fnName}('${value}')`,
-      tags: [],
-    })),
+    ),
   );
 
 export const buildBindings = ({ space, kapp, form, scope }) =>
   OrderedMap([
     [
       'Form',
-      {
+      Map({
         children:
           [
             'Datastore Form',
@@ -118,80 +123,82 @@ export const buildBindings = ({ space, kapp, form, scope }) =>
             'form',
             FORM_STATIC_BINDINGS,
             scope.startsWith('Datastore')
-              ? space.get('datastoreFormAttributeDefinitions')
-              : kapp.get('formAttributeDefinitions'),
+              ? get(space, 'datastoreFormAttributeDefinitions')
+              : get(kapp, 'formAttributeDefinitions'),
           ),
-      },
+      }),
     ],
     [
       'Kapp',
-      {
+      Map({
         children:
           ['Kapp', 'Form', 'Submission'].includes(scope) &&
           bindify(
             'kapp',
             KAPP_STATIC_BINDINGS,
-            kapp.get('kappAttributeDefinitions'),
+            get(kapp, 'kappAttributeDefinitions'),
           ),
-      },
+      }),
     ],
     [
       'Space',
-      {
+      Map({
         children: bindify(
           'space',
           SPACE_STATIC_BINDINGS,
-          space.get('spaceAttributeDefinitions'),
+          get(space, 'spaceAttributeDefinitions'),
         ),
-      },
+      }),
     ],
     [
       'Submission',
-      {
+      Map({
         children:
           ['Submission', 'Datastore Submission'].includes(scope) &&
           bindify('submission', SUBMISSION_STATIC_BINDINGS),
-      },
+      }),
     ],
     [
       'Team',
-      {
+      Map({
         children:
           scope === 'Team' &&
           bindify(
             'team',
             TEAM_STATIC_BINDINGS,
-            space.get('teamAttributeDefinitions'),
+            get(space, 'teamAttributeDefinitions'),
           ),
-      },
+      }),
     ],
     [
       'User',
-      {
+      Map({
         children:
           scope === 'User' &&
           bindify(
             'user',
             USER_STATIC_BINDINGS,
-            space.get('userAttributeDefinitions'),
+            get(space, 'userAttributeDefinitions'),
           ),
-      },
+      }),
     ],
     [
       'Values',
-      {
+      Map({
         children:
           ['Submission', 'Datastore Submission'].includes(scope) &&
           (form || kapp) &&
           OrderedMap(
             (form ? form.get('fields') : kapp.get('fields')).map(field => [
               field.get('name'),
-              {
+              Map({
                 value: `values('${field.get('name')}')`,
                 tags: [],
-              },
+              }),
             ]),
           ),
-      },
+      }),
     ],
-  ]).filter(o => o.children || o.value);
+  ]).filter(
+    o => (o.get('children') && !o.get('children').isEmpty()) || o.has('value'),
+  );

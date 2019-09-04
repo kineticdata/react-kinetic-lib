@@ -38,7 +38,7 @@ export const previousTypeaheadItem = editorState => {
 };
 
 export const traverseBindings = (bindings, [head, ...tail]) =>
-  head ? traverseBindings(bindings.get(head).children, tail) : bindings;
+  head ? traverseBindings(bindings.get(head).get('children'), tail) : bindings;
 
 export const checkSelectionEntities = editorState => {
   const entities = getEntities(editorState);
@@ -86,10 +86,7 @@ export const applyFilter = bindings => editorState => {
       .entrySeq()
       .toList()
       .filter(([label]) => matches(filter, label))
-      .map(([label, value]) => ({
-        label,
-        ...value,
-      }));
+      .map(([label, value]) => value.set('label', label).toObject());
     if (options.size === 0 && entities.size === 2) {
       return closeTypeahead(editorState);
     } else {

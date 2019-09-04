@@ -15,42 +15,34 @@ import { buildBindings, slugify } from '../../../helpers';
 
 const FORM_STATUSES = ['New', 'Active', 'Inactive', 'Delete'];
 
+const FORM_INCLUDES =
+  'details,attributesMap,securityPolicies,indexDefinitions,backgroundJobs,fields,categorizations';
+const KAPP_INCLUDES =
+  'fields,formTypes,formAttributeDefinitions,kappAttributeDefinitions';
+const SPACE_INCLUDES =
+  'spaceAttributeDefinitions,datastoreFormAttributeDefinitions';
+
 const dataSources = ({ formSlug, kappSlug, datastore }) => ({
-  form: [
-    fetchForm,
-    [
-      {
-        datastore,
-        formSlug,
-        kappSlug,
-        include:
-          'details,attributesMap,securityPolicies,indexDefinitions,backgroundJobs,fields,categorizations',
-      },
+  form: {
+    fn: fetchForm,
+    params: formSlug && [
+      { datastore, formSlug, kappSlug, include: FORM_INCLUDES },
     ],
-    { transform: result => result.form, runIf: () => !!formSlug },
-  ],
-  kapp: [
-    fetchKapp,
-    [
-      {
-        kappSlug,
-        include: 'formTypes,formAttributeDefinitions,kappAttributeDefinitions',
-      },
-    ],
-    { transform: result => result.kapp, runIf: () => !!kappSlug },
-  ],
-  space: [
-    fetchSpace,
-    [
-      {
-        include: 'spaceAttributeDefinitions,datastoreFormAttributeDefinitions',
-      },
-    ],
-    { transform: result => result.space },
-  ],
-  attributeDefinitions: [
-    fetchAttributeDefinitions,
-    [
+    transform: result => result.form,
+  },
+  kapp: {
+    fn: fetchKapp,
+    params: kappSlug && [{ kappSlug, include: KAPP_INCLUDES }],
+    transform: result => result.kapp,
+  },
+  space: {
+    fn: fetchSpace,
+    params: [{ include: SPACE_INCLUDES }],
+    transform: result => result.space,
+  },
+  attributeDefinitions: {
+    fn: fetchAttributeDefinitions,
+    params: [
       {
         kappSlug,
         formSlug,
@@ -59,25 +51,18 @@ const dataSources = ({ formSlug, kappSlug, datastore }) => ({
           : 'formAttributeDefinitions',
       },
     ],
-    {
-      transform: result => result.attributeDefinitions,
-    },
-  ],
-  securityPolicyDefinitions: [
-    fetchSecurityPolicyDefinitions,
-    [{ kappSlug }],
-    {
-      transform: result => result.securityPolicyDefinitions,
-    },
-  ],
-  categories: [
-    fetchCategories,
-    [{ kappSlug }],
-    {
-      transform: result => result.categories,
-      runIf: () => !!kappSlug,
-    },
-  ],
+    transform: result => result.attributeDefinitions,
+  },
+  securityPolicyDefinitions: {
+    fn: fetchSecurityPolicyDefinitions,
+    params: [{ kappSlug }],
+    transform: result => result.securityPolicyDefinitions,
+  },
+  categories: {
+    fn: fetchCategories,
+    params: kappSlug && [{ kappSlug }],
+    transform: result => result.categories,
+  },
 });
 
 const handleSubmit = ({ formSlug, kappSlug, datastore }) => values =>
@@ -131,110 +116,114 @@ const securityEndpoints = {
   },
 };
 
-const fields = ({ formSlug, kappSlug, datastore }) => [
-  !!kappSlug && {
-    name: 'anonymous',
-    label: 'Anonymous',
-    type: 'checkbox',
-    initialValue: ({ form }) => get(form, 'anonymous', false),
-  },
-  {
-    name: 'description',
-    label: 'Description',
-    type: 'text',
-    initialValue: ({ form }) => get(form, 'description'),
-  },
-  {
-    name: 'name',
-    label: 'Name',
-    type: 'text',
-    required: true,
-    onChange: ({ values }, { setValue }) => {
-      if (values.get('linked')) {
-        setValue('slug', slugify(values.get('name')), false);
-      }
+const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
+  (!formSlug || form) && [
+    !!kappSlug && {
+      name: 'anonymous',
+      label: 'Anonymous',
+      type: 'checkbox',
+      initialValue: get(form, 'anonymous', false),
     },
-    initialValue: ({ form }) => get(form, 'name'),
-  },
-  {
-    name: 'notes',
-    label: 'Notes',
-    type: 'text',
-    initialValue: ({ form }) => get(form, 'notes'),
-  },
-  {
-    name: 'slug',
-    label: 'Slug',
-    type: 'text',
-    required: true,
-    onChange: (_bindings, { setValue }) => {
-      setValue('linked', false);
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'text',
+      initialValue: get(form, 'description'),
     },
-    initialValue: ({ form }) => get(form, 'slug'),
-  },
-  {
-    name: 'linked',
-    label: 'Linked',
-    type: 'checkbox',
-    transient: true,
-    initialValue: ({ form }) => (get(form, 'slug') ? false : true),
-    visible: false,
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'select',
-    options: FORM_STATUSES.map(status => ({
-      value: status,
-      label: status,
-    })),
-    initialValue: ({ form }) => get(form, 'status') || 'New',
-  },
-  {
-    name: 'submissionLabelExpression',
-    label: 'Submission Label',
-    type: 'code-template',
-    initialValue: ({ form }) => get(form, 'submissionLabelExpression'),
-    options: ({ space, kapp, form }) =>
-      buildBindings({
-        space,
-        kapp,
-        form,
-        scope: kappSlug ? 'Submission' : 'Datastore Submission',
-      }),
-  },
-  !!kappSlug && {
-    name: 'type',
-    label: 'Type',
-    type: 'select',
-    options: ({ kapp }) =>
-      kapp
-        ? get(kapp, 'formTypes').map(type => ({
-            value: type.get('name'),
-            label: type.get('name'),
-          }))
-        : [],
-    initialValue: ({ form }) => get(form, 'type'),
-  },
-  ...(formSlug
-    ? Object.entries(securityEndpoints).map(
-        ([endpointFieldName, endpoint]) => ({
-          name: endpointFieldName,
-          label: endpoint.label,
-          type: 'select',
-          options: ({ securityPolicyDefinitions }) =>
-            securityPolicyDefinitions
-              ? securityPolicyDefinitions
-                  .filter(definition =>
-                    endpoint.types.includes(definition.get('type')),
-                  )
-                  .map(definition => ({
-                    value: definition.get('name'),
-                    label: definition.get('name'),
-                  }))
-              : [],
-          initialValue: ({ form }) =>
-            form
+    {
+      name: 'name',
+      label: 'Name',
+      type: 'text',
+      required: true,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('linked')) {
+          setValue('slug', slugify(values.get('name')), false);
+        }
+      },
+      initialValue: get(form, 'name'),
+    },
+    {
+      name: 'notes',
+      label: 'Notes',
+      type: 'text',
+      initialValue: get(form, 'notes') || '',
+    },
+    {
+      name: 'slug',
+      label: 'Slug',
+      type: 'text',
+      required: true,
+      onChange: (_bindings, { setValue }) => {
+        setValue('linked', false);
+      },
+      initialValue: get(form, 'slug'),
+    },
+    {
+      name: 'linked',
+      label: 'Linked',
+      type: 'checkbox',
+      transient: true,
+      initialValue: !form,
+      visible: false,
+    },
+    {
+      name: 'status',
+      label: 'Status',
+      type: 'select',
+      options: FORM_STATUSES.map(status => ({
+        value: status,
+        label: status,
+      })),
+      initialValue: get(form, 'status', 'New'),
+    },
+    {
+      name: 'submissionLabelExpression',
+      label: 'Submission Label',
+      type: 'code-template',
+      initialValue: get(form, 'submissionLabelExpression') || '',
+      options: ({ space, kapp, form }) =>
+        buildBindings({
+          space,
+          kapp,
+          form,
+          scope: kappSlug ? 'Submission' : 'Datastore Submission',
+        }),
+    },
+    !!kappSlug && {
+      name: 'type',
+      label: 'Type',
+      type: 'select',
+      options: ({ kapp }) =>
+        kapp
+          ? get(kapp, 'formTypes').map(type =>
+              Map({
+                value: type.get('name'),
+                label: type.get('name'),
+              }),
+            )
+          : [],
+      initialValue: get(form, 'type'),
+    },
+    ...(formSlug
+      ? Object.entries(securityEndpoints).map(
+          ([endpointFieldName, endpoint]) => ({
+            name: endpointFieldName,
+            label: endpoint.label,
+            type: 'select',
+            options: ({ securityPolicyDefinitions }) =>
+              securityPolicyDefinitions
+                ? securityPolicyDefinitions
+                    .filter(definition =>
+                      endpoint.types.includes(definition.get('type')),
+                    )
+                    .map(definition =>
+                      Map({
+                        value: definition.get('name'),
+                        label: definition.get('name'),
+                      }),
+                    )
+                : [],
+            initialValue: form
               ? form
                   .get('securityPolicies')
                   .find(
@@ -244,51 +233,54 @@ const fields = ({ formSlug, kappSlug, datastore }) => [
                   )
                   .get('name')
               : '',
-          transient: true,
-        }),
-      )
-    : []),
-  {
-    name: 'securityPolicies',
-    label: 'Security Policies',
-    type: null,
-    visible: false,
-    serialize: ({ values }) =>
-      Object.entries(securityEndpoints)
-        .map(([endpointFieldName, policy]) => ({
-          endpoint: policy.endpoint,
-          name: values.get(endpointFieldName),
-        }))
-        .filter(endpoint => endpoint.name !== ''),
-    initialValue: ({ form }) => get(form, 'securityPolicies'),
-  },
-  {
-    name: 'attributesMap',
-    label: 'Attributes',
-    type: 'attributes',
-    required: false,
-    options: ({ attributeDefinitions }) => attributeDefinitions,
-    initialValue: ({ form }) => get(form, 'attributesMap'),
-  },
-  !!kappSlug && {
-    name: 'categorizations',
-    label: 'Categories',
-    type: 'select-multi',
-    options: ({ categories }) =>
-      categories.map(category => ({
-        label: category.get('name'),
-        value: category.get('slug'),
-      })),
-    initialValue: ({ form }) =>
-      form
+            transient: true,
+          }),
+        )
+      : []),
+    {
+      name: 'securityPolicies',
+      label: 'Security Policies',
+      type: null,
+      visible: false,
+      serialize: ({ values }) =>
+        Object.entries(securityEndpoints)
+          .map(([endpointFieldName, policy]) => ({
+            endpoint: policy.endpoint,
+            name: values.get(endpointFieldName),
+          }))
+          .filter(endpoint => endpoint.name !== ''),
+      initialValue: get(form, 'securityPolicies'),
+    },
+    {
+      name: 'attributesMap',
+      label: 'Attributes',
+      type: 'attributes',
+      required: false,
+      options: ({ attributeDefinitions }) => attributeDefinitions,
+      initialValue: get(form, 'attributesMap'),
+    },
+    !!kappSlug && {
+      name: 'categorizations',
+      label: 'Categories',
+      type: 'select-multi',
+      options: ({ categories }) =>
+        categories
+          ? categories.map(category =>
+              Map({
+                label: category.get('name'),
+                value: category.get('slug'),
+              }),
+            )
+          : [],
+      initialValue: form
         ? form
             .get('categorizations')
             .map(categorization => categorization.getIn(['category', 'slug']))
         : [],
-    serialize: ({ values }) =>
-      values.get('categorizations').map(slug => ({ category: { slug } })),
-  },
-];
+      serialize: ({ values }) =>
+        values.get('categorizations').map(slug => ({ category: { slug } })),
+    },
+  ];
 
 export const FormForm = ({
   formKey,
@@ -309,11 +301,12 @@ export const FormForm = ({
     alterFields={alterFields}
     fieldSet={fieldSet}
     components={components}
-    onSubmit={handleSubmit({ formSlug, kappSlug, datastore })}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources({ formSlug, kappSlug, datastore })}
-    fields={fields({ formSlug, kappSlug, datastore })}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{ formSlug, kappSlug, datastore }}
   >
     {children}
   </Form>

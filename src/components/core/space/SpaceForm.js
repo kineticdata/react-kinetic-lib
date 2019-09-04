@@ -1,5 +1,5 @@
 import React from 'react';
-import { get, getIn } from 'immutable';
+import { get, getIn, Map } from 'immutable';
 import t from 'prop-types';
 
 import { Form } from '../../form/Form';
@@ -16,35 +16,31 @@ import { slugify } from '../../../helpers';
 const DISPLAY_TYPES = ['Display Page', 'Redirect', 'Single Page App'];
 
 const dataSources = () => ({
-  space: [
-    fetchSpace,
-    [{ include: 'attributesMap,securityPolicies,details,filestore' }],
-    { transform: result => result.space },
-  ],
-  locales: [
-    fetchLocales,
-    [],
-    { shared: true, cache: true, transform: result => result.data.locales },
-  ],
-  timezones: [
-    fetchTimezones,
-    [],
-    { shared: true, cache: true, transform: result => result.data.timezones },
-  ],
-  attributeDefinitions: [
-    fetchAttributeDefinitions,
-    [{ attributeType: 'spaceAttributeDefinitions' }],
-    {
-      transform: result => result.attributeDefinitions,
-    },
-  ],
-  securityPolicyDefinitions: [
-    fetchSecurityPolicyDefinitions,
-    [],
-    {
-      transform: result => result.securityPolicyDefinitions,
-    },
-  ],
+  space: {
+    fn: fetchSpace,
+    params: [{ include: 'attributesMap,securityPolicies,details,filestore' }],
+    transform: result => result.space,
+  },
+  locales: {
+    fn: fetchLocales,
+    params: [],
+    transform: result => result.data.locales,
+  },
+  timezones: {
+    fn: fetchTimezones,
+    params: [],
+    transform: result => result.data.timezones,
+  },
+  attributeDefinitions: {
+    fn: fetchAttributeDefinitions,
+    params: [{ attributeType: 'spaceAttributeDefinitions' }],
+    transform: result => result.attributeDefinitions,
+  },
+  securityPolicyDefinitions: {
+    fn: fetchSecurityPolicyDefinitions,
+    params: [],
+    transform: result => result.securityPolicyDefinitions,
+  },
 });
 
 const handleSubmit = () => values =>
@@ -106,331 +102,340 @@ const securityEndpoints = {
   },
 };
 
-const fields = () => [
-  {
-    name: 'afterLogoutPath',
-    label: 'After Logout Path',
-    type: 'text',
-    initialValue: ({ space }) => get(space, 'afterLogoutPath'),
-    placeholder: ({ space }) => `/${get(space, 'slug')}`,
-    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
-  },
-  {
-    name: 'bundlePath',
-    label: 'Bundle Path',
-    type: 'text',
-    initialValue: ({ space }) => get(space, 'bundlePath'),
-    required: ({ values }) =>
-      get(values, 'sharedBundleBase') !== '' &&
-      get(values, 'displayType') === 'Display Page',
-  },
-  {
-    name: 'defaultDatastoreFormConfirmationPage',
-    label: 'Default Datastore Form Confirmation Page',
-    type: 'text',
-    initialValue: ({ space }) =>
-      get(space, 'defaultDatastoreFormConfirmationPage'),
-    placeholder: 'confirmation.jsp',
-    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
-  },
-  {
-    name: 'defaultDatastoreFormDisplayPage',
-    label: 'Default Datastore Form Display Page',
-    type: 'text',
-    initialValue: ({ space }) => get(space, 'defaultDatastoreFormDisplayPage'),
-    placeholder: 'form.jsp',
-    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
-  },
-  {
-    name: 'defaultLocale',
-    label: 'Default Locale',
-    type: 'select',
-    options: ({ locales }) =>
-      locales.map(locale => ({
-        value: locale.get('code'),
-        label: locale.get('name'),
-      })),
-    initialValue: ({ space }) => get(space, 'defaultLocale'),
-  },
-  {
-    name: 'defaultTimezone',
-    label: 'Default Timezone',
-    type: 'select',
-    options: ({ timezones }) =>
-      timezones.map(timezone => ({
-        value: timezone.get('id'),
-        label: `${timezone.get('name')} (${timezone.get('id')})`,
-      })),
-    initialValue: ({ space }) => get(space, 'defaultTimezone'),
-  },
-  {
-    name: 'displayType',
-    label: 'Display Type',
-    type: 'select',
-    options: DISPLAY_TYPES.map(displayType => ({
-      value: displayType,
-      label: displayType,
-    })),
-    initialValue: ({ space }) => get(space, 'displayType') || 'Display Page',
-  },
-  {
-    name: 'displayValueJSP',
-    label: 'Space Display Page',
-    type: 'text',
-    transient: true,
-    placeholder: 'space.jsp',
-    visible: ({ values }) => get(values, 'displayType') === 'Display Page',
-    required: ({ values }) => get(values, 'displayType') === 'Display Page',
-    initialValue: ({ space }) =>
-      get(space, 'displayType') === 'Display Page'
-        ? get(space, 'displayValue')
-        : '',
-  },
-  {
-    name: 'displayValueRedirect',
-    label: 'Redirect URL',
-    type: 'text',
-    transient: true,
-    visible: ({ values }) => get(values, 'displayType') === 'Redirect',
-    required: ({ values }) => get(values, 'displayType') === 'Redirect',
-    requiredMessage: "This field is required, when display type is 'Redirect'",
-    initialValue: ({ space }) =>
-      get(space, 'displayType') === 'Redirect'
-        ? get(space, 'displayValue')
-        : '',
-  },
-  {
-    name: 'displayValueSPA',
-    label: 'Location',
-    type: 'text',
-    transient: true,
-    visible: ({ values }) => get(values, 'displayType') === 'Single Page App',
-    required: ({ values }) => get(values, 'displayType') === 'Single Page App',
-    initialValue: ({ space }) =>
-      get(space, 'displayType') === 'Single Page App'
-        ? (get(space, 'displayValue') || '')
-            .replace('spa.jsp', '')
-            .replace('?location=', '')
-        : '',
-  },
-  {
-    name: 'displayValue',
-    label: 'Dispaly Value',
-    type: 'text',
-    visible: false,
-    initialValue: ({ space }) => get(space, 'displayValue'),
-    serialize: ({ values }) => {
-      const displayType = values.get('displayType');
-      const displayValueSPA = values.get('displayValueSPA');
-      const displayValueJSP = values.get('displayValueJSP');
-      const displayValueRedirect = values.get('displayValueRedirect');
-      return displayType === 'Single Page App'
-        ? `spa.jsp${displayValueSPA && '?location=' + displayValueSPA}`
-        : displayType === 'Redirect'
-        ? displayValueRedirect
-        : displayValueJSP;
+const fields = () => ({ space }) =>
+  space && [
+    {
+      name: 'afterLogoutPath',
+      label: 'After Logout Path',
+      type: 'text',
+      initialValue: get(space, 'afterLogoutPath'),
+      placeholder: ({ space }) => `/${get(space, 'slug')}`,
+      visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
     },
-  },
-  {
-    name: 'filestore',
-    label: 'File Store',
-    type: null,
-    visible: false,
-    serialize: ({ values }) => ({
-      filehubUrl: values.get('filehubUrl'),
-      key: values.get('filestoreKey'),
-      slug: values.get('filestoreSlug'),
-      ...(values.get('changeFilestoreSecret') && {
-        secret: values.get('filestoreSecret'),
+    {
+      name: 'bundlePath',
+      label: 'Bundle Path',
+      type: 'text',
+      initialValue: get(space, 'bundlePath'),
+      required: ({ values }) =>
+        get(values, 'sharedBundleBase') !== '' &&
+        get(values, 'displayType') === 'Display Page',
+    },
+    {
+      name: 'defaultDatastoreFormConfirmationPage',
+      label: 'Default Datastore Form Confirmation Page',
+      type: 'text',
+      initialValue: get(space, 'defaultDatastoreFormConfirmationPage'),
+      placeholder: 'confirmation.jsp',
+      visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
+    },
+    {
+      name: 'defaultDatastoreFormDisplayPage',
+      label: 'Default Datastore Form Display Page',
+      type: 'text',
+      initialValue: get(space, 'defaultDatastoreFormDisplayPage'),
+      placeholder: 'form.jsp',
+      visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
+    },
+    {
+      name: 'defaultLocale',
+      label: 'Default Locale',
+      type: 'select',
+      options: ({ locales }) =>
+        locales.map(locale =>
+          Map({
+            value: locale.get('code'),
+            label: locale.get('name'),
+          }),
+        ),
+      initialValue: get(space, 'defaultLocale'),
+    },
+    {
+      name: 'defaultTimezone',
+      label: 'Default Timezone',
+      type: 'select',
+      options: ({ timezones }) =>
+        timezones.map(timezone =>
+          Map({
+            value: timezone.get('id'),
+            label: `${timezone.get('name')} (${timezone.get('id')})`,
+          }),
+        ),
+      initialValue: get(space, 'defaultTimezone'),
+    },
+    {
+      name: 'displayType',
+      label: 'Display Type',
+      type: 'select',
+      options: DISPLAY_TYPES.map(displayType => ({
+        value: displayType,
+        label: displayType,
+      })),
+      initialValue: get(space, 'displayType') || 'Display Page',
+    },
+    {
+      name: 'displayValueJSP',
+      label: 'Space Display Page',
+      type: 'text',
+      transient: true,
+      placeholder: 'space.jsp',
+      visible: ({ values }) => get(values, 'displayType') === 'Display Page',
+      required: ({ values }) => get(values, 'displayType') === 'Display Page',
+      initialValue:
+        get(space, 'displayType') === 'Display Page'
+          ? get(space, 'displayValue')
+          : '',
+    },
+    {
+      name: 'displayValueRedirect',
+      label: 'Redirect URL',
+      type: 'text',
+      transient: true,
+      visible: ({ values }) => get(values, 'displayType') === 'Redirect',
+      required: ({ values }) => get(values, 'displayType') === 'Redirect',
+      requiredMessage:
+        "This field is required, when display type is 'Redirect'",
+      initialValue:
+        get(space, 'displayType') === 'Redirect'
+          ? get(space, 'displayValue')
+          : '',
+    },
+    {
+      name: 'displayValueSPA',
+      label: 'Location',
+      type: 'text',
+      transient: true,
+      visible: ({ values }) => get(values, 'displayType') === 'Single Page App',
+      required: ({ values }) =>
+        get(values, 'displayType') === 'Single Page App',
+      initialValue:
+        get(space, 'displayType') === 'Single Page App'
+          ? (get(space, 'displayValue') || '')
+              .replace('spa.jsp', '')
+              .replace('?location=', '')
+          : '',
+    },
+    {
+      name: 'displayValue',
+      label: 'Dispaly Value',
+      type: 'text',
+      visible: false,
+      initialValue: get(space, 'displayValue'),
+      serialize: ({ values }) => {
+        const displayType = values.get('displayType');
+        const displayValueSPA = values.get('displayValueSPA');
+        const displayValueJSP = values.get('displayValueJSP');
+        const displayValueRedirect = values.get('displayValueRedirect');
+        return displayType === 'Single Page App'
+          ? `spa.jsp${displayValueSPA && '?location=' + displayValueSPA}`
+          : displayType === 'Redirect'
+          ? displayValueRedirect
+          : displayValueJSP;
+      },
+    },
+    {
+      name: 'filestore',
+      label: 'File Store',
+      type: null,
+      visible: false,
+      serialize: ({ values }) => ({
+        filehubUrl: values.get('filehubUrl'),
+        key: values.get('filestoreKey'),
+        slug: values.get('filestoreSlug'),
+        ...(values.get('changeFilestoreSecret') && {
+          secret: values.get('filestoreSecret'),
+        }),
       }),
-    }),
-    initialValue: ({ space }) => get(space, 'filestore'),
-  },
-  {
-    name: 'filehubUrl',
-    label: 'Filehub URL',
-    type: 'text',
-    visible: true,
-    transient: true,
-    initialValue: ({ space }) => getIn(space, ['filestore', 'filehubUrl']),
-  },
-  {
-    name: 'filestoreKey',
-    label: 'Filestore Key',
-    type: 'text',
-    visible: true,
-    transient: true,
-    initialValue: ({ space }) => getIn(space, ['filestore', 'key']),
-  },
-  {
-    name: 'filestoreSecret',
-    label: 'Filestore Secret',
-    type: 'password',
-    visible: ({ values }) => values.get('changeFilestoreSecret'),
-    transient: true,
-  },
-  {
-    name: 'changeFilestoreSecret',
-    label: 'Change Filestore Secret',
-    type: 'checkbox',
-    transient: true,
-    // in "new" mode we do not show this toggle field and default it to true
-    visible: ({ space }) => !!space,
-    initialValue: ({ space }) => !space,
-    onChange: ({ values }, { setValue }) => {
-      if (values.get('filestoreSecret') !== '') {
-        setValue('filestoreSecret', '');
-      }
+      initialValue: get(space, 'filestore'),
     },
-  },
-  {
-    name: 'filestoreSlug',
-    label: 'Filestore Slug',
-    type: 'text',
-    visible: true,
-    transient: true,
-    initialValue: ({ space }) => getIn(space, ['filestore', 'slug']),
-  },
-  {
-    name: 'loginPage',
-    label: 'Login Page',
-    type: 'text',
-    initialValue: ({ space }) => get(space, 'loginPage'),
-    placeholder: 'login.jsp',
-    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
-  },
-  {
-    name: 'name',
-    label: 'Space Name',
-    type: 'text',
-    required: true,
-    initialValue: ({ space }) => get(space, 'name'),
-    onChange: ({ values }, { setValue }) => {
-      if (values.get('linked')) {
-        setValue('slug', slugify(values.get('name')), false);
-      }
+    {
+      name: 'filehubUrl',
+      label: 'Filehub URL',
+      type: 'text',
+      visible: true,
+      transient: true,
+      initialValue: getIn(space, ['filestore', 'filehubUrl']),
     },
-  },
-  {
-    name: 'resetPasswordPage',
-    label: 'Reset Password Page',
-    type: 'text',
-    initialValue: ({ space }) => get(space, 'resetPasswordPage'),
-    placeholder: 'resetPassword.jsp',
-    visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
-  },
-  {
-    name: 'oauthSigningKey',
-    label: 'OAuth Signing Key',
-    type: 'password',
-    visible: ({ values }) => values.get('changeOAuthSigningKey'),
-    transient: ({ values }) => !values.get('changeOAuthSigningKey'),
-  },
-  {
-    name: 'changeOAuthSigningKey',
-    label: 'Change OAuth Signing Key',
-    type: 'checkbox',
-    transient: true,
-    // in "new" mode we do not show this toggle field and default it to true
-    visible: ({ space }) => !!space,
-    initialValue: ({ space }) => !space,
-    onChange: ({ values }, { setValue }) => {
-      if (values.get('oauthSigningKey') !== '') {
-        setValue('oauthSigningKey', '');
-      }
+    {
+      name: 'filestoreKey',
+      label: 'Filestore Key',
+      type: 'text',
+      visible: true,
+      transient: true,
+      initialValue: getIn(space, ['filestore', 'key']),
     },
-  },
-  {
-    name: 'sessionInactiveLimitInSeconds',
-    label: 'Inactive Session Limit (in seconds)',
-    type: 'text',
-    initialValue: ({ space }) => get(space, 'sessionInactiveLimitInSeconds'),
-    serialize: ({ values }) =>
-      parseInt(values.get('sessionInactiveLimitInSeconds')),
-  },
-  {
-    name: 'sharedBundleBase',
-    label: 'Shared Bundle Base',
-    type: 'text',
-    initialValue: ({ space }) => get(space, 'sharedBundleBase'),
-  },
-  {
-    name: 'slug',
-    label: 'Slug',
-    type: 'text',
-    required: true,
-    initialValue: ({ space }) => get(space, 'slug'),
-    onChange: (_bindings, { setValue }) => {
-      setValue('linked', false);
+    {
+      name: 'filestoreSecret',
+      label: 'Filestore Secret',
+      type: 'password',
+      visible: ({ values }) => values.get('changeFilestoreSecret'),
+      transient: true,
     },
-  },
-  {
-    name: 'linked',
-    label: 'Linked',
-    type: 'checkbox',
-    transient: true,
-    initialValue: true,
-    visible: false,
-  },
-  {
-    name: 'trustedFrameDomains',
-    label: 'Trusted Frame Domains',
-    type: 'text-multi',
-    initialValue: ({ space }) => get(space, 'trustedFrameDomains'),
-  },
-  {
-    name: 'trustedResourceDomains',
-    label: 'Trusted Resource Domains',
-    type: 'text-multi',
-    initialValue: ({ space }) => get(space, 'trustedResourceDomains'),
-  },
-  ...Object.entries(securityEndpoints).map(([endpointFieldName, endpoint]) => ({
-    name: endpointFieldName,
-    label: endpoint.label,
-    type: 'select',
-    options: ({ securityPolicyDefinitions }) =>
-      securityPolicyDefinitions
-        ? securityPolicyDefinitions
-            .filter(definition =>
-              endpoint.types.includes(definition.get('type')),
-            )
-            .map(definition => ({
-              value: definition.get('name'),
-              label: definition.get('name'),
-            }))
-        : [],
-    initialValue: ({ space }) =>
-      space
-        ? space
-            .get('securityPolicies')
-            .find(pol => pol.get('endpoint') === endpoint.endpoint)
-            .get('name')
-        : '',
-    transient: true,
-  })),
-  {
-    name: 'securityPolicies',
-    label: 'Security Policies',
-    type: null,
-    visible: false,
-    serialize: ({ values }) =>
-      Object.entries(securityEndpoints)
-        .map(([endpointFieldName, policy]) => ({
-          endpoint: policy.endpoint,
-          name: values.get(endpointFieldName),
-        }))
-        .filter(endpoint => endpoint.name !== ''),
-    initialValue: ({ space }) => get(space, 'securityPolicies'),
-  },
-  {
-    name: 'attributesMap',
-    label: 'Attributes',
-    type: 'attributes',
-    required: false,
-    options: ({ attributeDefinitions }) => attributeDefinitions,
-    initialValue: ({ space }) => get(space, 'attributesMap'),
-  },
-];
+    {
+      name: 'changeFilestoreSecret',
+      label: 'Change Filestore Secret',
+      type: 'checkbox',
+      transient: true,
+      // in "new" mode we do not show this toggle field and default it to true
+      visible: ({ space }) => !!space,
+      initialValue: !space,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('filestoreSecret') !== '') {
+          setValue('filestoreSecret', '');
+        }
+      },
+    },
+    {
+      name: 'filestoreSlug',
+      label: 'Filestore Slug',
+      type: 'text',
+      visible: true,
+      transient: true,
+      initialValue: getIn(space, ['filestore', 'slug']),
+    },
+    {
+      name: 'loginPage',
+      label: 'Login Page',
+      type: 'text',
+      initialValue: get(space, 'loginPage'),
+      placeholder: 'login.jsp',
+      visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
+    },
+    {
+      name: 'name',
+      label: 'Space Name',
+      type: 'text',
+      required: true,
+      initialValue: get(space, 'name'),
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('linked')) {
+          setValue('slug', slugify(values.get('name')), false);
+        }
+      },
+    },
+    {
+      name: 'resetPasswordPage',
+      label: 'Reset Password Page',
+      type: 'text',
+      initialValue: get(space, 'resetPasswordPage'),
+      placeholder: 'resetPassword.jsp',
+      visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
+    },
+    {
+      name: 'oauthSigningKey',
+      label: 'OAuth Signing Key',
+      type: 'password',
+      visible: ({ values }) => values.get('changeOAuthSigningKey'),
+      transient: ({ values }) => !values.get('changeOAuthSigningKey'),
+    },
+    {
+      name: 'changeOAuthSigningKey',
+      label: 'Change OAuth Signing Key',
+      type: 'checkbox',
+      transient: true,
+      // in "new" mode we do not show this toggle field and default it to true
+      visible: ({ space }) => !!space,
+      initialValue: !space,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('oauthSigningKey') !== '') {
+          setValue('oauthSigningKey', '');
+        }
+      },
+    },
+    {
+      name: 'sessionInactiveLimitInSeconds',
+      label: 'Inactive Session Limit (in seconds)',
+      type: 'text',
+      initialValue: get(space, 'sessionInactiveLimitInSeconds'),
+      serialize: ({ values }) =>
+        parseInt(values.get('sessionInactiveLimitInSeconds')),
+    },
+    {
+      name: 'sharedBundleBase',
+      label: 'Shared Bundle Base',
+      type: 'text',
+      initialValue: get(space, 'sharedBundleBase'),
+    },
+    {
+      name: 'slug',
+      label: 'Slug',
+      type: 'text',
+      required: true,
+      initialValue: get(space, 'slug'),
+      onChange: (_bindings, { setValue }) => {
+        setValue('linked', false);
+      },
+    },
+    {
+      name: 'linked',
+      label: 'Linked',
+      type: 'checkbox',
+      transient: true,
+      initialValue: true,
+      visible: false,
+    },
+    {
+      name: 'trustedFrameDomains',
+      label: 'Trusted Frame Domains',
+      type: 'text-multi',
+      initialValue: get(space, 'trustedFrameDomains'),
+    },
+    {
+      name: 'trustedResourceDomains',
+      label: 'Trusted Resource Domains',
+      type: 'text-multi',
+      initialValue: get(space, 'trustedResourceDomains'),
+    },
+    ...Object.entries(securityEndpoints).map(
+      ([endpointFieldName, endpoint]) => ({
+        name: endpointFieldName,
+        label: endpoint.label,
+        type: 'select',
+        options: ({ securityPolicyDefinitions }) =>
+          securityPolicyDefinitions
+            ? securityPolicyDefinitions
+                .filter(definition =>
+                  endpoint.types.includes(definition.get('type')),
+                )
+                .map(definition =>
+                  Map({
+                    value: definition.get('name'),
+                    label: definition.get('name'),
+                  }),
+                )
+            : [],
+        initialValue: space
+          ? space
+              .get('securityPolicies')
+              .find(pol => pol.get('endpoint') === endpoint.endpoint)
+              .get('name')
+          : '',
+        transient: true,
+      }),
+    ),
+    {
+      name: 'securityPolicies',
+      label: 'Security Policies',
+      type: null,
+      visible: false,
+      serialize: ({ values }) =>
+        Object.entries(securityEndpoints)
+          .map(([endpointFieldName, policy]) => ({
+            endpoint: policy.endpoint,
+            name: values.get(endpointFieldName),
+          }))
+          .filter(endpoint => endpoint.name !== ''),
+      initialValue: get(space, 'securityPolicies'),
+    },
+    {
+      name: 'attributesMap',
+      label: 'Attributes',
+      type: 'attributes',
+      required: false,
+      options: ({ attributeDefinitions }) => attributeDefinitions,
+      initialValue: get(space, 'attributesMap'),
+    },
+  ];
 
 export const SpaceForm = ({
   addFields,
@@ -441,7 +446,6 @@ export const SpaceForm = ({
   onSave,
   onError,
   children,
-  ...formOptions
 }) => (
   <Form
     formKey={formKey}
@@ -449,11 +453,12 @@ export const SpaceForm = ({
     alterFields={alterFields}
     fieldSet={fieldSet}
     components={components}
-    onSubmit={handleSubmit(formOptions)}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources(formOptions)}
-    fields={fields(formOptions)}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{}}
   >
     {children}
   </Form>
