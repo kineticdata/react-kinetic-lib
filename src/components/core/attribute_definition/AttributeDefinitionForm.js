@@ -1,7 +1,6 @@
 import React from 'react';
-import { Form } from '../../form/Form';
 import t from 'prop-types';
-
+import { Form } from '../../form/Form';
 import {
   createAttributeDefinition,
   updateAttributeDefinition,
@@ -9,14 +8,13 @@ import {
 } from '../../../apis';
 
 const dataSources = ({ kappSlug, attributeType, attributeName }) => ({
-  attributeDefinition: [
-    fetchAttributeDefinition,
-    [{ kappSlug, attributeType, attributeName, include: 'details' }],
-    {
-      transform: result => result.attributeDefinition,
-      runIf: () => !!attributeName,
-    },
-  ],
+  attributeDefinition: {
+    fn: fetchAttributeDefinition,
+    params: attributeName && [
+      { kappSlug, attributeType, attributeName, include: 'details' },
+    ],
+    transform: result => result.attributeDefinition,
+  },
 });
 
 const handleSubmit = ({ kappSlug, attributeType, attributeName }) => values =>
@@ -33,32 +31,34 @@ const handleSubmit = ({ kappSlug, attributeType, attributeName }) => values =>
     return attributeDefinition;
   });
 
-const fields = () => [
-  {
-    name: 'name',
-    label: 'Name',
-    type: 'text',
-    required: true,
-    initialValue: ({ attributeDefinition }) =>
-      attributeDefinition ? attributeDefinition.get('name') : '',
-  },
-  {
-    name: 'description',
-    label: 'Description',
-    type: 'text',
-    required: false,
-    initialValue: ({ attributeDefinition }) =>
-      attributeDefinition ? attributeDefinition.get('description') : '',
-  },
-  {
-    name: 'allowsMultiple',
-    label: 'Allow multiple attributes?',
-    type: 'checkbox',
-    required: false,
-    initialValue: ({ attributeDefinition }) =>
-      attributeDefinition ? attributeDefinition.get('allowsMultiple') : false,
-  },
-];
+const fields = ({ attributeName }) => ({ attributeDefinition }) =>
+  (!attributeName || attributeDefinition) && [
+    {
+      name: 'name',
+      label: 'Name',
+      type: 'text',
+      required: true,
+      initialValue: attributeDefinition ? attributeDefinition.get('name') : '',
+    },
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'text',
+      required: false,
+      initialValue: attributeDefinition
+        ? attributeDefinition.get('description')
+        : '',
+    },
+    {
+      name: 'allowsMultiple',
+      label: 'Allow multiple attributes?',
+      type: 'checkbox',
+      required: false,
+      initialValue: attributeDefinition
+        ? attributeDefinition.get('allowsMultiple')
+        : false,
+    },
+  ];
 
 /**
  * @component
@@ -73,7 +73,9 @@ export const AttributeDefinitionForm = ({
   onSave,
   onError,
   children,
-  ...formOptions
+  kappSlug,
+  attributeType,
+  attributeName,
 }) => (
   <Form
     addFields={addFields}
@@ -81,11 +83,12 @@ export const AttributeDefinitionForm = ({
     fieldSet={fieldSet}
     formKey={formKey}
     components={components}
-    onSubmit={handleSubmit(formOptions)}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources(formOptions)}
-    fields={fields(formOptions)}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{ kappSlug, attributeType, attributeName }}
   >
     {children}
   </Form>

@@ -10,19 +10,18 @@ import { Form } from '../../form/Form';
 import { slugify } from '../../../helpers';
 
 const dataSources = ({ kappSlug, categorySlug }) => ({
-  category: [
-    fetchCategory,
-    [{ kappSlug, categorySlug, include: 'attributesMap' }],
-    {
-      transform: result => result.category,
-      runIf: () => !!categorySlug,
-    },
-  ],
-  attributeDefinitions: [
-    fetchAttributeDefinitions,
-    [{ kappSlug, attributeType: 'categoryAttributeDefinitions' }],
-    { transform: result => result.attributeDefinitions },
-  ],
+  category: {
+    fn: fetchCategory,
+    params: categorySlug && [
+      { kappSlug, categorySlug, include: 'attributesMap' },
+    ],
+    transform: result => result.category,
+  },
+  attributeDefinitions: {
+    fn: fetchAttributeDefinitions,
+    params: [{ kappSlug, attributeType: 'categoryAttributeDefinitions' }],
+    transform: result => result.attributeDefinitions,
+  },
 });
 
 const handleSubmit = ({ kappSlug, categorySlug }) => values =>
@@ -38,47 +37,47 @@ const handleSubmit = ({ kappSlug, categorySlug }) => values =>
     return category;
   });
 
-const fields = ({ kappSlug, categorySlug }) => [
-  {
-    name: 'name',
-    label: 'Name',
-    type: 'text',
-    required: true,
-    initialValue: ({ category }) => (category ? category.get('name') : ''),
-    onChange: ({ values }, { setValue }) => {
-      if (values.get('linked')) {
-        setValue('slug', slugify(values.get('name')), false);
-      }
+const fields = ({ kappSlug, categorySlug }) => ({ category }) =>
+  (!categorySlug || category) && [
+    {
+      name: 'name',
+      label: 'Name',
+      type: 'text',
+      required: true,
+      initialValue: category ? category.get('name') : '',
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('linked')) {
+          setValue('slug', slugify(values.get('name')), false);
+        }
+      },
     },
-  },
-  {
-    name: 'slug',
-    label: 'Slug',
-    type: 'text',
-    required: false,
-    initialValue: ({ category }) => (category ? category.get('slug') : ''),
-    onChange: (_bindings, { setValue }) => {
-      setValue('linked', false);
+    {
+      name: 'slug',
+      label: 'Slug',
+      type: 'text',
+      required: false,
+      initialValue: category ? category.get('slug') : '',
+      onChange: (_bindings, { setValue }) => {
+        setValue('linked', false);
+      },
     },
-  },
-  {
-    name: 'linked',
-    label: 'Linked',
-    type: 'checkbox',
-    transient: true,
-    initialValue: ({ category }) => !category,
-    visible: false,
-  },
-  {
-    name: 'attributesMap',
-    label: 'Attributes',
-    type: 'attributes',
-    required: false,
-    options: ({ attributeDefinitions }) => attributeDefinitions,
-    initialValue: ({ category }) =>
-      category ? category.get('attributesMap') : null,
-  },
-];
+    {
+      name: 'linked',
+      label: 'Linked',
+      type: 'checkbox',
+      transient: true,
+      initialValue: !category,
+      visible: false,
+    },
+    {
+      name: 'attributesMap',
+      label: 'Attributes',
+      type: 'attributes',
+      required: false,
+      options: ({ attributeDefinitions }) => attributeDefinitions,
+      initialValue: category ? category.get('attributesMap') : undefined,
+    },
+  ];
 
 export const CategoryForm = ({
   addFields,
@@ -89,7 +88,8 @@ export const CategoryForm = ({
   onSave,
   onError,
   children,
-  ...formOptions
+  kappSlug,
+  categorySlug,
 }) => (
   <Form
     addFields={addFields}
@@ -97,11 +97,12 @@ export const CategoryForm = ({
     fieldSet={fieldSet}
     formKey={formKey}
     components={components}
-    onSubmit={handleSubmit(formOptions)}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources(formOptions)}
-    fields={fields(formOptions)}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{ kappSlug, categorySlug }}
   >
     {children}
   </Form>

@@ -11,32 +11,34 @@ import {
   fetchTimezones,
 } from '../../../apis';
 
+const USER_INCLUDES = 'attributesMap,memberships,profileAttributesMap';
+
 const dataSources = ({ username }) => ({
-  locales: [
-    fetchLocales,
-    [],
-    { shared: true, cache: true, transform: result => result.data.locales },
-  ],
-  timezones: [
-    fetchTimezones,
-    [],
-    { shared: true, cache: true, transform: result => result.data.timezones },
-  ],
-  user: [
-    fetchUser,
-    [{ username, include: 'attributesMap,memberships,profileAttributesMap' }],
-    { transform: result => result.user, runIf: () => !!username },
-  ],
-  attributeDefinitions: [
-    fetchAttributeDefinitions,
-    [{ attributeType: 'userAttributeDefinitions' }],
-    { transform: result => result.attributeDefinitions },
-  ],
-  profileAttributeDefinitions: [
-    fetchAttributeDefinitions,
-    [{ attributeType: 'userProfileAttributeDefinitions' }],
-    { transform: result => result.attributeDefinitions },
-  ],
+  locales: {
+    fn: fetchLocales,
+    params: [],
+    transform: result => result.data.locales,
+  },
+  timezones: {
+    fn: fetchTimezones,
+    params: [],
+    transform: result => result.data.timezones,
+  },
+  user: {
+    fn: fetchUser,
+    params: username && [{ username, include: USER_INCLUDES }],
+    transform: result => result.user,
+  },
+  attributeDefinitions: {
+    fn: fetchAttributeDefinitions,
+    params: [{ attributeType: 'userAttributeDefinitions' }],
+    transform: result => result.attributeDefinitions,
+  },
+  profileAttributeDefinitions: {
+    fn: fetchAttributeDefinitions,
+    params: [{ attributeType: 'userProfileAttributeDefinitions' }],
+    transform: result => result.attributeDefinitions,
+  },
 });
 
 const handleSubmit = ({ username }) => values => {
@@ -44,135 +46,143 @@ const handleSubmit = ({ username }) => values => {
   return username ? updateUser({ username, user }) : createUser({ user });
 };
 
-const fields = ({ username }) => [
-  {
-    name: 'username',
-    label: 'Username',
-    type: 'text',
-    required: true,
-    enabled: !username,
-    initialValue: ({ user }) => get(user, 'username', ''),
-  },
-  {
-    name: 'email',
-    label: 'Email',
-    type: 'text',
-    initialValue: ({ user }) => get(user, 'email', ''),
-  },
-  {
-    name: 'displayName',
-    label: 'Display Name',
-    type: 'text',
-    initialValue: ({ user }) => get(user, 'displayName'),
-  },
-  {
-    name: 'enabled',
-    label: 'Enabled?',
-    type: 'checkbox',
-    initialValue: ({ user }) => get(user, 'enabled', true),
-  },
-  {
-    name: 'spaceAdmin',
-    label: 'Space Admin?',
-    type: 'checkbox',
-    initialValue: ({ user }) => get(user, 'spaceAdmin'),
-  },
-  {
-    name: 'password',
-    label: 'Password',
-    type: 'password',
-    required: ({ values }) => values.get('changePassword'),
-    visible: ({ values }) => values.get('changePassword'),
-    transient: ({ values }) => !values.get('changePassword'),
-  },
-  {
-    name: 'passwordConfirmation',
-    label: 'Password Confirmation',
-    type: 'password',
-    required: ({ values }) => values.get('changePassword'),
-    visible: ({ values }) => values.get('changePassword'),
-    transient: ({ values }) => !values.get('changePassword'),
-    constraint: ({ values }) =>
-      values.get('passwordConfirmation') === values.get('password'),
-    constraintMessage: 'Password Confirmation does not match',
-  },
-  {
-    name: 'changePassword',
-    label: 'Change Password',
-    type: 'checkbox',
-    visible: !!username,
-    initialValue: !username,
-    transient: true,
-    onChange: ({ values }, { setValue }) => {
-      if (values.get('password') !== '') {
-        setValue('password', '');
-      }
-      if (values.get('passwordConfirmation') !== '') {
-        setValue('passwordConfirmation', '');
-      }
+const fields = ({ username }) => ({ user }) =>
+  (!username || user) && [
+    {
+      name: 'username',
+      label: 'Username',
+      type: 'text',
+      required: true,
+      enabled: !username,
+      initialValue: get(user, 'username') || '',
     },
-  },
-  {
-    name: 'allowedIps',
-    label: 'Allowed IP Addresses',
-    placeholder: '*',
-    type: 'text',
-    required: false,
-    initialValue: ({ user }) => get(user, 'allowedIps'),
-  },
-  {
-    name: 'preferredLocale',
-    label: 'Preferred Locale',
-    type: 'select',
-    options: ({ locales }) =>
-      locales.map(locale => ({
-        value: locale.get('code'),
-        label: locale.get('name'),
-      })),
-    initialValue: ({ user }) => get(user, 'preferredLocale'),
-  },
-  {
-    name: 'timezone',
-    label: 'Timezone',
-    type: 'select',
-    options: ({ timezones }) =>
-      timezones.map(timezone => ({
-        value: timezone.get('id'),
-        label: timezone.get('name'),
-      })),
-    initialValue: ({ user }) => get(user, 'timezone'),
-  },
-  {
-    name: 'attributesMap',
-    label: 'Attributes',
-    type: 'attributes',
-    required: false,
-    options: ({ attributeDefinitions }) => attributeDefinitions,
-    initialValue: ({ user }) => get(user, 'attributesMap'),
-    placeholder: 'There are no attributes configured',
-  },
-  {
-    name: 'profileAttributesMap',
-    label: 'Profile Attributes',
-    type: 'attributes',
-    required: false,
-    options: ({ profileAttributeDefinitions }) => profileAttributeDefinitions,
-    initialValue: ({ user }) => get(user, 'profileAttributesMap'),
-    placeholder: 'There are no profile attributes configured',
-  },
-  {
-    name: 'memberships',
-    label: 'Teams',
-    type: 'team-multi',
-    required: false,
-    placeholder: 'Select a team...',
-    options: [],
-    initialValue: ({ user }) =>
-      get(user, 'memberships', List()).map(m => m.get('team')),
-    serialize: ({ values }) =>
-      values.get('memberships').map(team => Map({ team })),
-  },
-];
+    {
+      name: 'email',
+      label: 'Email',
+      type: 'text',
+      initialValue: get(user, 'email') || '',
+    },
+    {
+      name: 'displayName',
+      label: 'Display Name',
+      type: 'text',
+      initialValue: get(user, 'displayName') || '',
+    },
+    {
+      name: 'enabled',
+      label: 'Enabled?',
+      type: 'checkbox',
+      initialValue: user ? get(user, 'enabled') : true,
+    },
+    {
+      name: 'spaceAdmin',
+      label: 'Space Admin?',
+      type: 'checkbox',
+      initialValue: user ? get(user, 'spaceAdmin') : false,
+    },
+    {
+      name: 'password',
+      label: 'Password',
+      type: 'password',
+      required: ({ values }) => values.get('changePassword'),
+      visible: ({ values }) => values.get('changePassword'),
+      transient: ({ values }) => !values.get('changePassword'),
+    },
+    {
+      name: 'passwordConfirmation',
+      label: 'Password Confirmation',
+      type: 'password',
+      required: ({ values }) => values.get('changePassword'),
+      visible: ({ values }) => values.get('changePassword'),
+      transient: ({ values }) => !values.get('changePassword'),
+      constraint: ({ values }) =>
+        values.get('passwordConfirmation') === values.get('password'),
+      constraintMessage: 'Password Confirmation does not match',
+    },
+    {
+      name: 'changePassword',
+      label: 'Change Password',
+      type: 'checkbox',
+      visible: !!username,
+      initialValue: !username,
+      transient: true,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('password') !== '') {
+          setValue('password', '');
+        }
+        if (values.get('passwordConfirmation') !== '') {
+          setValue('passwordConfirmation', '');
+        }
+      },
+    },
+    {
+      name: 'allowedIps',
+      label: 'Allowed IP Addresses',
+      placeholder: '*',
+      type: 'text',
+      required: false,
+      initialValue: get(user, 'allowedIps') || '',
+    },
+    {
+      name: 'preferredLocale',
+      label: 'Preferred Locale',
+      type: 'select',
+      options: ({ locales }) =>
+        locales
+          ? locales.map(locale =>
+              Map({
+                value: locale.get('code'),
+                label: locale.get('name'),
+              }),
+            )
+          : List(),
+      initialValue: get(user, 'preferredLocale') || '',
+    },
+    {
+      name: 'timezone',
+      label: 'Timezone',
+      type: 'select',
+      options: ({ timezones }) =>
+        timezones
+          ? timezones.map(timezone =>
+              Map({
+                value: timezone.get('id'),
+                label: timezone.get('name'),
+              }),
+            )
+          : List(),
+      initialValue: get(user, 'timezone') || '',
+    },
+    {
+      name: 'attributesMap',
+      label: 'Attributes',
+      type: 'attributes',
+      required: false,
+      options: ({ attributeDefinitions }) => attributeDefinitions,
+      initialValue: get(user, 'attributesMap'),
+      placeholder: 'There are no attributes configured',
+    },
+    {
+      name: 'profileAttributesMap',
+      label: 'Profile Attributes',
+      type: 'attributes',
+      required: false,
+      options: ({ profileAttributeDefinitions }) => profileAttributeDefinitions,
+      initialValue: get(user, 'profileAttributesMap'),
+      placeholder: 'There are no profile attributes configured',
+    },
+    {
+      name: 'memberships',
+      label: 'Teams',
+      type: 'team-multi',
+      required: false,
+      placeholder: 'Select a team...',
+      options: [],
+      initialValue: get(user, 'memberships', List()).map(m => m.get('team')),
+      serialize: ({ values }) =>
+        values.get('memberships').map(team => Map({ team })),
+    },
+  ];
 
 export const UserForm = ({
   addFields,
@@ -189,13 +199,14 @@ export const UserForm = ({
     addFields={addFields}
     alterFields={alterFields}
     components={components}
-    dataSources={dataSources({ username })}
-    fields={fields({ username })}
+    dataSources={dataSources}
+    fields={fields}
     fieldSet={fieldSet}
     formKey={formKey}
     onError={onError}
     onSave={onSave}
-    onSubmit={handleSubmit({ username })}
+    onSubmit={handleSubmit}
+    formOptions={{ username }}
   >
     {children}
   </Form>

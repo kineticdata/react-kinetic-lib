@@ -297,19 +297,15 @@ regSaga(
     const { bindings, fields, onSubmit, onSave, onError } = yield select(
       selectForm(formKey),
     );
+
     const values = fields
-      .filter(
-        field =>
-          !field.get('transient') && fieldSet.contains(field.get('name')),
-      )
+      .filter(field => !field.transient && fieldSet.contains(field.name))
       .map(field =>
-        field.has('serialize')
-          ? field.get('serialize')(bindings)
-          : field.get('value'),
+        field.serialize ? field.serialize(bindings) : field.value,
       );
 
     const errors = fields
-      .map(field => field.get('errors'))
+      .map(field => field.errors)
       .filter(errors => !errors.isEmpty());
 
     if (errors.isEmpty()) {
@@ -429,7 +425,7 @@ export class Form extends Component {
           <FormImpl
             {...props}
             formKey={this.formKey}
-            components={config.merge(components)}
+            components={config.merge(Map(components).filter(c => !!c))}
           />
         )}
       </ComponentConfigContext.Consumer>
@@ -463,7 +459,7 @@ class FormImplComponent extends Component {
       formState,
     } = this.props;
     const bindings = formState ? formState.bindings : {};
-    const initialized = formState && !!formState.fields;
+    const initialized = formState ? !!formState.fields : false;
     let form = null;
     if (initialized) {
       const { FormButtons, FormError, FormLayout } = components.toObject();

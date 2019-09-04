@@ -19,35 +19,27 @@ const SPACE_SECURITY_DEFINITION_TYPES = [
 
 const KAPP_SECURITY_DEFINITION_TYPES = ['Kapp', 'Form', 'Submission'];
 
+const SPACE_INCLUDES =
+  'datastoreFormAttributeDefinitions,spaceAttributeDefinitions,teamAttributeDefinitions,userAttributeDefinitions,userProfileAttributeDefinitions';
+const KAPP_INCLUDES =
+  'formAttributeDefinitions,kappAttributeDefinitions,fields';
+
 const dataSources = ({ securityPolicyName, kappSlug }) => ({
-  space: [
-    fetchSpace,
-    [
-      {
-        include:
-          'datastoreFormAttributeDefinitions,spaceAttributeDefinitions,teamAttributeDefinitions,userAttributeDefinitions,userProfileAttributeDefinitions',
-      },
-    ],
-    { transform: result => result.space },
-  ],
-  kapp: [
-    fetchKapp,
-    [
-      {
-        kappSlug,
-        include: 'formAttributeDefinitions,kappAttributeDefinitions,fields',
-      },
-    ],
-    { transform: result => result.kapp, runIf: () => !!kappSlug },
-  ],
-  securityPolicy: [
-    fetchSecurityPolicyDefinition,
-    [{ securityPolicyName, kappSlug }],
-    {
-      transform: result => result.securityPolicyDefinition,
-      runIf: () => !!securityPolicyName,
-    },
-  ],
+  space: {
+    fn: fetchSpace,
+    params: [{ include: SPACE_INCLUDES }],
+    transform: result => result.space,
+  },
+  kapp: {
+    fn: fetchKapp,
+    params: kappSlug && [{ kappSlug, include: KAPP_INCLUDES }],
+    transform: result => result.kapp,
+  },
+  securityPolicy: {
+    fn: fetchSecurityPolicyDefinition,
+    params: securityPolicyName && [{ securityPolicyName, kappSlug }],
+    transform: result => result.securityPolicyDefinition,
+  },
 });
 
 const handleSubmit = ({ securityPolicyName, kappSlug }) => values =>
@@ -65,49 +57,50 @@ const handleSubmit = ({ securityPolicyName, kappSlug }) => values =>
     return securityPolicyDefinition;
   });
 
-const fields = ({ kappSlug }) => [
-  {
-    name: 'name',
-    label: 'Name',
-    type: 'text',
-    required: true,
-    initialValue: ({ securityPolicy }) =>
-      securityPolicy ? securityPolicy.get('name') : '',
-  },
-  {
-    name: 'type',
-    label: 'Type',
-    type: 'select',
-    required: true,
-    options: (kappSlug
-      ? KAPP_SECURITY_DEFINITION_TYPES
-      : SPACE_SECURITY_DEFINITION_TYPES
-    ).map(ele => ({
-      value: ele,
-      label: ele,
-    })),
-    initialValue: ({ securityPolicy }) =>
-      securityPolicy ? securityPolicy.get('type') : 'Space',
-  },
-  {
-    name: 'message',
-    label: 'Message',
-    type: 'text',
-    required: true,
-    initialValue: ({ securityPolicy }) =>
-      securityPolicy ? securityPolicy.get('message') : '',
-  },
-  {
-    name: 'rule',
-    label: 'Rule',
-    type: 'code',
-    required: true,
-    initialValue: ({ securityPolicy }) =>
-      securityPolicy ? securityPolicy.get('rule') : '',
-    options: ({ space, kapp, values }) =>
-      buildBindings({ space, kapp, scope: values.get('type') }),
-  },
-];
+const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
+  (!securityPolicyName || securityPolicy) && [
+    {
+      name: 'name',
+      label: 'Name',
+      type: 'text',
+      required: true,
+      initialValue: securityPolicy ? securityPolicy.get('name') : '',
+    },
+    {
+      name: 'type',
+      label: 'Type',
+      type: 'select',
+      required: true,
+      options: (kappSlug
+        ? KAPP_SECURITY_DEFINITION_TYPES
+        : SPACE_SECURITY_DEFINITION_TYPES
+      ).map(ele => ({
+        value: ele,
+        label: ele,
+      })),
+      initialValue: securityPolicy
+        ? securityPolicy.get('type')
+        : kappSlug
+        ? 'Kapp'
+        : 'Space',
+    },
+    {
+      name: 'message',
+      label: 'Message',
+      type: 'text',
+      required: true,
+      initialValue: securityPolicy ? securityPolicy.get('message') : '',
+    },
+    {
+      name: 'rule',
+      label: 'Rule',
+      type: 'code',
+      required: true,
+      options: ({ space, kapp, values }) =>
+        buildBindings({ space, kapp, scope: values.get('type') }),
+      initialValue: securityPolicy ? securityPolicy.get('rule') : '',
+    },
+  ];
 
 export const SecurityDefinitionForm = ({
   addFields,
@@ -118,7 +111,8 @@ export const SecurityDefinitionForm = ({
   onSave,
   onError,
   children,
-  ...formOptions
+  securityPolicyName,
+  kappSlug,
 }) => (
   <Form
     addFields={addFields}
@@ -126,11 +120,12 @@ export const SecurityDefinitionForm = ({
     fieldSet={fieldSet}
     formKey={formKey}
     components={components}
-    onSubmit={handleSubmit(formOptions)}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources(formOptions)}
-    fields={fields(formOptions)}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{ kappSlug, securityPolicyName }}
   >
     {children}
   </Form>

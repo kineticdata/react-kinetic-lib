@@ -14,6 +14,7 @@ export const FormState = Record({
   onError: null,
   onSave: null,
   onSubmit: null,
+  submitting: false,
 });
 
 export const DATA_SOURCE_STATUS = {
@@ -68,6 +69,7 @@ export const Field = Record({
   renderAttributes: Map(),
   required: false,
   requiredMessage: 'This field is required',
+  serialize: null,
   touched: false,
   transient: false,
   type: '',

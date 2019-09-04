@@ -43,6 +43,7 @@ export const createField = formKey => ({
   renderAttributes,
   required,
   requiredMessage,
+  serialize,
   transient,
   type,
   visible,
@@ -50,12 +51,13 @@ export const createField = formKey => ({
   const defaultedValue =
     initialValue === undefined
       ? FIELD_DEFAULT_VALUES.get(type, '')
-      : initialValue;
+      : fromJS(initialValue);
   return Field({
     // Derived options
     id: `${formKey}-${name}`,
-    value: defaultedValue,
     initialValue: defaultedValue,
+    renderAttributes: fromJS(renderAttributes),
+    value: defaultedValue,
     // Options supporting conditional expressions,
     enabled: typeof enabled === 'function' ? false : enabled,
     label: typeof label === 'function' ? '' : label,
@@ -87,8 +89,8 @@ export const createField = formKey => ({
     onChange,
     pattern,
     patternMessage,
-    renderAttributes,
     requiredMessage,
+    serialize,
     type,
   });
 };

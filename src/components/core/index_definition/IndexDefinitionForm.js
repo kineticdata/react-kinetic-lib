@@ -12,10 +12,17 @@ const staticParts = [
   'updatedBy',
 ];
 
+const getFields = form => form.get('fields');
+
+const getIndexDefinition = (form, indexName) =>
+  form
+    .get('indexDefinitions')
+    .find(indexDefinition => indexDefinition.get('name') === indexName);
+
 const dataSources = ({ formSlug, indexName }) => ({
-  form: [
-    fetchForm,
-    [
+  form: {
+    fn: fetchForm,
+    params: [
       {
         datastore: true,
         kappSlug: null,
@@ -23,24 +30,16 @@ const dataSources = ({ formSlug, indexName }) => ({
         include: 'fields,indexDefinitions',
       },
     ],
-    {
-      transform: result => result.form,
-    },
-  ],
-  fields: [
-    fields => fields,
-    ({ form }) => [form.get('fields')],
-    { dependencies: ['form'] },
-  ],
-  indexDefinition: [
-    indexDefinition => indexDefinition,
-    ({ form }) => [
-      form
-        .get('indexDefinitions')
-        .find(indexDefinition => indexDefinition.get('name') === indexName),
-    ],
-    { runIf: () => !!indexName, dependencies: ['form'] },
-  ],
+    transform: result => result.form,
+  },
+  fields: {
+    fn: getFields,
+    params: ({ form }) => form && [form],
+  },
+  indexDefinition: {
+    fn: getIndexDefinition,
+    params: ({ form }) => form && indexName && [form, indexName],
+  },
 });
 
 const handleSubmit = ({ formSlug, indexName }) => (values, { form }) =>
@@ -71,29 +70,31 @@ const handleSubmit = ({ formSlug, indexName }) => (values, { form }) =>
     return form;
   });
 
-const fields = (formSlug, indexName) => [
-  {
-    name: 'parts',
-    label: 'Parts',
-    type: 'select-multi',
-    required: true,
-    options: ({ fields }) =>
-      fields
-        .map(field => field.get('name'))
-        .sort()
-        .concat(staticParts)
-        .map(name => ({ label: name, value: name })),
-    initialValue: ({ indexDefinition }) =>
-      indexDefinition ? indexDefinition.get('parts') : [],
-  },
-  {
-    name: 'unique',
-    label: 'Unique',
-    type: 'checkbox',
-    initialValue: ({ indexDefinition }) =>
-      indexDefinition ? indexDefinition.get('unique') : false,
-  },
-];
+const fields = ({ formSlug, indexName }) => ({ indexDefinition }) =>
+  (!indexName || indexDefinition) && [
+    {
+      name: 'parts',
+      label: 'Parts',
+      type: 'select-multi',
+      required: true,
+      options: ({ fields }) =>
+        fields
+          ? fields
+              .map(field => field.get('name'))
+              .sort()
+              .concat(staticParts)
+              .map(name => ({ label: name, value: name }))
+              .toArray()
+          : [],
+      initialValue: indexDefinition ? indexDefinition.get('parts') : [],
+    },
+    {
+      name: 'unique',
+      label: 'Unique',
+      type: 'checkbox',
+      initialValue: indexDefinition ? indexDefinition.get('unique') : false,
+    },
+  ];
 
 export const IndexDefinitionForm = ({
   addFields,
@@ -104,7 +105,8 @@ export const IndexDefinitionForm = ({
   onSave,
   onError,
   children,
-  ...formOptions
+  formSlug,
+  indexName,
 }) => (
   <Form
     addFields={addFields}
@@ -112,11 +114,12 @@ export const IndexDefinitionForm = ({
     fieldSet={fieldSet}
     formKey={formKey}
     components={components}
-    onSubmit={handleSubmit(formOptions)}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources(formOptions)}
-    fields={fields(formOptions)}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{ formSlug, indexName }}
   >
     {children}
   </Form>

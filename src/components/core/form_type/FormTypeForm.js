@@ -1,20 +1,13 @@
 import React from 'react';
 import { Form } from '../../form/Form';
-import {
-  createFormType,
-  updateFormType,
-  fetchFormType,
-} from '../../../apis';
+import { createFormType, updateFormType, fetchFormType } from '../../../apis';
 
 const dataSources = ({ kappSlug, name }) => ({
-  formType: [
-    fetchFormType,
-    [{ kappSlug, name, include: 'details' }],
-    {
-      transform: result => result.formType,
-      runIf: () => !!name,
-    },
-  ],
+  formType: {
+    fn: fetchFormType,
+    params: name && [{ kappSlug, name, include: 'details' }],
+    transform: result => result.formType,
+  },
 });
 
 const handleSubmit = ({ kappSlug, name }) => values =>
@@ -30,15 +23,16 @@ const handleSubmit = ({ kappSlug, name }) => values =>
     return formType;
   });
 
-const fields = () => [
-  {
-    name: 'name',
-    label: 'Name',
-    type: 'text',
-    required: true,
-    initialValue: ({ formType }) => (formType ? formType.get('name') : ''),
-  },
-];
+const fields = ({ name }) => ({ formType }) =>
+  (!name || formType) && [
+    {
+      name: 'name',
+      label: 'Name',
+      type: 'text',
+      required: true,
+      initialValue: formType ? formType.get('name') : '',
+    },
+  ];
 
 export const FormTypeForm = ({
   addFields,
@@ -49,7 +43,8 @@ export const FormTypeForm = ({
   onSave,
   onError,
   children,
-  ...formOptions
+  kappSlug,
+  name,
 }) => (
   <Form
     addFields={addFields}
@@ -57,11 +52,12 @@ export const FormTypeForm = ({
     fieldSet={fieldSet}
     formKey={formKey}
     components={components}
-    onSubmit={handleSubmit(formOptions)}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources(formOptions)}
-    fields={fields(formOptions)}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{ kappSlug, name }}
   >
     {children}
   </Form>
