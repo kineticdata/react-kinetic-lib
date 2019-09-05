@@ -33,6 +33,8 @@ export {
 export {
   AttributeDefinitionTable,
 } from './core/attribute_definition/AttributeDefinitionTable';
+export { BridgeModelForm } from './core/bridge_model/BridgeModelForm';
+export { BridgeModelTable } from './core/bridge_model/BridgeModelTable';
 export { CategoryForm } from './core/category/CategoryForm';
 export { CategoryTable } from './core/category/CategoryTable';
 export { FormForm } from './core/form/FormForm';

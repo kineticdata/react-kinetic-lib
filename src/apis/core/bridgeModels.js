@@ -56,3 +56,14 @@ export const updateBridgeModel = (options = {}) => {
     .then(response => ({ bridgeModel: response.data.model }))
     .catch(handleErrors);
 };
+
+export const deleteBridgeModel = (options = {}) => {
+  validateOptions('deleteBridgeModel', ['modelName'], options);
+  return axios
+    .delete(`${bundle.apiLocation()}/models/${options.modelName}`, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ bridgeModel: response.data.model }))
+    .catch(handleErrors);
+};

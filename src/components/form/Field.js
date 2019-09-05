@@ -20,10 +20,7 @@ export const typeToComponent = {
 
 export const Field = ({ helpText, ...props }) => {
   const componentName = typeToComponent[props.type] || 'TextField';
-  const FieldImpl =
-    props.components.field ||
-    props.components.form[componentName] ||
-    props.components.context.get(componentName);
+  const FieldImpl = props.component || props.components.get(componentName);
   return (
     <FieldImpl
       {...props}

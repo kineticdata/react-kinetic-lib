@@ -2,6 +2,9 @@ import { Map } from 'immutable';
 import { AttributesField } from './AttributesField';
 import { CheckboxField } from './CheckboxField';
 import { CodeField } from './CodeField';
+import { FormButtons } from './FormButtons';
+import { FormError } from './FormError';
+import { FormLayout } from './FormLayout';
 import { CodeTemplateField } from './CodeTemplateField';
 import { PasswordField } from './PasswordField';
 import { RadioField } from './RadioField';
@@ -19,6 +22,9 @@ export const DefaultFieldConfig = Map({
   CheckboxField,
   CodeField,
   CodeTemplateField,
+  FormButtons,
+  FormError,
+  FormLayout,
   PasswordField,
   RadioField,
   TeamField,

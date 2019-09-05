@@ -1,4 +1,5 @@
 import React from 'react';
+import { get } from 'immutable';
 import { Form } from '../../form/Form';
 import {
   fetchOAuthClient,
@@ -7,14 +8,11 @@ import {
 } from '../../../apis';
 
 const dataSources = ({ clientId }) => ({
-  client: [
-    fetchOAuthClient,
-    [{ clientId }],
-    {
-      transform: result => result.client,
-      runIf: () => !!clientId,
-    },
-  ],
+  client: {
+    fn: fetchOAuthClient,
+    params: clientId && [{ clientId }],
+    transform: result => result.client,
+  },
 });
 
 const handleSubmit = ({ clientId }) => values =>
@@ -29,61 +27,59 @@ const handleSubmit = ({ clientId }) => values =>
     return client;
   });
 
-const getOrBlank = (from, what) => bindings =>
-  bindings[from] ? bindings[from].get(what) : '';
-
-const fields = ({ clientId }) => [
-  {
-    name: 'name',
-    label: 'Name',
-    type: 'text',
-    required: true,
-    initialValue: getOrBlank('client', 'name'),
-  },
-  {
-    name: 'description',
-    label: 'Description',
-    type: 'text',
-    required: false,
-    initialValue: getOrBlank('client', 'description'),
-  },
-  {
-    name: 'clientId',
-    label: 'Client ID',
-    type: 'text',
-    required: true,
-    initialValue: getOrBlank('client', 'clientId'),
-  },
-  {
-    name: 'clientSecret',
-    label: 'Client Secret',
-    type: 'password',
-    visible: ({ values }) => values.get('changeClientSecret'),
-    required: ({ values }) => values.get('changeClientSecret'),
-    transient: ({ values }) => !values.get('changeClientSecret'),
-  },
-  {
-    name: 'changeClientSecret',
-    label: 'Change Client Secret',
-    type: 'checkbox',
-    transient: true,
-    // in "new" mode we do not show this toggle field and default it to true
-    visible: !!clientId,
-    initialValue: !clientId,
-    onChange: ({ values }, { setValue }) => {
-      if (values.get('clientSecret') !== '') {
-        setValue('clientSecret', '');
-      }
+const fields = ({ clientId }) => ({ client }) =>
+  (!clientId || client) && [
+    {
+      name: 'name',
+      label: 'Name',
+      type: 'text',
+      required: true,
+      initialValue: get(client, 'name') || '',
     },
-  },
-  {
-    name: 'redirectUri',
-    label: 'Redirect URI',
-    type: 'text',
-    required: true,
-    initialValue: getOrBlank('client', 'redirectUri'),
-  },
-];
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'text',
+      required: false,
+      initialValue: get(client, 'description') || '',
+    },
+    {
+      name: 'clientId',
+      label: 'Client ID',
+      type: 'text',
+      required: true,
+      initialValue: get(client, 'clientId') || '',
+    },
+    {
+      name: 'clientSecret',
+      label: 'Client Secret',
+      type: 'password',
+      visible: ({ values }) => values.get('changeClientSecret'),
+      required: ({ values }) => values.get('changeClientSecret'),
+      transient: ({ values }) => !values.get('changeClientSecret'),
+    },
+    {
+      name: 'changeClientSecret',
+      label: 'Change Client Secret',
+      type: 'checkbox',
+      transient: true,
+      // in "new" mode we do not show this toggle field and default it to true
+      visible: !!clientId,
+      initialValue: !clientId,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('clientSecret') !== '') {
+          setValue('clientSecret', '');
+        }
+      },
+    },
+    {
+      name: 'redirectUri',
+      label: 'Redirect URI',
+      type: 'text',
+      required: true,
+      initialValue: get(client, 'redirectUri') || '',
+    },
+  ];
 
 export const OAuthClientForm = ({
   addFields,
@@ -94,7 +90,7 @@ export const OAuthClientForm = ({
   onSave,
   onError,
   children,
-  ...formOptions
+  clientId,
 }) => (
   <Form
     addFields={addFields}
@@ -102,11 +98,12 @@ export const OAuthClientForm = ({
     fieldSet={fieldSet}
     formKey={formKey}
     components={components}
-    onSubmit={handleSubmit(formOptions)}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources(formOptions)}
-    fields={fields(formOptions)}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{ clientId }}
   >
     {children}
   </Form>
