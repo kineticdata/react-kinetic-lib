@@ -1,5 +1,4 @@
 import React from 'react';
-import { get } from 'immutable';
 import { Form } from '../../form/Form';
 import {
   fetchBridgeModel,
@@ -8,11 +7,11 @@ import {
 } from '../../../apis';
 
 const dataSources = ({ modelName }) => ({
-  model: [
-    fetchBridgeModel,
-    [{ modelName, include: 'details,attributes,qualifications' }],
-    { transform: result => result.bridgeModel, runIf: () => !!modelName },
-  ],
+  model: {
+    fn: fetchBridgeModel,
+    params: [{ modelName, include: 'details,attributes,qualifications' }],
+    transform: result => result.bridgeModel,
+  },
 });
 
 const handleSubmit = ({ modelName }) => values =>
@@ -27,33 +26,34 @@ const handleSubmit = ({ modelName }) => values =>
     return model;
   });
 
-const fields = ({ modelName }) => [
-  {
-    name: 'name',
-    label: 'Bridge Model Name',
-    type: 'text',
-    required: true,
-    initialValue: ({ model }) => get(model, 'name'),
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'text',
-    initialValue: ({ model }) => get(model, 'status'),
-  },
-  {
-    name: 'attributes',
-    label: 'Attributes',
-    type: 'text',
-    initialValue: ({ model }) => get(model, 'attributes'),
-  },
-  {
-    name: 'qualifications',
-    label: 'Qualifications',
-    type: 'text',
-    initialValue: ({ model }) => get(model, 'qualifications'),
-  },
-];
+const fields = ({ modelName }) => ({ model }) =>
+  (!modelName || model) && [
+    {
+      name: 'name',
+      label: 'Bridge Model Name',
+      type: 'text',
+      required: true,
+      initialValue: model.get('name'),
+    },
+    {
+      name: 'status',
+      label: 'Status',
+      type: 'text',
+      initialValue: model.get('status'),
+    },
+    {
+      name: 'attributes',
+      label: 'Attributes',
+      type: 'text',
+      initialValue: model.get('attributes'),
+    },
+    {
+      name: 'qualifications',
+      label: 'Qualifications',
+      type: 'text',
+      initialValue: model.get('qualifications'),
+    },
+  ];
 
 export const BridgeModelForm = ({
   addFields,
@@ -64,7 +64,7 @@ export const BridgeModelForm = ({
   onSave,
   onError,
   children,
-  ...formOptions
+  modelName,
 }) => (
   <Form
     formKey={formKey}
@@ -72,11 +72,12 @@ export const BridgeModelForm = ({
     alterFields={alterFields}
     fieldSet={fieldSet}
     components={components}
-    onSubmit={handleSubmit(formOptions)}
+    onSubmit={handleSubmit}
     onSave={onSave}
     onError={onError}
-    dataSources={dataSources(formOptions)}
-    fields={fields(formOptions)}
+    dataSources={dataSources}
+    fields={fields}
+    formOptions={{ modelName }}
   >
     {children}
   </Form>
