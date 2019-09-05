@@ -21,6 +21,8 @@ export const fetchLogs = (options = {}) => {
         format,
         q: options.q,
         pageToken: options.nextPageToken,
+        start: options.start,
+        end: options.end,
       },
       headers: headerBuilder(options),
     })
@@ -36,12 +38,18 @@ export const fetchLogs = (options = {}) => {
         .split('\n')
         .filter(ll => ll !== '')
         .map(parseNDLog);
-      const metaEntry = logs[logs.length - 1];
-      logs.pop();
+      const last = logs[logs.length - 1];
+
+      if (last.metadata) {
+        logs.pop();
+        return {
+          logs,
+          nextPageToken: last.metadata.nextPageToken,
+        };
+      }
 
       return {
         logs,
-        nextPageToken: metaEntry.metadata.nextPageToken,
       };
     })
     .catch(handleErrors);

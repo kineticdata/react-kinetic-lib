@@ -1,26 +1,47 @@
 import { generateTable } from '../../table/Table';
 import { fetchLogs } from '../../../apis';
+import { List } from 'immutable';
+import moment from 'moment';
 
 const dataSource = () => ({
   fn: fetchLogs,
   params: paramData => {
     const filters = JSON.stringify(
       paramData.filters
+        .filter((_v, k) => k !== 'timestamp')
         .map(filter => filter.get('value'))
         .filter(filter => filter !== '')
         .toJSON(),
     );
 
     const q = filters === '{}' ? undefined : filters;
+    const [startDate, endDate] = paramData.filters.getIn(
+      ['timestamp', 'value'],
+      List(['', '']),
+    );
+
+    const start =
+      startDate === '' && endDate === ''
+        ? moment()
+            .subtract(60, 'minutes')
+            .toISOString()
+        : startDate === '' && endDate !== ''
+        ? moment(endDate)
+            .subtract(60, 'minutes')
+            .toISOString()
+        : moment(startDate).toISOString();
+    const end =
+      endDate === '' ? moment().toISOString() : moment(endDate).toISOString();
 
     const fetchParams = [
       {
         q,
         limit: paramData.pageSize,
         nextPageToken: paramData.nextPageToken,
+        start,
+        end,
       },
     ];
-    console.log(fetchParams);
     return fetchParams;
   },
   transform: result => ({
@@ -29,6 +50,18 @@ const dataSource = () => ({
   }),
 });
 
+const APP_COMPONENT_OPTIONS = [
+  'core',
+  'loghub',
+  'task',
+  'bridgehub',
+  'filehub',
+  'ssl-trust-setup',
+].map(component => ({
+  label: component,
+  value: component,
+}));
+
 const columns = [
   {
     value: 'app.component',
@@ -36,6 +69,7 @@ const columns = [
     filter: 'equals',
     type: 'text',
     sortable: false,
+    options: () => APP_COMPONENT_OPTIONS,
   },
   {
     value: 'app.correlationId',
@@ -182,7 +216,7 @@ const columns = [
   {
     value: 'timestamp',
     title: 'Timestamp',
-    filter: 'equals',
+    filter: 'between',
     type: 'text',
     sortable: false,
   },
