@@ -102,8 +102,18 @@ const securityEndpoints = {
   },
 };
 
-const fields = () => ({ space }) =>
-  space && [
+const fields = () => ({
+  attributeDefinitions,
+  locales,
+  securityPolicyDefinitions,
+  space,
+  timezones,
+}) =>
+  space &&
+  locales &&
+  timezones &&
+  attributeDefinitions &&
+  securityPolicyDefinitions && [
     {
       name: 'afterLogoutPath',
       label: 'After Logout Path',
@@ -393,17 +403,15 @@ const fields = () => ({ space }) =>
         type: 'select',
         options: ({ securityPolicyDefinitions }) =>
           securityPolicyDefinitions
-            ? securityPolicyDefinitions
-                .filter(definition =>
-                  endpoint.types.includes(definition.get('type')),
-                )
-                .map(definition =>
-                  Map({
-                    value: definition.get('name'),
-                    label: definition.get('name'),
-                  }),
-                )
-            : [],
+            .filter(definition =>
+              endpoint.types.includes(definition.get('type')),
+            )
+            .map(definition =>
+              Map({
+                value: definition.get('name'),
+                label: definition.get('name'),
+              }),
+            ),
         initialValue: space
           ? space
               .get('securityPolicies')
