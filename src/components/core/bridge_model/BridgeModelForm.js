@@ -9,7 +9,9 @@ import {
 const dataSources = ({ modelName }) => ({
   model: {
     fn: fetchBridgeModel,
-    params: [{ modelName, include: 'details,attributes,qualifications' }],
+    params: modelName && [
+      { modelName, include: 'details,attributes,qualifications' },
+    ],
     transform: result => result.bridgeModel,
   },
 });
@@ -33,25 +35,25 @@ const fields = ({ modelName }) => ({ model }) =>
       label: 'Bridge Model Name',
       type: 'text',
       required: true,
-      initialValue: model.get('name'),
+      initialValue: model ? model.get('name') : '',
     },
     {
       name: 'status',
       label: 'Status',
       type: 'text',
-      initialValue: model.get('status'),
+      initialValue: model ? model.get('status') : '',
     },
     {
       name: 'attributes',
       label: 'Attributes',
       type: 'text',
-      initialValue: model.get('attributes'),
+      initialValue: model ? model.get('attributes') : '',
     },
     {
       name: 'qualifications',
       label: 'Qualifications',
       type: 'text',
-      initialValue: model.get('qualifications'),
+      initialValue: model ? model.get('qualifications') : '',
     },
   ];
 
