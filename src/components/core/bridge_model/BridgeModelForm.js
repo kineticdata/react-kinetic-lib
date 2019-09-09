@@ -43,18 +43,6 @@ const fields = ({ modelName }) => ({ model }) =>
       type: 'text',
       initialValue: model ? model.get('status') : '',
     },
-    {
-      name: 'attributes',
-      label: 'Attributes',
-      type: 'text',
-      initialValue: model ? model.get('attributes') : '',
-    },
-    {
-      name: 'qualifications',
-      label: 'Qualifications',
-      type: 'text',
-      initialValue: model ? model.get('qualifications') : '',
-    },
   ];
 
 export const BridgeModelForm = ({
@@ -67,8 +55,10 @@ export const BridgeModelForm = ({
   onError,
   children,
   modelName,
+  noFormTag,
 }) => (
   <Form
+    noFormTag={noFormTag}
     formKey={formKey}
     addFields={addFields}
     alterFields={alterFields}

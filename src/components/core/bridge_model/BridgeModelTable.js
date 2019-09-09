@@ -1,13 +1,12 @@
 import { generateTable } from '../../table/Table';
-import { fetchBridgeModels, generateCESearchParams } from '../../../apis';
+import { fetchBridgeModels } from '../../../apis';
 
 const dataSource = () => ({
   fn: fetchBridgeModels,
   clientSideSearch: true,
-  params: paramData => [
+  params: () => [
     {
       include: 'details',
-      ...generateCESearchParams(paramData),
     },
   ],
   transform: result => ({
@@ -39,6 +38,3 @@ export const BridgeModelTable = generateTable({
 });
 
 BridgeModelTable.displayName = 'BridgeModelTable';
-BridgeModelTable.defaultProps = {
-  columns,
-};

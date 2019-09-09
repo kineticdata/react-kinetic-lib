@@ -1,17 +1,11 @@
 import axios from 'axios';
 import { bundle } from '../../helpers';
-import { handleErrors, headerBuilder, paramBuilder } from '../http';
-
-const validateOptions = (functionName, requiredOptions, options) => {
-  const missing = requiredOptions.filter(
-    requiredOption => !options[requiredOption],
-  );
-  if (missing.length > 0) {
-    throw new Error(
-      `${functionName} failed! The following required options are missing: ${missing}`,
-    );
-  }
-};
+import {
+  handleErrors,
+  headerBuilder,
+  paramBuilder,
+  validateOptions,
+} from '../http';
 
 export const fetchBridgeModels = (options = {}) => {
   return axios

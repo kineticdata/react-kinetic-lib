@@ -82,6 +82,17 @@ export const headerBuilder = options => {
   return headers;
 };
 
+export const validateOptions = (functionName, requiredOptions, options) => {
+  const missing = requiredOptions.filter(
+    requiredOption => !options[requiredOption],
+  );
+  if (missing.length > 0) {
+    throw new Error(
+      `${functionName} failed! The following required options are missing: ${missing}`,
+    );
+  }
+};
+
 export const formPath = ({ form, kapp, datastore }) =>
   datastore
     ? form

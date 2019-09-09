@@ -483,38 +483,42 @@ class FormImplComponent extends Component {
           ? fieldSet(fullFieldSet)
           : fieldSet,
       );
-      form = (
-        <form onSubmit={onSubmit(formKey, computedFieldSet)}>
-          <FormLayout
-            fields={OrderedMap(
-              computedFieldSet.map(name => [name, fields.get(name).toObject()]),
-            ).map(({ eventHandlers, ...props }) => (
-              <Field
-                key={props.name}
-                {...props}
-                {...eventHandlers.toObject()}
-                component={fieldComponents.get(props.name)}
-                components={components}
-              />
-            ))}
-            error={
-              error && <FormError error={error} clear={clearError(formKey)} />
-            }
-            buttons={
-              <FormButtons
-                reset={onReset(formKey)}
-                submit={onSubmit(formKey, computedFieldSet)}
-                submitting={submitting}
-                dirty={fields.some(field => field.dirty)}
-              />
-            }
-            meta={fields.map(field =>
-              Map({
-                visible: field.visible,
-              }),
-            )}
-          />
-        </form>
+      const formLayout = (
+        <FormLayout
+          formOptions={formOptions}
+          fields={OrderedMap(
+            computedFieldSet.map(name => [name, fields.get(name).toObject()]),
+          ).map(({ eventHandlers, ...props }) => (
+            <Field
+              key={props.name}
+              {...props}
+              {...eventHandlers.toObject()}
+              component={fieldComponents.get(props.name)}
+              components={components}
+            />
+          ))}
+          error={
+            error && <FormError error={error} clear={clearError(formKey)} />
+          }
+          buttons={
+            <FormButtons
+              reset={onReset(formKey)}
+              submit={onSubmit(formKey, computedFieldSet)}
+              submitting={submitting}
+              dirty={fields.some(field => field.dirty)}
+            />
+          }
+          meta={fields.map(field =>
+            Map({
+              visible: field.visible,
+            }),
+          )}
+        />
+      );
+      form = this.props.noFormTag ? (
+        formLayout
+      ) : (
+        <form onSubmit={onSubmit(formKey, computedFieldSet)}>{formLayout}</form>
       );
     }
     return typeof this.props.children === 'function'
