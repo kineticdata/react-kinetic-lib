@@ -424,7 +424,7 @@ export class Form extends Component {
         {config => (
           <FormImpl
             {...props}
-            formKey={this.formKey}
+            formKey={this.auto ? this.formKey : this.props.formKey}
             components={config.merge(Map(components).filter(c => !!c))}
           />
         )}
