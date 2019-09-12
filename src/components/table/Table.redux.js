@@ -66,6 +66,11 @@ export const generateFilters = (tableKey, columns) =>
       ),
   );
 
+const evaluateValidFilters = table => {
+  const validateFilters = table.get('onValidateFilters');
+  return validateFilters ? validateFilters(table.get('filters')) : true;
+};
+
 export const generateInitialSortColumn = (sortColumn, columns) =>
   sortColumn ? columns.find(col => col.get('value') === sortColumn) : null;
 
@@ -88,6 +93,7 @@ regHandlers({
         defaultSortColumn = null,
         defaultSortDirection = 'desc',
         tableOptions,
+        onValidateFilters,
       },
     },
   ) =>
@@ -120,6 +126,8 @@ regHandlers({
             // Filtering
             filters: generateFilters(tableKey, columns),
             appliedFilters: generateFilters(tableKey, columns),
+            validFilters: true,
+            onValidateFilters,
 
             configured: true,
             initialize: true,
@@ -168,7 +176,11 @@ regHandlers({
       );
     }),
   SET_FILTER: (state, { payload: { tableKey, filter, value } }) =>
-    state.setIn(['tables', tableKey, 'filters', filter, 'value'], value),
+    state.updateIn(['tables', tableKey], table =>
+      table
+        .setIn(['filters', filter, 'value'], value)
+        .set('validFilters', evaluateValidFilters(table)),
+    ),
   APPLY_FILTERS: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], table =>
       table
@@ -325,7 +337,10 @@ const calculateRows = tableData => {
 
 export const mountTable = tableKey => dispatch('MOUNT_TABLE', { tableKey });
 export const unmountTable = tableKey => dispatch('UNMOUNT_TABLE', { tableKey });
-export const configureTable = payload => dispatch('CONFIGURE_TABLE', payload);
+export const configureTable = payload => {
+  console.log('configure table', payload);
+  dispatch('CONFIGURE_TABLE', payload);
+};
 export const refetchTable = tableKey =>
   dispatch('REFECTH_TABLE_DATA', { tableKey });
 export const clearFilters = tableKey =>

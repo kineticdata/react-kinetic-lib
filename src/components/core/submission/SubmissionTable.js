@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { List } from 'immutable';
 import { generateTable } from '../../table/Table';
 import { isValueEmpty } from '../../table/Table.redux';
 import {
@@ -114,6 +115,15 @@ const dataSource = props => {
     }),
   };
 };
+
+const onValidateFilters = filters =>
+  filters
+    .getIn(['values', 'value'], List())
+    .reduce(
+      (valid, value) =>
+        valid && value.get('field') !== '' ? value.get('value') !== '' : valid,
+      true,
+    );
 
 const columns = [
   {
@@ -244,6 +254,7 @@ export const SubmissionTable = generateTable({
   tableOptions: ['kappSlug', 'formSlug', 'datastore'],
   columns,
   dataSource,
+  onValidateFilters,
 });
 
 SubmissionTable.displayName = 'SubmissionTable';

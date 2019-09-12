@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 
 const FilterLayout = ({
   filters,
+  validFilters,
   onSearch,
   columnSet,
   loading,

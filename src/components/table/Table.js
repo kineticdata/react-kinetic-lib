@@ -82,6 +82,7 @@ const buildFilterLayout = ({
   columnComponents,
   filters,
   appliedFilters,
+  validFilters,
   tableKey,
   columnSet,
   loading,
@@ -122,6 +123,7 @@ const buildFilterLayout = ({
     <FilterLayout
       filters={f}
       appliedFilters={appliedFilters}
+      validFilters={validFilters}
       onSearch={onSearch}
       onChangeFilter={onChangeFilter}
       columnSet={columnSet}
@@ -403,6 +405,7 @@ export const generateTable = ({ tableOptions, ...setObjects }) => props => {
         return to;
       }, {})
     : {};
+
   const setProps = {
     ...setObjects,
     tableOptions: { ...props.tableOptions, ...tableOptionProps },
