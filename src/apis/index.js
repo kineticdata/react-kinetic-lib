@@ -6,6 +6,7 @@ export * from './core/backgroundJobs';
 export * from './core/bridgedresources';
 export * from './core/bridgeModels';
 export * from './core/bridgeModelAttributes';
+export * from './core/bridgeModelAttributeMappings';
 export * from './core/categories';
 export * from './core/forms';
 export * from './core/formTypes';

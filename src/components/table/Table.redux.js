@@ -184,6 +184,7 @@ regHandlers({
   APPLY_FILTERS: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], table =>
       table
+        .set('loading', true)
         .set('appliedFilters', state.getIn(['tables', tableKey, 'filters']))
         .set('pageOffset', 0)
         .set('currentPageToken', null)
@@ -192,7 +193,9 @@ regHandlers({
     ),
   REFECTH_TABLE_DATA: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
-      tableData.get('dataSource') ? tableData.set('data', null) : tableData,
+      tableData.get('dataSource')
+        ? tableData.set('loading', true).set('data', null)
+        : tableData,
     ),
   CLEAR_TABLE_FILTERS: (state, { payload: { tableKey } }) =>
     state.setIn(

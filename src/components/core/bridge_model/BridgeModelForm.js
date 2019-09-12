@@ -9,9 +9,7 @@ import {
 const dataSources = ({ modelName }) => ({
   model: {
     fn: fetchBridgeModel,
-    params: modelName && [
-      { modelName, include: 'details,attributes,qualifications' },
-    ],
+    params: modelName && [{ modelName, include: 'details' }],
     transform: result => result.bridgeModel,
   },
 });
@@ -20,12 +18,12 @@ const handleSubmit = ({ modelName }) => values =>
   (modelName ? updateBridgeModel : createBridgeModel)({
     modelName,
     bridgeModel: values.toJS(),
-  }).then(({ model, error }) => {
+  }).then(({ bridgeModel, error }) => {
     if (error) {
       throw (error.statusCode === 400 && error.message) ||
         'There was an error saving the model';
     }
-    return model;
+    return bridgeModel;
   });
 
 const fields = ({ modelName }) => ({ model }) =>
@@ -40,8 +38,12 @@ const fields = ({ modelName }) => ({ model }) =>
     {
       name: 'status',
       label: 'Status',
-      type: 'text',
-      initialValue: model ? model.get('status') : '',
+      type: 'radio',
+      initialValue: model ? model.get('status') : 'Active',
+      options: [
+        { label: 'Active', value: 'Active' },
+        { label: 'Inactive', value: 'Inactive' },
+      ],
     },
   ];
 
@@ -55,10 +57,8 @@ export const BridgeModelForm = ({
   onError,
   children,
   modelName,
-  noFormTag,
 }) => (
   <Form
-    noFormTag={noFormTag}
     formKey={formKey}
     addFields={addFields}
     alterFields={alterFields}

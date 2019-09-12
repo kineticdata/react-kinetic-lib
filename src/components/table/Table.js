@@ -254,13 +254,21 @@ export const buildTableBody = props => {
     <Body
       loading={props.loading}
       initializing={props.initializing}
+      tableOptions={props.tableOptions}
       tableRows={tableRows}
     />
   );
 };
 
 export const buildTableBodyRows = props => {
-  const { components, rows, columns, columnSet, appliedFilters } = props;
+  const {
+    components,
+    rows,
+    columns,
+    columnSet,
+    appliedFilters,
+    tableOptions,
+  } = props;
   const BodyRow = components.BodyRow;
   const EmptyBodyRow = components.EmptyBodyRow;
 
@@ -270,7 +278,13 @@ export const buildTableBodyRows = props => {
         const cells = buildTableBodyCells(props, row, index);
         return (
           <KeyWrapper key={`row-${index}`}>
-            <BodyRow cells={cells} columns={columns} row={row} index={index} />
+            <BodyRow
+              cells={cells}
+              columns={columns}
+              row={row}
+              index={index}
+              tableOptions={tableOptions}
+            />
           </KeyWrapper>
         );
       })
@@ -280,6 +294,7 @@ export const buildTableBodyRows = props => {
         initializing={props.initializing}
         loading={props.loading}
         appliedFilters={appliedFilters}
+        tableOptions={tableOptions}
       />
     );
 
@@ -323,25 +338,36 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
 };
 
 export const buildTableFooter = props => {
-  const { components, columnSet, rows, includeFooter } = props;
+  const { components, columnSet, rows, tableOptions, includeFooter } = props;
   const footerRow = buildTableFooterRow(props);
   const Footer = components.Footer;
 
   return includeFooter ? (
-    <Footer rows={rows.toJS()} footerRow={footerRow} colSpan={columnSet.size} />
+    <Footer
+      rows={rows.toJS()}
+      footerRow={footerRow}
+      colSpan={columnSet.size}
+      tableOptions={tableOptions}
+    />
   ) : null;
 };
 
 export const buildTableFooterRow = props => {
-  const { components } = props;
+  const { components, tableOptions } = props;
   const cells = buildTableFooterCells(props);
   const FooterRow = components.FooterRow;
 
-  return <FooterRow cells={cells} />;
+  return <FooterRow cells={cells} tableOptions={tableOptions} />;
 };
 
 export const buildTableFooterCells = props => {
-  const { components, columns, columnSet, columnComponents } = props;
+  const {
+    components,
+    columns,
+    columnSet,
+    columnComponents,
+    tableOptions,
+  } = props;
   return fromColumnSet(columns, columnSet).map((column, index) => {
     const FooterCell = columnComponents.getIn(
       [column.get('value'), 'FooterCell'],
@@ -350,7 +376,7 @@ export const buildTableFooterCells = props => {
 
     return (
       <KeyWrapper key={`column-${index}`}>
-        <FooterCell column={column} />
+        <FooterCell column={column} tableOptions={tableOptions} />
       </KeyWrapper>
     );
   });

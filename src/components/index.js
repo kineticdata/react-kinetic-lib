@@ -36,8 +36,11 @@ export {
 export { BridgeModelForm } from './core/bridge_model/BridgeModelForm';
 export { BridgeModelTable } from './core/bridge_model/BridgeModelTable';
 export {
+  BridgeModelAttributeForm,
+} from './core/bridge_model_attribute/BridgeModelAttributeForm';
+export {
   BridgeModelAttributeTable,
-} from './core/bridge_model/BridgeModelAttributeTable';
+} from './core/bridge_model_attribute/BridgeModelAttributeTable';
 export { CategoryForm } from './core/category/CategoryForm';
 export { CategoryTable } from './core/category/CategoryTable';
 export { FormForm } from './core/form/FormForm';
