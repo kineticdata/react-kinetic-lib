@@ -1,16 +1,19 @@
 import { generateTable } from '../../table/Table';
-import { fetchBridgeModelAttributes } from '../../../apis';
+import {
+  fetchBridgeModel,
+  fetchBridgeModelAttributeMappings,
+} from '../../../apis';
 
 const dataSource = ({ modelName }) => ({
-  fn: fetchBridgeModelAttributes,
+  fn: ({ modelName }) =>
+    fetchBridgeModel({ modelName }).then(
+      ({ bridgeModel: { activeMappingName: mappingName } }) =>
+        fetchBridgeModelAttributeMappings({ modelName, mappingName }),
+    ),
   clientSideSearch: true,
-  params: () => [
-    {
-      modelName,
-    },
-  ],
+  params: () => [{ modelName }],
   transform: result => ({
-    data: result.bridgeModelAttributes,
+    data: result.bridgeModelAttributeMappings,
     nextPageToken: result.nextPageToken,
   }),
 });
@@ -22,6 +25,11 @@ const columns = [
     filter: 'startsWith',
     type: 'text',
     sortable: true,
+  },
+  {
+    value: 'structureField',
+    title: 'Mapping',
+    type: 'text',
   },
 ];
 

@@ -1,9 +1,9 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
 export const FormLayout = props => (
-  <Fragment>
+  <form>
     {props.fields.toList()}
     {props.error}
     {props.buttons}
-  </Fragment>
+  </form>
 );

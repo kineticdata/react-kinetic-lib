@@ -57,10 +57,8 @@ export const BridgeModelForm = ({
   onError,
   children,
   modelName,
-  noFormTag,
 }) => (
   <Form
-    noFormTag={noFormTag}
     formKey={formKey}
     addFields={addFields}
     alterFields={alterFields}

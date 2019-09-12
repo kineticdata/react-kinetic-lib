@@ -483,7 +483,7 @@ class FormImplComponent extends Component {
           ? fieldSet(fullFieldSet)
           : fieldSet,
       );
-      const formLayout = (
+      form = (
         <FormLayout
           formOptions={formOptions}
           fields={OrderedMap(
@@ -514,11 +514,6 @@ class FormImplComponent extends Component {
             }),
           )}
         />
-      );
-      form = this.props.noFormTag ? (
-        formLayout
-      ) : (
-        <form onSubmit={onSubmit(formKey, computedFieldSet)}>{formLayout}</form>
       );
     }
     return typeof this.props.children === 'function'

@@ -43,7 +43,7 @@ export const fetchBridgeModelAttribute = (options = {}) => {
 
 export const createBridgeModelAttribute = (options = {}) => {
   validateOptions(
-    'createBridgeModel',
+    'createBridgeModelAttribute',
     ['modelName', 'bridgeModelAttribute'],
     options,
   );
@@ -64,7 +64,7 @@ export const createBridgeModelAttribute = (options = {}) => {
 
 export const updateBridgeModelAttribute = (options = {}) => {
   validateOptions(
-    'updateBridgeModel',
+    'updateBridgeModelAttribute',
     ['modelName', 'attributeName', 'bridgeModelAttribute'],
     options,
   );
@@ -83,7 +83,11 @@ export const updateBridgeModelAttribute = (options = {}) => {
 };
 
 export const deleteBridgeModelAttribute = (options = {}) => {
-  validateOptions('deleteBridgeModel', ['modelName', 'attributeName'], options);
+  validateOptions(
+    'deleteBridgeModelAttribute',
+    ['modelName', 'attributeName'],
+    options,
+  );
   const { modelName, attributeName } = options;
   return axios
     .delete(
