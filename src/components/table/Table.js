@@ -19,7 +19,7 @@ const KeyWrapper = ({ children }) => children;
 
 const TableComponent = props => {
   if (props.configured) {
-    const { children, loading, initializing, rows } = props;
+    const { children, loading, initializing, rows, error } = props;
     const table = buildTable(props);
     const filter = buildFilterLayout(props);
     const pagination = buildPaginationControl(props);
@@ -31,6 +31,7 @@ const TableComponent = props => {
       initializing,
       loading,
       rows,
+      error,
     });
   }
   return null;
@@ -202,6 +203,7 @@ export const buildTable = props => {
       footer={footer}
       initializing={props.initializing}
       loading={props.loading}
+      error={props.error}
     />
   );
 };
@@ -256,6 +258,7 @@ export const buildTableBody = props => {
       initializing={props.initializing}
       tableOptions={props.tableOptions}
       tableRows={tableRows}
+      error={props.error}
     />
   );
 };
@@ -295,6 +298,7 @@ export const buildTableBodyRows = props => {
         loading={props.loading}
         appliedFilters={appliedFilters}
         tableOptions={tableOptions}
+        error={props.error}
       />
     );
 

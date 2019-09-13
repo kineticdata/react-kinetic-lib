@@ -122,6 +122,7 @@ regHandlers({
             nextPageToken: null,
             pageTokens: List(),
             pageOffset: 0,
+            error: null,
 
             // Filtering
             filters: generateFilters(tableKey, columns),
@@ -133,28 +134,37 @@ regHandlers({
             initialize: true,
           }),
         ),
-  SET_ROWS: (state, { payload: { tableKey, rows, data, nextPageToken } }) =>
+
+  SET_ROWS: (
+    state,
+    { payload: { tableKey, rows, data, nextPageToken, error = null } },
+  ) =>
     state.updateIn(['tables', tableKey], table =>
       table
         .set('rows', rows)
         .set('data', data)
         .set('currentPageToken', nextPageToken)
         .set('nextPageToken', null)
+        .set('error', error)
         .set('initializing', false)
         .set('loading', false),
     ),
   NEXT_PAGE: (state, { payload: { tableKey } }) =>
-    state.updateIn(['tables', tableKey], tableData =>
-      isClientSide(tableData)
-        ? clientSideNextPage(tableData)
-        : serverSideNextPage(tableData),
-    ),
+    state
+      .updateIn(['tables', tableKey], tableData =>
+        isClientSide(tableData)
+          ? clientSideNextPage(tableData)
+          : serverSideNextPage(tableData),
+      )
+      .setIn(['tables', tableKey, 'error'], null),
   PREV_PAGE: (state, { payload: { tableKey } }) =>
-    state.updateIn(['tables', tableKey], tableData =>
-      isClientSide(tableData)
-        ? clientSidePrevPage(tableData)
-        : serverSidePrevPage(tableData),
-    ),
+    state
+      .updateIn(['tables', tableKey], tableData =>
+        isClientSide(tableData)
+          ? clientSidePrevPage(tableData)
+          : serverSidePrevPage(tableData),
+      )
+      .setIn(['tables', tableKey, 'error'], null),
   SORT_COLUMN: (state, { payload: { tableKey, column } }) =>
     state.updateIn(['tables', tableKey], t => {
       const sortColumn = t.get('sortColumn');
@@ -173,6 +183,7 @@ regHandlers({
               : 'desc',
           )
           .set('sortColumn', column)
+          .set('error', null)
       );
     }),
   SET_FILTER: (state, { payload: { tableKey, filter, value } }) =>
@@ -189,12 +200,16 @@ regHandlers({
         .set('pageOffset', 0)
         .set('currentPageToken', null)
         .set('nextPageToken', null)
-        .set('pageTokens', List()),
+        .set('pageTokens', List())
+        .set('error', null),
     ),
   REFECTH_TABLE_DATA: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
       tableData.get('dataSource')
-        ? tableData.set('loading', true).set('data', null)
+        ? tableData
+            .set('loading', true)
+            .set('data', null)
+            .set('error', null)
         : tableData,
     ),
   CLEAR_TABLE_FILTERS: (state, { payload: { tableKey } }) =>
@@ -208,11 +223,27 @@ function* calculateRowsTask({ payload }) {
   const { tableKey } = payload;
   const tableData = yield select(state => state.getIn(['tables', tableKey]));
 
-  const { rows, data, nextPageToken } = yield call(calculateRows, tableData);
-  yield put({
-    type: 'SET_ROWS',
-    payload: { tableKey, rows, data, nextPageToken },
-  });
+  const response = yield call(calculateRows, tableData);
+
+  const { rows, data, nextPageToken, error } = response;
+
+  if (error) {
+    yield put({
+      type: 'SET_ROWS',
+      payload: {
+        tableKey,
+        error,
+        rows: List(),
+        data: List(),
+        nextPageToken: null,
+      },
+    });
+  } else {
+    yield put({
+      type: 'SET_ROWS',
+      payload: { tableKey, rows, data, nextPageToken },
+    });
+  }
 }
 
 regSaga(takeEvery('CONFIGURE_TABLE', calculateRowsTask));
@@ -314,23 +345,20 @@ const calculateRows = tableData => {
       nextPageToken: tableData.get('nextPageToken'),
     });
 
-    return dataSource
-      .fn(...params)
-      .then(transform)
-      .then(({ nextPageToken, data }) => ({
+    return dataSource.fn(...params).then(response => {
+      if (response.error) return response;
+
+      const { nextPageToken, data } = transform(response);
+      const rows = List(data);
+
+      return {
         nextPageToken,
         data: List(data),
-        rows: List(data),
-      }))
-      .then(result => {
-        if (dataSource.clientSideSearch) {
-          return {
-            ...result,
-            rows: applyClientSideFilters(tableData, result.rows),
-          };
-        }
-        return result;
-      });
+        rows: dataSource.clientSideSearch
+          ? applyClientSideFilters(tableData, rows)
+          : rows,
+      };
+    });
   } else {
     throw new Error(
       'Unable to calculate rows: Missing both data and a dataSource!',
