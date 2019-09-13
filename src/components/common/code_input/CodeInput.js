@@ -233,6 +233,15 @@ export class CodeInput extends Component {
       applyFilter(this.props.bindings),
     );
     const entities = getEntities(nextEditorState);
+    const valueChanged =
+      this.state.editorState
+        .getCurrentContent()
+        .getFirstBlock()
+        .getText() !==
+      nextEditorState
+        .getCurrentContent()
+        .getFirstBlock()
+        .getText();
     this.setState(
       {
         editorState: nextEditorState,
@@ -240,7 +249,7 @@ export class CodeInput extends Component {
         typeaheadTentative: entities.size === 2,
       },
       () => {
-        if (typeof this.props.onChange === 'function') {
+        if (valueChanged && typeof this.props.onChange === 'function') {
           this.props.onChange(
             nextEditorState
               .getCurrentContent()
