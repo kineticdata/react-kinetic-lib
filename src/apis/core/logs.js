@@ -32,12 +32,20 @@ export const fetchLogs = (options = {}) => {
           logs: [],
           nextPageToken: response.data.metadata.nextPageToken,
         };
+      } else if (
+        typeof response.data === 'string' &&
+        !response.data.startsWith('{')
+      ) {
+        return {
+          error: response.data,
+        };
       }
 
       const logs = response.data
         .split('\n')
         .filter(ll => ll !== '')
         .map(parseNDLog);
+
       const last = logs[logs.length - 1];
 
       if (last.metadata) {
