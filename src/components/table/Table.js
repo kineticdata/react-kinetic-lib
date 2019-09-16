@@ -223,7 +223,7 @@ export const buildTableHeaderRow = props => {
     buildTableHeaderCell(props),
   );
 
-  return <HeaderRow columnHeaders={columnHeaders} rows={rows.toJS()} />;
+  return <HeaderRow columnHeaders={columnHeaders} rows={rows} />;
 };
 
 export const buildTableHeaderCell = props => (column, index) => {
@@ -322,7 +322,7 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
       components.BodyCell,
     );
 
-    const value = row[column.get('value')];
+    const value = row.get(column.get('value'));
 
     return (
       <KeyWrapper key={`column-${index}`}>
@@ -332,7 +332,7 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
           rowIndex={rowIndex}
           index={index}
           value={value}
-          rows={rows.toJS()}
+          rows={rows}
           column={column}
           tableOptions={tableOptions}
         />
@@ -348,7 +348,7 @@ export const buildTableFooter = props => {
 
   return includeFooter ? (
     <Footer
-      rows={rows.toJS()}
+      rows={rows}
       footerRow={footerRow}
       colSpan={columnSet.size}
       tableOptions={tableOptions}

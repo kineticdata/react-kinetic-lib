@@ -1,4 +1,4 @@
-import { List, Map } from 'immutable';
+import { List, Map, fromJS } from 'immutable';
 import isarray from 'isarray';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { dispatch, regHandlers, regSaga } from '../../store';
@@ -297,7 +297,7 @@ export const isValueEmpty = value => {
 export const clientSideRowFilter = filters => row => {
   const usableFilters = filters
     .filter(filter => filter.get('value') !== '')
-    .map((filter, column) => filter.set('currentValue', row[column]));
+    .map((filter, column) => filter.set('currentValue', row.get(column)));
 
   return usableFilters.size === 0
     ? true
@@ -322,7 +322,9 @@ const applyClientSideFilters = (tableData, data) => {
 
   return data
     .update(d => d.filter(clientSideRowFilter(filters)))
-    .update(d => (sortColumn ? d.sortBy(r => r[sortColumn.get('value')]) : d))
+    .update(d =>
+      sortColumn ? d.sortBy(r => r.get(sortColumn.get('value'))) : d,
+    )
     .update(d => (sortDirection === 'asc' ? d.reverse() : d))
     .update(d => d.slice(startIndex, endIndex));
 };
@@ -349,7 +351,7 @@ const calculateRows = tableData => {
       if (response.error) return response;
 
       const { nextPageToken, data } = transform(response);
-      const rows = List(data);
+      const rows = fromJS(data);
 
       return {
         nextPageToken,
