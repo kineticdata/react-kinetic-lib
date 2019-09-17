@@ -369,9 +369,14 @@ export class CodeInput extends Component {
     }
   };
 
+  startTypeahead = () => {
+    this.onChange(startTypeahead(this.state.editorState));
+  };
+
   render() {
-    return (
-      <div onKeyUp={this.stopEscape}>
+    return this.props.children({
+      wrapperProps: { onKeyUp: this.stopEscape },
+      editor: (
         <Editor
           readOnly={this.props.disabled}
           editorState={this.state.editorState}
@@ -383,7 +388,8 @@ export class CodeInput extends Component {
           handleKeyCommand={this.handleKeyCommand}
           keyBindingFn={this.keyBindingFn}
         />
-      </div>
-    );
+      ),
+      startTypeahead: this.startTypeahead,
+    });
   }
 }
