@@ -48,14 +48,14 @@ AttributeDefinitionTable.propTypes = {
   kappSlug: t.string,
   /** The type of attribute definition to display.   */
   attributeType: t.oneOf([
-    'spaceAttributeDefinitions',
-    'teamAttributeDefinitions',
-    'userAttributeDefinitions',
-    'userProfileAttributeDefinitions',
-    'categoryAttributeDefinitions',
-    'kappAttributeDefinitions',
-    'formAttributeDefinitions',
-    'datastoreFormAttributeDefinitions',
+    'space',
+    'team',
+    'user',
+    'userProfile',
+    'category',
+    'kapp',
+    'form',
+    'datastoreForm',
   ]).isRequired,
   /** The columns that should be displayed.   */
   columnSet: t.arrayOf(t.string),
