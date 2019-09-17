@@ -506,6 +506,8 @@ class FormImplComponent extends Component {
               submit={onSubmit(formKey, computedFieldSet)}
               submitting={submitting}
               dirty={fields.some(field => field.dirty)}
+              error={error}
+              clearError={clearError(formKey)}
             />
           }
           meta={fields.map(field =>
