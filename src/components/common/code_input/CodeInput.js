@@ -96,7 +96,10 @@ export class CodeInput extends Component {
                           {({ parentRef, childRef }) => (
                             <ul ref={parentRef}>
                               {options.map(
-                                ({ label, children, value, tags }, i) => (
+                                (
+                                  { label, children, value, selection, tags },
+                                  i,
+                                ) => (
                                   <li
                                     className={classNames({
                                       active: i === active,
@@ -105,7 +108,7 @@ export class CodeInput extends Component {
                                     onClick={selectTypeaheadItem(
                                       this,
                                       this.props.template,
-                                    )(label, value)}
+                                    )(label, value, selection)}
                                     style={{
                                       userSelect: 'none',
                                       MozUserSelect: 'none',
@@ -303,8 +306,12 @@ export class CodeInput extends Component {
       ).last().data;
       const activeOption = options.get(active);
       if (activeOption) {
-        const { label, value } = activeOption;
-        selectTypeaheadItem(this, this.props.template)(label, value)();
+        const { label, value, selection } = activeOption;
+        selectTypeaheadItem(this, this.props.template)(
+          label,
+          value,
+          selection,
+        )();
       }
     }
     if (command === 'next-typeahead-option') {
