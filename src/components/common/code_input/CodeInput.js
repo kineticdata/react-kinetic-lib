@@ -25,7 +25,12 @@ import {
   selectTypeaheadItem,
   startTypeahead,
 } from './draftHelpers';
-import { processCode, processTemplate } from './languageHelpers';
+import {
+  processErbTemplate,
+  processJavaScript,
+  processJavaScriptTemplate,
+  processRuby,
+} from './languageHelpers';
 import { Scroller } from '../Scroller';
 
 export class CodeInput extends Component {
@@ -155,7 +160,13 @@ export class CodeInput extends Component {
                     ' '.repeat(typeaheadEnd - typeaheadStart) +
                     contentBlock.getText().slice(typeaheadEnd)
                   : contentBlock.getText();
-              const processor = props.template ? processTemplate : processCode;
+              const processor = props.template
+                ? props.ruby
+                  ? processErbTemplate
+                  : processJavaScriptTemplate
+                : props.ruby
+                ? processRuby
+                : processJavaScript;
               this.tokenStarts = {};
               this.tokenEnds = {};
               processor(text)
@@ -323,6 +334,11 @@ export class CodeInput extends Component {
     return 'not-handled';
   };
 
+  handlePastedText = (text, html, editorState) => {
+    this.onChange(insertText({ text: text })(editorState));
+    return true;
+  };
+
   keyBindingFn = event => {
     if (this.state.typeaheadOpen) {
       if (event.keyCode === 27) {
@@ -392,6 +408,7 @@ export class CodeInput extends Component {
           onChange={this.onChange}
           ref={this.handleRef}
           handleDroppedFiles={this.handleDroppedFiles}
+          handlePastedText={this.handlePastedText}
           handleKeyCommand={this.handleKeyCommand}
           keyBindingFn={this.keyBindingFn}
         />
