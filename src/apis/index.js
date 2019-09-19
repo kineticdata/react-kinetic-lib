@@ -39,3 +39,6 @@ export {
 
 // Sockets
 export { socket, socketIdentify } from './socket';
+
+// Task
+export * from './task';
