@@ -117,6 +117,37 @@ export const apiFunction = ({
     .catch(handleErrors);
 };
 
+export const apiGroup = ({ dataOption, name, plural, singular }) => ({
+  [`fetch${name}s`]: apiFunction({
+    name: `fetch${name}s`,
+    method: 'get',
+    ...plural,
+  }),
+  [`fetch${name}`]: apiFunction({
+    name: `fetch${name}`,
+    method: 'get',
+    ...singular,
+  }),
+  [`create${name}`]: apiFunction({
+    name: `create${name}`,
+    dataOption,
+    method: 'post',
+    ...plural,
+    transform: singular.transform,
+  }),
+  [`update${name}`]: apiFunction({
+    name: `update${name}`,
+    dataOption,
+    method: 'put',
+    ...singular,
+  }),
+  [`delete${name}`]: apiFunction({
+    name: `delete${name}`,
+    method: 'delete',
+    ...singular,
+  }),
+});
+
 export const formPath = ({ form, kapp, datastore }) =>
   datastore
     ? form
