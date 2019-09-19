@@ -65,6 +65,7 @@
     "@babel/cli": "^7.2.3",
     "babel-eslint": "9.x",
     "babel-jest": "^24.5.0",
+    "babel-plugin-prismjs": "^1.1.1",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^7.0.2",
     "concurrently": "^4.1.0",
@@ -123,6 +124,11 @@
           "absoluteRuntime": false
         }
       ]
+    ],
+    "plugins": [
+      ["prismjs", {
+        "languages": ["javascript", "ruby"]
+      }]
     ]
   },
   "eslintConfig": {

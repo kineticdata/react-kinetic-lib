@@ -25,7 +25,12 @@ import {
   selectTypeaheadItem,
   startTypeahead,
 } from './draftHelpers';
-import { processCode, processTemplate } from './languageHelpers';
+import {
+  processErbTemplate,
+  processJavaScript,
+  processJavaScriptTemplate,
+  processRuby,
+} from './languageHelpers';
 import { Scroller } from '../Scroller';
 
 export class CodeInput extends Component {
@@ -96,7 +101,10 @@ export class CodeInput extends Component {
                           {({ parentRef, childRef }) => (
                             <ul ref={parentRef}>
                               {options.map(
-                                ({ label, children, value, tags }, i) => (
+                                (
+                                  { label, children, value, selection, tags },
+                                  i,
+                                ) => (
                                   <li
                                     className={classNames({
                                       active: i === active,
@@ -105,7 +113,7 @@ export class CodeInput extends Component {
                                     onClick={selectTypeaheadItem(
                                       this,
                                       this.props.template,
-                                    )(label, value)}
+                                    )(label, value, selection)}
                                     style={{
                                       userSelect: 'none',
                                       MozUserSelect: 'none',
@@ -152,7 +160,13 @@ export class CodeInput extends Component {
                     ' '.repeat(typeaheadEnd - typeaheadStart) +
                     contentBlock.getText().slice(typeaheadEnd)
                   : contentBlock.getText();
-              const processor = props.template ? processTemplate : processCode;
+              const processor = props.template
+                ? props.ruby
+                  ? processErbTemplate
+                  : processJavaScriptTemplate
+                : props.ruby
+                ? processRuby
+                : processJavaScript;
               this.tokenStarts = {};
               this.tokenEnds = {};
               processor(text)
@@ -303,8 +317,12 @@ export class CodeInput extends Component {
       ).last().data;
       const activeOption = options.get(active);
       if (activeOption) {
-        const { label, value } = activeOption;
-        selectTypeaheadItem(this, this.props.template)(label, value)();
+        const { label, value, selection } = activeOption;
+        selectTypeaheadItem(this, this.props.template)(
+          label,
+          value,
+          selection,
+        )();
       }
     }
     if (command === 'next-typeahead-option') {
@@ -314,6 +332,11 @@ export class CodeInput extends Component {
       this.onMetaChange(previousTypeaheadItem(editorState));
     }
     return 'not-handled';
+  };
+
+  handlePastedText = (text, html, editorState) => {
+    this.onChange(insertText({ text: text })(editorState));
+    return true;
   };
 
   keyBindingFn = event => {
@@ -369,9 +392,14 @@ export class CodeInput extends Component {
     }
   };
 
+  startTypeahead = () => {
+    this.onChange(startTypeahead(this.state.editorState));
+  };
+
   render() {
-    return (
-      <div onKeyUp={this.stopEscape}>
+    return this.props.children({
+      wrapperProps: { onKeyUp: this.stopEscape },
+      editor: (
         <Editor
           readOnly={this.props.disabled}
           editorState={this.state.editorState}
@@ -380,10 +408,12 @@ export class CodeInput extends Component {
           onChange={this.onChange}
           ref={this.handleRef}
           handleDroppedFiles={this.handleDroppedFiles}
+          handlePastedText={this.handlePastedText}
           handleKeyCommand={this.handleKeyCommand}
           keyBindingFn={this.keyBindingFn}
         />
-      </div>
-    );
+      ),
+      startTypeahead: this.startTypeahead,
+    });
   }
 }
