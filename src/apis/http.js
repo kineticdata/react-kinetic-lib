@@ -93,6 +93,30 @@ export const validateOptions = (functionName, requiredOptions, options) => {
   }
 };
 
+export const apiFunction = ({
+  name,
+  method,
+  dataOption,
+  requiredOptions,
+  url,
+  transform,
+}) => (options = {}) => {
+  validateOptions(
+    name,
+    dataOption ? [...requiredOptions, dataOption] : requiredOptions,
+    options,
+  );
+  return axios({
+    method,
+    url: bundle.apiLocation() + url(options),
+    data: dataOption && options[dataOption],
+    params: paramBuilder(options),
+    headers: headerBuilder(options),
+  })
+    .then(transform)
+    .catch(handleErrors);
+};
+
 export const formPath = ({ form, kapp, datastore }) =>
   datastore
     ? form
