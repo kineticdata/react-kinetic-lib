@@ -90,3 +90,6 @@ export { LogTable } from './core/log/LogTable';
 export { WebhookForm } from './core/webhook/WebhookForm';
 export { WebhookTable } from './core/webhook/WebhookTable';
 export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
+
+// Task
+export { WorkflowTable } from './task/workflows/WorkflowTable';

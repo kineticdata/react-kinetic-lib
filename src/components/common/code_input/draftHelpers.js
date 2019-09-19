@@ -152,6 +152,7 @@ export const closeTypeahead = editorState => {
 export const selectTypeaheadItem = (self, isTemplate) => (
   label,
   value,
+  selection,
 ) => () => {
   const entities = getEntities(self.state.editorState);
   if (!value) {
@@ -179,6 +180,11 @@ export const selectTypeaheadItem = (self, isTemplate) => (
         self.state.editorState,
         select({ anchor: start, focus: end }),
         insertText({ text: isTemplate ? `\${${value}}` : value }),
+        selection &&
+          select({
+            anchor: start + selection.get('start') + (isTemplate ? 2 : 0),
+            focus: start + selection.get('end') + (isTemplate ? 2 : 0),
+          }),
       ),
     );
   }
@@ -225,7 +231,9 @@ export const getEntitiesImpl = (block, content) => {
 // SUPER GENERIC HELPERS
 
 export const apply = (editorState, ...operations) =>
-  operations.reduce((reduction, op) => op(reduction), editorState);
+  operations
+    .filter(op => !!op)
+    .reduce((reduction, op) => op(reduction), editorState);
 
 export const select = ({ anchor, focus }) => editorState => {
   const selection0 = editorState.getSelection();
