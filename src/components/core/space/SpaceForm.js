@@ -181,6 +181,7 @@ const fields = () => ({
         value: displayType,
         label: displayType,
       })),
+      required: true,
       initialValue: get(space, 'displayType') || 'Display Page',
     },
     {
