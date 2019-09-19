@@ -18,7 +18,12 @@ const DISPLAY_TYPES = ['Display Page', 'Redirect', 'Single Page App'];
 const dataSources = () => ({
   space: {
     fn: fetchSpace,
-    params: [{ include: 'attributesMap,securityPolicies,details,filestore' }],
+    params: [
+      {
+        include:
+          'attributesMap,securityPolicies,details,filestore,platformComponents',
+      },
+    ],
     transform: result => result.space,
   },
   locales: {
@@ -121,6 +126,47 @@ const fields = () => ({
       initialValue: get(space, 'afterLogoutPath'),
       placeholder: ({ space }) => `/${get(space, 'slug')}`,
       visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
+    },
+    {
+      name: 'bridgehubUrl',
+      label: 'Bridgehub URL',
+      type: 'text',
+      visible: true,
+      transient: true,
+      initialValue: getIn(space, ['bridgehub', 'url']),
+    },
+    {
+      name: 'bridgehubDefaulted',
+      label: 'Bridgehub Defaulted',
+      type: 'checkbox',
+      visible: true,
+      transient: true,
+      initialValue: getIn(space, [
+        'platformComponents',
+        'bridgehub',
+        'defaulted',
+      ]),
+    },
+    {
+      name: 'bridgehubSecret',
+      label: 'Bridgehub Secret',
+      type: 'password',
+      visible: ({ values }) => values.get('changeBridgehubSecret'),
+      transient: true,
+    },
+    {
+      name: 'changeBridgehubSecret',
+      label: 'Change Bridgehub Secret',
+      type: 'checkbox',
+      transient: true,
+      // in "new" mode we do not show this toggle field and default it to true
+      visible: ({ space }) => !!space,
+      initialValue: !space,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('bridgehubSecret') !== '') {
+          setValue('bridgehubSecret', '');
+        }
+      },
     },
     {
       name: 'bundlePath',
@@ -264,7 +310,41 @@ const fields = () => ({
       type: 'text',
       visible: true,
       transient: true,
+      // needs to be updated to `initialValue: getIn(space, ['platformComponents', 'filehub', 'url']),`
       initialValue: getIn(space, ['filestore', 'filehubUrl']),
+    },
+    {
+      name: 'filehubDefaulted',
+      label: 'Filehub Defaulted',
+      type: 'checkbox',
+      visible: true,
+      transient: true,
+      initialValue: getIn(space, [
+        'platformComponents',
+        'filehub',
+        'defaulted',
+      ]),
+    },
+    {
+      name: 'filehubSecret',
+      label: 'Filehub Secret',
+      type: 'password',
+      visible: ({ values }) => values.get('changeFilehubSecret'),
+      transient: true,
+    },
+    {
+      name: 'changeFilehubSecret',
+      label: 'Change Filehub Secret',
+      type: 'checkbox',
+      transient: true,
+      // in "new" mode we do not show this toggle field and default it to true
+      visible: ({ space }) => !!space,
+      initialValue: !space,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('filehubSecret') !== '') {
+          setValue('filehubSecret', '');
+        }
+      },
     },
     {
       name: 'filestoreKey',
@@ -353,6 +433,33 @@ const fields = () => ({
       },
     },
     {
+      name: 'platformComponents',
+      label: 'Platform Components',
+      type: null,
+      visible: false,
+      serialize: ({ values }) => ({
+        bridgehub: {
+          url: values.get('bridgehubUrl'),
+          ...(values.get('changeBridgehubSecret') && {
+            secret: values.get('bridgehubSecret'),
+          }),
+        },
+        filehub: {
+          url: values.get('filehubUrl'),
+          ...(values.get('changeFilehubSecret') && {
+            secret: values.get('filehubSecret'),
+          }),
+        },
+        task: {
+          url: values.get('taskUrl'),
+          ...(values.get('changeTaskSecret') && {
+            secret: values.get('taskSecret'),
+          }),
+        },
+      }),
+      initialValue: get(space, 'platformComponents'),
+    },
+    {
       name: 'sessionInactiveLimitInSeconds',
       label: 'Inactive Session Limit (in seconds)',
       type: 'text',
@@ -383,6 +490,43 @@ const fields = () => ({
       transient: true,
       initialValue: true,
       visible: false,
+    },
+    {
+      name: 'taskUrl',
+      label: 'Task URL',
+      type: 'text',
+      visible: true,
+      transient: true,
+      initialValue: getIn(space, ['task', 'url']),
+    },
+    {
+      name: 'taskDefaulted',
+      label: 'Task Defaulted',
+      type: 'checkbox',
+      visible: true,
+      transient: true,
+      initialValue: getIn(space, ['platformComponents', 'task', 'defaulted']),
+    },
+    {
+      name: 'taskSecret',
+      label: 'Task Secret',
+      type: 'password',
+      visible: ({ values }) => values.get('changeTaskSecret'),
+      transient: true,
+    },
+    {
+      name: 'changeTaskSecret',
+      label: 'Change Task Secret',
+      type: 'checkbox',
+      transient: true,
+      // in "new" mode we do not show this toggle field and default it to true
+      visible: ({ space }) => !!space,
+      initialValue: !space,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('taskSecret') !== '') {
+          setValue('taskSecret', '');
+        }
+      },
     },
     {
       name: 'trustedFrameDomains',
