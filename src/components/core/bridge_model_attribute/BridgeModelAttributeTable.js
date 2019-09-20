@@ -1,42 +1,39 @@
 import { generateTable } from '../../table/Table';
-import {
-  fetchBridgeModel,
-  fetchBridgeModelAttributeMappings,
-} from '../../../apis';
+import { fetchBridgeModel } from '../../../apis';
 
-const mergeAttributesAndMappings = (attributes, attributesMappings) => ({
-  data: attributes.map(attributes => {
-    const mapping = attributesMappings.find(
-      ({ name }) => name === attributes.name,
+// Handles bridge model api response by checking for error and also returning
+// error if active mapping is not present. If valid returns object with the
+// attributes and their mappings.
+const handleBridgeModel = ({
+  bridgeModel: { error, attributes, activeMappingName, mappings },
+}) => {
+  if (error) {
+    return { error };
+  }
+  const mapping = mappings.find(({ name }) => name === activeMappingName);
+  if (!mapping) {
+    return { error: 'Invalid bridge model, active mapping not found' };
+  }
+  return { attributes, attributeMappings: mapping.attributes };
+};
+
+const transform = ({ attributes, attributeMappings }) => ({
+  data: attributes.map(attribute => {
+    const mapping = attributeMappings.find(
+      ({ name }) => name === attribute.name,
     );
     return {
-      ...attributes,
+      ...attribute,
       structureField: mapping ? mapping.structureField || '' : null,
     };
   }),
 });
 
 const dataSource = ({ modelName }) => ({
-  fn: ({ modelName }) =>
-    fetchBridgeModel({ modelName, include: 'attributes' }).then(
-      ({
-        bridgeModel: { activeMappingName: mappingName, attributes },
-        error: error1,
-      }) =>
-        error1
-          ? { error: error1 }
-          : fetchBridgeModelAttributeMappings({ modelName, mappingName }).then(
-              ({ bridgeModelAttributeMappings, error: error2 }) =>
-                error2
-                  ? { error: error2 }
-                  : mergeAttributesAndMappings(
-                      attributes,
-                      bridgeModelAttributeMappings,
-                    ),
-            ),
-    ),
+  fn: () => fetchBridgeModel({ modelName }).then(handleBridgeModel),
   clientSideSearch: true,
   params: () => [{ modelName }],
+  transform,
 });
 
 const columns = [
