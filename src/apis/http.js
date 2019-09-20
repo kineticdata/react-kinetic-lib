@@ -93,6 +93,61 @@ export const validateOptions = (functionName, requiredOptions, options) => {
   }
 };
 
+export const apiFunction = ({
+  name,
+  method,
+  dataOption,
+  requiredOptions,
+  url,
+  transform,
+}) => (options = {}) => {
+  validateOptions(
+    name,
+    dataOption ? [...requiredOptions, dataOption] : requiredOptions,
+    options,
+  );
+  return axios({
+    method,
+    url: bundle.apiLocation() + url(options),
+    data: dataOption && options[dataOption],
+    params: paramBuilder(options),
+    headers: headerBuilder(options),
+  })
+    .then(transform)
+    .catch(handleErrors);
+};
+
+export const apiGroup = ({ dataOption, name, plural, singular }) => ({
+  [`fetch${name}s`]: apiFunction({
+    name: `fetch${name}s`,
+    method: 'get',
+    ...plural,
+  }),
+  [`fetch${name}`]: apiFunction({
+    name: `fetch${name}`,
+    method: 'get',
+    ...singular,
+  }),
+  [`create${name}`]: apiFunction({
+    name: `create${name}`,
+    dataOption,
+    method: 'post',
+    ...plural,
+    transform: singular.transform,
+  }),
+  [`update${name}`]: apiFunction({
+    name: `update${name}`,
+    dataOption,
+    method: 'put',
+    ...singular,
+  }),
+  [`delete${name}`]: apiFunction({
+    name: `delete${name}`,
+    method: 'delete',
+    ...singular,
+  }),
+});
+
 export const formPath = ({ form, kapp, datastore }) =>
   datastore
     ? form
