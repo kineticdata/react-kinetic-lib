@@ -204,6 +204,7 @@ export const buildTable = props => {
       initializing={props.initializing}
       loading={props.loading}
       error={props.error}
+      empty={props.rows.isEmpty()}
     />
   );
 };
@@ -259,6 +260,7 @@ export const buildTableBody = props => {
       tableOptions={props.tableOptions}
       tableRows={tableRows}
       error={props.error}
+      empty={props.rows.isEmpty()}
     />
   );
 };
