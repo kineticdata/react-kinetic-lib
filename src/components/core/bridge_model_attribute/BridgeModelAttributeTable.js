@@ -4,18 +4,39 @@ import {
   fetchBridgeModelAttributeMappings,
 } from '../../../apis';
 
+const mergeAttributesAndMappings = (attributes, attributesMappings) => ({
+  data: attributes.map(attributes => {
+    const mapping = attributesMappings.find(
+      ({ name }) => name === attributes.name,
+    );
+    return {
+      ...attributes,
+      structureField: mapping ? mapping.structureField || '' : null,
+    };
+  }),
+});
+
 const dataSource = ({ modelName }) => ({
   fn: ({ modelName }) =>
-    fetchBridgeModel({ modelName }).then(
-      ({ bridgeModel: { activeMappingName: mappingName } }) =>
-        fetchBridgeModelAttributeMappings({ modelName, mappingName }),
+    fetchBridgeModel({ modelName, include: 'attributes' }).then(
+      ({
+        bridgeModel: { activeMappingName: mappingName, attributes },
+        error: error1,
+      }) =>
+        error1
+          ? { error: error1 }
+          : fetchBridgeModelAttributeMappings({ modelName, mappingName }).then(
+              ({ bridgeModelAttributeMappings, error: error2 }) =>
+                error2
+                  ? { error: error2 }
+                  : mergeAttributesAndMappings(
+                      attributes,
+                      bridgeModelAttributeMappings,
+                    ),
+            ),
     ),
   clientSideSearch: true,
   params: () => [{ modelName }],
-  transform: result => ({
-    data: result.bridgeModelAttributeMappings,
-    nextPageToken: result.nextPageToken,
-  }),
 });
 
 const columns = [

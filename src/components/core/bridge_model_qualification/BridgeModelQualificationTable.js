@@ -26,15 +26,19 @@ const dataSource = ({ modelName }) => ({
         bridgeModel: { activeMappingName: mappingName, qualifications },
         error: error1,
       }) =>
-        error1 ||
-        fetchBridgeModelQualificationMappings({ modelName, mappingName }).then(
-          ({ bridgeModelQualificationMappings, error: error2 }) =>
-            error2 ||
-            mergeQualificationsAndMappings(
-              qualifications,
-              bridgeModelQualificationMappings,
+        error1
+          ? { error: error1 }
+          : fetchBridgeModelQualificationMappings({
+              modelName,
+              mappingName,
+            }).then(({ bridgeModelQualificationMappings, error: error2 }) =>
+              error2
+                ? { error: error2 }
+                : mergeQualificationsAndMappings(
+                    qualifications,
+                    bridgeModelQualificationMappings,
+                  ),
             ),
-        ),
     ),
   clientSideSearch: true,
   params: () => [{ modelName }],
