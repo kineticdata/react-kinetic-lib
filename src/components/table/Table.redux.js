@@ -139,15 +139,18 @@ regHandlers({
     state,
     { payload: { tableKey, rows, data, nextPageToken, error = null } },
   ) =>
-    state.updateIn(['tables', tableKey], table =>
-      table
-        .set('rows', rows)
-        .set('data', data)
-        .set('currentPageToken', nextPageToken)
-        .set('nextPageToken', null)
-        .set('error', error)
-        .set('initializing', false)
-        .set('loading', false),
+    state.updateIn(
+      ['tables', tableKey],
+      table =>
+        table &&
+        table
+          .set('rows', rows)
+          .set('data', data)
+          .set('currentPageToken', nextPageToken)
+          .set('nextPageToken', null)
+          .set('error', error)
+          .set('initializing', false)
+          .set('loading', false),
     ),
   NEXT_PAGE: (state, { payload: { tableKey } }) =>
     state
