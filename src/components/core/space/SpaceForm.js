@@ -1,5 +1,5 @@
 import React from 'react';
-import { get, getIn, Map } from 'immutable';
+import { get, getIn, hasIn, Map } from 'immutable';
 import t from 'prop-types';
 
 import { Form } from '../../form/Form';
@@ -131,21 +131,18 @@ const fields = () => ({
       name: 'bridgehubUrl',
       label: 'Bridgehub URL',
       type: 'text',
-      visible: true,
+      required: ({ values }) => values.get('bridgehubCustom'),
+      visible: ({ values }) => values.get('bridgehubCustom'),
       transient: true,
       initialValue: getIn(space, ['bridgehub', 'url']),
     },
     {
-      name: 'bridgehubDefaulted',
-      label: 'Bridgehub Defaulted',
+      name: 'bridgehubCustom',
+      label: 'Use Private Bridgehub',
       type: 'checkbox',
       visible: true,
       transient: true,
-      initialValue: getIn(space, [
-        'platformComponents',
-        'bridgehub',
-        'defaulted',
-      ]),
+      initialValue: hasIn(space, ['platformComponents', 'bridgehub', 'url']),
     },
     {
       name: 'bridgehubSecret',
@@ -160,7 +157,7 @@ const fields = () => ({
       type: 'checkbox',
       transient: true,
       // in "new" mode we do not show this toggle field and default it to true
-      visible: ({ space }) => !!space,
+      visible: ({ space, values }) => !!space && values.get('bridgehubCustom'),
       initialValue: !space,
       onChange: ({ values }, { setValue }) => {
         if (values.get('bridgehubSecret') !== '') {
@@ -309,22 +306,19 @@ const fields = () => ({
       name: 'filehubUrl',
       label: 'Filehub URL',
       type: 'text',
-      visible: true,
+      visible: ({ values }) => values.get('filehubCustom'),
+      required: ({ values }) => values.get('filehubCustom'),
       transient: true,
       // needs to be updated to `initialValue: getIn(space, ['platformComponents', 'filehub', 'url']),`
       initialValue: getIn(space, ['filestore', 'filehubUrl']),
     },
     {
-      name: 'filehubDefaulted',
-      label: 'Filehub Defaulted',
+      name: 'filehubCustom',
+      label: 'Use Private Filehub',
       type: 'checkbox',
       visible: true,
       transient: true,
-      initialValue: getIn(space, [
-        'platformComponents',
-        'filehub',
-        'defaulted',
-      ]),
+      initialValue: hasIn(space, ['platformComponents', 'filehub', 'url']),
     },
     {
       name: 'filehubSecret',
@@ -339,7 +333,7 @@ const fields = () => ({
       type: 'checkbox',
       transient: true,
       // in "new" mode we do not show this toggle field and default it to true
-      visible: ({ space }) => !!space,
+      visible: ({ space, values }) => !!space && values.get('filehubCustom'),
       initialValue: !space,
       onChange: ({ values }, { setValue }) => {
         if (values.get('filehubSecret') !== '') {
@@ -439,18 +433,24 @@ const fields = () => ({
       type: null,
       visible: false,
       serialize: ({ values }) => ({
-        bridgehub: {
-          url: values.get('bridgehubUrl'),
-          ...(values.get('changeBridgehubSecret') && {
-            secret: values.get('bridgehubSecret'),
-          }),
-        },
-        filehub: {
-          url: values.get('filehubUrl'),
-          ...(values.get('changeFilehubSecret') && {
-            secret: values.get('filehubSecret'),
-          }),
-        },
+        // only send if not Custom
+        ...(values.get('bridgehubCustom') && {
+          bridgehub: {
+            url: values.get('bridgehubUrl'),
+            ...(values.get('changeBridgehubSecret') && {
+              secret: values.get('bridgehubSecret'),
+            }),
+          },
+        }),
+        // only send if not Custom
+        ...(values.get('filehubCustom') && {
+          filehub: {
+            url: values.get('filehubUrl'),
+            ...(values.get('changeFilehubSecret') && {
+              secret: values.get('filehubSecret'),
+            }),
+          },
+        }),
         task: {
           url: values.get('taskUrl'),
           ...(values.get('changeTaskSecret') && {
@@ -499,14 +499,6 @@ const fields = () => ({
       visible: true,
       transient: true,
       initialValue: getIn(space, ['task', 'url']),
-    },
-    {
-      name: 'taskDefaulted',
-      label: 'Task Defaulted',
-      type: 'checkbox',
-      visible: true,
-      transient: true,
-      initialValue: getIn(space, ['platformComponents', 'task', 'defaulted']),
     },
     {
       name: 'taskSecret',
