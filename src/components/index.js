@@ -41,6 +41,12 @@ export {
 export {
   BridgeModelAttributeTable,
 } from './core/bridge_model_attribute/BridgeModelAttributeTable';
+export {
+  BridgeModelQualificationForm,
+} from './core/bridge_model_qualification/BridgeModelQualificationForm';
+export {
+  BridgeModelQualificationTable,
+} from './core/bridge_model_qualification/BridgeModelQualificationTable';
 export { CategoryForm } from './core/category/CategoryForm';
 export { CategoryTable } from './core/category/CategoryTable';
 export { FormForm } from './core/form/FormForm';
