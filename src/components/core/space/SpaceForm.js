@@ -134,7 +134,7 @@ const fields = () => ({
       required: ({ values }) => values.get('bridgehubCustom'),
       visible: ({ values }) => values.get('bridgehubCustom'),
       transient: true,
-      initialValue: getIn(space, ['bridgehub', 'url']),
+      initialValue: getIn(space, ['platformComponents', 'bridgehub', 'url']),
     },
     {
       name: 'bridgehubCustom',
@@ -498,7 +498,7 @@ const fields = () => ({
       type: 'text',
       visible: true,
       transient: true,
-      initialValue: getIn(space, ['task', 'url']),
+      initialValue: getIn(space, ['platformComponents', 'task', 'url']),
     },
     {
       name: 'taskSecret',
