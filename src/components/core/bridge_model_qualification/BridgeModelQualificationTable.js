@@ -1,13 +1,23 @@
 import { generateTable } from '../../table/Table';
-import {
-  fetchBridgeModel,
-  fetchBridgeModelQualificationMappings,
-} from '../../../apis';
+import { fetchBridgeModel } from '../../../apis';
 
-const mergeQualificationsAndMappings = (
-  qualifications,
-  qualificationMappings,
-) => ({
+// Handles bridge model api response by checking for error and also returning
+// error if active mapping is not present. If valid returns object with the
+// attributes and their mappings.
+const handleBridgeModel = ({
+  bridgeModel: { error, qualifications, activeMappingName, mappings },
+}) => {
+  if (error) {
+    return { error };
+  }
+  const mapping = mappings.find(({ name }) => name === activeMappingName);
+  if (!mapping) {
+    return { error: 'Invalid bridge model, active mapping not found' };
+  }
+  return { qualifications, qualificationMappings: mapping.qualifications };
+};
+
+const transform = ({ qualifications, qualificationMappings }) => ({
   data: qualifications.map(qualification => {
     const mapping = qualificationMappings.find(
       ({ name }) => name === qualification.name,
@@ -20,24 +30,10 @@ const mergeQualificationsAndMappings = (
 });
 
 const dataSource = ({ modelName }) => ({
-  fn: ({ modelName }) =>
-    fetchBridgeModel({ modelName, include: 'qualifications' }).then(
-      ({
-        bridgeModel: { activeMappingName: mappingName, qualifications },
-        error: error1,
-      }) =>
-        error1 ||
-        fetchBridgeModelQualificationMappings({ modelName, mappingName }).then(
-          ({ bridgeModelQualificationMappings, error: error2 }) =>
-            error2 ||
-            mergeQualificationsAndMappings(
-              qualifications,
-              bridgeModelQualificationMappings,
-            ),
-        ),
-    ),
+  fn: () => fetchBridgeModel({ modelName }).then(handleBridgeModel),
   clientSideSearch: true,
   params: () => [{ modelName }],
+  transform,
 });
 
 const columns = [

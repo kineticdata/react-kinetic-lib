@@ -141,6 +141,7 @@ const evaluateFields = formState =>
     : formState;
 
 const digest = formState =>
+  formState &&
   [buildBindings, initializeFields, evaluateFields, evaluateDataSources].reduce(
     (reduction, fn) => fn(reduction),
     formState,
@@ -181,13 +182,16 @@ regHandlers({
     }),
   RESOLVE_DATA_SOURCE: (state, { payload: { formKey, name, data } }) =>
     state
-      .updateIn(['forms', formKey, 'dataSources', name], dataSource =>
-        dataSource.merge({
-          data: fromJS(
-            dataSource.transform ? dataSource.transform(data) : data,
-          ),
-          status: DATA_SOURCE_STATUS.RESOLVED,
-        }),
+      .updateIn(
+        ['forms', formKey, 'dataSources', name],
+        dataSource =>
+          dataSource &&
+          dataSource.merge({
+            data: fromJS(
+              dataSource.transform ? dataSource.transform(data) : data,
+            ),
+            status: DATA_SOURCE_STATUS.RESOLVED,
+          }),
       )
       .updateIn(['forms', formKey], digest),
   RESET: (state, { payload: { formKey } }) =>
