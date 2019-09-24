@@ -8,6 +8,7 @@ export * from './core/bridgedresources';
 export * from './core/bridgeModels';
 export * from './core/bridgeModelAttributes';
 export * from './core/bridgeModelAttributeMappings';
+export * from './core/bridgeModelMappings';
 export * from './core/bridgeModelQualifications';
 export * from './core/bridgeModelQualificationMappings';
 export * from './core/categories';
