@@ -7,7 +7,8 @@ export const hasData = data => isarray(data) || data instanceof List;
 
 export const isClientSide = tableData => {
   const data = tableData.get('data');
-  const dataSource = tableData.get('dataSource');
+  const tableOptions = tableData.get('tableOptions');
+  const dataSource = tableData.get('dataSource', () => null)(tableOptions);
 
   return (
     hasData(data) &&
@@ -303,11 +304,13 @@ export const clientSideRowFilter = filters => row => {
     ? true
     : usableFilters.reduce((has, filter) => {
         const currentValue = filter.get('currentValue');
-        const op = filter.getIn(['column', 'filter']);
-
+        const op = operations.get(
+          filter.getIn(['column', 'filter']),
+          () => true,
+        );
         const value = filter.get('value');
 
-        return has || (isValueEmpty(value) ? has : op(currentValue, value));
+        return isValueEmpty(value) ? has : op(currentValue, value);
       }, true);
 };
 
@@ -320,7 +323,8 @@ const applyClientSideFilters = (tableData, data) => {
   const startIndex = pageOffset;
   const endIndex = Math.min(pageOffset + pageSize, data.size);
 
-  return data
+  return List(data)
+    .map(d => Map(d))
     .update(d => d.filter(clientSideRowFilter(filters)))
     .update(d =>
       sortColumn ? d.sortBy(r => r.get(sortColumn.get('value'))) : d,

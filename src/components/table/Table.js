@@ -136,19 +136,20 @@ const buildFilterLayout = ({
   );
 };
 
-const hasPrevPage = (data, dataSource, pageTokens, pageOffset) =>
-  isClientSide(Map({ data, dataSource }))
+const hasPrevPage = (data, dataSource, tableOptions, pageTokens, pageOffset) =>
+  isClientSide(Map({ data, dataSource, tableOptions }))
     ? pageOffset > 0
     : pageTokens.size !== 0;
 
 const hasNextPage = (
   data,
   dataSource,
+  tableOptions,
   pageOffset,
   pageSize,
   currentPageToken,
 ) =>
-  isClientSide(Map({ data, dataSource }))
+  isClientSide(Map({ data, dataSource, tableOptions }))
     ? data
       ? pageOffset + pageSize < data.size
       : false
@@ -159,6 +160,7 @@ const buildPaginationControl = props => {
     tableKey,
     data,
     dataSource,
+    tableOptions,
     pageTokens,
     pageSize,
     pageOffset,
@@ -167,13 +169,20 @@ const buildPaginationControl = props => {
     loading,
   } = props;
   const PaginationControl = components.PaginationControl;
-  const prevPage = hasPrevPage(data, dataSource, pageTokens, pageOffset)
+  const prevPage = hasPrevPage(
+    data,
+    dataSource,
+    tableOptions,
+    pageTokens,
+    pageOffset,
+  )
     ? onPrevPage(tableKey)
     : null;
 
   const nextPage = hasNextPage(
     data,
     dataSource,
+    tableOptions,
     pageOffset,
     pageSize,
     currentPageToken,
