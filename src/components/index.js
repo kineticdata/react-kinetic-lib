@@ -33,6 +33,7 @@ export {
 export {
   AttributeDefinitionTable,
 } from './core/attribute_definition/AttributeDefinitionTable';
+export { BridgeTable } from './core/bridge/BridgeTable';
 export { BridgeModelForm } from './core/bridge_model/BridgeModelForm';
 export { BridgeModelTable } from './core/bridge_model/BridgeModelTable';
 export {
@@ -100,3 +101,4 @@ export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 // Task
 export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { SourceTable } from './task/sources/SourceTable';
+export { HandlerTable } from './task/handlers/HandlerTable';

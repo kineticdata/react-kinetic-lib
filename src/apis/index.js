@@ -3,6 +3,7 @@ export * from './core/activity';
 export * from './core/attributeDefinitions';
 export * from './core/authentication';
 export * from './core/backgroundJobs';
+export * from './core/bridges';
 export * from './core/bridgedresources';
 export * from './core/bridgeModels';
 export * from './core/bridgeModelAttributes';

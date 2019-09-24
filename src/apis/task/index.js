@@ -41,3 +41,18 @@ export const fetchSources = (options = {}) =>
     .then(response => ({
       sources: response.data.sourceRoots,
     }));
+
+export const fetchHandlers = (options = {}) =>
+  axios
+    .get('/kinetic-task/app/api/v2/handlers', {
+      params: {
+        include: options.include,
+      },
+      auth: {
+        username: 'developer',
+        password: 'developer',
+      },
+    })
+    .then(response => ({
+      handlers: response.data.handlers,
+    }));
