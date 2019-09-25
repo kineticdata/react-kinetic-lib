@@ -318,7 +318,14 @@ regSaga(
         dispatch('SUBMIT_SUCCESS', { formKey });
         if (onSave) yield call(onSave, result);
       } catch (error) {
-        dispatch('SUBMIT_ERROR', { formKey, error });
+        dispatch('SUBMIT_ERROR', {
+          formKey,
+          error:
+            typeof error === 'string' ? error : 'Unexpected error occurred',
+        });
+        if (typeof error !== 'string') {
+          console.error('Error handling  form submit', error);
+        }
         if (onError) yield call(onError, error);
       }
     } else {

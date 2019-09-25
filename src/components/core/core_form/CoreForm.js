@@ -377,6 +377,7 @@ export class CoreForm extends Component {
           id: this.props.submission,
           datastore: !!this.props.datastore,
           include: submissionIncludes,
+          authAssumed: !this.props.public,
         }).then(({ submission, error }) => {
           this.setStateSafe({
             submission,
@@ -389,6 +390,7 @@ export class CoreForm extends Component {
           kappSlug: this.props.kapp,
           formSlug: this.props.form,
           include: formIncludes,
+          authAssumed: !this.props.public,
         }).then(({ form, error }) => {
           this.setStateSafe({
             form,

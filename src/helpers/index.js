@@ -7,6 +7,7 @@ export const bundle =
     : {
         apiLocation: () => '/app/api/v1',
         spaceLocation: () => '',
+        kappSlug: () => '',
       };
 
 export const splitTeamName = team => {
