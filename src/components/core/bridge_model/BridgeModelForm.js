@@ -1,11 +1,14 @@
 import React from 'react';
 import { Form } from '../../form/Form';
+import { List, Map } from 'immutable';
+
 import {
   fetchBridgeModel,
   createBridgeModel,
   createBridgeModelMapping,
   updateBridgeModel,
   updateBridgeModelMapping,
+  fetchBridges,
 } from '../../../apis';
 
 const getMapping = model =>
@@ -25,6 +28,11 @@ const dataSources = ({ modelName }) => ({
   modelMapping: {
     fn: getMapping,
     params: ({ model }) => modelName && model && [model],
+  },
+  bridges: {
+    fn: fetchBridges,
+    params: [{ include: 'details' }],
+    transform: result => result.bridges,
   },
 });
 
@@ -67,8 +75,8 @@ const handleSubmit = ({ modelName }) => async (values, { modelMapping }) => {
   return bridgeModel;
 };
 
-const fields = ({ modelName }) => ({ model, modelMapping }) =>
-  (!modelName || (model && modelMapping)) && [
+const fields = ({ modelName }) => ({ model, modelMapping, bridges }) =>
+  (!modelName || (model && modelMapping && bridges)) && [
     {
       name: 'name',
       label: 'Name',
@@ -89,9 +97,19 @@ const fields = ({ modelName }) => ({ model, modelMapping }) =>
     {
       name: 'bridgeSlug',
       label: 'Bridge Slug',
-      type: 'text',
+      type: 'select',
       required: true,
       initialValue: modelMapping ? modelMapping.get('bridgeSlug') : '',
+      helpText: 'Bridges are configured under Plugins',
+      options: ({ bridges }) =>
+        bridges
+          ? bridges.map(bridge =>
+              Map({
+                value: bridge.get('slug'),
+                label: bridge.get('name'),
+              }),
+            )
+          : List(),
     },
     {
       name: 'structure',
