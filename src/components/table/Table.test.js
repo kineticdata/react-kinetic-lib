@@ -43,7 +43,7 @@ describe('<Table />', () => {
         data,
         columns,
         columnSet,
-        rows: List(data),
+        rows: List(data).map(r => Map(r)),
       };
     });
 
