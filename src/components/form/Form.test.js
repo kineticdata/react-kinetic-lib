@@ -42,26 +42,83 @@ describe('validateFields', () => {
       expect(validateField({})(field).errors).toEqual(List(['HEY!']));
     });
 
-    test('no error when required and value is populated string', () => {});
-    test('has error when required function evaluates to true and value is empty string', () => {});
+    test('no error when required and value is populated string', () => {
+      const field = Field({
+        name: 'First Name',
+        required: true,
+        value: 'foo',
+      });
+      expect(validateField({})(field).errors).toEqual(List([]));
+    });
+
+    test('has error when required function evaluates to true and value is empty string', () => {
+      const field = Field({
+        name: 'First Name',
+        required: true,
+        value: '',
+      });
+      expect(validateField({})(field).errors).toEqual(
+        List(['This field is required']),
+      );
+    });
   });
 
   describe('check pattern', () => {
-    const field = Field({ name: 'First Name', pattern: /\d+/, value: '' });
-    test('no error when pattern but value is empty string', () => {});
-    test('no error when pattern and string matches', () => {});
-    test('error when pattern and string does not match', () => {});
+    test('no error when pattern but value is empty string', () => {
+      const field = Field({ name: 'First Name', pattern: /\d+/, value: '' });
+      expect(validateField({})(field).errors).toEqual(List());
+    });
+
+    test('no error when pattern and string matches', () => {
+      const field = Field({ name: 'First Name', pattern: /\d+/, value: '2' });
+      expect(validateField({})(field).errors).toEqual(List());
+    });
+
+    test('error when pattern and string does not match', () => {
+      const field = Field({
+        name: 'Last Name',
+        type: 'text',
+        pattern: /^\d+$/,
+        value: 'Blah1.2x',
+      });
+      expect(validateField({})(field).errors).toEqual(List(['Invalid format']));
+    });
+
     test('pattern message used if defined', () => {});
   });
 
   describe('check custom constraint', () => {
-    const field = Field({
-      name: 'First Name',
-      constraint: () => true,
-      value: '',
+    test('no error when constraint evaluates to true', () => {
+      const field = Field({
+        name: 'First Name',
+        required: true,
+        value: 'Hello',
+        constraint: () => true,
+      });
+      expect(validateField({})(field).errors).toEqual(List());
     });
-    test('no error when constraint evaluates to true', () => {});
-    test('error when constraint evaluates to false', () => {});
-    test('constraint message used if defined ', () => {});
+
+    test('error when constraint evaluates to false', () => {
+      const field = Field({
+        name: 'First Name',
+        required: true,
+        value: 'Hello',
+        constraint: () => false,
+      });
+      expect(validateField({})(field).errors).toEqual(List(['Invalid']));
+    });
+
+    test('constraint message used if defined ', () => {
+      const field = Field({
+        name: 'First Name',
+        required: true,
+        value: 'Hello',
+        constraint: () => false,
+        constraintMessage: 'Invalid constraint',
+      });
+      expect(validateField({})(field).errors).toEqual(
+        List(['Invalid constraint']),
+      );
+    });
   });
 });
