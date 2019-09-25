@@ -65,7 +65,7 @@ export const checkConstraint = bindings => field =>
     ? List([field.constraintMessage])
     : List();
 
-export const validateFields = bindings => field =>
+export const validateField = bindings => field =>
   field.set(
     'errors',
     List([checkRequired, checkPattern, checkConstraint(bindings)]).flatMap(fn =>
@@ -136,7 +136,7 @@ const evaluateFields = formState =>
     ? formState.update('fields', fields =>
         fields
           .map(evaluateFieldProps(formState.bindings))
-          .map(validateFields(formState.bindings)),
+          .map(validateField(formState.bindings)),
       )
     : formState;
 
