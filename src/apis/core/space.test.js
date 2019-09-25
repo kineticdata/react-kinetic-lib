@@ -1,40 +1,19 @@
 import axios from 'axios';
 import createError from 'axios/lib/core/createError';
 import { fetchSpace, updateSpace } from './space';
-import { SpaceBuilder } from '../../../tests/utils/space_builder';
-import {
-  rejectPromiseWith,
-  resolvePromiseWith,
-} from '../../../tests/utils/promises';
 
 jest.mock('axios');
-
-// Mock out the bundle object from a dependency.
-jest.mock('../../helpers', () => ({
-  bundle: {
-    apiLocation: () => 'space/app/api/v1',
-  },
-}));
 
 describe('space api', () => {
   describe('#fetchSpace', () => {
     describe('when successful', () => {
-      let response;
-      let testSpace;
-
       beforeEach(() => {
-        response = {
+        axios.get.mockResolvedValue({
           status: 200,
           data: {
-            space: {},
+            space: { name: 'Acme', slug: 'acme', attributes: [] },
           },
-        };
-        testSpace = new SpaceBuilder()
-          .stub()
-          .withAttribute('Attribute', 'value')
-          .build();
-        response.data.space = testSpace;
-        axios.get = resolvePromiseWith(response);
+        });
       });
 
       test('does not return errors', () => {
@@ -48,8 +27,8 @@ describe('space api', () => {
         expect.assertions(1);
         return fetchSpace().then(({ space }) => {
           expect(space).toMatchObject({
-            name: testSpace.name,
-            slug: testSpace.slug,
+            name: 'Acme',
+            slug: 'acme',
           });
         });
       });
@@ -71,7 +50,7 @@ describe('space api', () => {
           status: 500,
           data: {},
         };
-        axios.get = rejectPromiseWith({ response });
+        axios.get.mockRejectedValue({ response });
       });
 
       test('does return errors', () => {
@@ -110,7 +89,7 @@ describe('space api', () => {
       });
       expect(axios.put.mock.calls).toEqual([
         [
-          'space/app/api/v1/space',
+          '/app/api/v1/space',
           {
             name: 'Foo',
             attributes: [{ name: 'Company Name', values: ['Foo Bar'] }],
