@@ -9,23 +9,41 @@ import { onBlur, onChange as onChangeHandler, onFocus } from './Form';
 
 const sameName = field1 => field2 => field1.name === field2.name;
 
-export const resolveFieldConfig = (fields, addFields = [], alterFields = {}) =>
-  OrderedMap(
-    [
-      ...fields,
-      ...addFields
-        .filter(field => !fields.find(sameName(field)))
-        .map(field => ({ ...field, transient: true })),
-    ]
-      .filter(field => !!field)
-      .map(({ name, type, ...fieldConfig }) => ({
-        ...fieldConfig,
-        ...(alterFields[name] || {}),
-        name,
-        type,
-      }))
-      .map(field => [field.name, field]),
-  );
+export const resolveFieldConfig = (
+  formOptions,
+  bindings,
+  fieldsFn,
+  addFieldsParam = [],
+  alterFieldsParam = {},
+) => {
+  const fields = fieldsFn(formOptions)(bindings);
+  const addFields =
+    typeof addFieldsParam === 'function'
+      ? addFieldsParam(formOptions)(bindings)
+      : addFieldsParam;
+  const alterFields =
+    typeof alterFieldsParam === 'function'
+      ? alterFieldsParam(formOptions)(bindings)
+      : alterFieldsParam;
+  if (fields && addFields && alterFields) {
+    return OrderedMap(
+      [
+        ...fields,
+        ...addFields
+          .filter(field => !fields.find(sameName(field)))
+          .map(field => ({ ...field, transient: true })),
+      ]
+        .filter(field => !!field)
+        .map(({ name, type, ...fieldConfig }) => ({
+          ...fieldConfig,
+          ...(alterFields[name] || {}),
+          name,
+          type,
+        }))
+        .map(field => [field.name, field]),
+    );
+  }
+};
 
 export const createField = formKey => ({
   constraint,
@@ -119,7 +137,7 @@ export const createFormState = ({
     addFields,
     alterFields,
     dataSources: Map(dataSources(formOptions)).map(createDataSource),
-    fieldsFn: fields(formOptions),
+    fieldsFn: fields,
     formKey,
     formOptions,
     onError: onError && onError(formOptions),
