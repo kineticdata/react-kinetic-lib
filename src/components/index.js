@@ -34,6 +34,7 @@ export {
   AttributeDefinitionTable,
 } from './core/attribute_definition/AttributeDefinitionTable';
 export { BridgeTable } from './core/bridge/BridgeTable';
+export { BridgeForm } from './core/bridge/BridgeForm';
 export { BridgeModelForm } from './core/bridge_model/BridgeModelForm';
 export { BridgeModelTable } from './core/bridge_model/BridgeModelTable';
 export {
