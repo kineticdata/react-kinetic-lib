@@ -101,5 +101,6 @@ export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 
 // Task
 export { WorkflowTable } from './task/workflows/WorkflowTable';
+export { WorkflowForm } from './task/workflows/WorkflowForm';
 export { SourceTable } from './task/sources/SourceTable';
 export { HandlerTable } from './task/handlers/HandlerTable';

@@ -74,7 +74,7 @@ const fields = ({ title }) => ({ workflow }) => [
   },
 ];
 
-export const TreeForm = ({
+export const WorkflowForm = ({
   addFields,
   alterFields,
   fieldSet,

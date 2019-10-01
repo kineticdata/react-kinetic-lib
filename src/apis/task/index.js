@@ -27,6 +27,19 @@ export const fetchTrees = (options = {}) =>
       nextPageToken: generateNextPageToken(response.data),
     }));
 
+export const fetchTree = () => ({
+  tree: {
+    name: 'Complete',
+    notes: 'Notes about the tree',
+    ownerEmail: 'email of the person that is in change of the process',
+    sourceName: 'Request CE',
+    sourceGroup: 'Kapp Name > My Process',
+    status: 'Active',
+    title: 'Request CE :: Kapp Name > My Process :: Complete',
+    type: 'Tree',
+  },
+});
+
 export const fetchSources = (options = {}) =>
   axios
     .get('/kinetic-task/app/api/v2/sources', {
