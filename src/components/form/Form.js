@@ -65,7 +65,7 @@ export const checkConstraint = bindings => field =>
     ? List([field.constraintMessage])
     : List();
 
-export const validateFields = bindings => field =>
+export const validateField = bindings => field =>
   field.set(
     'errors',
     List([checkRequired, checkPattern, checkConstraint(bindings)]).flatMap(fn =>
@@ -83,18 +83,16 @@ export const evaluateFieldProps = bindings => field =>
 
 const initializeFields = formState => {
   if (!formState.fields) {
-    const fields = formState.fieldsFn(formState.bindings);
+    const fields = resolveFieldConfig(
+      formState.formOptions,
+      formState.bindings,
+      formState.fieldsFn,
+      formState.addFields,
+      formState.alterFields,
+    );
     if (!!fields) {
-      const fieldConfig = resolveFieldConfig(
-        fields,
-        formState.addFields,
-        formState.alterFields,
-      );
       return buildBindings(
-        formState.set(
-          'fields',
-          fieldConfig.map(createField(formState.formKey)),
-        ),
+        formState.set('fields', fields.map(createField(formState.formKey))),
       );
     }
   }
@@ -136,7 +134,7 @@ const evaluateFields = formState =>
     ? formState.update('fields', fields =>
         fields
           .map(evaluateFieldProps(formState.bindings))
-          .map(validateFields(formState.bindings)),
+          .map(validateField(formState.bindings)),
       )
     : formState;
 
@@ -479,7 +477,9 @@ class FormImplComponent extends Component {
       // alterFields options. Note that we get those from the parent props not
       // redux store because we want to see new components on HMR updates.
       const fieldComponents = resolveFieldConfig(
-        fieldsFn(formOptions)(bindings),
+        formOptions,
+        bindings,
+        fieldsFn,
         addFields,
         alterFields,
       )
