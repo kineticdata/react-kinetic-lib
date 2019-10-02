@@ -1,6 +1,7 @@
 import React from 'react';
-import { fetchTree, fetchSources } from '../../../apis';
+import { fetchTree, fetchSources, updateTree, createTree } from '../../../apis';
 import { Form } from '../../form/Form';
+import { get } from 'immutable';
 
 const dataSources = ({ workflowType, itemId }) => {
   return {
@@ -23,7 +24,19 @@ const dataSources = ({ workflowType, itemId }) => {
   };
 };
 
-const handleSubmit = ({ itemId }) => values => {};
+const handleSubmit = ({ itemId }) => values =>
+  new Promise((resolve, reject) => {
+    const tree = values.toJS();
+    (itemId ? updateTree({ itemId, tree }) : createTree({ tree })).then(
+      ({ tree, error }) => {
+        if (tree) {
+          resolve(tree);
+        } else {
+          reject(error.message || 'There was an error saving the workflow');
+        }
+      },
+    );
+  });
 
 const fields = ({ itemId }) => ({ workflow }) =>
   (!itemId || workflow) && [
@@ -39,7 +52,7 @@ const fields = ({ itemId }) => ({ workflow }) =>
       label: 'Notes',
       type: 'text',
       required: true,
-      initialValue: workflow ? workflow.get('notes') : '',
+      initialValue: get(workflow, 'notes', '') || '',
     },
     {
       name: 'ownerEmail',

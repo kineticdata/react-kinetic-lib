@@ -10,6 +10,14 @@ const fetchWorkflowUsage = (options = {}) => ({
       usage: 'routine_kinetic_admin_kapp_submission_config_v1',
       updatedAt: new Date(),
     },
+    {
+      type: 'Tree',
+      sourceName: 'Kinetic Request CE',
+      sourceGroup: 'Submissions > admin',
+      tree: 34,
+      usage: 'routine_kinetic_admin_kapp_submission_config_v1',
+      updatedAt: new Date(),
+    },
   ],
 });
 

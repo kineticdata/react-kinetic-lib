@@ -45,6 +45,40 @@ export const fetchTree = (options = {}) => {
     }));
 };
 
+export const updateTree = (options = {}) => {
+  validateOptions('updateTree', ['itemId', 'tree'], options);
+  return axios
+    .put(`/kinetic-task/app/api/v2/trees/${options.itemId}`, options.tree, {
+      params: {
+        include: options.include,
+      },
+      auth: {
+        username: 'developer',
+        password: 'developer',
+      },
+    })
+    .then(response => ({
+      tree: response.data,
+    }));
+};
+
+export const createTree = (options = {}) => {
+  validateOptions('createTree', ['tree'], options);
+  return axios
+    .post(`/kinetic-task/app/api/v2/trees`, options.tree, {
+      params: {
+        include: options.include,
+      },
+      auth: {
+        username: 'developer',
+        password: 'developer',
+      },
+    })
+    .then(response => ({
+      tree: response.data,
+    }));
+};
+
 export const fetchSources = (options = {}) =>
   axios
     .get('/kinetic-task/app/api/v2/sources', {
