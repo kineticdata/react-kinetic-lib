@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { validateOptions } from '../http';
 
 const generateNextPageToken = data =>
   data.offset + data.limit > data.count ? null : data.limit + data.offset;
@@ -27,18 +28,22 @@ export const fetchTrees = (options = {}) =>
       nextPageToken: generateNextPageToken(response.data),
     }));
 
-export const fetchTree = () => ({
-  tree: {
-    name: 'Complete',
-    notes: 'Notes about the tree',
-    ownerEmail: 'email of the person that is in change of the process',
-    sourceName: 'Request CE',
-    sourceGroup: 'Kapp Name > My Process',
-    status: 'Active',
-    title: 'Request CE :: Kapp Name > My Process :: Complete',
-    type: 'Tree',
-  },
-});
+export const fetchTree = (options = {}) => {
+  validateOptions('fetchTree', ['itemId'], options);
+  return axios
+    .get(`/kinetic-task/app/api/v2/trees/${options.itemId}`, {
+      params: {
+        include: options.include,
+      },
+      auth: {
+        username: 'developer',
+        password: 'developer',
+      },
+    })
+    .then(response => ({
+      tree: response.data,
+    }));
+};
 
 export const fetchSources = (options = {}) =>
   axios
