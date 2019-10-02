@@ -61,6 +61,7 @@ export const createField = formKey => ({
   renderAttributes,
   required,
   requiredMessage,
+  search,
   serialize,
   transient,
   type,
@@ -82,6 +83,7 @@ export const createField = formKey => ({
     options: typeof options === 'function' ? List() : fromJS(options),
     placeholder: typeof placeholder === 'function' ? '' : placeholder,
     required: typeof required === 'function' ? false : required,
+    search: typeof search === 'function' ? Map() : fromJS(search),
     transient: typeof transient === 'function' ? false : transient,
     visible: typeof visible === 'function' ? false : visible,
     functions: Map({
@@ -90,6 +92,7 @@ export const createField = formKey => ({
       options: typeof options === 'function' ? options : null,
       placeholder: typeof placeholder === 'function' ? placeholder : null,
       required: typeof required === 'function' ? required : null,
+      search: typeof search === 'function' ? search : null,
       transient: typeof transient === 'function' ? transient : null,
       visible: typeof visible === 'function' ? visible : null,
     }),

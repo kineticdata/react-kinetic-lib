@@ -32,7 +32,7 @@ const getStatusProps = props => ({
         ? 'Too many teams, first 25 shown. Please refine your search.'
         : props.empty && !props.custom
         ? 'No matching teams.'
-        : 'There was an error fetching users.'
+        : 'There was an error fetching teams.'
       : null,
 
   clearFilterField: props.searchField ? props.setSearchField(null) : null,
