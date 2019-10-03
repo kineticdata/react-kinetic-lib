@@ -5,8 +5,6 @@ import { getArrowPoints, getRectIntersections } from './helpers';
 export class Connector extends Component {
   constructor(props) {
     super(props);
-    this.from = props.from;
-    this.to = props.to;
     this.connector = createRef();
     this.connectorCircle = createRef();
     this.connectorArrow = createRef();
@@ -20,13 +18,13 @@ export class Connector extends Component {
     console.log('on drag head');
   };
 
-  setTo = to => {
-    this.to = to;
+  setTo = ({ x, y }) => {
+    this.to = { x, y };
     this.draw();
   };
 
-  setFrom = from => {
-    this.from = from;
+  setFrom = ({ x, y }) => {
+    this.from = { x, y };
     this.draw();
   };
 
@@ -39,8 +37,31 @@ export class Connector extends Component {
     this.connectorArrow.current.setAttribute('points', getArrowPoints(points));
   };
 
+  // Helper function that syncs the instance's `fromX`, `fromY`, `toX`, and
+  // `toY` values with the ones passed via the `from` and `to` props and calls
+  // draw if the internal state has changed as a result.
+  sync = () => {
+    const { from, to } = this.props;
+    const dirty =
+      !this.from ||
+      !this.to ||
+      this.from.x !== from.x ||
+      this.from.y !== from.y ||
+      this.to.x !== to.x ||
+      this.to.x !== to.y;
+    this.from = { x: from.x, y: from.y };
+    this.to = { x: to.x, y: to.y };
+    if (dirty) {
+      this.draw();
+    }
+  };
+
   componentDidMount() {
-    this.draw();
+    this.sync();
+  }
+
+  componentDidUpdate() {
+    this.sync();
   }
 
   render() {

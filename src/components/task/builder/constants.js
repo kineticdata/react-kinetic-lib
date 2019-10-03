@@ -5,7 +5,7 @@ export const CONNECTOR_TAIL_TRIANGLE_SIZE = 3;
 
 export const NODE_RADIUS = 3;
 export const NODE_HEIGHT = 60;
-export const NODE_PADDING = 6;
+export const NODE_PADDING = 8;
 export const NODE_WIDTH = 180;
 export const NODE_STROKE_WIDTH = 2;
 
