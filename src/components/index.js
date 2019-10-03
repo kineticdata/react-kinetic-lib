@@ -99,6 +99,7 @@ export { WebhookTable } from './core/webhook/WebhookTable';
 export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 
 // Task
+export { Builder } from './task/builder/Builder';
 export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { SourceTable } from './task/sources/SourceTable';
 export { HandlerTable } from './task/handlers/HandlerTable';
