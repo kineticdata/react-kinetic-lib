@@ -3,7 +3,7 @@ import { Typeahead } from './Typeahead';
 import { fetchForms } from '../../apis';
 import { List, Map } from 'immutable';
 
-const fields = [{ name: 'name' }, { name: 'category' }];
+const fields = [{ name: 'name' }, { name: 'slug' }, { name: 'category' }];
 
 const searchForms = ({ options, search }) => (field, value) => {
   const searchFields =
