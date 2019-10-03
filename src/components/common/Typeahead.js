@@ -1,6 +1,6 @@
 import React from 'react';
 import Autosuggest from 'react-autosuggest';
-import { fromJS, List } from 'immutable';
+import { fromJS, is, List } from 'immutable';
 
 const DEBOUNCE_DURATION = 150;
 
@@ -42,21 +42,23 @@ const TypeaheadInputDefault = ({ inputProps }) => <input {...inputProps} />;
 export class Typeahead extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      editing: true,
-      newValue:
-        this.props.textMode && this.props.value
-          ? this.props.getSuggestionValue(this.props.value)
-          : '',
-      error: null,
-      empty: false,
-      nextPageToken: null,
-      searchField: null,
-      searchValue: '',
-      suggestions: [],
-      touched: false,
-    };
+    this.state = this.createStateFromProps(props);
   }
+
+  createStateFromProps = props => ({
+    editing: true,
+    newValue:
+      props.textMode && props.value
+        ? props.getSuggestionValue(props.value)
+        : '',
+    error: null,
+    empty: false,
+    nextPageToken: null,
+    searchField: null,
+    searchValue: '',
+    suggestions: [],
+    touched: false,
+  });
 
   edit = event => {
     this.setState({ editing: true });
@@ -225,6 +227,9 @@ export class Typeahead extends React.Component {
     }
     if (this.state.editing && !prevState.editing) {
       this.autosuggest.input.focus();
+    }
+    if (!is(this.props.value, prevProps.value)) {
+      this.setState(this.createStateFromProps(this.props));
     }
   }
 
