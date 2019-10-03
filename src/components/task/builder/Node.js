@@ -70,8 +70,8 @@ export class Node extends Component {
           strokeWidth={constants.NODE_STROKE_WIDTH}
           rx={constants.NODE_RADIUS}
           ry={constants.NODE_RADIUS}
-          x={constants.NODE_STROKE_WIDTH}
-          y={constants.NODE_STROKE_WIDTH}
+          x={constants.NODE_RECT_OFFSET_X}
+          y={constants.NODE_RECT_OFFSET_Y}
           onMouseDown={this.drag}
         />
       </svg>

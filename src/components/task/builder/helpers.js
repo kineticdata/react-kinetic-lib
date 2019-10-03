@@ -35,14 +35,14 @@ export const getArrowPoints = ([[x1, y1], [x2, y2]]) => {
 };
 
 export const getRectIntersections = (from, to) => {
-  const dx = constants.NODE_SVG_WIDTH / 2;
-  const dy = constants.NODE_SVG_HEIGHT / 2;
-
   // get the center of the `from` and `to` rectangles
-  const x1 = from.x + dx;
-  const y1 = from.y + dy;
-  const x2 = to.x + dx;
-  const y2 = to.y + dy;
+  const x1 = from.x + constants.NODE_CENTER_X;
+  const y1 = from.y + constants.NODE_CENTER_Y;
+  const x2 = to.x + constants.NODE_CENTER_X;
+  const y2 = to.y + constants.NODE_CENTER_Y;
+
+  const dx = constants.NODE_CENTER_X + constants.NODE_PADDING;
+  const dy = constants.NODE_CENTER_Y + constants.NODE_PADDING;
 
   // compute the slope of the line between `from` and `to`
   const slope = (y2 - y1) / (x2 - x1);

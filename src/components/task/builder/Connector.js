@@ -45,17 +45,17 @@ export class Connector extends Component {
 
   render() {
     return (
-      <g>
-        <path ref={this.connector} className="connector" />
+      <g className="connector">
+        <path ref={this.connector} className="body" />
         <circle
-          r={constants.CONNECTOR_HEAD_RADIUS}
           ref={this.connectorCircle}
-          className="connector-tail"
+          className="head"
+          r={constants.CONNECTOR_HEAD_RADIUS}
           onMouseDown={this.dragTail}
         />
         <polygon
           ref={this.connectorArrow}
-          className="connector-head"
+          className="tail"
           onMouseDown={this.dragHead}
         />
       </g>
