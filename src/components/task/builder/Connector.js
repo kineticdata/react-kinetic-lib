@@ -89,13 +89,22 @@ export class Connector extends Component {
   // changed and redraws.
   sync = () => {
     const { headId, tailId } = this.props;
-    if (this.headId !== headId || this.tailId !== tailId) {
-      this.headId = headId;
+    const headRect = this.props.nodes.get(headId);
+    const tailRect = this.props.nodes.get(tailId);
+    const dirty =
+      this.headId !== headId ||
+      this.tailId !== tailId ||
+      this.headRect.x !== headRect.x ||
+      this.headRect.y !== headRect.y ||
+      this.tailRect.x !== tailRect.x ||
+      this.tailRect.y !== tailRect.y;
+    this.headId = headId;
+    this.headRect = headRect;
+    this.tailId = tailId;
+    this.tailRect = tailRect;
+    if (dirty) {
       this.headPoint = null;
-      this.headRect = this.props.nodes.get(headId);
-      this.tailId = tailId;
       this.tailPoint = null;
-      this.tailRect = this.props.nodes.get(tailId);
       this.draw();
     }
   };
