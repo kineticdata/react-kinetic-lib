@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { createRef, Component, Fragment } from 'react';
 import { connect, dispatch } from '../../../store';
 import './builder.redux';
 import { SvgCanvas } from './SvgCanvas';
@@ -11,6 +11,7 @@ const redo = treeKey => () => dispatch('TREE_REDO', { treeKey });
 export class TreeBuilderComponent extends Component {
   constructor(props) {
     super(props);
+    this.canvasRef = createRef();
     this.connectorRefsMap = {
       byHead: {},
       byTail: {},
@@ -35,7 +36,7 @@ export class TreeBuilderComponent extends Component {
     return (
       this.props.tree && (
         <Fragment>
-          <SvgCanvas>
+          <SvgCanvas ref={this.canvasRef}>
             {this.props.tree.connectors
               .map((connector, id) => (
                 <Connector
@@ -46,6 +47,7 @@ export class TreeBuilderComponent extends Component {
                   )}
                   key={id}
                   treeKey={this.props.treeKey}
+                  canvasRef={this.canvasRef}
                   id={id}
                   label={connector.label}
                   from={this.props.tree.nodes.get(connector.headId)}
@@ -58,6 +60,7 @@ export class TreeBuilderComponent extends Component {
                 <Node
                   key={id}
                   treeKey={this.props.treeKey}
+                  canvasRef={this.canvasRef}
                   id={id}
                   name={node.name}
                   x={node.x}

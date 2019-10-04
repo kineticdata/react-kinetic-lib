@@ -29,42 +29,23 @@ export class Node extends Component {
   }
 
   drag = event => {
-    event.stopPropagation();
-    event.preventDefault();
-    const transformerEl = this.el.current.parentNode;
-    const canvasEl = transformerEl.parentNode;
-    this.lastX = event.clientX;
-    this.lastY = event.clientY;
-    this.scale = getScale(transformerEl);
-    canvasEl.addEventListener('mouseup', this.drop);
-    canvasEl.addEventListener('mouseleave', this.drop);
-    canvasEl.addEventListener('mousemove', this.move);
-  };
-
-  drop = event => {
-    event.stopPropagation();
-    event.preventDefault();
-    const canvasEl = this.el.current.parentNode.parentNode;
-    canvasEl.removeEventListener('mouseup', this.drop);
-    canvasEl.removeEventListener('mouseleave', this.drop);
-    canvasEl.removeEventListener('mousemove', this.move);
-    updateNode({
-      treeKey: this.props.treeKey,
-      id: this.props.id,
-      x: this.x,
-      y: this.y,
+    this.props.canvasRef.current.watchDrag({
+      event,
+      onMove: this.move,
+      onDrop: () => {
+        updateNode({
+          treeKey: this.props.treeKey,
+          id: this.props.id,
+          x: this.x,
+          y: this.y,
+        });
+      },
     });
   };
 
-  move = throttle(event => {
-    event.stopPropagation();
-    event.preventDefault();
-    const deltaX = event.clientX - this.lastX;
-    const deltaY = event.clientY - this.lastY;
-    this.lastX = event.clientX;
-    this.lastY = event.clientY;
-    this.x += deltaX / this.scale;
-    this.y += deltaY / this.scale;
+  move = ({ dx, dy }) => {
+    this.x += dx;
+    this.y += dy;
     Object.values(
       this.props.connectorRefsMap.byHead[this.props.id] || {},
     ).forEach(connector => connector.setFrom({ x: this.x, y: this.y }));
@@ -72,7 +53,7 @@ export class Node extends Component {
       this.props.connectorRefsMap.byTail[this.props.id] || {},
     ).forEach(connector => connector.setTo({ x: this.x, y: this.y }));
     this.draw();
-  }, 32);
+  };
 
   draw = () => {
     this.el.current.setAttribute('x', this.x);

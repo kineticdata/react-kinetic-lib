@@ -1,3 +1,9 @@
+export const CANVAS_SCALE_MAX = 1.0;
+export const CANVAS_SCALE_MIN = 0.1;
+export const CANVAS_ZOOM_MODIFIER = 2000;
+export const THROTTLE_DRAG = 33;
+export const THROTTLE_ZOOM = 33;
+
 export const CONNECTOR_HEAD_RADIUS = 4;
 export const CONNECTOR_LABEL_WIDTH = 130;
 export const CONNECTOR_LABEL_HEIGHT = 18;

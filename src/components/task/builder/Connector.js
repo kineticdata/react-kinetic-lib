@@ -11,11 +11,27 @@ export class Connector extends Component {
   }
 
   dragTail = event => {
-    console.log('on drag tail');
+    this.draggingTail = true;
+    this.props.canvasRef.current.watchDrag({
+      relative: false,
+      event,
+      onMove: this.setFrom,
+      onDrop: () => {
+        this.draggingTail = false;
+      },
+    });
   };
 
   dragHead = event => {
-    console.log('on drag head');
+    this.draggingHead = true;
+    this.props.canvasRef.current.watchDrag({
+      relative: false,
+      event,
+      onMove: this.setTo,
+      onDrop: () => {
+        this.draggingHead = false;
+      },
+    });
   };
 
   setTo = ({ x, y }) => {
@@ -30,11 +46,19 @@ export class Connector extends Component {
 
   draw = () => {
     const points = getRectIntersections(this.from, this.to);
-    const [[x1, y1], [x2, y2]] = points;
+    const tailPoint = this.draggingTail
+      ? [this.from.x, this.from.y]
+      : points[0];
+    const headPoint = this.draggingHead ? [this.to.x, this.to.y] : points[1];
+    const [x1, y1] = tailPoint;
+    const [x2, y2] = headPoint;
     this.connector.current.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
     this.connectorCircle.current.setAttribute('cx', x1);
     this.connectorCircle.current.setAttribute('cy', y1);
-    this.connectorArrow.current.setAttribute('points', getArrowPoints(points));
+    this.connectorArrow.current.setAttribute(
+      'points',
+      getArrowPoints(tailPoint, headPoint),
+    );
   };
 
   // Helper function that syncs the instance's `fromX`, `fromY`, `toX`, and

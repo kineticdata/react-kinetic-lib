@@ -24,7 +24,7 @@ export const getPointOnCircle = (x, y, a, d) => {
 
 // getArrowPoints comes from the following blog post
 // https://www.varvet.com/blog/svg-arrows-with-hover/
-export const getArrowPoints = ([[x1, y1], [x2, y2]]) => {
+export const getArrowPoints = ([x1, y1], [x2, y2]) => {
   const angle = Math.atan2(y2 - y1, x2 - x1);
   const angleDegrees = (angle * 180) / Math.PI;
   return `\

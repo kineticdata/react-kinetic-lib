@@ -1,12 +1,7 @@
 import React, { createRef, Component } from 'react';
 import { throttle } from 'lodash-es';
 import { isIE11 } from './helpers';
-
-const PAN_THROTTLE = 33;
-const SCALE_MIN = 0.1;
-const SCALE_MAX = 1;
-const ZOOM_MODIFIER = 2000;
-const ZOOM_THROTTLE = 33;
+import * as constants from './constants';
 
 export class SvgCanvas extends Component {
   constructor(props) {
@@ -19,52 +14,67 @@ export class SvgCanvas extends Component {
     this.viewport = { scale: 1.0, x: 0, y: 0 };
   }
 
-  // This event handler is bound by passing it as a react prop so that
-  // propagation of click events on things inside the svg canvas (like nodes
-  // and connectors) works properly. Otherwise this event was firing before
-  // onMouseDown defined in <Node>.
-  startPan = event => {
+  watchDrag = ({ event, onMove, onDrop, scaled = true, relative = true }) => {
     event.preventDefault();
     event.stopPropagation();
-    this.lastX = event.nativeEvent.offsetX;
-    this.lastY = event.nativeEvent.offsetY;
-    this.canvas.current.addEventListener('mousemove', this.onMousemove);
-    this.canvas.current.addEventListener('mouseup', this.stopPan);
-    this.canvas.current.addEventListener('mouseleave', this.stopPan);
+    let lastX = event.nativeEvent.clientX;
+    let lastY = event.nativeEvent.clientY;
+    const moveHandler = throttle(event => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (relative) {
+        const x = event.clientX;
+        const y = event.clientY;
+        const dx = (x - lastX) / (scaled ? this.viewport.scale : 1);
+        const dy = (y - lastY) / (scaled ? this.viewport.scale : 1);
+        lastX = x;
+        lastY = y;
+        onMove({ dx, dy });
+      } else {
+        const x = (event.offsetX - this.viewport.x) / this.viewport.scale;
+        const y = (event.offsetY - this.viewport.y) / this.viewport.scale;
+        onMove({ x, y });
+      }
+    }, constants.THROTTLE_DRAG);
+    const dropHandler = event => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.canvas.current.removeEventListener('mousemove', moveHandler);
+      this.canvas.current.removeEventListener('mouseup', dropHandler);
+      this.canvas.current.removeEventListener('mouseleave', dropHandler);
+      if (onDrop) {
+        onDrop();
+      }
+    };
+    this.canvas.current.addEventListener('mousemove', moveHandler);
+    this.canvas.current.addEventListener('mouseup', dropHandler);
+    this.canvas.current.addEventListener('mouseleave', dropHandler);
   };
 
-  stopPan = event => {
-    event.preventDefault();
-    event.stopPropagation();
-    this.canvas.current.removeEventListener('mousemove', this.onMousemove);
-    this.canvas.current.removeEventListener('mouseup', this.stopPan);
-    this.canvas.current.removeEventListener('mouseleave', this.stopPan);
+  drag = event => {
+    this.watchDrag({ event, onMove: this.pan, scaled: false });
   };
 
-  pan = throttle(event => {
-    const { offsetX, offsetY } = event;
-    const deltaX = offsetX - this.lastX;
-    const deltaY = offsetY - this.lastY;
-    this.lastX = offsetX;
-    this.lastY = offsetY;
-    this.viewport.x += deltaX;
-    this.viewport.y += deltaY;
+  pan = ({ dx, dy }) => {
+    this.viewport.x += dx;
+    this.viewport.y += dy;
     this.setTransform();
-  }, PAN_THROTTLE);
+  };
 
   zoom = throttle(event => {
     const { offsetX, offsetY } = event;
     // Compute the new scale value, the deltaY from the mouse event is usually
     // somewhere between 0 and 100 so we divide that by a large number to get
     // much smaller increments.
-    let scale = this.viewport.scale - this.scrollDelta / ZOOM_MODIFIER;
+    let scale =
+      this.viewport.scale - this.scrollDelta / constants.CANVAS_ZOOM_MODIFIER;
     this.scrollDelta = 0;
     // If the newly computed scale value is less than the minimum or more than
     // the maximum we use those values instead.
-    if (scale < SCALE_MIN) {
-      scale = SCALE_MIN;
-    } else if (scale > SCALE_MAX) {
-      scale = SCALE_MAX;
+    if (scale < constants.CANVAS_SCALE_MIN) {
+      scale = constants.CANVAS_SCALE_MIN;
+    } else if (scale > constants.CANVAS_SCALE_MAX) {
+      scale = constants.CANVAS_SCALE_MAX;
     }
     if (scale !== this.viewport.scale) {
       // In order to keep the mouse cursor in the same position relative to the
@@ -77,19 +87,13 @@ export class SvgCanvas extends Component {
       this.viewport.scale = scale;
       this.setTransform();
     }
-  }, ZOOM_THROTTLE);
+  }, constants.THROTTLE_ZOOM);
 
   onWheel = event => {
     event.preventDefault();
     event.stopPropagation();
     this.scrollDelta += event.deltaY;
     this.zoom(event);
-  };
-
-  onMousemove = event => {
-    event.preventDefault();
-    event.stopPropagation();
-    this.pan(event);
   };
 
   setTransform(duration) {
@@ -121,7 +125,7 @@ export class SvgCanvas extends Component {
         ref={this.canvas}
         className="rkl tree-builder"
         style={{ height: '100%', width: '100%' }}
-        onMouseDown={this.startPan}
+        onMouseDown={this.drag}
       >
         <g ref={this.transformer}>{this.props.children}</g>
       </svg>
