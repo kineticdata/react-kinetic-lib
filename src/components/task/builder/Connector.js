@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import * as constants from './constants';
-import { getArrowPoints, getRectIntersections, isPointInRect } from './helpers';
+import { getArrowPoints, getRectIntersections, isPointInNode } from './helpers';
 import { dispatch } from '../../../store';
 
 export class Connector extends Component {
@@ -18,7 +18,7 @@ export class Connector extends Component {
       onMove: this.setTailPoint,
       onDrop: () => {
         const nodeId = this.props.nodes.findIndex(
-          isPointInRect(this.tailPoint),
+          isPointInNode(this.tailPoint),
         );
         if (nodeId === -1 || nodeId === this.tailId || nodeId === this.headId) {
           this.setTailPoint(null);
@@ -40,7 +40,7 @@ export class Connector extends Component {
       onMove: this.setHeadPoint,
       onDrop: () => {
         const nodeId = this.props.nodes.findIndex(
-          isPointInRect(this.headPoint),
+          isPointInNode(this.headPoint),
         );
         if (nodeId === -1 || nodeId === this.tailId || nodeId === this.headId) {
           this.setHeadPoint(null);
