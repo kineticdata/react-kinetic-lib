@@ -1,8 +1,13 @@
 import React, { Component, createRef } from 'react';
+import classNames from 'classnames';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
 import { isIE11 } from './helpers';
 import { SvgText } from './SvgText';
+import loopIcon from '../../../assets/task/icons/loop.svg';
+import routineIcon from '../../../assets/task/icons/routine.svg';
+import deferIcon from '../../../assets/task/icons/defer.svg';
+import plusIcon from '../../../assets/task/icons/plus_small.svg';
 
 const addNode = ({ treeKey, x, y }) => () =>
   dispatch('TREE_ADD_NODE', { treeKey, x, y, name: 'Foo' });
@@ -84,11 +89,20 @@ export class Node extends Component {
   }
 
   render() {
-    const { treeKey, id, x, y, name } = this.props;
+    const {
+      treeKey,
+      id,
+      x,
+      y,
+      name,
+      highlighted,
+      invalid,
+      selected,
+    } = this.props;
     return (
       <g ref={this.el}>
         <rect
-          className="node"
+          className={classNames('node', { highlighted, invalid, selected })}
           height={constants.NODE_HEIGHT}
           width={constants.NODE_WIDTH}
           rx={constants.NODE_RADIUS}
@@ -105,18 +119,12 @@ export class Node extends Component {
         >
           {name}
         </SvgText>
-        <circle
-          r={6}
-          fill="red"
-          cx="0"
-          cy="0"
-          onClick={removeNode({ treeKey, id })}
-        />
-        <circle
-          r={9}
-          fill="orange"
-          cx={constants.NODE_CENTER_X}
-          cy={constants.NODE_HEIGHT}
+        <image xlinkHref={deferIcon} x={6} y={-12} />
+        <image xlinkHref={routineIcon} x={6} y={constants.NODE_HEIGHT - 12} />
+        <image
+          xlinkHref={plusIcon}
+          x={constants.NODE_CENTER_X - 9}
+          y={constants.NODE_HEIGHT - 9}
           onClick={addConnectedNode({ treeKey, x, y, parentId: id })}
         />
       </g>
