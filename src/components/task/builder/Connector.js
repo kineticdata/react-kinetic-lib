@@ -1,6 +1,7 @@
 import React, { Component, createRef } from 'react';
 import * as constants from './constants';
-import { getArrowPoints, getRectIntersections } from './helpers';
+import { getArrowPoints, getRectIntersections, isPointInRect } from './helpers';
+import { dispatch } from '../../../store';
 
 export class Connector extends Component {
   constructor(props) {
@@ -11,71 +12,90 @@ export class Connector extends Component {
   }
 
   dragTail = event => {
-    this.draggingTail = true;
     this.props.canvasRef.current.watchDrag({
       relative: false,
       event,
-      onMove: this.setFrom,
+      onMove: this.setTailPoint,
       onDrop: () => {
-        this.draggingTail = false;
+        const nodeId = this.props.nodes.findIndex(
+          isPointInRect(this.tailPoint),
+        );
+        if (nodeId === -1 || nodeId === this.tailId || nodeId === this.headId) {
+          this.setTailPoint(null);
+        } else {
+          dispatch('TREE_UPDATE_CONNECTOR_TAIL', {
+            treeKey: this.props.treeKey,
+            id: this.props.id,
+            nodeId,
+          });
+        }
       },
     });
   };
 
   dragHead = event => {
-    this.draggingHead = true;
     this.props.canvasRef.current.watchDrag({
       relative: false,
       event,
-      onMove: this.setTo,
+      onMove: this.setHeadPoint,
       onDrop: () => {
-        this.draggingHead = false;
+        const nodeId = this.props.nodes.findIndex(
+          isPointInRect(this.headPoint),
+        );
+        if (nodeId === -1 || nodeId === this.tailId || nodeId === this.headId) {
+          this.setHeadPoint(null);
+        } else {
+          dispatch('TREE_UPDATE_CONNECTOR_HEAD', {
+            treeKey: this.props.treeKey,
+            id: this.props.id,
+            nodeId,
+          });
+        }
       },
     });
   };
 
-  setTo = ({ x, y }) => {
-    this.to = { x, y };
+  setHeadPoint = point => {
+    this.headPoint = point;
     this.draw();
   };
 
-  setFrom = ({ x, y }) => {
-    this.from = { x, y };
+  setTailPoint = point => {
+    this.tailPoint = point;
+    this.draw();
+  };
+
+  setHead = ({ x, y }) => {
+    this.headRect = { x, y };
+    this.draw();
+  };
+
+  setTail = ({ x, y }) => {
+    this.tailRect = { x, y };
     this.draw();
   };
 
   draw = () => {
-    const points = getRectIntersections(this.from, this.to);
-    const tailPoint = this.draggingTail
-      ? [this.from.x, this.from.y]
-      : points[0];
-    const headPoint = this.draggingHead ? [this.to.x, this.to.y] : points[1];
-    const [x1, y1] = tailPoint;
-    const [x2, y2] = headPoint;
+    const points = getRectIntersections(this);
+    const [{ x: x1, y: y1 }, { x: x2, y: y2 }] = points;
     this.connector.current.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
     this.connectorCircle.current.setAttribute('cx', x1);
     this.connectorCircle.current.setAttribute('cy', y1);
-    this.connectorArrow.current.setAttribute(
-      'points',
-      getArrowPoints(tailPoint, headPoint),
-    );
+    this.connectorArrow.current.setAttribute('points', getArrowPoints(points));
   };
 
-  // Helper function that syncs the instance's `fromX`, `fromY`, `toX`, and
-  // `toY` values with the ones passed via the `from` and `to` props and calls
-  // draw if the internal state has changed as a result.
+  // Helper function that checks for changes to the `headId` / `tailId` props
+  // and resets the `headPoint` / `tailPoint` instance variables if the ids were
+  // changed and redraws.
   sync = () => {
-    const { from, to } = this.props;
-    const dirty =
-      !this.from ||
-      !this.to ||
-      this.from.x !== from.x ||
-      this.from.y !== from.y ||
-      this.to.x !== to.x ||
-      this.to.x !== to.y;
-    this.from = { x: from.x, y: from.y };
-    this.to = { x: to.x, y: to.y };
-    if (dirty) {
+    const { headId, tailId } = this.props;
+    if (this.headId !== headId || this.tailId !== tailId) {
+      this.headId = headId;
+      this.headPoint = null;
+      this.headRect = this.props.nodes.get(headId);
+      this.tailId = tailId;
+      this.tailPoint = null;
+      this.tailRect = this.props.nodes.get(tailId);
       this.draw();
     }
   };

@@ -56,8 +56,8 @@ regHandlers({
         connectors.push(
           Connector({
             id: connectors.size,
-            headId: parentId,
-            tailId: state.getIn(['trees', treeKey, 'tree', 'nodes']).size,
+            headId: state.getIn(['trees', treeKey, 'tree', 'nodes']).size,
+            tailId: parentId,
           }),
         ),
       ),
@@ -76,5 +76,14 @@ regHandlers({
       ),
   TREE_ADD_CONNECTOR: (state, { payload: { treeKey, connector } }) => state,
   TREE_REMOVE_CONNECTOR: (state, { payload: { treeKey, connector } }) => state,
-  TREE_UPDATE_CONNECTOR: (state, { payload: { treeKey, connector } }) => state,
+  TREE_UPDATE_CONNECTOR_HEAD: (state, { payload: { treeKey, id, nodeId } }) =>
+    remember(state, treeKey).setIn(
+      ['trees', treeKey, 'tree', 'connectors', id, 'headId'],
+      nodeId,
+    ),
+  TREE_UPDATE_CONNECTOR_TAIL: (state, { payload: { treeKey, id, nodeId } }) =>
+    remember(state, treeKey).setIn(
+      ['trees', treeKey, 'tree', 'connectors', id, 'tailId'],
+      nodeId,
+    ),
 });

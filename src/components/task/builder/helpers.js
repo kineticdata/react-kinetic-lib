@@ -2,17 +2,6 @@ import * as constants from './constants';
 
 export const isIE11 = document.documentMode === 11;
 
-// given the <g> element that does the transform, returns the float value of the
-// current scale, depending on the browser we look at the transform / style
-// attribute then use regex to extract it from the attribute value
-export const getScale = transformerEl => {
-  const property =
-    transformerEl.getAttribute('transform') ||
-    transformerEl.getAttribute('style');
-  const scaleString = property.match(/scale\((\d*\.?\d*)\)/)[1];
-  return parseFloat(scaleString);
-};
-
 // getPointOnCircle comes from the following blog post
 // https://www.varvet.com/blog/svg-arrows-with-hover/
 export const getPointOnCircle = (x, y, a, d) => {
@@ -24,7 +13,7 @@ export const getPointOnCircle = (x, y, a, d) => {
 
 // getArrowPoints comes from the following blog post
 // https://www.varvet.com/blog/svg-arrows-with-hover/
-export const getArrowPoints = ([x1, y1], [x2, y2]) => {
+export const getArrowPoints = ([{ x: x1, y: y1 }, { x: x2, y: y2 }]) => {
   const angle = Math.atan2(y2 - y1, x2 - x1);
   const angleDegrees = (angle * 180) / Math.PI;
   return `\
@@ -34,12 +23,17 @@ export const getArrowPoints = ([x1, y1], [x2, y2]) => {
   `;
 };
 
-export const getRectIntersections = (from, to) => {
+export const getRectIntersections = ({
+  headPoint,
+  headRect,
+  tailPoint,
+  tailRect,
+}) => {
   // get the center of the `from` and `to` rectangles
-  const x1 = from.x + constants.NODE_CENTER_X;
-  const y1 = from.y + constants.NODE_CENTER_Y;
-  const x2 = to.x + constants.NODE_CENTER_X;
-  const y2 = to.y + constants.NODE_CENTER_Y;
+  const x1 = tailPoint ? tailPoint.x : tailRect.x + constants.NODE_CENTER_X;
+  const y1 = tailPoint ? tailPoint.y : tailRect.y + constants.NODE_CENTER_Y;
+  const x2 = headPoint ? headPoint.x : headRect.x + constants.NODE_CENTER_X;
+  const y2 = headPoint ? headPoint.y : headRect.y + constants.NODE_CENTER_Y;
 
   const dx = constants.NODE_CENTER_X + constants.NODE_PADDING;
   const dy = constants.NODE_CENTER_Y + constants.NODE_PADDING;
@@ -49,15 +43,36 @@ export const getRectIntersections = (from, to) => {
 
   if (Math.abs(slope) > constants.NODE_SLOPE) {
     if (y2 > y1) {
-      return [[x1 + dy / slope, y1 + dy], [x2 - dy / slope, y2 - dy]];
+      return [
+        tailPoint || { x: x1 + dy / slope, y: y1 + dy },
+        headPoint || { x: x2 - dy / slope, y: y2 - dy },
+      ];
     } else {
-      return [[x1 - dy / slope, y1 - dy], [x2 + dy / slope, y2 + dy]];
+      return [
+        tailPoint || { x: x1 - dy / slope, y: y1 - dy },
+        headPoint || { x: x2 + dy / slope, y: y2 + dy },
+      ];
     }
   } else {
     if (x2 > x1) {
-      return [[x1 + dx, y1 + slope * dx], [x2 - dx, y2 - slope * dx]];
+      return [
+        tailPoint || { x: x1 + dx, y: y1 + slope * dx },
+        headPoint || { x: x2 - dx, y: y2 - slope * dx },
+      ];
     } else {
-      return [[x1 - dx, y1 - slope * dx], [x2 + dx, y2 + slope * dx]];
+      return [
+        tailPoint || { x: x1 - dx, y: y1 - slope * dx },
+        headPoint || { x: x2 + dx, y: y2 + slope * dx },
+      ];
     }
   }
 };
+
+export const isPointInRect = ({ x: pointX, y: pointY }) => ({
+  x: rectX,
+  y: rectY,
+}) =>
+  pointX >= rectX &&
+  pointX <= rectX + constants.NODE_SVG_WIDTH &&
+  pointY >= rectY &&
+  pointY <= rectY + constants.NODE_SVG_HEIGHT;

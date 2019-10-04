@@ -1,6 +1,4 @@
 import React, { Component, createRef } from 'react';
-import { throttle } from 'lodash-es';
-import { getScale } from './helpers';
 import * as constants from './constants';
 import { dispatch } from '../../../store';
 
@@ -48,10 +46,10 @@ export class Node extends Component {
     this.y += dy;
     Object.values(
       this.props.connectorRefsMap.byHead[this.props.id] || {},
-    ).forEach(connector => connector.setFrom({ x: this.x, y: this.y }));
+    ).forEach(connector => connector.setHead({ x: this.x, y: this.y }));
     Object.values(
       this.props.connectorRefsMap.byTail[this.props.id] || {},
-    ).forEach(connector => connector.setTo({ x: this.x, y: this.y }));
+    ).forEach(connector => connector.setTail({ x: this.x, y: this.y }));
     this.draw();
   };
 

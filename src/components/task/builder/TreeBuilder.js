@@ -50,8 +50,9 @@ export class TreeBuilderComponent extends Component {
                   canvasRef={this.canvasRef}
                   id={id}
                   label={connector.label}
-                  from={this.props.tree.nodes.get(connector.headId)}
-                  to={this.props.tree.nodes.get(connector.tailId)}
+                  headId={connector.headId}
+                  tailId={connector.tailId}
+                  nodes={this.props.tree.nodes}
                 />
               ))
               .toArray()}

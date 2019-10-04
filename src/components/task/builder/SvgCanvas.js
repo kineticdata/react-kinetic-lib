@@ -17,28 +17,36 @@ export class SvgCanvas extends Component {
   watchDrag = ({ event, onMove, onDrop, scaled = true, relative = true }) => {
     event.preventDefault();
     event.stopPropagation();
+    // boolean to prevent race condition where onMove could be called after
+    // onDrop was called
+    let dragging = true;
+    // for relative mode, track the last x and y positions so we can pass the
+    // deltas to onMove
     let lastX = event.nativeEvent.clientX;
     let lastY = event.nativeEvent.clientY;
     const moveHandler = throttle(event => {
       event.preventDefault();
       event.stopPropagation();
-      if (relative) {
-        const x = event.clientX;
-        const y = event.clientY;
-        const dx = (x - lastX) / (scaled ? this.viewport.scale : 1);
-        const dy = (y - lastY) / (scaled ? this.viewport.scale : 1);
-        lastX = x;
-        lastY = y;
-        onMove({ dx, dy });
-      } else {
-        const x = (event.offsetX - this.viewport.x) / this.viewport.scale;
-        const y = (event.offsetY - this.viewport.y) / this.viewport.scale;
-        onMove({ x, y });
+      if (dragging) {
+        if (relative) {
+          const x = event.clientX;
+          const y = event.clientY;
+          const dx = (x - lastX) / (scaled ? this.viewport.scale : 1);
+          const dy = (y - lastY) / (scaled ? this.viewport.scale : 1);
+          lastX = x;
+          lastY = y;
+          onMove({ dx, dy });
+        } else {
+          const x = (event.offsetX - this.viewport.x) / this.viewport.scale;
+          const y = (event.offsetY - this.viewport.y) / this.viewport.scale;
+          onMove({ x, y });
+        }
       }
     }, constants.THROTTLE_DRAG);
     const dropHandler = event => {
       event.preventDefault();
       event.stopPropagation();
+      dragging = false;
       this.canvas.current.removeEventListener('mousemove', moveHandler);
       this.canvas.current.removeEventListener('mouseup', dropHandler);
       this.canvas.current.removeEventListener('mouseleave', dropHandler);
