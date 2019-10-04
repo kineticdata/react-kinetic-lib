@@ -24,21 +24,27 @@ export class SvgCanvas extends Component {
     // deltas to onMove
     let lastX = event.nativeEvent.clientX;
     let lastY = event.nativeEvent.clientY;
+    // for non-relative mode we want to calculate the virtual position in the
+    // canvas, to do this we need to subtract the offsets below from the client
+    // position (this is because offsetX and offsetY can't be trusted in IE).
+    const offsetLeft = this.canvas.current.parentNode.offsetLeft;
+    const offsetTop = this.canvas.current.parentNode.offsetTop;
     const moveHandler = throttle(event => {
       event.preventDefault();
       event.stopPropagation();
+      const { clientX, clientY } = event;
       if (dragging) {
         if (relative) {
-          const x = event.clientX;
-          const y = event.clientY;
-          const dx = (x - lastX) / (scaled ? this.viewport.scale : 1);
-          const dy = (y - lastY) / (scaled ? this.viewport.scale : 1);
-          lastX = x;
-          lastY = y;
+          const dx = (clientX - lastX) / (scaled ? this.viewport.scale : 1);
+          const dy = (clientY - lastY) / (scaled ? this.viewport.scale : 1);
+          lastX = clientX;
+          lastY = clientY;
           onMove({ dx, dy });
         } else {
-          const x = (event.offsetX - this.viewport.x) / this.viewport.scale;
-          const y = (event.offsetY - this.viewport.y) / this.viewport.scale;
+          const x =
+            (clientX - offsetLeft - this.viewport.x) / this.viewport.scale;
+          const y =
+            (clientY - offsetTop - this.viewport.y) / this.viewport.scale;
           onMove({ x, y });
         }
       }

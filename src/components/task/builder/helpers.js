@@ -68,7 +68,8 @@ export const getRectIntersections = ({
   }
 };
 
-export const isPointInNode = (point) => (node) =>
+export const isPointInNode = point => node =>
+  point &&
   node &&
   point.x >= node.x &&
   point.x <= node.x + constants.NODE_WIDTH &&
