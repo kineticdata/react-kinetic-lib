@@ -1,6 +1,7 @@
 import React, { Component, createRef } from 'react';
-import * as constants from './constants';
 import { dispatch } from '../../../store';
+import * as constants from './constants';
+import { isIE11 } from './helpers';
 
 const addNode = ({ treeKey, x, y }) => () =>
   dispatch('TREE_ADD_NODE', { treeKey, x, y, name: 'Foo' });
@@ -54,8 +55,11 @@ export class Node extends Component {
   };
 
   draw = () => {
-    this.el.current.setAttribute('x', this.x);
-    this.el.current.setAttribute('y', this.y);
+    const attribute = isIE11 ? 'transform' : 'style';
+    const value = isIE11
+      ? `translate(${this.x}px ${this.y})`
+      : `transform: translate(${this.x}px,  ${this.y}px)`;
+    this.el.current.setAttribute(attribute, value);
   };
 
   // Helper function that syncs the instance's `x` and `y` values with the ones
@@ -81,41 +85,30 @@ export class Node extends Component {
   render() {
     const { treeKey, id, x, y } = this.props;
     return (
-      <svg
-        ref={this.el}
-        height={constants.NODE_SVG_HEIGHT}
-        width={constants.NODE_SVG_WIDTH}
-      >
+      <g ref={this.el}>
         <rect
           className="node"
           height={constants.NODE_HEIGHT}
           width={constants.NODE_WIDTH}
-          strokeWidth={constants.NODE_STROKE_WIDTH}
           rx={constants.NODE_RADIUS}
           ry={constants.NODE_RADIUS}
-          x={constants.NODE_RECT_OFFSET_X}
-          y={constants.NODE_RECT_OFFSET_Y}
           onMouseDown={this.drag}
         />
         <circle
           r={6}
           fill="red"
-          cx={
-            constants.NODE_RECT_OFFSET_X + constants.NODE_STROKE_WIDTH / 2 + 6
-          }
-          cy={
-            constants.NODE_RECT_OFFSET_Y + constants.NODE_STROKE_WIDTH / 2 + 6
-          }
+          cx="0"
+          cy="0"
           onClick={removeNode({ treeKey, id })}
         />
         <circle
           r={9}
           fill="orange"
           cx={constants.NODE_CENTER_X}
-          cy={constants.NODE_RECT_OFFSET_Y + constants.NODE_HEIGHT}
+          cy={constants.NODE_HEIGHT}
           onClick={addConnectedNode({ treeKey, x, y, parentId: id })}
         />
-      </svg>
+      </g>
     );
   }
 }

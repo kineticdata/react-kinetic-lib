@@ -73,6 +73,6 @@ export const isPointInRect = ({ x: pointX, y: pointY }) => ({
   y: rectY,
 }) =>
   pointX >= rectX &&
-  pointX <= rectX + constants.NODE_SVG_WIDTH &&
+  pointX <= rectX + constants.NODE_WIDTH &&
   pointY >= rectY &&
-  pointY <= rectY + constants.NODE_SVG_HEIGHT;
+  pointY <= rectY + constants.NODE_HEIGHT;
