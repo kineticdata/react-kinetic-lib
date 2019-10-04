@@ -2,6 +2,7 @@ import React, { Component, createRef } from 'react';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
 import { isIE11 } from './helpers';
+import { SvgText } from './SvgText';
 
 const addNode = ({ treeKey, x, y }) => () =>
   dispatch('TREE_ADD_NODE', { treeKey, x, y, name: 'Foo' });
@@ -57,7 +58,7 @@ export class Node extends Component {
   draw = () => {
     const attribute = isIE11 ? 'transform' : 'style';
     const value = isIE11
-      ? `translate(${this.x}px ${this.y})`
+      ? `translate(${this.x} ${this.y})`
       : `transform: translate(${this.x}px,  ${this.y}px)`;
     this.el.current.setAttribute(attribute, value);
   };
@@ -83,7 +84,7 @@ export class Node extends Component {
   }
 
   render() {
-    const { treeKey, id, x, y } = this.props;
+    const { treeKey, id, x, y, name } = this.props;
     return (
       <g ref={this.el}>
         <rect
@@ -94,6 +95,16 @@ export class Node extends Component {
           ry={constants.NODE_RADIUS}
           onMouseDown={this.drag}
         />
+        <SvgText
+          className="node-name"
+          x={0}
+          y={0}
+          height={constants.NODE_HEIGHT}
+          width={constants.NODE_WIDTH}
+          padding={10}
+        >
+          {name}
+        </SvgText>
         <circle
           r={6}
           fill="red"

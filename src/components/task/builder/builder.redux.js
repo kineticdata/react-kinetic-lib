@@ -68,7 +68,7 @@ regHandlers({
     }),
   TREE_REMOVE_NODE: (state, { payload: { treeKey, id } }) =>
     remember(state, treeKey)
-      .deleteIn(['trees', treeKey, 'tree', 'nodes', id])
+      .setIn(['trees', treeKey, 'tree', 'nodes', id], null)
       .updateIn(['trees', treeKey, 'tree', 'connectors'], connectors =>
         connectors.filter(
           connector => connector.headId !== id && connector.tailId !== id,

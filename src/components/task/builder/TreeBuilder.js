@@ -57,18 +57,21 @@ export class TreeBuilderComponent extends Component {
               ))
               .toArray()}
             {this.props.tree.nodes
-              .map((node, id) => (
-                <Node
-                  key={id}
-                  treeKey={this.props.treeKey}
-                  canvasRef={this.canvasRef}
-                  id={id}
-                  name={node.name}
-                  x={node.x}
-                  y={node.y}
-                  connectorRefsMap={this.connectorRefsMap}
-                />
-              ))
+              .map(
+                (node, id) =>
+                  node && (
+                    <Node
+                      key={id}
+                      treeKey={this.props.treeKey}
+                      canvasRef={this.canvasRef}
+                      id={id}
+                      name={node.name}
+                      x={node.x}
+                      y={node.y}
+                      connectorRefsMap={this.connectorRefsMap}
+                    />
+                  ),
+              )
               .toArray()}
           </SvgCanvas>
           <div style={{ position: 'fixed', top: '5px', left: '5px' }}>
