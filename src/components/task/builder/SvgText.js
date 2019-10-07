@@ -68,7 +68,9 @@ export class SvgText extends Component {
         ? memo.set(memo.size - 1, next)
         : memo.push(word);
     }, List([first]));
-    const maxLines = Math.floor(this.props.height / lineHeight);
+    // We make sure to always render at least one line, with the scaling around
+    // these tspans there can be some finicky lineHeight values returned above.
+    const maxLines = Math.floor(this.props.height / lineHeight) || 1;
     const lines =
       allLines.size <= maxLines
         ? allLines

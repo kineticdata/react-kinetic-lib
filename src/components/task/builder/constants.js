@@ -7,7 +7,7 @@ export const THROTTLE_ZOOM = 16;
 export const CONNECTOR_HEAD_POINTS = '-8,0 4,-7 4,7';
 export const CONNECTOR_TAIL_RADIUS = 6;
 export const CONNECTOR_LABEL_WIDTH = 130;
-export const CONNECTOR_LABEL_HEIGHT = 19;
+export const CONNECTOR_LABEL_HEIGHT = 18;
 export const CONNECTOR_LABEL_PADDING = 5;
 
 export const ICON_SIZE = 24;
