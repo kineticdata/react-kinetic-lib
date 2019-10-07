@@ -55,6 +55,17 @@ export const fetchSources = (options = {}) =>
       sources: response.data.sourceRoots,
     }));
 
+export const fetchTaskCategories = (options = {}) =>
+  axios
+    .get('/app/components/task/app/api/v2/categories', {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      categories: response.data.categories,
+    }));
+
 export const fetchHandlers = (options = {}) =>
   axios
     .get('/kinetic-task/app/api/v2/handlers', {
@@ -69,3 +80,16 @@ export const fetchHandlers = (options = {}) =>
     .then(response => ({
       handlers: response.data.handlers,
     }));
+
+export const fetchHandler = (options = {}) => {
+  validateOptions('fetchHandler', ['definitionId'], options);
+  return axios
+    .get(`/app/components/task/app/api/v2/handlers/${options.definitionId}`, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      handler: response.data,
+    }));
+};
