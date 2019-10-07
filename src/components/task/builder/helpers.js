@@ -2,27 +2,6 @@ import * as constants from './constants';
 
 export const isIE11 = document.documentMode === 11;
 
-// getPointOnCircle comes from the following blog post
-// https://www.varvet.com/blog/svg-arrows-with-hover/
-export const getPointOnCircle = (x, y, a, d) => {
-  const newAngle = ((a + d) * Math.PI) / 180;
-  const x2 = x + Math.cos(newAngle) * constants.CONNECTOR_TAIL_TRIANGLE_SIZE;
-  const y2 = y + Math.sin(newAngle) * constants.CONNECTOR_TAIL_TRIANGLE_SIZE;
-  return `${x2},${y2}`;
-};
-
-// getArrowPoints comes from the following blog post
-// https://www.varvet.com/blog/svg-arrows-with-hover/
-export const getArrowPoints = ([{ x: x1, y: y1 }, { x: x2, y: y2 }]) => {
-  const angle = Math.atan2(y2 - y1, x2 - x1);
-  const angleDegrees = (angle * 180) / Math.PI;
-  return `\
-    ${getPointOnCircle(x2, y2, angleDegrees, 0)} \
-    ${getPointOnCircle(x2, y2, angleDegrees, 120)} \
-    ${getPointOnCircle(x2, y2, angleDegrees, -120)} \
-  `;
-};
-
 export const getRectIntersections = ({
   headPoint,
   headRect,

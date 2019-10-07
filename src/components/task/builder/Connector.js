@@ -1,14 +1,17 @@
-import React, { Component, createRef } from 'react';
-import * as constants from './constants';
-import { getArrowPoints, getRectIntersections, isPointInNode } from './helpers';
+import React, { Component, createRef, Fragment } from 'react';
 import { dispatch } from '../../../store';
+import * as constants from './constants';
+import { getRectIntersections, isIE11, isPointInNode } from './helpers';
+import { SvgText } from './SvgText';
+import filter from '../../../assets/task/icons/filter.svg';
 
 export class Connector extends Component {
   constructor(props) {
     super(props);
     this.connector = createRef();
-    this.connectorCircle = createRef();
-    this.connectorArrow = createRef();
+    this.connectorBody = createRef();
+    this.connectorTail = createRef();
+    this.connectorLabel = createRef();
   }
 
   dragTail = event => {
@@ -76,12 +79,22 @@ export class Connector extends Component {
   };
 
   draw = () => {
-    const points = getRectIntersections(this);
-    const [{ x: x1, y: y1 }, { x: x2, y: y2 }] = points;
-    this.connector.current.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
-    this.connectorCircle.current.setAttribute('cx', x1);
-    this.connectorCircle.current.setAttribute('cy', y1);
-    this.connectorArrow.current.setAttribute('points', getArrowPoints(points));
+    const [{ x: x1, y: y1 }, { x: x2, y: y2 }] = getRectIntersections(this);
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+    const angle = (Math.atan2(dy, dx) * 180) / Math.PI + 180;
+    const attribute = isIE11 ? 'transform' : 'style';
+    const connectorValue = isIE11
+      ? `translate(${x2} ${y2}) rotate(${angle})`
+      : `transform: translate(${x2}px, ${y2}px) rotate(${angle}deg)`;
+    const connectorLabelValue = isIE11
+      ? `translate(${x1 + dx / 2} ${y1 + dy / 2})`
+      : `transform: translate(${x1 + dx / 2}px, ${y1 + dy / 2}px)`;
+    this.connector.current.setAttribute(attribute, connectorValue);
+    this.connectorTail.current.setAttribute('cx', length);
+    this.connectorBody.current.setAttribute('x2', length);
+    this.connectorLabel.current.setAttribute(attribute, connectorLabelValue);
   };
 
   // Helper function that checks for changes to the `headId` / `tailId` props
@@ -120,18 +133,65 @@ export class Connector extends Component {
   render() {
     return (
       <g className="connector">
-        <path ref={this.connector} className="body" />
-        <circle
-          ref={this.connectorCircle}
-          className="head"
-          r={constants.CONNECTOR_HEAD_RADIUS}
-          onMouseDown={this.dragTail}
-        />
-        <polygon
-          ref={this.connectorArrow}
-          className="tail"
-          onMouseDown={this.dragHead}
-        />
+        <g ref={this.connector}>
+          <line
+            ref={this.connectorBody}
+            className="connector-body"
+            x1="0"
+            y1="0"
+            y2="0"
+          />
+          <circle
+            ref={this.connectorTail}
+            className="connector-tail"
+            r={constants.CONNECTOR_TAIL_RADIUS}
+            cy="0"
+            onMouseDown={this.dragTail}
+          />
+          <polygon
+            className="connector-head"
+            points={constants.CONNECTOR_HEAD_POINTS}
+            onMouseDown={this.dragHead}
+          />
+        </g>
+        <g ref={this.connectorLabel} className="connector-button">
+          <rect
+            x={-constants.ICON_CENTER}
+            y={-constants.ICON_CENTER}
+            height={constants.ICON_SIZE}
+            width={constants.ICON_SIZE}
+            rx="3"
+            ry="3"
+          />
+          {this.props.label ? (
+            <Fragment>
+              <rect
+                x={-constants.CONNECTOR_LABEL_CENTER_X}
+                y={-constants.CONNECTOR_LABEL_CENTER_Y}
+                height={constants.CONNECTOR_LABEL_HEIGHT}
+                width={constants.CONNECTOR_LABEL_WIDTH}
+                rx="3"
+                ry="3"
+              />
+              <SvgText
+                className="connector-label"
+                x={-constants.CONNECTOR_LABEL_CENTER_X}
+                y={-constants.CONNECTOR_LABEL_CENTER_Y}
+                width={constants.CONNECTOR_LABEL_WIDTH}
+                height={constants.CONNECTOR_LABEL_HEIGHT}
+                padding={constants.CONNECTOR_LABEL_PADDING}
+              >
+                {this.props.label}
+              </SvgText>
+            </Fragment>
+          ) : (
+            <image
+              xlinkHref={filter}
+              x={-constants.ICON_CENTER}
+              y={-constants.ICON_CENTER}
+            />
+          )}
+        </g>
       </g>
     );
   }

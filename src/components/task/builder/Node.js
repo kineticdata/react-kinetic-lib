@@ -4,7 +4,6 @@ import { dispatch } from '../../../store';
 import * as constants from './constants';
 import { isIE11 } from './helpers';
 import { SvgText } from './SvgText';
-import loopIcon from '../../../assets/task/icons/loop.svg';
 import routineIcon from '../../../assets/task/icons/routine.svg';
 import deferIcon from '../../../assets/task/icons/defer.svg';
 import plusIcon from '../../../assets/task/icons/plus_small.svg';
@@ -19,6 +18,7 @@ const addConnectedNode = ({ treeKey, x, y, parentId }) => () =>
     y,
     parentId,
     name: 'Foo',
+    connectorLabel: 'Approved -> Yes and some',
   });
 
 const updateNode = ({ treeKey, id, x, y }) =>
@@ -115,16 +115,24 @@ export class Node extends Component {
           y={0}
           height={constants.NODE_HEIGHT}
           width={constants.NODE_WIDTH}
-          padding={10}
+          padding={constants.NODE_NAME_PADDING}
         >
           {name}
         </SvgText>
-        <image xlinkHref={deferIcon} x={6} y={-12} />
-        <image xlinkHref={routineIcon} x={6} y={constants.NODE_HEIGHT - 12} />
+        <image
+          xlinkHref={deferIcon}
+          x={constants.NODE_BADGE_OFFSET}
+          y={-constants.ICON_CENTER}
+        />
+        <image
+          xlinkHref={routineIcon}
+          x={constants.NODE_BADGE_OFFSET}
+          y={constants.NODE_HEIGHT - constants.ICON_CENTER}
+        />
         <image
           xlinkHref={plusIcon}
-          x={constants.NODE_CENTER_X - 9}
-          y={constants.NODE_HEIGHT - 9}
+          x={constants.NODE_CENTER_X - constants.ICON_CENTER}
+          y={constants.NODE_HEIGHT - constants.ICON_CENTER}
           onClick={addConnectedNode({ treeKey, x, y, parentId: id })}
         />
       </g>

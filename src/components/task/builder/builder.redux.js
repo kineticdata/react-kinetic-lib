@@ -46,7 +46,7 @@ regHandlers({
     ),
   TREE_ADD_NODE_WITH_CONNECTOR: (
     state,
-    { payload: { treeKey, parentId, x, y, name } },
+    { payload: { treeKey, parentId, x, y, name, connectorLabel } },
   ) =>
     remember(state, treeKey)
       .updateIn(['trees', treeKey, 'tree', 'nodes'], nodes =>
@@ -58,6 +58,7 @@ regHandlers({
             id: connectors.size,
             headId: state.getIn(['trees', treeKey, 'tree', 'nodes']).size,
             tailId: parentId,
+            label: connectorLabel,
           }),
         ),
       ),
