@@ -110,7 +110,7 @@ export class Node extends Component {
           onMouseDown={this.drag}
         />
         <SvgText
-          className="node-name"
+          className="node-name med-detail"
           x={0}
           y={0}
           height={constants.NODE_HEIGHT}
@@ -120,17 +120,26 @@ export class Node extends Component {
           {name}
         </SvgText>
         <image
+          className="high-detail"
           xlinkHref={deferIcon}
+          height={constants.ICON_SIZE}
+          width={constants.ICON_SIZE}
           x={constants.NODE_BADGE_OFFSET}
           y={-constants.ICON_CENTER}
         />
         <image
+          className="high-detail"
           xlinkHref={routineIcon}
+          height={constants.ICON_SIZE}
+          width={constants.ICON_SIZE}
           x={constants.NODE_BADGE_OFFSET}
           y={constants.NODE_HEIGHT - constants.ICON_CENTER}
         />
         <image
+          className="high-detail"
           xlinkHref={plusIcon}
+          height={constants.ICON_SIZE}
+          width={constants.ICON_SIZE}
           x={constants.NODE_CENTER_X - constants.ICON_CENTER}
           y={constants.NODE_HEIGHT - constants.ICON_CENTER}
           onClick={addConnectedNode({ treeKey, x, y, parentId: id })}

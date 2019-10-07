@@ -126,6 +126,25 @@ export class SvgCanvas extends Component {
         `translate(${x} ${y}) scale(${scale})`,
       );
     }
+    if (
+      this.viewport.scale < 0.4 &&
+      this.transformer.current.className.baseVal !== 'min-detail'
+    ) {
+      this.transformer.current.className.baseVal = 'min-detail';
+    }
+    if (
+      this.viewport.scale >= 0.4 &&
+      this.viewport.scale < 0.75 &&
+      this.transformer.current.className.baseVal !== 'med-detail'
+    ) {
+      this.transformer.current.className.baseVal = 'med-detail';
+    }
+    if (
+      this.viewport.scale >= 0.75 &&
+      this.transformer.current.className.baseVal !== ''
+    ) {
+      this.transformer.current.className.baseVal = '';
+    }
   }
 
   componentDidMount() {

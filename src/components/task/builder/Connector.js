@@ -143,19 +143,20 @@ export class Connector extends Component {
           />
           <circle
             ref={this.connectorTail}
-            className="connector-tail"
+            className="connector-tail high-detail"
             r={constants.CONNECTOR_TAIL_RADIUS}
             cy="0"
             onMouseDown={this.dragTail}
           />
           <polygon
-            className="connector-head"
+            className="connector-head high-detail"
             points={constants.CONNECTOR_HEAD_POINTS}
             onMouseDown={this.dragHead}
           />
         </g>
         <g ref={this.connectorLabel} className="connector-button">
           <rect
+            className="high-detail"
             x={-constants.ICON_CENTER}
             y={-constants.ICON_CENTER}
             height={constants.ICON_SIZE}
@@ -166,6 +167,7 @@ export class Connector extends Component {
           {this.props.label ? (
             <Fragment>
               <rect
+                className="high-detail"
                 x={-constants.CONNECTOR_LABEL_CENTER_X}
                 y={-constants.CONNECTOR_LABEL_CENTER_Y}
                 height={constants.CONNECTOR_LABEL_HEIGHT}
@@ -174,7 +176,7 @@ export class Connector extends Component {
                 ry="3"
               />
               <SvgText
-                className="connector-label"
+                className="connector-label med-detail"
                 x={-constants.CONNECTOR_LABEL_CENTER_X}
                 y={-constants.CONNECTOR_LABEL_CENTER_Y}
                 width={constants.CONNECTOR_LABEL_WIDTH}
@@ -186,6 +188,7 @@ export class Connector extends Component {
             </Fragment>
           ) : (
             <image
+              className="high-detail"
               xlinkHref={filter}
               x={-constants.ICON_CENTER}
               y={-constants.ICON_CENTER}
