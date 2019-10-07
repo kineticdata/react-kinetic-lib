@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { validateOptions } from '../http';
 
 const generateNextPageToken = data =>
   data.offset + data.limit > data.count ? null : data.limit + data.offset;
@@ -106,6 +107,6 @@ export const fetchHandlerUsage = (options = {}) => {
       },
     )
     .then(response => ({
-      handler: response.data,
+      handlerUsage: response.data.handlerUsage,
     }));
 };
