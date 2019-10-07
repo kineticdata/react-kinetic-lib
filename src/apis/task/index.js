@@ -93,3 +93,19 @@ export const fetchHandler = (options = {}) => {
       handler: response.data,
     }));
 };
+
+export const fetchHandlerUsage = (options = {}) => {
+  validateOptions('fetchHandlerUsage', ['definitionId'], options);
+  return axios
+    .get(
+      `/app/components/task/app/api/v2/handlers/${options.definitionId}/usage`,
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      handler: response.data,
+    }));
+};
