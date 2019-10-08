@@ -84,6 +84,12 @@ const fields = ({ modelName, attributeName }) => ({ bridgeModelAttribute }) =>
       initialValue: bridgeModelAttribute
         ? bridgeModelAttribute.get('structureField')
         : '',
+      options: {
+        'Add Field': {
+          value: 'fields("NAME")',
+          selection: { start: 8, end: 12 },
+        },
+      },
     },
   ];
 

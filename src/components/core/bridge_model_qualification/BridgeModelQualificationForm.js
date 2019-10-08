@@ -108,6 +108,12 @@ const fields = ({ modelName, qualificationName }) => ({
       initialValue: bridgeModelQualificationMapping
         ? bridgeModelQualificationMapping.get('query', '')
         : '',
+      options: {
+        'Add Parameter': {
+          value: 'parameters("NAME")',
+          selection: { start: 12, end: 16 },
+        },
+      },
     },
   ];
 
