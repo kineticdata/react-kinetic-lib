@@ -2,6 +2,7 @@ import React, { createRef, Component } from 'react';
 import { throttle } from 'lodash-es';
 import { isIE11 } from './helpers';
 import * as constants from './constants';
+import { Point } from './models';
 
 export class SvgCanvas extends Component {
   constructor(props) {
@@ -45,7 +46,7 @@ export class SvgCanvas extends Component {
             (clientX - offsetLeft - this.viewport.x) / this.viewport.scale;
           const y =
             (clientY - offsetTop - this.viewport.y) / this.viewport.scale;
-          onMove({ x, y });
+          onMove(Point({ x, y }));
         }
       }
     }, constants.THROTTLE_DRAG);

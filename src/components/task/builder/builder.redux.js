@@ -1,5 +1,5 @@
 import { dispatch, regHandlers } from '../../../store';
-import { Connector, Node, TreeBuilderState } from './models';
+import { Connector, Node, Point, TreeBuilderState } from './models';
 
 export const mountTreeBuilder = treeKey => dispatch('TREE_MOUNT', { treeKey });
 export const unmountTreeBuilder = treeKey =>
@@ -47,26 +47,50 @@ regHandlers({
   TREE_ADD_NODE_WITH_CONNECTOR: (
     state,
     { payload: { treeKey, parentId, x, y, name, connectorLabel } },
-  ) =>
-    remember(state, treeKey)
+  ) => {
+    const parentPosition = state.getIn([
+      'trees',
+      treeKey,
+      'tree',
+      'nodes',
+      parentId,
+      'position',
+    ]);
+    const position = Point({
+      x: parentPosition.x + 300,
+      y: parentPosition.y + 300,
+    });
+    return remember(state, treeKey)
       .updateIn(['trees', treeKey, 'tree', 'nodes'], nodes =>
-        nodes.push(Node({ id: nodes.size, x: x + 150, y: y + 150, name })),
+        nodes.push(Node({ id: nodes.size, name, position })),
       )
       .updateIn(['trees', treeKey, 'tree', 'connectors'], connectors =>
         connectors.push(
           Connector({
             id: connectors.size,
             headId: state.getIn(['trees', treeKey, 'tree', 'nodes']).size,
+            headPosition: position,
             tailId: parentId,
+            tailPosition: parentPosition,
             label: connectorLabel,
           }),
         ),
-      ),
-  TREE_UPDATE_NODE: (state, { payload: { treeKey, id, x, y } }) =>
-    remember(state, treeKey).mergeIn(['trees', treeKey, 'tree', 'nodes', id], {
-      x,
-      y,
-    }),
+      );
+  },
+  TREE_UPDATE_NODE: (state, { payload: { treeKey, id, position } }) =>
+    remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
+      tree
+        .mergeIn(['nodes', id], { position })
+        .update('connectors', connectors =>
+          connectors.map(connector =>
+            connector.headId === id
+              ? connector.set('headPosition', position)
+              : connector.tailId === id
+              ? connector.set('tailPosition', position)
+              : connector,
+          ),
+        ),
+    ),
   TREE_REMOVE_NODE: (state, { payload: { treeKey, id } }) =>
     remember(state, treeKey)
       .setIn(['trees', treeKey, 'tree', 'nodes', id], null)
@@ -78,13 +102,17 @@ regHandlers({
   TREE_ADD_CONNECTOR: (state, { payload: { treeKey, connector } }) => state,
   TREE_REMOVE_CONNECTOR: (state, { payload: { treeKey, connector } }) => state,
   TREE_UPDATE_CONNECTOR_HEAD: (state, { payload: { treeKey, id, nodeId } }) =>
-    remember(state, treeKey).setIn(
-      ['trees', treeKey, 'tree', 'connectors', id, 'headId'],
-      nodeId,
+    remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
+      tree.mergeIn(['connectors', id], {
+        headId: nodeId,
+        headPosition: tree.getIn(['nodes', nodeId, 'position']),
+      }),
     ),
   TREE_UPDATE_CONNECTOR_TAIL: (state, { payload: { treeKey, id, nodeId } }) =>
-    remember(state, treeKey).setIn(
-      ['trees', treeKey, 'tree', 'connectors', id, 'tailId'],
-      nodeId,
+    remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
+      tree.mergeIn(['connectors', id], {
+        tailId: nodeId,
+        tailPosition: tree.getIn(['nodes', nodeId, 'position']),
+      }),
     ),
 });

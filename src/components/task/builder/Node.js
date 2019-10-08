@@ -3,13 +3,11 @@ import classNames from 'classnames';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
 import { isIE11 } from './helpers';
+import { Point } from './models';
 import { SvgText } from './SvgText';
 import routineIcon from '../../../assets/task/icons/routine.svg';
 import deferIcon from '../../../assets/task/icons/defer.svg';
 import plusIcon from '../../../assets/task/icons/plus_small.svg';
-
-const addNode = ({ treeKey, x, y }) => () =>
-  dispatch('TREE_ADD_NODE', { treeKey, x, y, name: 'Foo' });
 
 const addConnectedNode = ({ treeKey, x, y, parentId }) => () =>
   dispatch('TREE_ADD_NODE_WITH_CONNECTOR', {
@@ -21,84 +19,88 @@ const addConnectedNode = ({ treeKey, x, y, parentId }) => () =>
     connectorLabel: 'Approved -> Yes and some',
   });
 
-const updateNode = ({ treeKey, id, x, y }) =>
-  dispatch('TREE_UPDATE_NODE', { treeKey, id, x, y });
-
-const removeNode = ({ treeKey, id }) => () =>
-  dispatch('TREE_REMOVE_NODE', { treeKey, id });
-
 export class Node extends Component {
   constructor(props) {
     super(props);
     this.el = createRef();
   }
 
+  setTreeBuilder(treeBuilder) {
+    this.treeBuilder = treeBuilder;
+  }
+
+  /*****************************************************************************
+   * Drag-and-drop support                                                     *
+   * Leverages the `watchDrag` helper exposed by the `TreeBuilder` instance.   *
+   * On move we need to update any related connectors manually (for maximum    *
+   * performance).                                                             *
+   * On drop we dispatch an action to update the node in redux to persist the  *
+   * change.                                                                   *
+   ****************************************************************************/
+
   drag = event => {
-    this.props.canvasRef.current.watchDrag({
-      event,
-      onMove: this.move,
-      onDrop: () => {
-        updateNode({
-          treeKey: this.props.treeKey,
-          id: this.props.id,
-          x: this.x,
-          y: this.y,
-        });
-      },
+    this.treeBuilder.watchDrag({ event, onMove: this.move, onDrop: this.drop });
+  };
+
+  drop = () => {
+    dispatch('TREE_UPDATE_NODE', {
+      treeKey: this.props.treeKey,
+      id: this.props.node.id,
+      position: this.position,
     });
   };
 
   move = ({ dx, dy }) => {
-    this.x += dx;
-    this.y += dy;
-    Object.values(
-      this.props.connectorRefsMap.byHead[this.props.id] || {},
-    ).forEach(connector => connector.setHead({ x: this.x, y: this.y }));
-    Object.values(
-      this.props.connectorRefsMap.byTail[this.props.id] || {},
-    ).forEach(connector => connector.setTail({ x: this.x, y: this.y }));
+    this.position = Point({ x: this.position.x + dx, y: this.position.y + dy });
+    this.treeBuilder
+      .getConnectorsByHead(this.props.node.id)
+      .forEach(connector => connector.setHead(this.position, false));
+
+    this.treeBuilder
+      .getConnectorsByTail(this.props.node.id)
+      .forEach(connector => connector.setTail(this.position, false));
     this.draw();
   };
 
-  draw = () => {
-    const attribute = isIE11 ? 'transform' : 'style';
-    const value = isIE11
-      ? `translate(${this.x} ${this.y})`
-      : `transform: translate(${this.x}px,  ${this.y}px)`;
-    this.el.current.setAttribute(attribute, value);
-  };
+  /*****************************************************************************
+   * React lifecycle                                                           *
+   * The only prop than can be changed is `node` which should be an immutable  *
+   * record. If that prop changes we need to sync the instance's `position`    *
+   * value and call `draw`.                                                    *
+   ****************************************************************************/
 
-  // Helper function that syncs the instance's `x` and `y` values with the ones
-  // passed via the props and calls draw if the internal state has changed as a
-  // result.
-  sync = () => {
-    const dirty = this.props.x !== this.x || this.props.y !== this.y;
-    this.x = this.props.x;
-    this.y = this.props.y;
-    if (dirty) {
-      this.draw();
-    }
-  };
+  shouldComponentUpdate(nextProps) {
+    return !this.props.node.equals(nextProps.node);
+  }
 
   componentDidMount() {
-    this.sync();
+    this.position = this.props.node.position;
+    this.draw();
   }
 
   componentDidUpdate() {
-    this.sync();
+    this.position = this.props.node.position;
+    this.draw();
+  }
+
+  /*****************************************************************************
+   * Rendering                                                                 *
+   * To make the drag-and-drop perform as fast as possible we manually         *
+   * manipulate some DOM elements in the `draw` method below. Anything that    *
+   * changes the instance's `position` property should also call `draw`        *
+   ****************************************************************************/
+
+  draw() {
+    const attribute = isIE11 ? 'transform' : 'style';
+    const value = isIE11
+      ? `translate(${this.position.x} ${this.position.y})`
+      : `transform: translate(${this.position.x}px,  ${this.position.y}px)`;
+    this.el.current.setAttribute(attribute, value);
   }
 
   render() {
-    const {
-      treeKey,
-      id,
-      x,
-      y,
-      name,
-      highlighted,
-      invalid,
-      selected,
-    } = this.props;
+    const { treeKey, node } = this.props;
+    const { highlighted, id, invalid, name, selected } = node;
     return (
       <g ref={this.el}>
         <rect
@@ -142,7 +144,7 @@ export class Node extends Component {
           width={constants.ICON_SIZE}
           x={constants.NODE_CENTER_X - constants.ICON_CENTER}
           y={constants.NODE_HEIGHT - constants.ICON_CENTER}
-          onClick={addConnectedNode({ treeKey, x, y, parentId: id })}
+          onClick={addConnectedNode({ treeKey, x: 500, y: 500, parentId: id })}
         />
       </g>
     );

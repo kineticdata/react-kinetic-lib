@@ -2,19 +2,14 @@ import * as constants from './constants';
 
 export const isIE11 = document.documentMode === 11;
 
-export const getRectIntersections = ({
-  headPoint,
-  headRect,
-  tailPoint,
-  tailRect,
-}) => {
+export const getRectIntersections = ({ dragging, head, tail }) => {
   // Compute the points that make up the full path of the connector before
   // accounting for intersections. This will either be between the center of two
   // rects or from a dragging point to the center of a rect.
-  const x1 = tailPoint ? tailPoint.x : tailRect.x + constants.NODE_CENTER_X;
-  const y1 = tailPoint ? tailPoint.y : tailRect.y + constants.NODE_CENTER_Y;
-  const x2 = headPoint ? headPoint.x : headRect.x + constants.NODE_CENTER_X;
-  const y2 = headPoint ? headPoint.y : headRect.y + constants.NODE_CENTER_Y;
+  const x1 = dragging === 'tail' ? tail.x : tail.x + constants.NODE_CENTER_X;
+  const y1 = dragging === 'tail' ? tail.y : tail.y + constants.NODE_CENTER_Y;
+  const x2 = dragging === 'head' ? head.x : head.x + constants.NODE_CENTER_X;
+  const y2 = dragging === 'head' ? head.y : head.y + constants.NODE_CENTER_Y;
 
   // To compute the intersection points we will be adding/subtracting values
   // from the points above  using the slope computed below. The maximum distance
@@ -55,15 +50,19 @@ export const getRectIntersections = ({
   // them or we compute the intersection point(s) by applying the deltas
   // computed above.
   return [
-    tailPoint || { x: x1 - dx * dxMultiplier, y: y1 - dy * dyMultiplier },
-    headPoint || { x: x2 + dx * dxMultiplier, y: y2 + dy * dyMultiplier },
+    dragging === 'tail'
+      ? tail
+      : { x: x1 - dx * dxMultiplier, y: y1 - dy * dyMultiplier },
+    dragging === 'head'
+      ? head
+      : { x: x2 + dx * dxMultiplier, y: y2 + dy * dyMultiplier },
   ];
 };
 
 export const isPointInNode = point => node =>
   point &&
   node &&
-  point.x >= node.x &&
-  point.x <= node.x + constants.NODE_WIDTH &&
-  point.y >= node.y &&
-  point.y <= node.y + constants.NODE_HEIGHT;
+  point.x >= node.position.x &&
+  point.x <= node.position.x + constants.NODE_WIDTH &&
+  point.y >= node.position.y &&
+  point.y <= node.position.y + constants.NODE_HEIGHT;

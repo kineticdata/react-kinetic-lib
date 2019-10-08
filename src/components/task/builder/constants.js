@@ -9,6 +9,7 @@ export const CONNECTOR_TAIL_RADIUS = 6;
 export const CONNECTOR_LABEL_WIDTH = 130;
 export const CONNECTOR_LABEL_HEIGHT = 18;
 export const CONNECTOR_LABEL_PADDING = 5;
+export const CONNECTOR_LABEL_RADIUS = 3;
 
 export const ICON_SIZE = 24;
 

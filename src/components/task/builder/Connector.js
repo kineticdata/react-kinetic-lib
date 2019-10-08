@@ -1,7 +1,7 @@
 import React, { Component, createRef, Fragment } from 'react';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
-import { getRectIntersections, isIE11, isPointInNode } from './helpers';
+import { getRectIntersections, isIE11 } from './helpers';
 import { SvgText } from './SvgText';
 import filter from '../../../assets/task/icons/filter.svg';
 
@@ -14,69 +14,115 @@ export class Connector extends Component {
     this.connectorLabel = createRef();
   }
 
-  dragTail = event => {
-    this.props.canvasRef.current.watchDrag({
-      relative: false,
-      event,
-      onMove: this.setTailPoint,
-      onDrop: () => {
-        const nodeId = this.props.nodes.findIndex(
-          isPointInNode(this.tailPoint),
-        );
-        if (nodeId === -1 || nodeId === this.tailId || nodeId === this.headId) {
-          this.setTailPoint(null);
-        } else {
-          dispatch('TREE_UPDATE_CONNECTOR_TAIL', {
-            treeKey: this.props.treeKey,
-            id: this.props.id,
-            nodeId,
-          });
-        }
-      },
-    });
+  setTreeBuilder = treeBuilder => {
+    this.treeBuilder = treeBuilder;
   };
+
+  /*****************************************************************************
+   * Drag-and-drop support                                                     *
+   * Leverages the `watchDrag` helper exposed by the `TreeBuilder` instance.   *
+   * On move we update this instance's `head` or `tail` properties and set     *
+   * `dragging` to either "head" or "tail" so that the `draw` method knows if  *
+   * we are drawing to a dragging point or to the center of a node.            *
+   * On drop we check to see if the point we are dropping at is within a node  *
+   * (we check that its a valid node as well) and dispatch a redux action to   *
+   * persist the change or we reset the `head` or `tail` properties and `draw` *
+   ****************************************************************************/
 
   dragHead = event => {
-    this.props.canvasRef.current.watchDrag({
+    this.treeBuilder.watchDrag({
       relative: false,
       event,
-      onMove: this.setHeadPoint,
-      onDrop: () => {
-        const nodeId = this.props.nodes.findIndex(
-          isPointInNode(this.headPoint),
-        );
-        if (nodeId === -1 || nodeId === this.tailId || nodeId === this.headId) {
-          this.setHeadPoint(null);
-        } else {
-          dispatch('TREE_UPDATE_CONNECTOR_HEAD', {
-            treeKey: this.props.treeKey,
-            id: this.props.id,
-            nodeId,
-          });
-        }
-      },
+      onMove: this.setHead,
+      onDrop: this.dropHead,
     });
   };
 
-  setHeadPoint = point => {
-    this.headPoint = point;
+  dragTail = event => {
+    this.treeBuilder.watchDrag({
+      relative: false,
+      event,
+      onMove: this.setTail,
+      onDrop: this.dropTail,
+    });
+  };
+
+  dropHead = () => {
+    const node = this.treeBuilder.findNodeByPoint(this.head);
+    const { headId, headPosition, id, tailId } = this.props.connector;
+    if (node && node.id !== headId && node.id !== tailId) {
+      dispatch('TREE_UPDATE_CONNECTOR_HEAD', {
+        treeKey: this.props.treeKey,
+        id,
+        nodeId: node.id,
+      });
+    } else {
+      this.setHead(headPosition, false);
+    }
+  };
+
+  dropTail = () => {
+    const node = this.treeBuilder.findNodeByPoint(this.tail);
+    const { headId, id, tailId, tailPosition } = this.props.connector;
+    if (node && node.id !== headId && node.id !== tailId) {
+      dispatch('TREE_UPDATE_CONNECTOR_TAIL', {
+        treeKey: this.props.treeKey,
+        id,
+        nodeId: node.id,
+      });
+    } else {
+      this.setTail(tailPosition, false);
+    }
+  };
+
+  // Dragging will be true when dragging by the head and false when called via
+  // dragging node.
+  setHead = (point, dragging = true) => {
+    this.dragging = dragging ? 'head' : null;
+    this.head = point;
     this.draw();
   };
 
-  setTailPoint = point => {
-    this.tailPoint = point;
+  // Dragging will be true when dragging by the tail and false when called via
+  // dragging node.
+  setTail = (point, dragging = true) => {
+    this.dragging = dragging ? 'tail' : null;
+    this.tail = point;
     this.draw();
   };
 
-  setHead = ({ x, y }) => {
-    this.headRect = { x, y };
-    this.draw();
-  };
+  /*****************************************************************************
+   * React lifecycle                                                           *
+   * The only prop than can be changed is `connector` which should be an       *
+   * immutable record. If that prop changes we need to sync the instance's     *
+   * `head` and `tail` values and call `draw`.                                 *
+   ****************************************************************************/
 
-  setTail = ({ x, y }) => {
-    this.tailRect = { x, y };
+  shouldComponentUpdate(nextProps) {
+    return !this.props.connector.equals(nextProps.connector);
+  }
+
+  componentDidMount() {
+    this.dragging = null;
+    this.tail = this.props.connector.tailPosition;
+    this.head = this.props.connector.headPosition;
     this.draw();
-  };
+  }
+
+  componentDidUpdate() {
+    this.dragging = null;
+    this.tail = this.props.connector.tailPosition;
+    this.head = this.props.connector.headPosition;
+    this.draw();
+  }
+
+  /*****************************************************************************
+   * Rendering                                                                 *
+   * To make the drag-and-drop perform as fast as possible we manually         *
+   * manipulate some DOM elements in the `draw` method below. Anything that    *
+   * changes the instance's `head` or `tail` properties should also call       *
+   * `draw`                                                                    *
+   ****************************************************************************/
 
   draw = () => {
     const [{ x: x1, y: y1 }, { x: x2, y: y2 }] = getRectIntersections(this);
@@ -96,39 +142,6 @@ export class Connector extends Component {
     this.connectorBody.current.setAttribute('x2', length);
     this.connectorLabel.current.setAttribute(attribute, connectorLabelValue);
   };
-
-  // Helper function that checks for changes to the `headId` / `tailId` props
-  // and resets the `headPoint` / `tailPoint` instance variables if the ids were
-  // changed and redraws.
-  sync = () => {
-    const { headId, tailId } = this.props;
-    const headRect = this.props.nodes.get(headId);
-    const tailRect = this.props.nodes.get(tailId);
-    const dirty =
-      this.headId !== headId ||
-      this.tailId !== tailId ||
-      this.headRect.x !== headRect.x ||
-      this.headRect.y !== headRect.y ||
-      this.tailRect.x !== tailRect.x ||
-      this.tailRect.y !== tailRect.y;
-    this.headId = headId;
-    this.headRect = headRect;
-    this.tailId = tailId;
-    this.tailRect = tailRect;
-    if (dirty) {
-      this.headPoint = null;
-      this.tailPoint = null;
-      this.draw();
-    }
-  };
-
-  componentDidMount() {
-    this.sync();
-  }
-
-  componentDidUpdate() {
-    this.sync();
-  }
 
   render() {
     return (
@@ -161,8 +174,8 @@ export class Connector extends Component {
             y={-constants.ICON_CENTER}
             height={constants.ICON_SIZE}
             width={constants.ICON_SIZE}
-            rx="3"
-            ry="3"
+            rx={constants.CONNECTOR_LABEL_RADIUS}
+            ry={constants.CONNECTOR_LABEL_RADIUS}
           />
           {this.props.label ? (
             <Fragment>
@@ -172,8 +185,8 @@ export class Connector extends Component {
                 y={-constants.CONNECTOR_LABEL_CENTER_Y}
                 height={constants.CONNECTOR_LABEL_HEIGHT}
                 width={constants.CONNECTOR_LABEL_WIDTH}
-                rx="3"
-                ry="3"
+                rx={constants.CONNECTOR_LABEL_RADIUS}
+                ry={constants.CONNECTOR_LABEL_RADIUS}
               />
               <SvgText
                 className="connector-label med-detail"
@@ -192,6 +205,8 @@ export class Connector extends Component {
               xlinkHref={filter}
               x={-constants.ICON_CENTER}
               y={-constants.ICON_CENTER}
+              height={constants.ICON_SIZE}
+              width={constants.ICON_SIZE}
             />
           )}
         </g>
