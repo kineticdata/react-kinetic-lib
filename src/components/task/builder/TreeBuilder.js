@@ -22,6 +22,13 @@ export class TreeBuilderComponent extends Component {
 
   findNodeByPoint = point => this.props.tree.nodes.find(isPointInNode(point));
 
+  findDuplicateConnector = (nodeId1, nodeId2) =>
+    this.props.tree.connectors.some(
+      connector =>
+        (connector.headId === nodeId1 && connector.tailId === nodeId2) ||
+        (connector.headId === nodeId2 && connector.tailId === nodeId1),
+    );
+
   getConnectorsByHead = nodeId =>
     Object.values(this.connectorMap.byHead[nodeId] || {});
 

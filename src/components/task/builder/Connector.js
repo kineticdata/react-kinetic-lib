@@ -50,7 +50,12 @@ export class Connector extends Component {
   dropHead = () => {
     const node = this.treeBuilder.findNodeByPoint(this.head);
     const { headId, headPosition, id, tailId } = this.props.connector;
-    if (node && node.id !== headId && node.id !== tailId) {
+    if (
+      node &&
+      node.id !== headId &&
+      node.id !== tailId &&
+      !this.treeBuilder.findDuplicateConnector(node.id, tailId)
+    ) {
       dispatch('TREE_UPDATE_CONNECTOR_HEAD', {
         treeKey: this.props.treeKey,
         id,
@@ -64,7 +69,12 @@ export class Connector extends Component {
   dropTail = () => {
     const node = this.treeBuilder.findNodeByPoint(this.tail);
     const { headId, id, tailId, tailPosition } = this.props.connector;
-    if (node && node.id !== headId && node.id !== tailId) {
+    if (
+      node &&
+      node.id !== headId &&
+      node.id !== tailId &&
+      !this.treeBuilder.findDuplicateConnector(node.id, headId)
+    ) {
       dispatch('TREE_UPDATE_CONNECTOR_TAIL', {
         treeKey: this.props.treeKey,
         id,
