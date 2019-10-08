@@ -4,6 +4,7 @@ export { ContentEditable } from './common/ContentEditable';
 export { UserSelect } from './common/UserSelect';
 export { TeamSelect } from './common/TeamSelect';
 export { FormSelect } from './common/FormSelect';
+export { StaticSelect } from './common/StaticSelect';
 export { onLogout } from './common/authentication/AuthenticationContainer';
 
 // Form
