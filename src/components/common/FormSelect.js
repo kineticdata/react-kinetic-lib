@@ -64,7 +64,7 @@ const searchForms = ({ options, search }) => (field, value) => {
   }
 };
 
-const formToValue = form => form.get('slug');
+const formToValue = form => (form && form.get('slug')) || '';
 
 const getStatusProps = props => ({
   warning:
@@ -85,6 +85,8 @@ export const FormSelect = props => (
     textMode={props.textMode}
     multiple={props.multiple}
     search={searchForms(props)}
+    minSearchLength={props.minSearchLength}
+    alwaysRenderSuggestions={props.alwaysRenderSuggestions}
     getSuggestionValue={formToValue}
     getStatusProps={getStatusProps}
     value={props.value}

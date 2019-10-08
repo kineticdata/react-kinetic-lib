@@ -20,7 +20,7 @@ const searchTeams = (field, value) =>
     nextPageToken,
   }));
 
-const teamToValue = team => team.get('name');
+const teamToValue = team => (team && team.get('name')) || '';
 
 const getStatusProps = props => ({
   info: props.searchField ? `Find Teams by ${fields[props.searchField]}` : null,
@@ -54,6 +54,8 @@ export const TeamSelect = props => (
     textMode={props.textMode}
     multiple={props.multiple}
     search={searchTeams}
+    minSearchLength={props.minSearchLength}
+    alwaysRenderSuggestions={props.alwaysRenderSuggestions}
     getSuggestionValue={teamToValue}
     getStatusProps={getStatusProps}
     value={props.value}
