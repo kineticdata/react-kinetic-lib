@@ -6,9 +6,6 @@ import { SvgCanvas } from './SvgCanvas';
 import { Node } from './Node';
 import { Connector } from './Connector';
 
-const undo = treeKey => () => dispatch('TREE_UNDO', { treeKey });
-const redo = treeKey => () => dispatch('TREE_REDO', { treeKey });
-
 export class TreeBuilderComponent extends Component {
   constructor(props) {
     super(props);
@@ -63,40 +60,34 @@ export class TreeBuilderComponent extends Component {
 
   render() {
     const { tree: { connectors = [], nodes = [] } = {}, treeKey } = this.props;
-    return (
-      <Fragment>
-        <SvgCanvas ref={this.canvasRef}>
-          {connectors.map(connector => (
-            <Connector
-              key={connector.id}
-              ref={this.registerConnector(connector)}
-              treeKey={treeKey}
-              connector={connector}
-            />
-          ))}
-          {nodes.map(node => (
-            <Node
-              key={node.id}
-              ref={this.registerNode(node)}
-              treeKey={treeKey}
-              node={node}
-            />
-          ))}
-        </SvgCanvas>
-        <div style={{ position: 'fixed', top: '5px', left: '5px' }}>
-          <button type="button" onClick={undo(this.props.treeKey)}>
-            undo
-          </button>
-          <button type="button" onClick={redo(this.props.treeKey)}>
-            redo
-          </button>
-        </div>
-      </Fragment>
-    );
+    return this.props.children({
+      treeBuilder: (
+        <Fragment>
+          <SvgCanvas ref={this.canvasRef}>
+            {connectors.map(connector => (
+              <Connector
+                key={connector.id}
+                ref={this.registerConnector(connector)}
+                treeKey={treeKey}
+                connector={connector}
+              />
+            ))}
+            {nodes.map(node => (
+              <Node
+                key={node.id}
+                ref={this.registerNode(node)}
+                treeKey={treeKey}
+                node={node}
+              />
+            ))}
+          </SvgCanvas>
+        </Fragment>
+      ),
+    });
   }
 }
 
 const mapStateToProps = (state, props) => ({
-  tree: state.getIn(['trees', props.treeKey, 'tree'], null),
+  tree: state.getIn(['trees', props.treeKey, 'tree']),
 });
 export const TreeBuilder = connect(mapStateToProps)(TreeBuilderComponent);

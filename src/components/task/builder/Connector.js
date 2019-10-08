@@ -187,7 +187,7 @@ export class Connector extends Component {
             rx={constants.CONNECTOR_LABEL_RADIUS}
             ry={constants.CONNECTOR_LABEL_RADIUS}
           />
-          {this.props.label ? (
+          {this.props.connector.label ? (
             <Fragment>
               <rect
                 className="high-detail"
@@ -206,7 +206,7 @@ export class Connector extends Component {
                 height={constants.CONNECTOR_LABEL_HEIGHT}
                 padding={constants.CONNECTOR_LABEL_PADDING}
               >
-                {this.props.label}
+                {this.props.connector.label}
               </SvgText>
             </Fragment>
           ) : (
