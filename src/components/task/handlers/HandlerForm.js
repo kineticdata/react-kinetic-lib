@@ -26,39 +26,28 @@ const handleSubmit = () => values => {
   return Promise.resolve();
 };
 
-const _example = {
-  definitionId: 'kinetic_determine_next_occurrence_v2',
-  definitionName: 'kinetic_determine_next_occurrence',
-  definitionVersion: '2',
-  description:
-    'This handler determines the next occurence based on a provided start time and other recurrence information',
-  name: 'Kinetic Determine Next Occurrence',
-  status: 'Active',
-  createdAt: '2019-08-19T20:32:55.039Z',
-  createdBy: 'admin',
-  id: 3,
-  updatedAt: '2019-08-19T20:32:55.039Z',
-  updatedBy: 'admin',
-};
-
 const fields = ({ definitionId }) => ({ handler, categories }) => {
   if (!(definitionId && handler && categories)) {
     return false;
   }
 
-  const properties = handler.get('properties').map(property => ({
-    name: property.get('name'),
-    label: property.get('name'),
-    type: property.get('sensitive') ? 'password' : 'text',
-    required: property.get('required'),
-    transient: true,
-    // initialValue: getIn(handler, ['properties', property.get('name')], ''),
-  }));
+  const properties = handler
+    .get('properties')
+    .map(property => ({
+      name: property.get('name'),
+      label: property.get('name'),
+      type: property.get('type') === 'Encrypted' ? 'password' : 'text',
+      required: property.get('required'),
+      transient: true,
+      initialValue: property.get('value'),
+    }))
+    .toArray();
 
   return (
     definitionId &&
     handler &&
-    categories && [
+    categories &&
+    [
       {
         name: 'definitionId',
         label: 'Definition ID',
@@ -127,16 +116,12 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         name: 'properties',
         visible: false,
         initialValue: get(handler, 'properties', []),
-        // serialize: ({ values }) => {
-        //   console.log(
-        //     values
-        //       .filter((v, k) => !BRIDGE_FIELDS.includes(k) || k !== 'linker')
-        //       .toJS(),
-        //   );
-        //   return values;
-        // },
+        serialize: ({ values }) =>
+          get(handler, 'properties', List([])).map(p =>
+            p.set('value', values.get(p.get('name'))),
+          ),
       },
-    ]
+    ].concat(properties)
   );
 };
 
