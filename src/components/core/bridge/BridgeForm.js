@@ -34,7 +34,7 @@ const handleSubmit = ({ bridgeSlug }) => values =>
     return bridge;
   });
 
-const BRIDGE_FIELDS = ['name', 'slug', 'adapterClass', 'properties', 'linker'];
+const BRIDGE_FIELDS = ['name', 'slug', 'adapterClass', 'properties', 'linked'];
 
 const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
   let properties = [];
@@ -118,14 +118,8 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
           name: 'properties',
           visible: false,
           initialValue: get(bridge, 'properties', {}),
-          serialize: ({ values }) => {
-            console.log(
-              values
-                .filter((v, k) => !BRIDGE_FIELDS.includes(k) || k !== 'linker')
-                .toJS(),
-            );
-            return values;
-          },
+          serialize: ({ values }) =>
+            values.filter((v, k) => !BRIDGE_FIELDS.includes(k)).toJS(),
         },
       ].concat(properties);
     return fields;
