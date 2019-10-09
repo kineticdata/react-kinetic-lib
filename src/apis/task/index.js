@@ -6,7 +6,7 @@ const generateNextPageToken = data =>
 
 export const fetchTrees = (options = {}) =>
   axios
-    .get(`/kinetic-task/app/api/v2/trees`, {
+    .get(`/app/components/task/app/api/v2/trees`, {
       params: {
         type: options.type,
         limit: options.limit,
@@ -18,38 +18,60 @@ export const fetchTrees = (options = {}) =>
         ownerEmail: options.ownerEmail || undefined,
         status: options.status || undefined,
       },
-      auth: {
-        username: 'developer',
-        password: 'developer',
-      },
     })
     .then(response => ({
       trees: response.data.trees,
       nextPageToken: generateNextPageToken(response.data),
     }));
 
-export const fetchTree = () => ({
-  tree: {
-    name: 'Complete',
-    notes: 'Notes about the tree',
-    ownerEmail: 'email of the person that is in change of the process',
-    sourceName: 'Request CE',
-    sourceGroup: 'Kapp Name > My Process',
-    status: 'Active',
-    title: 'Request CE :: Kapp Name > My Process :: Complete',
-    type: 'Tree',
-  },
-});
-
-export const fetchSources = (options = {}) =>
-  axios
-    .get('/kinetic-task/app/api/v2/sources', {
+export const fetchTree = (options = {}) => {
+  validateOptions('fetchTree', ['itemId'], options);
+  return axios
+    .get(`/app/components/task/app/api/v2/trees/${options.itemId}`, {
       params: {
         include: options.include,
       },
-      auth: {
-        username: 'developer',
-        password: 'developer',
+    })
+    .then(response => ({
+      tree: response.data,
+    }));
+};
+
+export const updateTree = (options = {}) => {
+  validateOptions('updateTree', ['itemId', 'tree'], options);
+  return axios
+    .put(
+      `/app/components/task/app/api/v2/trees/${options.itemId}`,
+      options.tree,
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      tree: response.data,
+    }));
+};
+
+export const createTree = (options = {}) => {
+  validateOptions('createTree', ['tree'], options);
+  return axios
+    .post(`/app/components/task/app/api/v2/trees`, options.tree, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      tree: response.data,
+    }));
+};
+
+export const fetchSources = (options = {}) =>
+  axios
+    .get('/app/components/task/app/api/v2/sources', {
+      params: {
+        include: options.include,
       },
     })
     .then(response => ({
@@ -69,13 +91,9 @@ export const fetchTaskCategories = (options = {}) =>
 
 export const fetchHandlers = (options = {}) =>
   axios
-    .get('/kinetic-task/app/api/v2/handlers', {
+    .get('/app/components/task/app/api/v2/handlers', {
       params: {
         include: options.include,
-      },
-      auth: {
-        username: 'developer',
-        password: 'developer',
       },
     })
     .then(response => ({
