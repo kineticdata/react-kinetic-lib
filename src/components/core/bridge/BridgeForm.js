@@ -36,12 +36,12 @@ const handleSubmit = ({ bridgeSlug }) => values =>
 
 const BRIDGE_FIELDS = ['name', 'slug', 'adapterClass', 'properties', 'linker'];
 
-const fields = ({ bridgeSlug }) => ({ bridge, adapters }) => {
+const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
   let properties = [];
-  if (adapters && bridge) {
-    const adapter = adapters.find(
-      a => a.get('class') === bridge.get('adapterClass'),
-    );
+  const initialAdapterClass = get(bridge, 'adapterClass', adapterClass);
+
+  if (adapters) {
+    const adapter = adapters.find(a => a.get('class') === initialAdapterClass);
 
     const adapterProperties = adapter
       ? List(adapter.get('properties'))
@@ -55,7 +55,11 @@ const fields = ({ bridgeSlug }) => ({ bridge, adapters }) => {
             type: property.get('sensitive') ? 'password' : 'text',
             required: property.get('required'),
             transient: true,
-            initialValue: getIn(bridge, ['properties', property.name], ''),
+            initialValue: getIn(
+              bridge,
+              ['properties', property.get('name')],
+              '',
+            ),
           }))
           .toArray()
       : [];
@@ -100,9 +104,9 @@ const fields = ({ bridgeSlug }) => ({ bridge, adapters }) => {
           name: 'adapterClass',
           label: 'Adapter Class',
           type: bridgeSlug ? 'text' : 'select',
-          enabled: !bridgeSlug,
-          required: !!bridgeSlug,
-          initialValue: get(bridge, 'adapterClass', ''),
+          enabled: () => false,
+          required: () => false,
+          initialValue: initialAdapterClass,
           options: adapters.map(adapter =>
             Map({
               value: adapter.get('class'),
@@ -117,15 +121,13 @@ const fields = ({ bridgeSlug }) => ({ bridge, adapters }) => {
           serialize: ({ values }) => {
             console.log(
               values
-                .filter((v, k) => BRIDGE_FIELDS.includes(k) || k === 'linker')
+                .filter((v, k) => !BRIDGE_FIELDS.includes(k) || k !== 'linker')
                 .toJS(),
             );
             return values;
           },
         },
       ].concat(properties);
-
-    console.log('final fields', fields);
     return fields;
   } else {
     return false;
@@ -142,6 +144,7 @@ export const BridgeForm = ({
   onError,
   children,
   bridgeSlug,
+  adapterClass,
 }) => (
   <Form
     formKey={formKey}
@@ -154,7 +157,7 @@ export const BridgeForm = ({
     onError={onError}
     dataSources={dataSources}
     fields={fields}
-    formOptions={{ bridgeSlug }}
+    formOptions={{ bridgeSlug, adapterClass }}
   >
     {children}
   </Form>

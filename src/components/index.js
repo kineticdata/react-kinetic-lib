@@ -104,3 +104,5 @@ export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { WorkflowForm } from './task/workflows/WorkflowForm';
 export { SourceTable } from './task/sources/SourceTable';
 export { HandlerTable } from './task/handlers/HandlerTable';
+export { HandlerForm } from './task/handlers/HandlerForm';
+export { HandlerUsageTable } from './task/handlers/HandlerUsageTable';
