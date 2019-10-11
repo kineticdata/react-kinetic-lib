@@ -6,6 +6,7 @@ const ELLIPSIS = ' \u2026';
 const STYLE = {
   dominantBaseline: 'central',
   pointerEvents: 'none',
+  userSelect: 'none',
   textAnchor: 'middle',
 };
 

@@ -99,7 +99,22 @@ regHandlers({
           connector => connector.headId !== id && connector.tailId !== id,
         ),
       ),
-  TREE_ADD_CONNECTOR: (state, { payload: { treeKey, connector } }) => state,
+  TREE_ADD_CONNECTOR: (state, { payload: { treeKey, headId, tailId } }) =>
+    remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree => {
+      const headPosition = tree.getIn(['nodes', headId, 'position']);
+      const tailPosition = tree.getIn(['nodes', tailId, 'position']);
+      return tree.update('connectors', connectors =>
+        connectors.push(
+          Connector({
+            id: connectors.size,
+            headId,
+            headPosition,
+            tailId,
+            tailPosition,
+          }),
+        ),
+      );
+    }),
   TREE_REMOVE_CONNECTOR: (state, { payload: { treeKey, connector } }) => state,
   TREE_UPDATE_CONNECTOR_HEAD: (state, { payload: { treeKey, id, nodeId } }) =>
     remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>

@@ -1,7 +1,8 @@
 import React, { createRef, Component, Fragment } from 'react';
-import { connect, dispatch } from '../../../store';
+import { connect } from '../../../store';
 import './builder.redux';
 import { isPointInNode } from './helpers';
+import { Connector as ConnectorModel } from './models';
 import { SvgCanvas } from './SvgCanvas';
 import { Node } from './Node';
 import { Connector } from './Connector';
@@ -9,6 +10,8 @@ import { Connector } from './Connector';
 export class TreeBuilderComponent extends Component {
   constructor(props) {
     super(props);
+    this.state = { newConnector: null };
+    this.newConnector = createRef();
     this.canvasRef = createRef();
     this.connectorMap = {
       byHead: {},
@@ -31,6 +34,38 @@ export class TreeBuilderComponent extends Component {
 
   getConnectorsByTail = nodeId =>
     Object.values(this.connectorMap.byTail[nodeId] || {});
+
+  // helper provided so that the plus button on a node can start the process of
+  // creating a new connector, since the drop position may not be valid we do
+  // not want to persist anything to redux state until we can confirm the drop
+  // is valid so we store the temp connector in component state so it will be
+  // rendered and then on move we update the Connector instance (by ref) with
+  // the new position
+  dragNewConnector = node => position => {
+    this.setState(state => ({
+      newConnector:
+        state.newConnector ||
+        ConnectorModel({
+          dragging: 'head',
+          headPosition: position,
+          tailId: node.id,
+          tailPosition: node.position,
+        }),
+    }));
+    if (this.newConnector.current) {
+      this.newConnector.current.setTreeBuilder(this);
+      this.newConnector.current.setHead(position, true);
+    }
+  };
+
+  // helper provided so that the plus button on a node can create a new
+  // connector in conjunction with `dragNewConnector` above
+  dropNewConnector = () => {
+    if (this.newConnector.current) {
+      this.newConnector.current.dropHead();
+    }
+    this.setState({ newConnector: null });
+  };
 
   registerConnector = connector => connectorInstance => {
     const { headId, id, tailId } = connector;
@@ -70,14 +105,23 @@ export class TreeBuilderComponent extends Component {
                 ref={this.registerConnector(connector)}
                 treeKey={treeKey}
                 connector={connector}
+                onSelect={this.props.onSelectConnector}
               />
             ))}
+            {this.state.newConnector && (
+              <Connector
+                ref={this.newConnector}
+                treeKey={treeKey}
+                connector={this.state.newConnector}
+              />
+            )}
             {nodes.map(node => (
               <Node
                 key={node.id}
                 ref={this.registerNode(node)}
                 treeKey={treeKey}
                 node={node}
+                onSelect={this.props.onSelectNode}
               />
             ))}
           </SvgCanvas>

@@ -9,16 +9,6 @@ import routineIcon from '../../../assets/task/icons/routine.svg';
 import deferIcon from '../../../assets/task/icons/defer.svg';
 import plusIcon from '../../../assets/task/icons/plus_small.svg';
 
-const addConnectedNode = ({ treeKey, x, y, parentId }) => () =>
-  dispatch('TREE_ADD_NODE_WITH_CONNECTOR', {
-    treeKey,
-    x,
-    y,
-    parentId,
-    name: 'Foo',
-    connectorLabel: 'Approved -> Yes and some',
-  });
-
 export class Node extends Component {
   constructor(props) {
     super(props);
@@ -30,16 +20,52 @@ export class Node extends Component {
   }
 
   /*****************************************************************************
+   * Click handlers                                                            *
+   ****************************************************************************/
+
+  addNewNode = () => {
+    dispatch('TREE_ADD_NODE_WITH_CONNECTOR', {
+      treeKey: this.props.treeKey,
+      parentId: this.props.node.id,
+      name: 'Foo',
+      connectorLabel: 'Approved -> Yes and some',
+    });
+  };
+
+  onSelect = shiftKey => () => {
+    if (typeof this.props.onSelect === 'function') {
+      this.props.onSelect({ node: this.props.node, multi: shiftKey });
+    }
+  };
+
+  /*****************************************************************************
    * Drag-and-drop support                                                     *
    * Leverages the `watchDrag` helper exposed by the `TreeBuilder` instance.   *
    * On move we need to update any related connectors manually (for maximum    *
    * performance).                                                             *
    * On drop we dispatch an action to update the node in redux to persist the  *
    * change.                                                                   *
+   * We also watch for drag on the plus button, which should leverage the      *
+   * `TreeBuilder` instance to start creating a new connector                  *
    ****************************************************************************/
 
   drag = event => {
-    this.treeBuilder.watchDrag({ event, onMove: this.move, onDrop: this.drop });
+    this.treeBuilder.watchDrag({
+      event,
+      onMove: this.move,
+      onDrop: this.drop,
+      onClick: this.onSelect(event.shiftKey),
+    });
+  };
+
+  dragPlus = event => {
+    this.treeBuilder.watchDrag({
+      event,
+      relative: false,
+      onMove: this.treeBuilder.dragNewConnector(this.props.node),
+      onDrop: this.treeBuilder.dropNewConnector,
+      onClick: this.addNewNode,
+    });
   };
 
   drop = () => {
@@ -144,7 +170,7 @@ export class Node extends Component {
           width={constants.ICON_SIZE}
           x={constants.NODE_CENTER_X - constants.ICON_CENTER}
           y={constants.NODE_HEIGHT - constants.ICON_CENTER}
-          onClick={addConnectedNode({ treeKey, x: 500, y: 500, parentId: id })}
+          onMouseDown={this.dragPlus}
         />
       </g>
     );

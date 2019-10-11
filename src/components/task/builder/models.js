@@ -14,6 +14,7 @@ export const Connector = Record(
     tailId: null,
     tailPosition: Point(),
     label: '',
+    dragging: null,
   },
   'Connector',
 );

@@ -15,12 +15,21 @@ export class SvgCanvas extends Component {
     this.viewport = { scale: 1.0, x: 0, y: 0 };
   }
 
-  watchDrag = ({ event, onMove, onDrop, scaled = true, relative = true }) => {
-    event.preventDefault();
+  watchDrag = ({
+    event,
+    onClick,
+    onMove,
+    onDrop,
+    scaled = true,
+    relative = true,
+  }) => {
     event.stopPropagation();
     // boolean to prevent race condition where onMove could be called after
     // onDrop was called
     let dragging = true;
+    // track whether or not the mousemove event was fired before the mouseup,
+    // if not we will call onClick instead of onDrop
+    let dragged = false;
     // for relative mode, track the last x and y positions so we can pass the
     // deltas to onMove
     let lastX = event.nativeEvent.clientX;
@@ -33,6 +42,7 @@ export class SvgCanvas extends Component {
     const moveHandler = throttle(event => {
       event.preventDefault();
       event.stopPropagation();
+      dragged = true;
       const { clientX, clientY } = event;
       if (dragging) {
         if (relative) {
@@ -57,8 +67,14 @@ export class SvgCanvas extends Component {
       this.canvas.current.removeEventListener('mousemove', moveHandler);
       this.canvas.current.removeEventListener('mouseup', dropHandler);
       this.canvas.current.removeEventListener('mouseleave', dropHandler);
-      if (onDrop) {
-        onDrop();
+      if (dragged) {
+        if (onDrop) {
+          onDrop();
+        }
+      } else {
+        if (onClick) {
+          onClick();
+        }
       }
     };
     this.canvas.current.addEventListener('mousemove', moveHandler);

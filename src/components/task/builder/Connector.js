@@ -19,6 +19,19 @@ export class Connector extends Component {
   };
 
   /*****************************************************************************
+   * Click handlers                                                            *
+   ****************************************************************************/
+
+  onSelect = event => {
+    if (typeof this.props.onSelect === 'function') {
+      this.props.onSelect({
+        connector: this.props.connector,
+        multi: event.shiftKey,
+      });
+    }
+  };
+
+  /*****************************************************************************
    * Drag-and-drop support                                                     *
    * Leverages the `watchDrag` helper exposed by the `TreeBuilder` instance.   *
    * On move we update this instance's `head` or `tail` properties and set     *
@@ -56,11 +69,17 @@ export class Connector extends Component {
       node.id !== tailId &&
       !this.treeBuilder.findDuplicateConnector(node.id, tailId)
     ) {
-      dispatch('TREE_UPDATE_CONNECTOR_HEAD', {
-        treeKey: this.props.treeKey,
-        id,
-        nodeId: node.id,
-      });
+      id
+        ? dispatch('TREE_UPDATE_CONNECTOR_HEAD', {
+            treeKey: this.props.treeKey,
+            id,
+            nodeId: node.id,
+          })
+        : dispatch('TREE_ADD_CONNECTOR', {
+            treeKey: this.props.treeKey,
+            tailId: this.props.connector.tailId,
+            headId: node.id,
+          });
     } else {
       this.setHead(headPosition, false);
     }
@@ -113,14 +132,14 @@ export class Connector extends Component {
   }
 
   componentDidMount() {
-    this.dragging = null;
+    this.dragging = this.props.connector.dragging;
     this.tail = this.props.connector.tailPosition;
     this.head = this.props.connector.headPosition;
     this.draw();
   }
 
   componentDidUpdate() {
-    this.dragging = null;
+    this.dragging = this.props.connector.dragging;
     this.tail = this.props.connector.tailPosition;
     this.head = this.props.connector.headPosition;
     this.draw();
@@ -150,7 +169,9 @@ export class Connector extends Component {
     this.connector.current.setAttribute(attribute, connectorValue);
     this.connectorTail.current.setAttribute('cx', length);
     this.connectorBody.current.setAttribute('x2', length);
-    this.connectorLabel.current.setAttribute(attribute, connectorLabelValue);
+    if (this.connectorLabel.current) {
+      this.connectorLabel.current.setAttribute(attribute, connectorLabelValue);
+    }
   };
 
   render() {
@@ -177,49 +198,55 @@ export class Connector extends Component {
             onMouseDown={this.dragHead}
           />
         </g>
-        <g ref={this.connectorLabel} className="connector-button">
-          <rect
-            className="high-detail"
-            x={-constants.ICON_CENTER}
-            y={-constants.ICON_CENTER}
-            height={constants.ICON_SIZE}
-            width={constants.ICON_SIZE}
-            rx={constants.CONNECTOR_LABEL_RADIUS}
-            ry={constants.CONNECTOR_LABEL_RADIUS}
-          />
-          {this.props.connector.label ? (
-            <Fragment>
-              <rect
-                className="high-detail"
-                x={-constants.CONNECTOR_LABEL_CENTER_X}
-                y={-constants.CONNECTOR_LABEL_CENTER_Y}
-                height={constants.CONNECTOR_LABEL_HEIGHT}
-                width={constants.CONNECTOR_LABEL_WIDTH}
-                rx={constants.CONNECTOR_LABEL_RADIUS}
-                ry={constants.CONNECTOR_LABEL_RADIUS}
-              />
-              <SvgText
-                className="connector-label med-detail"
-                x={-constants.CONNECTOR_LABEL_CENTER_X}
-                y={-constants.CONNECTOR_LABEL_CENTER_Y}
-                width={constants.CONNECTOR_LABEL_WIDTH}
-                height={constants.CONNECTOR_LABEL_HEIGHT}
-                padding={constants.CONNECTOR_LABEL_PADDING}
-              >
-                {this.props.connector.label}
-              </SvgText>
-            </Fragment>
-          ) : (
-            <image
+        {this.props.connector.id !== null && (
+          <g
+            ref={this.connectorLabel}
+            className="connector-button"
+            onClick={this.onSelect}
+          >
+            <rect
               className="high-detail"
-              xlinkHref={filter}
               x={-constants.ICON_CENTER}
               y={-constants.ICON_CENTER}
               height={constants.ICON_SIZE}
               width={constants.ICON_SIZE}
+              rx={constants.CONNECTOR_LABEL_RADIUS}
+              ry={constants.CONNECTOR_LABEL_RADIUS}
             />
-          )}
-        </g>
+            {this.props.connector.label ? (
+              <Fragment>
+                <rect
+                  className="high-detail"
+                  x={-constants.CONNECTOR_LABEL_CENTER_X}
+                  y={-constants.CONNECTOR_LABEL_CENTER_Y}
+                  height={constants.CONNECTOR_LABEL_HEIGHT}
+                  width={constants.CONNECTOR_LABEL_WIDTH}
+                  rx={constants.CONNECTOR_LABEL_RADIUS}
+                  ry={constants.CONNECTOR_LABEL_RADIUS}
+                />
+                <SvgText
+                  className="connector-label med-detail"
+                  x={-constants.CONNECTOR_LABEL_CENTER_X}
+                  y={-constants.CONNECTOR_LABEL_CENTER_Y}
+                  width={constants.CONNECTOR_LABEL_WIDTH}
+                  height={constants.CONNECTOR_LABEL_HEIGHT}
+                  padding={constants.CONNECTOR_LABEL_PADDING}
+                >
+                  {this.props.connector.label}
+                </SvgText>
+              </Fragment>
+            ) : (
+              <image
+                className="high-detail"
+                xlinkHref={filter}
+                x={-constants.ICON_CENTER}
+                y={-constants.ICON_CENTER}
+                height={constants.ICON_SIZE}
+                width={constants.ICON_SIZE}
+              />
+            )}
+          </g>
+        )}
       </g>
     );
   }
