@@ -57,7 +57,7 @@ export class Typeahead extends React.Component {
     editing: props.textMode || props.multiple,
     newValue:
       props.textMode && props.value
-        ? props.getSuggestionValue(props.value)
+        ? props.getSuggestionLabel(props.value)
         : '',
     error: null,
     empty: false,
@@ -87,15 +87,25 @@ export class Typeahead extends React.Component {
   // when clicking enter to select then blur this clears the selected value or
   // sets to custom, I think because suggestions in empty when the menu is closed.
   onBlur = () => {
-    const { custom, getSuggestionValue, multiple, textMode } = this.props;
+    const {
+      custom,
+      getSuggestionLabel,
+      getSuggestionValue,
+      multiple,
+      textMode,
+    } = this.props;
     const { newValue, suggestions, touched } = this.state;
     const match = suggestions.find(
-      suggestion => getSuggestionValue(suggestion) === newValue,
+      suggestion =>
+        getSuggestionLabel(suggestion) === newValue ||
+        getSuggestionValue(suggestion) === newValue,
     );
     const customValue = custom && fromJS(custom(newValue));
     this.setState({
       newValue:
-        !touched || (textMode && (match || customValue)) ? newValue : '',
+        !touched || (textMode && (match || customValue))
+          ? getSuggestionLabel(match || customValue)
+          : '',
       editing: multiple || textMode,
       touched: false,
     });
@@ -117,10 +127,10 @@ export class Typeahead extends React.Component {
     if (method === 'enter') {
       event.preventDefault();
     }
-    const { getSuggestionValue, multiple, textMode, value } = this.props;
+    const { getSuggestionLabel, multiple, textMode, value } = this.props;
     this.setState({
       editing: multiple || textMode,
-      newValue: multiple || !textMode ? '' : getSuggestionValue(suggestion),
+      newValue: multiple || !textMode ? '' : getSuggestionLabel(suggestion),
       touched: false,
     });
     this.props.onChange(multiple ? value.push(suggestion) : suggestion);
@@ -179,7 +189,7 @@ export class Typeahead extends React.Component {
 
   SelectionDefault = ({ selection, remove, edit }) => (
     <tr>
-      <td>{this.props.getSuggestionValue(selection)}</td>
+      <td>{this.props.getSuggestionLabel(selection)}</td>
       <td>
         <button type="button" onClick={edit || remove}>
           &times;
@@ -189,9 +199,9 @@ export class Typeahead extends React.Component {
   );
 
   SuggestionDefault = ({ active, suggestion }) => {
-    const suggestionValue = this.props.getSuggestionValue(suggestion);
+    const suggestionLabel = this.props.getSuggestionLabel(suggestion);
     return (
-      <div>{active ? <strong>{suggestionValue}</strong> : suggestionValue}</div>
+      <div>{active ? <strong>{suggestionLabel}</strong> : suggestionLabel}</div>
     );
   };
 
@@ -268,7 +278,7 @@ export class Typeahead extends React.Component {
     const {
       multiple,
       placeholder,
-      getSuggestionValue,
+      getSuggestionLabel,
       textMode,
       value,
       components: {
@@ -318,7 +328,7 @@ export class Typeahead extends React.Component {
               renderSuggestion={this.renderSuggestion}
               renderSuggestionsContainer={this.renderSuggestionContainer}
               renderInputComponent={this.renderInput}
-              getSuggestionValue={getSuggestionValue}
+              getSuggestionValue={getSuggestionLabel}
             />
           ) : null
         }

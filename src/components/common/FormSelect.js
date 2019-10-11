@@ -87,6 +87,7 @@ export const FormSelect = props => (
     search={searchForms(props)}
     minSearchLength={props.minSearchLength}
     alwaysRenderSuggestions={props.alwaysRenderSuggestions}
+    getSuggestionLabel={formToValue}
     getSuggestionValue={formToValue}
     getStatusProps={getStatusProps}
     value={props.value}

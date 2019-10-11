@@ -27,11 +27,7 @@ const searchOptions = ({ options, search }) => (field, value) => {
                         .includes(value.toLowerCase())),
               ),
             );
-    return Promise.resolve({ suggestions: filter(options.toJS(), value) }).then(
-      r => {
-        return r;
-      },
-    );
+    return Promise.resolve({ suggestions: filter(options.toJS(), value) });
   }
   // Server Side Fetching
   else {
@@ -39,14 +35,11 @@ const searchOptions = ({ options, search }) => (field, value) => {
   }
 };
 
+const optionToLabel = option => (option && option.get('label')) || '';
+
 const optionToValue = option => (option && option.get('value')) || '';
 
-const valueToCustomOption = validateNew => value => {
-  if (typeof validateNew !== 'function' || validateNew(value)) {
-    return { value, label: value };
-  }
-  return null;
-};
+const valueToCustomOption = value => ({ value, label: value });
 
 const getStatusProps = props => ({
   warning:
@@ -64,10 +57,11 @@ export const StaticSelect = ({ alwaysRenderSuggestions = true, ...props }) => (
     components={props.components || {}}
     textMode={props.textMode}
     multiple={props.multiple}
-    custom={props.allowNew && valueToCustomOption(props.validateNew)}
+    custom={props.allowNew && valueToCustomOption}
     search={searchOptions(props)}
     minSearchLength={props.minSearchLength}
     alwaysRenderSuggestions={alwaysRenderSuggestions}
+    getSuggestionLabel={optionToLabel}
     getSuggestionValue={optionToValue}
     getStatusProps={getStatusProps}
     value={props.value}

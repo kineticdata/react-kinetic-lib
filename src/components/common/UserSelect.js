@@ -65,6 +65,7 @@ export const UserSelect = props => (
     search={searchUsers}
     minSearchLength={props.minSearchLength}
     alwaysRenderSuggestions={props.alwaysRenderSuggestions}
+    getSuggestionLabel={userToValue}
     getSuggestionValue={userToValue}
     getStatusProps={getStatusProps}
     value={props.value}

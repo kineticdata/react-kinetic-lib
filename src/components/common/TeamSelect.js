@@ -56,6 +56,7 @@ export const TeamSelect = props => (
     search={searchTeams}
     minSearchLength={props.minSearchLength}
     alwaysRenderSuggestions={props.alwaysRenderSuggestions}
+    getSuggestionLabel={teamToValue}
     getSuggestionValue={teamToValue}
     getStatusProps={getStatusProps}
     value={props.value}
