@@ -23,7 +23,8 @@ const searchUsers = (searchField, value) =>
     nextPageToken,
   }));
 
-const userToValue = user => user.get('username') || user.get('email');
+const userToValue = user =>
+  (user && (user.get('username') || user.get('email') || '')) || '';
 
 const valueToCustomUser = value =>
   value.match(emailPattern) && { email: value };
@@ -62,6 +63,8 @@ export const UserSelect = props => (
     multiple={props.multiple}
     custom={props.allowNew && valueToCustomUser}
     search={searchUsers}
+    minSearchLength={props.minSearchLength}
+    alwaysRenderSuggestions={props.alwaysRenderSuggestions}
     getSuggestionValue={userToValue}
     getStatusProps={getStatusProps}
     value={props.value}

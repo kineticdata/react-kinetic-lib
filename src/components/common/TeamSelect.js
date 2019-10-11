@@ -20,7 +20,7 @@ const searchTeams = (field, value) =>
     nextPageToken,
   }));
 
-const teamToValue = team => team.get('name');
+const teamToValue = team => (team && team.get('name')) || '';
 
 const getStatusProps = props => ({
   info: props.searchField ? `Find Teams by ${fields[props.searchField]}` : null,
@@ -32,7 +32,7 @@ const getStatusProps = props => ({
         ? 'Too many teams, first 25 shown. Please refine your search.'
         : props.empty && !props.custom
         ? 'No matching teams.'
-        : 'There was an error fetching users.'
+        : 'There was an error fetching teams.'
       : null,
 
   clearFilterField: props.searchField ? props.setSearchField(null) : null,
@@ -54,6 +54,8 @@ export const TeamSelect = props => (
     textMode={props.textMode}
     multiple={props.multiple}
     search={searchTeams}
+    minSearchLength={props.minSearchLength}
+    alwaysRenderSuggestions={props.alwaysRenderSuggestions}
     getSuggestionValue={teamToValue}
     getStatusProps={getStatusProps}
     value={props.value}

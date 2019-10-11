@@ -69,6 +69,7 @@ export const Field = Record({
   renderAttributes: Map(),
   required: false,
   requiredMessage: 'This field is required',
+  search: Map(),
   serialize: null,
   touched: false,
   transient: false,
