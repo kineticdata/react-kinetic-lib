@@ -1,8 +1,16 @@
-import { List, Record } from 'immutable';
+import { List, OrderedMap, Record } from 'immutable';
 
 export const Point = Record({ x: 0, y: 0 }, 'Point');
 
-export const Tree = Record({ nodes: List(), connectors: List() }, 'Tree');
+export const Tree = Record(
+  {
+    connectors: OrderedMap(),
+    nextNodeId: 0,
+    nextConnectorId: 0,
+    nodes: OrderedMap(),
+  },
+  'Tree',
+);
 
 export const Node = Record({ id: null, name: '', position: Point() }, 'Node');
 
@@ -25,8 +33,12 @@ export const TreeBuilderState = Record(
   {
     undoStack: List(),
     tree: Tree({
-      nodes: List([
-        Node({ name: 'Start', id: 0, position: Point({ x: 150, y: 150 }) }),
+      nextNodeId: 1,
+      nodes: OrderedMap([
+        [
+          0,
+          Node({ name: 'Start', id: 0, position: Point({ x: 150, y: 150 }) }),
+        ],
       ]),
     }),
     redoStack: List(),

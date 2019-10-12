@@ -27,14 +27,12 @@ export class Node extends Component {
     dispatch('TREE_ADD_NODE_WITH_CONNECTOR', {
       treeKey: this.props.treeKey,
       parentId: this.props.node.id,
-      name: 'Foo',
-      connectorLabel: 'Approved -> Yes and some',
     });
   };
 
   onSelect = shiftKey => () => {
     if (typeof this.props.onSelect === 'function') {
-      this.props.onSelect({ node: this.props.node, multi: shiftKey });
+      this.props.onSelect(this.props.node, shiftKey);
     }
   };
 

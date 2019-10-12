@@ -24,10 +24,7 @@ export class Connector extends Component {
 
   onSelect = event => {
     if (typeof this.props.onSelect === 'function') {
-      this.props.onSelect({
-        connector: this.props.connector,
-        multi: event.shiftKey,
-      });
+      this.props.onSelect(this.props.connector, event.shiftKey);
     }
   };
 

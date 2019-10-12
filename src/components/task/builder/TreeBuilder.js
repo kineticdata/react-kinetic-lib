@@ -1,4 +1,5 @@
 import React, { createRef, Component, Fragment } from 'react';
+import { OrderedMap } from 'immutable';
 import { connect, dispatch } from '../../../store';
 import './builder.redux';
 import { isPointInNode } from './helpers';
@@ -96,7 +97,10 @@ export class TreeBuilderComponent extends Component {
   watchDrag = (...args) => this.canvasRef.current.watchDrag(...args);
 
   render() {
-    const { tree: { connectors = [], nodes = [] } = {}, treeKey } = this.props;
+    const {
+      tree: { connectors = OrderedMap(), nodes = OrderedMap() } = {},
+      treeKey,
+    } = this.props;
     return this.props.children({
       actions: {
         deleteConnector: id =>
@@ -110,15 +114,17 @@ export class TreeBuilderComponent extends Component {
       treeBuilder: (
         <Fragment>
           <SvgCanvas ref={this.canvasRef}>
-            {connectors.map(connector => (
-              <Connector
-                key={connector.id}
-                ref={this.registerConnector(connector)}
-                treeKey={treeKey}
-                connector={connector}
-                onSelect={this.props.onSelectConnector}
-              />
-            ))}
+            {connectors
+              .map(connector => (
+                <Connector
+                  key={connector.id}
+                  ref={this.registerConnector(connector)}
+                  treeKey={treeKey}
+                  connector={connector}
+                  onSelect={this.props.onSelectConnector}
+                />
+              ))
+              .toList()}
             {this.state.newConnector && (
               <Connector
                 ref={this.newConnector}
@@ -126,18 +132,17 @@ export class TreeBuilderComponent extends Component {
                 connector={this.state.newConnector}
               />
             )}
-            {nodes.map(
-              node =>
-                node && (
-                  <Node
-                    key={node.id}
-                    ref={this.registerNode(node)}
-                    treeKey={treeKey}
-                    node={node}
-                    onSelect={this.props.onSelectNode}
-                  />
-                ),
-            )}
+            {nodes
+              .map(node => (
+                <Node
+                  key={node.id}
+                  ref={this.registerNode(node)}
+                  treeKey={treeKey}
+                  node={node}
+                  onSelect={this.props.onSelectNode}
+                />
+              ))
+              .toList()}
           </SvgCanvas>
         </Fragment>
       ),

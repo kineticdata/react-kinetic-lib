@@ -39,43 +39,35 @@ regHandlers({
             undoStack: builderState.undoStack.push(builderState.tree),
           }),
         ),
-  TREE_ADD_NODE: (state, { payload: { treeKey, name, x, y } }) =>
-    remember(state, treeKey).updateIn(
-      ['trees', treeKey, 'tree', 'nodes'],
-      nodes => nodes.push(Node({ id: nodes.size, x: x + 50, y: y + 50, name })),
-    ),
-  TREE_ADD_NODE_WITH_CONNECTOR: (
-    state,
-    { payload: { treeKey, parentId, x, y, name, connectorLabel } },
-  ) => {
-    const parentPosition = state.getIn([
+  TREE_ADD_NODE_WITH_CONNECTOR: (state, { payload: { treeKey, parentId } }) => {
+    const { connectors, nextConnectorId, nextNodeId, nodes } = state.getIn([
       'trees',
       treeKey,
       'tree',
-      'nodes',
-      parentId,
-      'position',
     ]);
+    const parentPosition = nodes.get(parentId).position;
     const position = Point({
       x: parentPosition.x + 300,
       y: parentPosition.y + 300,
     });
-    return remember(state, treeKey)
-      .updateIn(['trees', treeKey, 'tree', 'nodes'], nodes =>
-        nodes.push(Node({ id: nodes.size, name, position })),
-      )
-      .updateIn(['trees', treeKey, 'tree', 'connectors'], connectors =>
-        connectors.push(
-          Connector({
-            id: connectors.size,
-            headId: state.getIn(['trees', treeKey, 'tree', 'nodes']).size,
-            headPosition: position,
-            tailId: parentId,
-            tailPosition: parentPosition,
-            label: connectorLabel,
-          }),
-        ),
-      );
+    const node = Node({
+      id: nextNodeId,
+      name: `Node ${nextNodeId}`,
+      position,
+    });
+    const connector = Connector({
+      id: nextConnectorId,
+      headId: nextNodeId,
+      headPosition: position,
+      tailId: parentId,
+      tailPosition: parentPosition,
+    });
+    return remember(state, treeKey).mergeIn(['trees', treeKey, 'tree'], {
+      connectors: connectors.set(nextConnectorId, connector),
+      nextConnectorId: nextConnectorId + 1,
+      nextNodeId: nextNodeId + 1,
+      nodes: nodes.set(nextNodeId, node),
+    });
   },
   TREE_UPDATE_NODE: (
     state,
@@ -100,7 +92,7 @@ regHandlers({
     ),
   TREE_REMOVE_NODE: (state, { payload: { treeKey, id } }) =>
     remember(state, treeKey)
-      .setIn(['trees', treeKey, 'tree', 'nodes', id], null)
+      .deleteIn(['trees', treeKey, 'tree', 'nodes', id])
       .updateIn(['trees', treeKey, 'tree', 'connectors'], connectors =>
         connectors.filter(
           connector => connector.headId !== id && connector.tailId !== id,
@@ -110,17 +102,20 @@ regHandlers({
     remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree => {
       const headPosition = tree.getIn(['nodes', headId, 'position']);
       const tailPosition = tree.getIn(['nodes', tailId, 'position']);
-      return tree.update('connectors', connectors =>
-        connectors.push(
-          Connector({
-            id: connectors.size,
-            headId,
-            headPosition,
-            tailId,
-            tailPosition,
-          }),
-        ),
-      );
+      return tree
+        .update('connectors', connectors =>
+          connectors.set(
+            tree.nextConnectorId,
+            Connector({
+              id: tree.nextConnectorId,
+              headId,
+              headPosition,
+              tailId,
+              tailPosition,
+            }),
+          ),
+        )
+        .update('nextConnectorId', id => id + 1);
     }),
   TREE_UPDATE_CONNECTOR: (
     state,

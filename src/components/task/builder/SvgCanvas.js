@@ -23,6 +23,7 @@ export class SvgCanvas extends Component {
     scaled = true,
     relative = true,
   }) => {
+    event.preventDefault();
     event.stopPropagation();
     // boolean to prevent race condition where onMove could be called after
     // onDrop was called

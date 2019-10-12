@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
 import t from 'prop-types';
 import {
@@ -444,6 +444,8 @@ export class Form extends Component {
 }
 
 class FormImplComponent extends Component {
+  focusRef = createRef();
+
   checkConfigure() {
     if (this.props.formState === null) {
       configureForm(this.props);
@@ -454,14 +456,25 @@ class FormImplComponent extends Component {
     this.checkConfigure();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     this.checkConfigure();
+    // after the first render where fields should be rendered, check to see if
+    // we should focus a field (based on the autoFocus prop passed to the Form)
+    if (
+      this.props.formState &&
+      this.props.formState.fields &&
+      !(prevProps.formState && prevProps.formState.fields) &&
+      this.focusRef.current
+    ) {
+      this.focusRef.current.focus();
+    }
   }
 
   render() {
     const {
       addFields,
       alterFields,
+      autoFocus,
       components,
       fields: fieldsFn,
       fieldSet,
@@ -505,6 +518,7 @@ class FormImplComponent extends Component {
               key={props.name}
               {...props}
               {...eventHandlers.toObject()}
+              focusRef={props.name === autoFocus ? this.focusRef : null}
               component={fieldComponents.get(props.name)}
               components={components}
             />
@@ -551,6 +565,7 @@ export const generateForm = ({
   <Form
     addFields={configurationProps.addFields}
     alterFields={configurationProps.alterFields}
+    autoFocus={configurationProps.autoFocus}
     components={configurationProps.components}
     dataSources={dataSources}
     fields={fields}
