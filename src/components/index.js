@@ -19,7 +19,10 @@ export {
 export { Table } from './table/Table';
 
 // Tree Builder
-export { mountTreeBuilder, unmountTreeBuilder } from './task/builder/builder.redux';
+export {
+  mountTreeBuilder,
+  unmountTreeBuilder,
+} from './task/builder/builder.redux';
 
 // Discussions
 export { Discussion } from './discussions/Discussion';
@@ -103,6 +106,8 @@ export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 
 // Task
 export { TreeBuilder } from './task/builder/TreeBuilder';
+export { ConnectorForm } from './task/builder/ConnectorForm';
+export { NodeForm } from './task/builder/NodeForm';
 export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { SourceTable } from './task/sources/SourceTable';
 export { HandlerTable } from './task/handlers/HandlerTable';

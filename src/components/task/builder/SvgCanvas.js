@@ -26,7 +26,10 @@ export class SvgCanvas extends Component {
     event.stopPropagation();
     // boolean to prevent race condition where onMove could be called after
     // onDrop was called
-    let dragging = true;
+    let dragging = false;
+    // set a threshold before we consider the mode to be dragging to prevent
+    // clicks that result as really short drags
+    setTimeout(() => (dragging = true), 100);
     // track whether or not the mousemove event was fired before the mouseup,
     // if not we will call onClick instead of onDrop
     let dragged = false;
@@ -42,9 +45,9 @@ export class SvgCanvas extends Component {
     const moveHandler = throttle(event => {
       event.preventDefault();
       event.stopPropagation();
-      dragged = true;
       const { clientX, clientY } = event;
       if (dragging) {
+        dragged = true;
         if (relative) {
           const dx = (clientX - lastX) / (scaled ? this.viewport.scale : 1);
           const dy = (clientY - lastY) / (scaled ? this.viewport.scale : 1);

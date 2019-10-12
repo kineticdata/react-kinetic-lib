@@ -8,13 +8,15 @@ export const Node = Record({ id: null, name: '', position: Point() }, 'Node');
 
 export const Connector = Record(
   {
-    id: null,
+    condition: '',
+    dragging: null,
     headId: null,
     headPosition: Point(),
+    id: null,
+    label: '',
     tailId: null,
     tailPosition: Point(),
-    label: '',
-    dragging: null,
+    type: 'Complete',
   },
   'Connector',
 );

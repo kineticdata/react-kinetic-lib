@@ -77,7 +77,14 @@ regHandlers({
         ),
       );
   },
-  TREE_UPDATE_NODE: (state, { payload: { treeKey, id, position } }) =>
+  TREE_UPDATE_NODE: (
+    state,
+    { payload: { treeKey, id, name, defers, visible } },
+  ) =>
+    remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
+      tree.mergeIn(['nodes', id], { name, defers, visible }),
+    ),
+  TREE_UPDATE_NODE_POSITION: (state, { payload: { treeKey, id, position } }) =>
     remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
       tree
         .mergeIn(['nodes', id], { position })
@@ -115,7 +122,26 @@ regHandlers({
         ),
       );
     }),
-  TREE_REMOVE_CONNECTOR: (state, { payload: { treeKey, connector } }) => state,
+  TREE_UPDATE_CONNECTOR: (
+    state,
+    { payload: { treeKey, id, type, label, condition } },
+  ) =>
+    remember(state, treeKey).mergeIn(
+      ['trees', treeKey, 'tree', 'connectors', id],
+      {
+        type,
+        label,
+        condition,
+      },
+    ),
+  TREE_REMOVE_CONNECTOR: (state, { payload: { treeKey, id } }) =>
+    remember(state, treeKey).deleteIn([
+      'trees',
+      treeKey,
+      'tree',
+      'connectors',
+      id,
+    ]),
   TREE_UPDATE_CONNECTOR_HEAD: (state, { payload: { treeKey, id, nodeId } }) =>
     remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
       tree.mergeIn(['connectors', id], {

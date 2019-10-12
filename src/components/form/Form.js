@@ -10,6 +10,7 @@ import {
   OrderedMap,
   OrderedSet,
 } from 'immutable';
+import { pick } from 'lodash-es';
 import { action, connect, dispatch, regHandlers, regSaga } from '../../store';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { generateKey } from '../../helpers';
@@ -411,7 +412,7 @@ export class Form extends Component {
   constructor(props) {
     super(props);
     this.auto = !this.props.formKey;
-    this.formKey = this.props.formKey || generateKey();
+    this.formKey = this.props.formKey || 'f' + generateKey();
   }
 
   componentDidMount() {
@@ -540,6 +541,29 @@ export const mapStateToProps = (state, props) => ({
 });
 
 const FormImpl = connect(mapStateToProps)(FormImplComponent);
+
+export const generateForm = ({
+  dataSources,
+  fields,
+  handleSubmit,
+  formOptions,
+}) => configurationProps => (
+  <Form
+    addFields={configurationProps.addFields}
+    alterFields={configurationProps.alterFields}
+    components={configurationProps.components}
+    dataSources={dataSources}
+    fields={fields}
+    fieldSet={configurationProps.fieldSet}
+    formKey={configurationProps.formKey}
+    formOptions={pick(configurationProps, formOptions)}
+    onSubmit={handleSubmit}
+    onSave={configurationProps.onSave}
+    onError={configurationProps.onError}
+  >
+    {configurationProps.children}
+  </Form>
+);
 
 Form.propTypes = {
   /** An object describing how a form fetches data. */

@@ -69,7 +69,7 @@ export class Node extends Component {
   };
 
   drop = () => {
-    dispatch('TREE_UPDATE_NODE', {
+    dispatch('TREE_UPDATE_NODE_POSITION', {
       treeKey: this.props.treeKey,
       id: this.props.node.id,
       position: this.position,

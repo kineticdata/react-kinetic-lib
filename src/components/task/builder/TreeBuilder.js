@@ -1,5 +1,5 @@
 import React, { createRef, Component, Fragment } from 'react';
-import { connect } from '../../../store';
+import { connect, dispatch } from '../../../store';
 import './builder.redux';
 import { isPointInNode } from './helpers';
 import { Connector as ConnectorModel } from './models';
@@ -42,16 +42,18 @@ export class TreeBuilderComponent extends Component {
   // rendered and then on move we update the Connector instance (by ref) with
   // the new position
   dragNewConnector = node => position => {
-    this.setState(state => ({
-      newConnector:
-        state.newConnector ||
-        ConnectorModel({
-          dragging: 'head',
-          headPosition: position,
-          tailId: node.id,
-          tailPosition: node.position,
-        }),
-    }));
+    if (!this.state.newConnector) {
+      this.setState(state => ({
+        newConnector:
+          state.newConnector ||
+          ConnectorModel({
+            dragging: 'head',
+            headPosition: position,
+            tailId: node.id,
+            tailPosition: node.position,
+          }),
+      }));
+    }
     if (this.newConnector.current) {
       this.newConnector.current.setTreeBuilder(this);
       this.newConnector.current.setHead(position, true);
@@ -96,6 +98,15 @@ export class TreeBuilderComponent extends Component {
   render() {
     const { tree: { connectors = [], nodes = [] } = {}, treeKey } = this.props;
     return this.props.children({
+      actions: {
+        deleteConnector: id =>
+          dispatch('TREE_REMOVE_CONNECTOR', { treeKey, id }),
+        deleteNode: id => dispatch('TREE_REMOVE_NODE', { treeKey, id }),
+        updateConnector: values =>
+          dispatch('TREE_UPDATE_CONNECTOR', { treeKey, ...values }),
+        updateNode: values =>
+          dispatch('TREE_UPDATE_NODE', { treeKey, ...values }),
+      },
       treeBuilder: (
         <Fragment>
           <SvgCanvas ref={this.canvasRef}>
@@ -115,15 +126,18 @@ export class TreeBuilderComponent extends Component {
                 connector={this.state.newConnector}
               />
             )}
-            {nodes.map(node => (
-              <Node
-                key={node.id}
-                ref={this.registerNode(node)}
-                treeKey={treeKey}
-                node={node}
-                onSelect={this.props.onSelectNode}
-              />
-            ))}
+            {nodes.map(
+              node =>
+                node && (
+                  <Node
+                    key={node.id}
+                    ref={this.registerNode(node)}
+                    treeKey={treeKey}
+                    node={node}
+                    onSelect={this.props.onSelectNode}
+                  />
+                ),
+            )}
           </SvgCanvas>
         </Fragment>
       ),
