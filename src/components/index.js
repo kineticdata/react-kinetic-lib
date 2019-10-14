@@ -4,6 +4,8 @@ export { ContentEditable } from './common/ContentEditable';
 export { UserSelect } from './common/UserSelect';
 export { TeamSelect } from './common/TeamSelect';
 export { TableInput } from './common/TableInput';
+export { FormSelect } from './common/FormSelect';
+export { StaticSelect } from './common/StaticSelect';
 export { onLogout } from './common/authentication/AuthenticationContainer';
 
 // Form
@@ -103,8 +105,7 @@ export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 // Task
 export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { WorkflowForm } from './task/workflows/WorkflowForm';
-export { WorkflowUsageTable } from './task/workflows/WorkflowUsageTable';
 export { SourceTable } from './task/sources/SourceTable';
 export { HandlerTable } from './task/handlers/HandlerTable';
 export { HandlerForm } from './task/handlers/HandlerForm';
-export { HandlerUsageTable } from './task/handlers/HandlerUsageTable';
+export { UsageTable } from './task/common/UsageTable';

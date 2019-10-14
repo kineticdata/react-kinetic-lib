@@ -1,6 +1,6 @@
 import React from 'react';
 import Autosuggest from 'react-autosuggest';
-import { fromJS, List } from 'immutable';
+import { fromJS, is, List } from 'immutable';
 
 const DEBOUNCE_DURATION = 150;
 
@@ -43,20 +43,30 @@ export class Typeahead extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editing: true,
-      newValue:
-        this.props.textMode && this.props.value
-          ? this.props.getSuggestionValue(this.props.value)
-          : '',
-      error: null,
-      empty: false,
-      nextPageToken: null,
-      searchField: null,
-      searchValue: '',
-      suggestions: [],
-      touched: false,
+      ...this.createStateFromProps(props),
+      minSearchLength:
+        typeof props.minSearchLength === 'number'
+          ? Math.max(parseInt(props.minSearchLength, 10), 0)
+          : this.props.alwaysRenderSuggestions
+          ? 0
+          : 1,
     };
   }
+
+  createStateFromProps = props => ({
+    editing: props.textMode || props.multiple,
+    newValue:
+      props.textMode && props.value
+        ? props.getSuggestionLabel(props.value)
+        : '',
+    error: null,
+    empty: false,
+    nextPageToken: null,
+    searchField: null,
+    searchValue: '',
+    suggestions: [],
+    touched: false,
+  });
 
   edit = event => {
     this.setState({ editing: true });
@@ -66,22 +76,36 @@ export class Typeahead extends React.Component {
     this.props.onChange(this.props.value.delete(index));
   };
 
-  onChange = (event, { newValue }) => {
-    this.setState({ newValue, touched: true });
+  onChange = (event, { newValue, method }) => {
+    if (method !== 'escape') {
+      this.setState({ newValue, touched: true });
+    } else {
+      this.setState(this.createStateFromProps(this.props));
+    }
   };
 
   // when clicking enter to select then blur this clears the selected value or
   // sets to custom, I think because suggestions in empty when the menu is closed.
   onBlur = () => {
-    const { custom, getSuggestionValue, multiple, textMode } = this.props;
+    const {
+      custom,
+      getSuggestionLabel,
+      getSuggestionValue,
+      multiple,
+      textMode,
+    } = this.props;
     const { newValue, suggestions, touched } = this.state;
     const match = suggestions.find(
-      suggestion => getSuggestionValue(suggestion) === newValue,
+      suggestion =>
+        getSuggestionLabel(suggestion) === newValue ||
+        getSuggestionValue(suggestion) === newValue,
     );
     const customValue = custom && fromJS(custom(newValue));
     this.setState({
       newValue:
-        !touched || (textMode && (match || customValue)) ? newValue : '',
+        !touched || (textMode && (match || customValue))
+          ? getSuggestionLabel(match || customValue)
+          : '',
       editing: multiple || textMode,
       touched: false,
     });
@@ -93,21 +117,36 @@ export class Typeahead extends React.Component {
     }
   };
 
+  onKeyDown = ({ keyCode }) => {
+    if ((keyCode === 40 || keyCode === 38) && !this.state.touched) {
+      this.setState({ touched: true, searchValue: this.state.newValue });
+    }
+  };
+
   onSelect = (event, { method, suggestion }) => {
     if (method === 'enter') {
       event.preventDefault();
     }
-    const { getSuggestionValue, multiple, textMode, value } = this.props;
+    const { getSuggestionLabel, multiple, textMode, value } = this.props;
     this.setState({
       editing: multiple || textMode,
-      newValue: multiple || !textMode ? '' : getSuggestionValue(suggestion),
+      newValue: multiple || !textMode ? '' : getSuggestionLabel(suggestion),
       touched: false,
     });
     this.props.onChange(multiple ? value.push(suggestion) : suggestion);
   };
 
-  onSearch = ({ value }) => {
-    this.setState({ searchValue: value });
+  onSearch = ({ value, reason }) => {
+    if (reason !== 'escape-pressed') {
+      if (reason === 'input-focused' && this.props.alwaysRenderSuggestions) {
+        this.setState({ searchValue: value, touched: true });
+      } else {
+        this.setState({ searchValue: value });
+      }
+    } else {
+      this.setState(this.createStateFromProps(this.props));
+    }
+    return false;
   };
 
   onClearSuggestions = () => {
@@ -150,7 +189,7 @@ export class Typeahead extends React.Component {
 
   SelectionDefault = ({ selection, remove, edit }) => (
     <tr>
-      <td>{this.props.getSuggestionValue(selection)}</td>
+      <td>{this.props.getSuggestionLabel(selection)}</td>
       <td>
         <button type="button" onClick={edit || remove}>
           &times;
@@ -160,9 +199,9 @@ export class Typeahead extends React.Component {
   );
 
   SuggestionDefault = ({ active, suggestion }) => {
-    const suggestionValue = this.props.getSuggestionValue(suggestion);
+    const suggestionLabel = this.props.getSuggestionLabel(suggestion);
     return (
-      <div>{active ? <strong>{suggestionValue}</strong> : suggestionValue}</div>
+      <div>{active ? <strong>{suggestionLabel}</strong> : suggestionLabel}</div>
     );
   };
 
@@ -212,7 +251,7 @@ export class Typeahead extends React.Component {
         searchValue !== prevState.searchValue ||
         !prevState.touched)
     ) {
-      if (searchValue) {
+      if (searchValue.length >= this.state.minSearchLength) {
         clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
           this.props
@@ -226,17 +265,20 @@ export class Typeahead extends React.Component {
     if (this.state.editing && !prevState.editing) {
       this.autosuggest.input.focus();
     }
+    if (!is(this.props.value, prevProps.value)) {
+      this.setState(this.createStateFromProps(this.props));
+    }
   }
 
   shouldRenderSuggestions = value => {
-    return value.length > 0;
+    return value.length >= this.state.minSearchLength;
   };
 
   render() {
     const {
       multiple,
       placeholder,
-      getSuggestionValue,
+      getSuggestionLabel,
       textMode,
       value,
       components: {
@@ -270,21 +312,23 @@ export class Typeahead extends React.Component {
                 onBlur: this.onBlur,
                 onFocus: this.props.onFocus,
                 onChange: this.onChange,
+                onKeyDown: this.onKeyDown,
                 placeholder,
               }}
               theme={{
                 suggestionsContainerOpen: 'OPEN',
               }}
               highlightFirstSuggestion
+              alwaysRenderSuggestions={true}
               shouldRenderSuggestions={this.shouldRenderSuggestions}
-              suggestions={suggestions}
+              suggestions={this.state.touched ? suggestions : []}
               onSuggestionsFetchRequested={this.onSearch}
               onSuggestionsClearRequested={this.onClearSuggestions}
               onSuggestionSelected={this.onSelect}
               renderSuggestion={this.renderSuggestion}
               renderSuggestionsContainer={this.renderSuggestionContainer}
               renderInputComponent={this.renderInput}
-              getSuggestionValue={getSuggestionValue}
+              getSuggestionValue={getSuggestionLabel}
             />
           ) : null
         }

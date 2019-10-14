@@ -113,18 +113,26 @@ export const fetchHandler = (options = {}) => {
     }));
 };
 
-export const fetchHandlerUsage = (options = {}) => {
-  validateOptions('fetchHandlerUsage', ['definitionId'], options);
+export const fetchUsage = (options = {}) => {
+  validateOptions('fetchUsage', ['definitionId', 'usageType'], options);
+  const path =
+    options.usageType === 'handler'
+      ? `/app/components/task/app/api/v2/handlers/${options.definitionId}/usage`
+      : `/app/components/task/app/api/v2/trees/${options.definitionId}/usage`;
   return axios
-    .get(
-      `/app/components/task/app/api/v2/handlers/${options.definitionId}/usage`,
-      {
-        params: {
-          include: options.include,
-        },
+    .get(path, {
+      params: {
+        include: options.include,
       },
-    )
+    })
     .then(response => ({
-      handlerUsage: response.data.handlerUsage,
+      usages: options.usageType === 'handler'
+        ? response.data.handlerUsage
+        : options.usageType === 'routine'
+        ? response.data.routineUsage
+        : [],
+      totalTrees: response.data.totalTrees,
+      totalRoutines: response.data.totalRoutines,
+      totalNodes: response.data.totalNodes,
     }));
 };

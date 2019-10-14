@@ -110,6 +110,12 @@ const buildFilterLayout = ({
     dispatch('APPLY_FILTERS', { tableKey });
   };
 
+  const onReset = e => {
+    e.preventDefault();
+    dispatch('CLEAR_TABLE_FILTERS', {tableKey});
+    dispatch('APPLY_FILTERS', {tableKey});
+  };
+
   const onChangeFilter = (value, filterName) => {
     dispatch('SET_FILTER', {
       tableKey,
@@ -126,6 +132,7 @@ const buildFilterLayout = ({
       appliedFilters={appliedFilters}
       validFilters={validFilters}
       onSearch={onSearch}
+      onReset={onReset}
       onChangeFilter={onChangeFilter}
       columnSet={columnSet}
       loading={loading}

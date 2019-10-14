@@ -7,6 +7,8 @@ export const typeToComponent = {
   checkbox: 'CheckboxField',
   code: 'CodeField',
   'code-template': 'CodeTemplateField',
+  form: 'FormField',
+  'form-multi': 'FormMultiField',
   password: 'PasswordField',
   radio: 'RadioField',
   select: 'SelectField',
@@ -39,6 +41,8 @@ Field.propTypes = {
   label: t.string,
   /** The options of the field defined in the forms config. Set if the field is a select, radio or checkbox */
   options: t.object,
+  /** The search params of the field defined in the forms config. Set for typeahead fields */
+  search: t.object,
   /** The type of the field defined in the forms config. */
   type: t.string,
   /** The value of the field. */
