@@ -8,7 +8,11 @@ const dataSources = ({ workflowType, itemId }) => {
     workflow: {
       fn: fetchTree,
       params: itemId && [
-        { type: workflowType || 'Tree', itemId, include: 'details' },
+        {
+          type: workflowType || 'Tree',
+          itemId,
+          include: 'details,inputs,outputs',
+        },
       ],
       transform: result => result.tree,
     },
@@ -38,7 +42,7 @@ const handleSubmit = ({ itemId }) => values =>
     );
   });
 
-const fields = ({ itemId }) => ({ workflow }) =>
+const fields = ({ itemId, workflowType }) => ({ workflow }) =>
   (!itemId || workflow) && [
     {
       name: 'name',
@@ -51,8 +55,16 @@ const fields = ({ itemId }) => ({ workflow }) =>
       name: 'notes',
       label: 'Notes',
       type: 'text',
-      required: true,
+      required: false,
       initialValue: get(workflow, 'notes', '') || '',
+    },
+    workflowType !== 'trees' && {
+      name: 'definitionId',
+      label: 'Definition ID',
+      type: 'text',
+      enabled: false,
+      required: false,
+      initialValue: get(workflow, 'definitionId', '') || '',
     },
     {
       name: 'ownerEmail',
@@ -86,7 +98,29 @@ const fields = ({ itemId }) => ({ workflow }) =>
         { label: 'Inactive', value: 'Inactive' },
         { label: 'Paused', value: 'Paused' },
       ],
-      initialValue: workflow ? workflow.get('status') : '',
+      initialValue: get(workflow, 'status', ''),
+    },
+    workflowType !== 'trees' && {
+      name: 'inputs',
+      label: 'Inputs',
+      type: 'table',
+      options: [
+        { name: 'name', label: 'Name', type: 'text' },
+        { name: 'defaultValue', label: 'Default Value', type: 'text' },
+        { name: 'description', label: 'Description', type: 'text' },
+        { name: 'required', label: 'Required', type: 'checkbox' },
+      ],
+      initialValue: get(workflow, 'inputs', []),
+    },
+    workflowType !== 'trees' && {
+      name: 'outputs',
+      label: 'Outputs',
+      type: 'table',
+      options: [
+        { name: 'name', label: 'Name', type: 'text' },
+        { name: 'description', label: 'Description', type: 'text' },
+      ],
+      initialValue: get(workflow, 'outputs', []),
     },
   ];
 

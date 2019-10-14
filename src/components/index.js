@@ -3,6 +3,7 @@ export { CodeInput } from './common/code_input/CodeInput';
 export { ContentEditable } from './common/ContentEditable';
 export { UserSelect } from './common/UserSelect';
 export { TeamSelect } from './common/TeamSelect';
+export { TableInput } from './common/TableInput';
 export { onLogout } from './common/authentication/AuthenticationContainer';
 
 // Form

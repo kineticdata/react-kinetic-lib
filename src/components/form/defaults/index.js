@@ -16,6 +16,7 @@ import { TextField } from './TextField';
 import { TextMultiField } from './TextMultiField';
 import { UserField } from './UserField';
 import { UserMultiField } from './UserMultiField';
+import { TableField } from './TableField';
 
 export const DefaultFieldConfig = Map({
   AttributesField,
@@ -35,4 +36,5 @@ export const DefaultFieldConfig = Map({
   TextMultiField,
   UserField,
   UserMultiField,
+  TableField,
 });

@@ -16,6 +16,7 @@ export const typeToComponent = {
   'team-multi': 'TeamMultiField',
   user: 'UserField',
   'user-multi': 'UserMultiField',
+  table: 'TableField',
 };
 
 export const Field = ({ helpText, ...props }) => {
