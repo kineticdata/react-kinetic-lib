@@ -2,13 +2,13 @@ import { generateTable } from '../../table/Table';
 import { fetchUsage } from '../../../apis';
 
 const dataSource = ({ definitionId, usageType }) => ({
-    fn: fetchUsage,
-    clientSideSearch: true,
-    params: () => [{ definitionId, usageType }],
-    transform: result => ({
-      data: result.usages,
-    }),
-  });
+  fn: fetchUsage,
+  clientSideSearch: true,
+  params: () => [{ definitionId, usageType }],
+  transform: result => ({
+    data: result.usages,
+  }),
+});
 
 const columns = [
   {

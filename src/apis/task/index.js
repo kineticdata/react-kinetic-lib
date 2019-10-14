@@ -126,11 +126,12 @@ export const fetchUsage = (options = {}) => {
       },
     })
     .then(response => ({
-      usages: options.usageType === 'handler'
-        ? response.data.handlerUsage
-        : options.usageType === 'routine'
-        ? response.data.routineUsage
-        : [],
+      usages:
+        options.usageType === 'handler'
+          ? response.data.handlerUsage
+          : options.usageType === 'routine'
+          ? response.data.routineUsage
+          : [],
       totalTrees: response.data.totalTrees,
       totalRoutines: response.data.totalRoutines,
       totalNodes: response.data.totalNodes,

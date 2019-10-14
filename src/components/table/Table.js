@@ -112,8 +112,8 @@ const buildFilterLayout = ({
 
   const onReset = e => {
     e.preventDefault();
-    dispatch('CLEAR_TABLE_FILTERS', {tableKey});
-    dispatch('APPLY_FILTERS', {tableKey});
+    dispatch('CLEAR_TABLE_FILTERS', { tableKey });
+    dispatch('APPLY_FILTERS', { tableKey });
   };
 
   const onChangeFilter = (value, filterName) => {
