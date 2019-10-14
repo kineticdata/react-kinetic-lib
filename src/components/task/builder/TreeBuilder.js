@@ -98,6 +98,7 @@ export class TreeBuilderComponent extends Component {
 
   render() {
     const {
+      selected,
       tree: { connectors = OrderedMap(), nodes = OrderedMap() } = {},
       treeKey,
     } = this.props;
@@ -121,6 +122,8 @@ export class TreeBuilderComponent extends Component {
                   ref={this.registerConnector(connector)}
                   treeKey={treeKey}
                   connector={connector}
+                  primary={selected.getIn([0, 'connectorId']) === connector.id}
+                  selected={selected.some(o => o.connectorId === connector.id)}
                   onSelect={this.props.onSelectConnector}
                 />
               ))
@@ -139,6 +142,8 @@ export class TreeBuilderComponent extends Component {
                   ref={this.registerNode(node)}
                   treeKey={treeKey}
                   node={node}
+                  primary={selected.getIn([0, 'nodeId']) === node.id}
+                  selected={selected.some(o => o.nodeId === node.id)}
                   onSelect={this.props.onSelectNode}
                 />
               ))

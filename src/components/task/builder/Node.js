@@ -88,13 +88,17 @@ export class Node extends Component {
 
   /*****************************************************************************
    * React lifecycle                                                           *
-   * The only prop than can be changed is `node` which should be an immutable  *
-   * record. If that prop changes we need to sync the instance's `position`    *
-   * value and call `draw`.                                                    *
+   * Check the `node` prop for change, which should be an immutable record.    *
+   * If that prop changes we need to sync the instance's `position` value and  *
+   * call `draw`.                                                              *
    ****************************************************************************/
 
   shouldComponentUpdate(nextProps) {
-    return !this.props.node.equals(nextProps.node);
+    return (
+      !this.props.node.equals(nextProps.node) ||
+      this.props.primary !== nextProps.primary ||
+      this.props.selected !== nextProps.selected
+    );
   }
 
   componentDidMount() {
@@ -123,12 +127,18 @@ export class Node extends Component {
   }
 
   render() {
-    const { treeKey, node } = this.props;
-    const { highlighted, id, invalid, name, selected } = node;
+    const { node, primary, selected, treeKey } = this.props;
+    const { defers, definitionId, highlighted, id, name } = node;
+    const invalid = !name;
     return (
       <g ref={this.el}>
         <rect
-          className={classNames('node', { highlighted, invalid, selected })}
+          className={classNames('node', {
+            highlighted,
+            invalid,
+            selected,
+            primary,
+          })}
           height={constants.NODE_HEIGHT}
           width={constants.NODE_WIDTH}
           rx={constants.NODE_RADIUS}
@@ -145,22 +155,26 @@ export class Node extends Component {
         >
           {name}
         </SvgText>
-        <image
-          className="high-detail"
-          xlinkHref={deferIcon}
-          height={constants.ICON_SIZE}
-          width={constants.ICON_SIZE}
-          x={constants.NODE_BADGE_OFFSET}
-          y={-constants.ICON_CENTER}
-        />
-        <image
-          className="high-detail"
-          xlinkHref={routineIcon}
-          height={constants.ICON_SIZE}
-          width={constants.ICON_SIZE}
-          x={constants.NODE_BADGE_OFFSET}
-          y={constants.NODE_HEIGHT - constants.ICON_CENTER}
-        />
+        {defers && (
+          <image
+            className="high-detail"
+            xlinkHref={deferIcon}
+            height={constants.ICON_SIZE}
+            width={constants.ICON_SIZE}
+            x={constants.NODE_BADGE_OFFSET}
+            y={-constants.ICON_CENTER}
+          />
+        )}
+        {definitionId && (
+          <image
+            className="high-detail"
+            xlinkHref={routineIcon}
+            height={constants.ICON_SIZE}
+            width={constants.ICON_SIZE}
+            x={constants.NODE_BADGE_OFFSET}
+            y={constants.NODE_HEIGHT - constants.ICON_CENTER}
+          />
+        )}
         <image
           className="high-detail"
           xlinkHref={plusIcon}

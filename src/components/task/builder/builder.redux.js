@@ -121,14 +121,16 @@ regHandlers({
     state,
     { payload: { treeKey, id, type, label, condition } },
   ) =>
-    remember(state, treeKey).mergeIn(
-      ['trees', treeKey, 'tree', 'connectors', id],
-      {
-        type,
-        label,
-        condition,
-      },
-    ),
+    state.hasIn(['trees', treeKey, 'tree', 'connectors', id])
+      ? remember(state, treeKey).mergeIn(
+          ['trees', treeKey, 'tree', 'connectors', id],
+          {
+            type,
+            label,
+            condition,
+          },
+        )
+      : state,
   TREE_REMOVE_CONNECTOR: (state, { payload: { treeKey, id } }) =>
     remember(state, treeKey).deleteIn([
       'trees',

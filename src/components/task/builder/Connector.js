@@ -1,4 +1,5 @@
 import React, { Component, createRef, Fragment } from 'react';
+import classNames from 'classnames';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
 import { getRectIntersections, isIE11 } from './helpers';
@@ -119,13 +120,17 @@ export class Connector extends Component {
 
   /*****************************************************************************
    * React lifecycle                                                           *
-   * The only prop than can be changed is `connector` which should be an       *
-   * immutable record. If that prop changes we need to sync the instance's     *
-   * `head` and `tail` values and call `draw`.                                 *
+   * Check the `connector` prop for change, which should be an immutable       *
+   * record. If that prop changes we need to sync the instance's `head` and    *
+   * `tail` values and call `draw`.                                            *
    ****************************************************************************/
 
   shouldComponentUpdate(nextProps) {
-    return !this.props.connector.equals(nextProps.connector);
+    return (
+      !this.props.connector.equals(nextProps.connector) ||
+      this.props.primary !== nextProps.primary ||
+      this.props.selected !== nextProps.selected
+    );
   }
 
   componentDidMount() {
@@ -172,8 +177,20 @@ export class Connector extends Component {
   };
 
   render() {
+    const { connector, primary, selected } = this.props;
+    const { condition, id, label, type } = connector;
+    const invalid = condition && !label;
     return (
-      <g className="connector">
+      <g
+        className={classNames('connector', {
+          invalid,
+          primary,
+          selected,
+          complete: type === 'Complete',
+          create: type === 'Create',
+          update: type === 'Update',
+        })}
+      >
         <g ref={this.connector}>
           <line
             ref={this.connectorBody}
@@ -195,7 +212,7 @@ export class Connector extends Component {
             onMouseDown={this.dragHead}
           />
         </g>
-        {this.props.connector.id !== null && (
+        {id !== null && (
           <g
             ref={this.connectorLabel}
             className="connector-button"
@@ -210,7 +227,7 @@ export class Connector extends Component {
               rx={constants.CONNECTOR_LABEL_RADIUS}
               ry={constants.CONNECTOR_LABEL_RADIUS}
             />
-            {this.props.connector.label ? (
+            {label ? (
               <Fragment>
                 <rect
                   className="high-detail"
@@ -229,7 +246,7 @@ export class Connector extends Component {
                   height={constants.CONNECTOR_LABEL_HEIGHT}
                   padding={constants.CONNECTOR_LABEL_PADDING}
                 >
-                  {this.props.connector.label}
+                  {label}
                 </SvgText>
               </Fragment>
             ) : (
