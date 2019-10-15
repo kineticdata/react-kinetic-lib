@@ -1,7 +1,7 @@
 import React, { createRef, Component, Fragment } from 'react';
-import { OrderedMap } from 'immutable';
+import { pick } from 'lodash-es';
 import { connect, dispatch } from '../../../store';
-import './builder.redux';
+import { configureTreeBuilder } from './builder.redux';
 import { isPointInNode } from './helpers';
 import { Connector as ConnectorModel } from './models';
 import { SvgCanvas } from './SvgCanvas';
@@ -19,6 +19,26 @@ export class TreeBuilderComponent extends Component {
       byTail: {},
     };
     this.nodeMap = {};
+  }
+
+  componentDidMount() {
+    this.checkConfig();
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    this.checkConfig();
+  }
+
+  checkConfig() {
+    // until this instance of the tree builder is mounted the builder state will
+    // be undefined (not in redux at all), once mounted it will be set to a null
+    // placeholder then we will call configureTreeBuilder with the component's
+    // props at that time
+    if (this.props.treeBuilderState === null) {
+      configureTreeBuilder(
+        pick(this.props, ['treeKey', 'source', 'sourceGroup', 'name']),
+      );
+    }
   }
 
   findNodeByPoint = point => this.props.tree.nodes.find(isPointInNode(point));
@@ -97,65 +117,70 @@ export class TreeBuilderComponent extends Component {
   watchDrag = (...args) => this.canvasRef.current.watchDrag(...args);
 
   render() {
-    const {
-      selected,
-      tree: { connectors = OrderedMap(), nodes = OrderedMap() } = {},
-      treeKey,
-    } = this.props;
-    return this.props.children({
-      actions: {
-        deleteConnector: id =>
-          dispatch('TREE_REMOVE_CONNECTOR', { treeKey, id }),
-        deleteNode: id => dispatch('TREE_REMOVE_NODE', { treeKey, id }),
-        updateConnector: values =>
-          dispatch('TREE_UPDATE_CONNECTOR', { treeKey, ...values }),
-        updateNode: values =>
-          dispatch('TREE_UPDATE_NODE', { treeKey, ...values }),
-      },
-      treeBuilder: (
-        <Fragment>
-          <SvgCanvas ref={this.canvasRef}>
-            {connectors
-              .map(connector => (
+    const { selected, treeBuilderState, treeKey } = this.props;
+    if (treeBuilderState) {
+      const { tree } = treeBuilderState;
+      return this.props.children({
+        actions: {
+          deleteConnector: id =>
+            dispatch('TREE_REMOVE_CONNECTOR', { treeKey, id }),
+          deleteNode: id => dispatch('TREE_REMOVE_NODE', { treeKey, id }),
+          updateConnector: values =>
+            dispatch('TREE_UPDATE_CONNECTOR', { treeKey, ...values }),
+          updateNode: values =>
+            dispatch('TREE_UPDATE_NODE', { treeKey, ...values }),
+        },
+        treeBuilder: (
+          <Fragment>
+            <SvgCanvas ref={this.canvasRef}>
+              {tree.connectors
+                .map(connector => (
+                  <Connector
+                    key={connector.id}
+                    ref={this.registerConnector(connector)}
+                    treeKey={treeKey}
+                    connector={connector}
+                    primary={
+                      selected.getIn([0, 'connectorId']) === connector.id
+                    }
+                    selected={selected.some(
+                      ({ connectorId }) => connectorId === connector.id,
+                    )}
+                    onSelect={this.props.onSelectConnector}
+                  />
+                ))
+                .toList()}
+              {this.state.newConnector && (
                 <Connector
-                  key={connector.id}
-                  ref={this.registerConnector(connector)}
+                  ref={this.newConnector}
                   treeKey={treeKey}
-                  connector={connector}
-                  primary={selected.getIn([0, 'connectorId']) === connector.id}
-                  selected={selected.some(o => o.connectorId === connector.id)}
-                  onSelect={this.props.onSelectConnector}
+                  connector={this.state.newConnector}
                 />
-              ))
-              .toList()}
-            {this.state.newConnector && (
-              <Connector
-                ref={this.newConnector}
-                treeKey={treeKey}
-                connector={this.state.newConnector}
-              />
-            )}
-            {nodes
-              .map(node => (
-                <Node
-                  key={node.id}
-                  ref={this.registerNode(node)}
-                  treeKey={treeKey}
-                  node={node}
-                  primary={selected.getIn([0, 'nodeId']) === node.id}
-                  selected={selected.some(o => o.nodeId === node.id)}
-                  onSelect={this.props.onSelectNode}
-                />
-              ))
-              .toList()}
-          </SvgCanvas>
-        </Fragment>
-      ),
-    });
+              )}
+              {tree.nodes
+                .map(node => (
+                  <Node
+                    key={node.id}
+                    ref={this.registerNode(node)}
+                    treeKey={treeKey}
+                    node={node}
+                    primary={selected.getIn([0, 'nodeId']) === node.id}
+                    selected={selected.some(({ nodeId }) => nodeId === node.id)}
+                    onSelect={this.props.onSelectNode}
+                  />
+                ))
+                .toList()}
+            </SvgCanvas>
+          </Fragment>
+        ),
+      });
+    }
+    return null;
   }
 }
 
 const mapStateToProps = (state, props) => ({
+  treeBuilderState: state.getIn(['trees', props.treeKey]),
   tree: state.getIn(['trees', props.treeKey, 'tree']),
 });
 export const TreeBuilder = connect(mapStateToProps)(TreeBuilderComponent);

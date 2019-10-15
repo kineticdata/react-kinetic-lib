@@ -4,6 +4,7 @@ import { Connector, Node, Point, TreeBuilderState } from './models';
 export const mountTreeBuilder = treeKey => dispatch('TREE_MOUNT', { treeKey });
 export const unmountTreeBuilder = treeKey =>
   dispatch('TREE_UNMOUNT', { treeKey });
+export const configureTreeBuilder = props => dispatch('TREE_CONFIGURE', props);
 
 // Helper that adds the present state to the past stack and clears the future
 // stack. This should be called by reducer cases that will be undo/redo able.
@@ -16,9 +17,11 @@ const remember = (state, treeKey) =>
 
 regHandlers({
   TREE_MOUNT: (state, { payload: { treeKey } }) =>
-    state.setIn(['trees', treeKey], TreeBuilderState()),
+    state.setIn(['trees', treeKey], null),
   TREE_UNMOUNT: (state, { payload: { treeKey } }) =>
     state.deleteIn(['trees', treeKey]),
+  TREE_CONFIGURE: (state, { payload: { treeKey, ...config } }) =>
+    state.setIn(['trees', treeKey], TreeBuilderState()),
   TREE_UNDO: (state, { payload: { treeKey } }) =>
     state.getIn(['trees', treeKey, 'undoStack']).isEmpty()
       ? state
