@@ -1,5 +1,13 @@
-import { dispatch, regHandlers } from '../../../store';
-import { Connector, Node, Point, TreeBuilderState } from './models';
+import { all, call, put, takeEvery } from 'redux-saga/effects';
+import { action, dispatch, regHandlers, regSaga } from '../../../store';
+import {
+  deserializeTree,
+  Connector,
+  Node,
+  Point,
+  TreeBuilderState,
+} from './models';
+import { fetchTaskCategories, fetchTree2 } from '../../../apis/task';
 
 export const mountTreeBuilder = treeKey => dispatch('TREE_MOUNT', { treeKey });
 export const unmountTreeBuilder = treeKey =>
@@ -15,13 +23,48 @@ const remember = (state, treeKey) =>
     )
     .deleteIn(['trees', treeKey, 'redoStack']);
 
+regSaga(
+  takeEvery('TREE_CONFIGURE', function*({ payload }) {
+    const { name, source, sourceGroup, treeKey } = payload;
+    const [{ tree }, { categories }] = yield all([
+      call(fetchTree2, {
+        source,
+        sourceGroup,
+        name,
+        include: 'bindings,details,treeJson',
+      }),
+      call(fetchTaskCategories, {
+        include:
+          'handlers.results,handlers.parameters,trees.parameters,trees.inputs,trees.outputs',
+      }),
+    ]);
+    yield put(
+      action('TREE_LOADED', {
+        categories,
+        treeKey,
+        tree: deserializeTree(tree),
+      }),
+    );
+  }),
+);
+
 regHandlers({
+  TREE_SET_TASKS: (state, { payload: { categories } }) =>
+    state.setIn(['taskCategories'], categories),
+  // the TreeBuilder component does nothing while the tree state is undefined,
+  // on mount we set it to null to signal to the component to dispatch the
+  // configure action with its configuration props
   TREE_MOUNT: (state, { payload: { treeKey } }) =>
     state.setIn(['trees', treeKey], null),
+  // the primary purpose of the configure action is to trigger the fetches in a
+  // saga but to prevent extra calls we set the tree state to false (instead of
+  // null) so the component doesn't keep dispatching configure actions
+  TREE_CONFIGURE: (state, { payload: { treeKey } }) =>
+    state.setIn(['trees', treeKey], false),
   TREE_UNMOUNT: (state, { payload: { treeKey } }) =>
     state.deleteIn(['trees', treeKey]),
-  TREE_CONFIGURE: (state, { payload: { treeKey, ...config } }) =>
-    state.setIn(['trees', treeKey], TreeBuilderState()),
+  TREE_LOADED: (state, { payload: { categories, treeKey, tree } }) =>
+    state.setIn(['trees', treeKey], TreeBuilderState({ categories, tree })),
   TREE_UNDO: (state, { payload: { treeKey } }) =>
     state.getIn(['trees', treeKey, 'undoStack']).isEmpty()
       ? state
