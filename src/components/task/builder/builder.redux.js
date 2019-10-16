@@ -97,13 +97,13 @@ regHandlers({
       y: parentPosition.y + 300,
     });
     const node = Node({
-      id: nextNodeId,
+      id: `node_v0_${nextNodeId}`,
       name: `Node ${nextNodeId}`,
       position,
     });
     const connector = Connector({
       id: nextConnectorId,
-      headId: nextNodeId,
+      headId: node.id,
       headPosition: position,
       tailId: parentId,
       tailPosition: parentPosition,
@@ -112,7 +112,7 @@ regHandlers({
       connectors: connectors.set(nextConnectorId, connector),
       nextConnectorId: nextConnectorId + 1,
       nextNodeId: nextNodeId + 1,
-      nodes: nodes.set(nextNodeId, node),
+      nodes: nodes.set(node.id, node),
     });
   },
   TREE_UPDATE_NODE: (
