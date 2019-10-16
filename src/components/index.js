@@ -109,3 +109,8 @@ export { SourceTable } from './task/sources/SourceTable';
 export { HandlerTable } from './task/handlers/HandlerTable';
 export { HandlerForm } from './task/handlers/HandlerForm';
 export { UsageTable } from './task/common/UsageTable';
+export { TaskCategoryTable } from './task/category/TaskCategoryTable';
+export { TaskCategoryForm } from './task/category/TaskCategoryForm';
+export { PolicyRuleTable } from './task/policy_rule/PolicyRuleTable';
+export { PolicyRuleForm } from './task/policy_rule/PolicyRuleForm';
+export { EngineSettingsForm } from './task/engine/EngineSettingsForm';
