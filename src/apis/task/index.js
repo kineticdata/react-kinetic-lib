@@ -17,6 +17,8 @@ export const fetchTrees = (options = {}) =>
         name: options.name || undefined,
         ownerEmail: options.ownerEmail || undefined,
         status: options.status || undefined,
+        orderBy: options.orderBy,
+        direction: options.direction,
       },
     })
     .then(response => ({

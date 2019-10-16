@@ -25,6 +25,8 @@ const dataSource = ({ workflowType, sourceName, sourceGroup }) => ({
         : paramData.filters.getIn(['sourceGroup', 'value']),
       type: workflowType || 'Tree',
       include: 'details',
+      orderBy: paramData.sortColumn,
+      direction: paramData.sortColumn ? paramData.sortDirection : undefined,
       limit: paramData.pageSize,
       offset: paramData.nextPageToken,
     },
@@ -39,6 +41,7 @@ const columns = [
   {
     value: 'id',
     title: 'ID',
+    sortable: false,
   },
   {
     value: 'name',
@@ -50,14 +53,17 @@ const columns = [
   {
     value: 'notes',
     title: 'Notes',
+    sortable: false,
   },
   {
     value: 'definitionId',
     title: 'Definition ID',
+    sortable: false,
   },
   {
     value: 'ownerEmail',
     title: 'Owner EMail',
+    sortable: false,
   },
   {
     value: 'sourceGroup',
@@ -78,15 +84,16 @@ const columns = [
     title: 'Status',
     filter: 'equals',
     type: 'text',
-    sortable: true,
+    sortable: false,
+
     options: () => STATUS_OPTIONS,
   },
-  { value: 'title', title: 'Title' },
-  { value: 'type', title: 'type' },
-  { value: 'createdAt', title: 'Created At' },
-  { value: 'createdBy', title: 'Created By' },
-  { value: 'updatedAt', title: 'Updated At' },
-  { value: 'updatedBy', title: 'Updated By' },
+  { value: 'title', title: 'Title', sortable: false },
+  { value: 'type', title: 'type', sortable: false },
+  { value: 'createdAt', title: 'Created At', sortable: false },
+  { value: 'createdBy', title: 'Created By', sortable: false },
+  { value: 'updatedAt', title: 'Updated At', sortable: false },
+  { value: 'updatedBy', title: 'Updated By', sortable: false },
 ];
 
 export const WorkflowTable = generateTable({
