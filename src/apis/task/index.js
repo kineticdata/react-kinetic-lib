@@ -17,6 +17,8 @@ export const fetchTrees = (options = {}) =>
         name: options.name || undefined,
         ownerEmail: options.ownerEmail || undefined,
         status: options.status || undefined,
+        orderBy: options.orderBy,
+        direction: options.direction,
       },
     })
     .then(response => ({
@@ -28,6 +30,20 @@ export const fetchTree = (options = {}) => {
   validateOptions('fetchTree', ['itemId'], options);
   return axios
     .get(`/app/components/task/app/api/v2/trees/${options.itemId}`, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      tree: response.data,
+    }));
+};
+
+export const fetchTree2 = (options = {}) => {
+  validateOptions('fetchTree', ['name', 'source', 'sourceGroup'], options);
+  const id = `${options.source} :: ${options.sourceGroup} :: ${options.name}`;
+  return axios
+    .get(`/app/components/task/app/api/v2/trees/${id}`, {
       params: {
         include: options.include,
       },
@@ -252,6 +268,32 @@ export const fetchHandler = (options = {}) => {
     })
     .then(response => ({
       handler: response.data,
+    }));
+};
+
+export const createHandler = (options = {}) => {
+  const { packageUrl, packageFile } = options;
+
+  let data = {};
+  let headers = {};
+
+  if (packageUrl) {
+    data = { packageUrl };
+  } else {
+    data = new FormData();
+    data.set('package', packageFile);
+    headers = { 'Content-Type': 'multipart/form-data' };
+    console.log(packageFile);
+  }
+
+  return axios
+    .post('/app/components/task/app/api/v2/handlers', data, {
+      headers,
+    })
+    .then(response => response.data)
+    .catch(() => ({
+      error:
+        'There was a problem uploading the handler. Please make sure it is a valid handler and is not already uploaded.',
     }));
 };
 

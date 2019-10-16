@@ -21,6 +21,12 @@ export {
 } from './table/Table.redux';
 export { Table } from './table/Table';
 
+// Tree Builder
+export {
+  mountTreeBuilder,
+  unmountTreeBuilder,
+} from './task/builder/builder.redux';
+
 // Discussions
 export { Discussion } from './discussions/Discussion';
 export { DateBanner } from './discussions/DateBanner';
@@ -103,6 +109,9 @@ export { WebhookTable } from './core/webhook/WebhookTable';
 export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 
 // Task
+export { TreeBuilder } from './task/builder/TreeBuilder';
+export { ConnectorForm } from './task/builder/ConnectorForm';
+export { NodeForm } from './task/builder/NodeForm';
 export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { WorkflowForm } from './task/workflows/WorkflowForm';
 export { SourceTable } from './task/sources/SourceTable';
