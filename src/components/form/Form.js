@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
 import t from 'prop-types';
 import {
@@ -10,6 +10,7 @@ import {
   OrderedMap,
   OrderedSet,
 } from 'immutable';
+import { pick } from 'lodash-es';
 import { action, connect, dispatch, regHandlers, regSaga } from '../../store';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { generateKey } from '../../helpers';
@@ -411,7 +412,7 @@ export class Form extends Component {
   constructor(props) {
     super(props);
     this.auto = !this.props.formKey;
-    this.formKey = this.props.formKey || generateKey();
+    this.formKey = this.props.formKey || 'f' + generateKey();
   }
 
   componentDidMount() {
@@ -443,6 +444,8 @@ export class Form extends Component {
 }
 
 class FormImplComponent extends Component {
+  focusRef = createRef();
+
   checkConfigure() {
     if (this.props.formState === null) {
       configureForm(this.props);
@@ -453,14 +456,25 @@ class FormImplComponent extends Component {
     this.checkConfigure();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     this.checkConfigure();
+    // after the first render where fields should be rendered, check to see if
+    // we should focus a field (based on the autoFocus prop passed to the Form)
+    if (
+      this.props.formState &&
+      this.props.formState.fields &&
+      !(prevProps.formState && prevProps.formState.fields) &&
+      this.focusRef.current
+    ) {
+      this.focusRef.current.focus();
+    }
   }
 
   render() {
     const {
       addFields,
       alterFields,
+      autoFocus,
       components,
       fields: fieldsFn,
       fieldSet,
@@ -504,6 +518,7 @@ class FormImplComponent extends Component {
               key={props.name}
               {...props}
               {...eventHandlers.toObject()}
+              focusRef={props.name === autoFocus ? this.focusRef : null}
               component={fieldComponents.get(props.name)}
               components={components}
             />
@@ -540,6 +555,30 @@ export const mapStateToProps = (state, props) => ({
 });
 
 const FormImpl = connect(mapStateToProps)(FormImplComponent);
+
+export const generateForm = ({
+  dataSources,
+  fields,
+  handleSubmit,
+  formOptions,
+}) => configurationProps => (
+  <Form
+    addFields={configurationProps.addFields}
+    alterFields={configurationProps.alterFields}
+    autoFocus={configurationProps.autoFocus}
+    components={configurationProps.components}
+    dataSources={dataSources}
+    fields={fields}
+    fieldSet={configurationProps.fieldSet}
+    formKey={configurationProps.formKey}
+    formOptions={pick(configurationProps, formOptions)}
+    onSubmit={handleSubmit}
+    onSave={configurationProps.onSave}
+    onError={configurationProps.onError}
+  >
+    {configurationProps.children}
+  </Form>
+);
 
 Form.propTypes = {
   /** An object describing how a form fetches data. */

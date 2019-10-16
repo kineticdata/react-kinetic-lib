@@ -37,6 +37,20 @@ export const fetchTree = (options = {}) => {
     }));
 };
 
+export const fetchTree2 = (options = {}) => {
+  validateOptions('fetchTree', ['name', 'source', 'sourceGroup'], options);
+  const id = `${options.source} :: ${options.sourceGroup} :: ${options.name}`;
+  return axios
+    .get(`/app/components/task/app/api/v2/trees/${id}`, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      tree: response.data,
+    }));
+};
+
 export const updateTree = (options = {}) => {
   validateOptions('updateTree', ['itemId', 'tree'], options);
   return axios
