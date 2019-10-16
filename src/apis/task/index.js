@@ -113,6 +113,32 @@ export const fetchHandler = (options = {}) => {
     }));
 };
 
+export const createHandler = (options = {}) => {
+  const { packageUrl, packageFile } = options;
+
+  let data = {};
+  let headers = {};
+
+  if (packageUrl) {
+    data = { packageUrl };
+  } else {
+    data = new FormData();
+    data.set('package', packageFile);
+    headers = { 'Content-Type': 'multipart/form-data' };
+    console.log(packageFile);
+  }
+
+  return axios
+    .post('/app/components/task/app/api/v2/handlers', data, {
+      headers,
+    })
+    .then(response => response.data)
+    .catch(() => ({
+      error:
+        'There was a problem uploading the handler. Please make sure it is a valid handler and is not already uploaded.',
+    }));
+};
+
 export const fetchUsage = (options = {}) => {
   validateOptions('fetchUsage', ['definitionId', 'usageType'], options);
   const path =
