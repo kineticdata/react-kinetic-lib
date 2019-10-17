@@ -1,13 +1,20 @@
-import { all, call, put, takeEvery } from 'redux-saga/effects';
+import { all, call, put, select, takeEvery } from 'redux-saga/effects';
+import { isFunction } from 'lodash-es';
 import { action, dispatch, regHandlers, regSaga } from '../../../store';
 import {
   deserializeTree,
+  serializeTree,
   Connector,
   Node,
   Point,
   TreeBuilderState,
 } from './models';
-import { fetchTaskCategories, fetchTree2 } from '../../../apis/task';
+import {
+  createTree,
+  fetchTaskCategories,
+  fetchTree2,
+  updateTree2,
+} from '../../../apis/task';
 
 export const mountTreeBuilder = treeKey => dispatch('TREE_MOUNT', { treeKey });
 export const unmountTreeBuilder = treeKey =>
@@ -25,12 +32,12 @@ const remember = (state, treeKey) =>
 
 regSaga(
   takeEvery('TREE_CONFIGURE', function*({ payload }) {
-    const { name, source, sourceGroup, treeKey } = payload;
+    const { name, sourceGroup, sourceName, treeKey } = payload;
     const [{ tree }, { categories }] = yield all([
       call(fetchTree2, {
-        source,
-        sourceGroup,
         name,
+        sourceGroup,
+        sourceName,
         include: 'bindings,details,treeJson',
       }),
       call(fetchTaskCategories, {
@@ -48,6 +55,58 @@ regSaga(
   }),
 );
 
+regSaga(
+  takeEvery('TREE_SAVE', function*({ payload }) {
+    // because of the optimistic locking functionality newName / overwrite can
+    // be passed as options to the builder's save function
+    const { newName, onError, onSave, overwrite, treeKey } = payload;
+    const { tree } = yield select(state => state.getIn(['trees', treeKey]));
+    const { name, sourceGroup, sourceName } = tree;
+    // if a newName was passed we will be creating a new tree with the builder
+    // contents, otherwise just an update
+    const { error } = yield newName
+      ? call(createTree, {
+          tree: {
+            name: newName,
+            title: `${sourceName} :: ${sourceGroup} :: ${name}`,
+            ...serializeTree(tree, true),
+          },
+        })
+      : call(updateTree2, {
+          name,
+          sourceGroup,
+          sourceName,
+          tree: serializeTree(tree, overwrite),
+        });
+    // dispatch the appropriate action based on the result of the call above
+    yield put(
+      error
+        ? action('TREE_SAVE_ERROR', {
+            treeKey,
+            error: error.message || error,
+            onError,
+          })
+        : action('TREE_SAVE_SUCCESS', { treeKey, newName, onSave }),
+    );
+  }),
+);
+
+regSaga(
+  takeEvery('TREE_SAVE_ERROR', function*({ payload: { error, onError } }) {
+    if (isFunction(onError)) {
+      yield call(onError, error);
+    }
+  }),
+);
+
+regSaga(
+  takeEvery('TREE_SAVE_SUCCESS', function*({ payload: { onSave, tree } }) {
+    if (isFunction(onSave)) {
+      yield call(onSave, tree);
+    }
+  }),
+);
+
 regHandlers({
   TREE_SET_TASKS: (state, { payload: { categories } }) =>
     state.setIn(['taskCategories'], categories),
@@ -56,15 +115,28 @@ regHandlers({
   // configure action with its configuration props
   TREE_MOUNT: (state, { payload: { treeKey } }) =>
     state.setIn(['trees', treeKey], null),
-  // the primary purpose of the configure action is to trigger the fetches in a
-  // saga but to prevent extra calls we set the tree state to false (instead of
-  // null) so the component doesn't keep dispatching configure actions
   TREE_CONFIGURE: (state, { payload: { treeKey } }) =>
-    state.setIn(['trees', treeKey], false),
+    state.setIn(['trees', treeKey], TreeBuilderState()),
   TREE_UNMOUNT: (state, { payload: { treeKey } }) =>
     state.deleteIn(['trees', treeKey]),
   TREE_LOADED: (state, { payload: { categories, treeKey, tree } }) =>
-    state.setIn(['trees', treeKey], TreeBuilderState({ categories, tree })),
+    state.mergeIn(['trees', treeKey], { categories, loading: false, tree }),
+  TREE_SAVE: (state, { payload: { treeKey } }) =>
+    state.mergeIn(['trees', treeKey], {
+      saving: true,
+    }),
+  TREE_SAVE_ERROR: (state, { payload: { treeKey, error } }) =>
+    state.mergeIn(['trees', treeKey], {
+      error,
+      saving: false,
+    }),
+  TREE_SAVE_SUCCESS: (state, { payload: { newName, treeKey } }) =>
+    state
+      .mergeIn(['trees', treeKey], {
+        error: null,
+        saving: false,
+      })
+      .updateIn(['trees', treeKey, 'tree', 'name'], name => newName || name),
   TREE_UNDO: (state, { payload: { treeKey } }) =>
     state.getIn(['trees', treeKey, 'undoStack']).isEmpty()
       ? state

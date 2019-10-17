@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { validateOptions } from '../http';
+import { handleErrors, validateOptions } from '../http';
 
 const generateNextPageToken = data =>
   data.offset + data.limit > data.count ? null : data.limit + data.offset;
@@ -40,8 +40,8 @@ export const fetchTree = (options = {}) => {
 };
 
 export const fetchTree2 = (options = {}) => {
-  validateOptions('fetchTree', ['name', 'source', 'sourceGroup'], options);
-  const id = `${options.source} :: ${options.sourceGroup} :: ${options.name}`;
+  validateOptions('fetchTree', ['name', 'sourceGroup', 'sourceName'], options);
+  const id = `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`;
   return axios
     .get(`/app/components/task/app/api/v2/trees/${id}`, {
       params: {
@@ -70,6 +70,25 @@ export const updateTree = (options = {}) => {
     }));
 };
 
+export const updateTree2 = (options = {}) => {
+  validateOptions(
+    'updateTree2',
+    ['name', 'sourceGroup', 'sourceName', 'tree'],
+    options,
+  );
+  const id = `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`;
+  return axios
+    .put(`/app/components/task/app/api/v2/trees/${id}`, options.tree, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      tree: response.data,
+    }))
+    .catch(handleErrors);
+};
+
 export const createTree = (options = {}) => {
   validateOptions('createTree', ['tree'], options);
   return axios
@@ -80,7 +99,8 @@ export const createTree = (options = {}) => {
     })
     .then(response => ({
       tree: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchSources = (options = {}) =>

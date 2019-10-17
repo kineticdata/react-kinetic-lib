@@ -36,7 +36,7 @@ export class TreeBuilderComponent extends Component {
     // props at that time
     if (this.props.treeBuilderState === null) {
       configureTreeBuilder(
-        pick(this.props, ['treeKey', 'source', 'sourceGroup', 'name']),
+        pick(this.props, ['treeKey', 'sourceName', 'sourceGroup', 'name']),
       );
     }
   }
@@ -119,7 +119,7 @@ export class TreeBuilderComponent extends Component {
   render() {
     const { selected, treeBuilderState, treeKey } = this.props;
     if (treeBuilderState) {
-      const { tree } = treeBuilderState;
+      const { saving, tree } = treeBuilderState;
       return this.props.children({
         actions: {
           deleteConnector: id =>
@@ -129,7 +129,23 @@ export class TreeBuilderComponent extends Component {
             dispatch('TREE_UPDATE_CONNECTOR', { treeKey, ...values }),
           updateNode: values =>
             dispatch('TREE_UPDATE_NODE', { treeKey, ...values }),
+          save: ({
+            overwrite = false,
+            newName = '',
+            onError = this.props.onError,
+            onSave = this.props.onSave,
+          }) => {
+            dispatch('TREE_SAVE', {
+              newName,
+              overwrite,
+              onError,
+              onSave,
+              treeKey,
+            });
+          },
         },
+        name: tree.name,
+        saving,
         treeBuilder: (
           <Fragment>
             <SvgCanvas ref={this.canvasRef}>

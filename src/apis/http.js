@@ -36,11 +36,11 @@ export const handleErrors = error => {
 
   // Destructure out the information needed.
   const { data = {}, status: statusCode, statusText } = error.response;
-  const { error: message, errorKey: key = null, ...rest } = data;
+  const { error: errorMessage, errorKey: key = null, message, ...rest } = data;
   const type = types[statusCode];
   const result = {
     ...rest,
-    message: message || statusText,
+    message: errorMessage || message || statusText,
     key,
     statusCode,
   };
