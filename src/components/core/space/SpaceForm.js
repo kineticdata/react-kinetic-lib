@@ -20,8 +20,7 @@ const dataSources = () => ({
     fn: fetchSpace,
     params: [
       {
-        include:
-          'attributesMap,securityPolicies,details,filestore,platformComponents',
+        include: 'attributesMap,securityPolicies,details,platformComponents',
       },
     ],
     transform: result => result.space,
@@ -106,6 +105,33 @@ const securityEndpoints = {
     types: ['Space', 'User'],
   },
 };
+
+const getBridgehubValue = values =>
+  values.get('bridgehubCustom')
+    ? {
+        url: values.get('bridgehubUrl'),
+        ...(values.get('changeBridgehubSecret') && {
+          secret: values.get('bridgehubSecret'),
+        }),
+      }
+    : null;
+
+// const getFilehubValue = values =>
+//   values.get('filehubCustom')
+//     ? {
+//         url: values.get('filehubUrl'),
+//         ...(values.get('changeFilehubSecret') && {
+//           secret: values.get('filehubSecret'),
+//         }),
+//       }
+//     : null;
+
+const getTaskValue = values => ({
+  url: values.get('taskUrl'),
+  ...(values.get('changeTaskSecret') && {
+    secret: values.get('taskSecret'),
+  }),
+});
 
 const fields = () => ({
   attributeDefinitions,
@@ -287,97 +313,45 @@ const fields = () => ({
           : displayValueJSP;
       },
     },
-    {
-      name: 'filestore',
-      label: 'File Store',
-      type: null,
-      visible: false,
-      serialize: ({ values }) => ({
-        filehubUrl: values.get('filehubUrl'),
-        key: values.get('filestoreKey'),
-        slug: values.get('filestoreSlug'),
-        ...(values.get('changeFilestoreSecret') && {
-          secret: values.get('filestoreSecret'),
-        }),
-      }),
-      initialValue: get(space, 'filestore'),
-    },
-    {
-      name: 'filehubUrl',
-      label: 'Filehub URL',
-      type: 'text',
-      visible: ({ values }) => values.get('filehubCustom'),
-      required: ({ values }) => values.get('filehubCustom'),
-      transient: true,
-      // needs to be updated to `initialValue: getIn(space, ['platformComponents', 'filehub', 'url']),`
-      initialValue: getIn(space, ['filestore', 'filehubUrl']),
-    },
-    {
-      name: 'filehubCustom',
-      label: 'Use Private Filehub',
-      type: 'checkbox',
-      visible: true,
-      transient: true,
-      initialValue: hasIn(space, ['platformComponents', 'filehub', 'url']),
-    },
-    {
-      name: 'filehubSecret',
-      label: 'Filehub Secret',
-      type: 'password',
-      visible: ({ values }) => values.get('changeFilehubSecret'),
-      transient: true,
-    },
-    {
-      name: 'changeFilehubSecret',
-      label: 'Change Filehub Secret',
-      type: 'checkbox',
-      transient: true,
-      // in "new" mode we do not show this toggle field and default it to true
-      visible: ({ space, values }) => !!space && values.get('filehubCustom'),
-      initialValue: !space,
-      onChange: ({ values }, { setValue }) => {
-        if (values.get('filehubSecret') !== '') {
-          setValue('filehubSecret', '');
-        }
-      },
-    },
-    {
-      name: 'filestoreKey',
-      label: 'Filestore Key',
-      type: 'text',
-      visible: true,
-      transient: true,
-      initialValue: getIn(space, ['filestore', 'key']),
-    },
-    {
-      name: 'filestoreSecret',
-      label: 'Filestore Secret',
-      type: 'password',
-      visible: ({ values }) => values.get('changeFilestoreSecret'),
-      transient: true,
-    },
-    {
-      name: 'changeFilestoreSecret',
-      label: 'Change Filestore Secret',
-      type: 'checkbox',
-      transient: true,
-      // in "new" mode we do not show this toggle field and default it to true
-      visible: ({ space }) => !!space,
-      initialValue: !space,
-      onChange: ({ values }, { setValue }) => {
-        if (values.get('filestoreSecret') !== '') {
-          setValue('filestoreSecret', '');
-        }
-      },
-    },
-    {
-      name: 'filestoreSlug',
-      label: 'Filestore Slug',
-      type: 'text',
-      visible: true,
-      transient: true,
-      initialValue: getIn(space, ['filestore', 'slug']),
-    },
+    // Removing filehub until fileResources are implemented
+    // {
+    //   name: 'filehubUrl',
+    //   label: 'Filehub URL',
+    //   type: 'text',
+    //   visible: ({ values }) => values.get('filehubCustom'),
+    //   required: ({ values }) => values.get('filehubCustom'),
+    //   transient: true,
+    //   initialValue: getIn(space, ['platformComponents', 'filehub', 'url']),
+    // },
+    // {
+    //   name: 'filehubCustom',
+    //   label: 'Use Private Filehub',
+    //   type: 'checkbox',
+    //   visible: true,
+    //   transient: true,
+    //   initialValue: hasIn(space, ['platformComponents', 'filehub', 'url']),
+    // },
+    // {
+    //   name: 'filehubSecret',
+    //   label: 'Filehub Secret',
+    //   type: 'password',
+    //   visible: ({ values }) => values.get('changeFilehubSecret'),
+    //   transient: true,
+    // },
+    // {
+    //   name: 'changeFilehubSecret',
+    //   label: 'Change Filehub Secret',
+    //   type: 'checkbox',
+    //   transient: true,
+    //   // in "new" mode we do not show this toggle field and default it to true
+    //   visible: ({ space, values }) => !!space && values.get('filehubCustom'),
+    //   initialValue: !space,
+    //   onChange: ({ values }, { setValue }) => {
+    //     if (values.get('filehubSecret') !== '') {
+    //       setValue('filehubSecret', '');
+    //     }
+    //   },
+    // },
     {
       name: 'loginPage',
       label: 'Login Page',
@@ -433,30 +407,10 @@ const fields = () => ({
       type: null,
       visible: false,
       serialize: ({ values }) => ({
-        // only send if not Custom
-        ...(values.get('bridgehubCustom') && {
-          bridgehub: {
-            url: values.get('bridgehubUrl'),
-            ...(values.get('changeBridgehubSecret') && {
-              secret: values.get('bridgehubSecret'),
-            }),
-          },
-        }),
-        // only send if not Custom
-        ...(values.get('filehubCustom') && {
-          filehub: {
-            url: values.get('filehubUrl'),
-            ...(values.get('changeFilehubSecret') && {
-              secret: values.get('filehubSecret'),
-            }),
-          },
-        }),
-        task: {
-          url: values.get('taskUrl'),
-          ...(values.get('changeTaskSecret') && {
-            secret: values.get('taskSecret'),
-          }),
-        },
+        bridgehub: getBridgehubValue(values),
+        // Removing filehub until fileResources are implemented
+        // filehub: getFilehubValue(values),
+        task: getTaskValue(values),
       }),
       initialValue: get(space, 'platformComponents'),
     },
