@@ -61,7 +61,7 @@ const columns = [
   {
     value: 'definitionId',
     title: 'Definition ID',
-    sortable: false,
+    sortable: true,
   },
   {
     value: 'ownerEmail',
@@ -87,7 +87,7 @@ const columns = [
     title: 'Status',
     filter: 'equals',
     type: 'text',
-    sortable: false,
+    sortable: true,
 
     options: () => STATUS_OPTIONS,
   },
@@ -95,7 +95,7 @@ const columns = [
   { value: 'type', title: 'type', sortable: false },
   { value: 'createdAt', title: 'Created At', sortable: false },
   { value: 'createdBy', title: 'Created By', sortable: false },
-  { value: 'updatedAt', title: 'Updated At', sortable: false },
+  { value: 'updatedAt', title: 'Updated At', sortable: true },
   { value: 'updatedBy', title: 'Updated By', sortable: false },
 ];
 
