@@ -84,7 +84,7 @@ export const updateTree2 = (options = {}) => {
       },
     })
     .then(response => ({
-      tree: response.data,
+      tree: response.data.tree,
     }))
     .catch(handleErrors);
 };
@@ -98,7 +98,32 @@ export const createTree = (options = {}) => {
       },
     })
     .then(response => ({
-      tree: response.data,
+      tree: response.data.tree,
+    }))
+    .catch(handleErrors);
+};
+
+export const cloneTree = (options = {}) => {
+  validateOptions(
+    'cloneTree',
+    ['name', 'tree', 'sourceGroup', 'sourceName'],
+    options,
+  );
+  return axios
+    .post(
+      `/app/components/task/app/api/v2/trees`,
+      {
+        ...options.tree,
+        title: `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`,
+      },
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      tree: response.data.tree,
     }))
     .catch(handleErrors);
 };

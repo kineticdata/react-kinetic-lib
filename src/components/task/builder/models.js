@@ -143,5 +143,5 @@ export const serializeTree = (
       .map(serializeNode)
       .toJS(),
   },
-  versionId: overwrite ? null : `${parseInt(versionId) - 1}`,
+  versionId: overwrite ? null : versionId,
 });
