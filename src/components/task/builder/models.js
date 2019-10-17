@@ -9,9 +9,13 @@ export const Point = Record({ x: 0, y: 0 }, 'Point');
 export const Tree = Record({
   bindings: OrderedMap(),
   connectors: OrderedMap(),
+  name: '',
   nextNodeId: 0,
   nextConnectorId: 0,
   nodes: OrderedMap(),
+  sourceGroup: '',
+  sourceName: '',
+  versionId: '0',
 });
 
 export const Node = Record({
@@ -51,7 +55,10 @@ export const Connector = Record({
 
 export const TreeBuilderState = Record({
   categories: OrderedMap(),
+  error: null,
+  loading: true,
   redoStack: List(),
+  saving: false,
   tree: Tree(),
   undoStack: List(),
 });
@@ -94,7 +101,14 @@ export const serializeConnector = ({
   type,
 }) => ({ from: tailId, label, to: headId, type, value: condition });
 
-export const deserializeTree = ({ treeJson, bindings }) => {
+export const deserializeTree = ({
+  bindings,
+  name,
+  sourceGroup,
+  sourceName,
+  treeJson,
+  versionId,
+}) => {
   const nodes = OrderedMap(
     treeJson.nodes.map(deserializeNode).map(n => [n.id, n]),
   );
@@ -104,20 +118,30 @@ export const deserializeTree = ({ treeJson, bindings }) => {
   return Tree({
     bindings,
     connectors,
+    name,
     nextNodeId: treeJson.lastId + 1,
     nextConnectorId: connectors.size,
     nodes,
+    sourceGroup,
+    sourceName,
+    versionId,
   });
 };
 
-export const serializeTree = ({ connectors, nextNodeId, nodes }) => ({
-  connectors: connectors
-    .toList()
-    .map(serializeConnector)
-    .toJS(),
-  lastId: nextNodeId - 1,
-  nodes: nodes
-    .toList()
-    .map(serializeNode)
-    .toJS(),
+export const serializeTree = (
+  { connectors, nextNodeId, nodes, versionId },
+  overwrite = false,
+) => ({
+  treeJson: {
+    connectors: connectors
+      .toList()
+      .map(serializeConnector)
+      .toJS(),
+    lastId: nextNodeId - 1,
+    nodes: nodes
+      .toList()
+      .map(serializeNode)
+      .toJS(),
+  },
+  versionId: overwrite ? null : `${parseInt(versionId) - 1}`,
 });
