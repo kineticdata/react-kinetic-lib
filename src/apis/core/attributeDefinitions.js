@@ -2,6 +2,17 @@ import axios from 'axios';
 import { bundle } from '../../helpers';
 import { handleErrors, headerBuilder, paramBuilder } from '../http';
 
+// The API returns the singular name of the attribute type, so we remove the "s",
+// except for userProfileAttributeDefinitions and datastoreFormAttributeDefinitions
+// TODO: KCORE-2982
+const responseEnvelope = attributeType =>
+  [
+    'userProfileAttributeDefinitions',
+    'datastoreFormAttributeDefinitions',
+  ].includes(attributeType)
+    ? attributeType
+    : attributeType.replace(/s$/, '');
+
 const validateOptions = (functionName, requiredOptions, options) => {
   const validAttributes = [
     'spaceAttributeDefinitions',
@@ -73,15 +84,14 @@ export const fetchAttributeDefinition = (options = {}) => {
     ['attributeType', 'attributeName'],
     options,
   );
-  // The API returns the singular name of the attribute type, so we remove the "s"
-  const responseEnvelope = attributeType.slice(0, -1);
+
   return axios
     .get(buildEndpoint(options), {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
     .then(response => ({
-      attributeDefinition: response.data[responseEnvelope],
+      attributeDefinition: response.data[responseEnvelope(attributeType)],
     }))
     .catch(handleErrors);
 };
@@ -99,14 +109,13 @@ export const createAttributeDefinition = (options = {}) => {
     ? `${bundle.apiLocation()}/kapps/${kappSlug}/${attributeType}`
     : `${bundle.apiLocation()}/${attributeType}`;
   // The API returns the singular name of the attribute type, so we remove the "s"
-  const responseEnvelope = attributeType.slice(0, -1);
   return axios
     .post(basePath, attributeDefinition, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
     .then(response => ({
-      attributeDefinition: response.data[responseEnvelope],
+      attributeDefinition: response.data[responseEnvelope(attributeType)],
     }))
     .catch(handleErrors);
 };
@@ -119,14 +128,13 @@ export const updateAttributeDefinition = (options = {}) => {
     options,
   );
   // The API returns the singular name of the attribute type, so we remove the "s"
-  const responseEnvelope = attributeType.slice(0, -1);
   return axios
     .put(buildEndpoint(options), attributeDefinition, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
     .then(response => ({
-      attributeDefinition: response.data[responseEnvelope],
+      attributeDefinition: response.data[responseEnvelope(attributeType)],
     }))
     .catch(handleErrors);
 };
@@ -139,9 +147,6 @@ export const deleteAttributeDefinition = (options = {}) => {
     options,
   );
 
-  // The API returns the singular name of the attribute type, so we remove the "s"
-  const responseEnvelope = attributeType.slice(0, -1);
-
   // Build URL and fetch the space.
   return axios
     .delete(buildEndpoint(options), {
@@ -149,7 +154,7 @@ export const deleteAttributeDefinition = (options = {}) => {
       headers: headerBuilder(options),
     })
     .then(response => ({
-      attributeDefinition: response.data[responseEnvelope],
+      attributeDefinition: response.data[responseEnvelope(attributeType)],
     }))
     .catch(handleErrors);
 };
