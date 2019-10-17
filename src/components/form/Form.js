@@ -536,6 +536,7 @@ class FormImplComponent extends Component {
               clearError={clearError(formKey)}
             />
           }
+          bindings={bindings}
           meta={fields.map(field =>
             Map({
               visible: field.visible,

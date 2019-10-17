@@ -53,6 +53,7 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         label: 'Definition ID',
         type: 'text',
         required: true,
+        enabled: false,
         initialValue: get(handler, 'definitionId', ''),
       },
 
@@ -61,6 +62,7 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         label: 'Definition Name',
         type: 'text',
         required: true,
+        enabled: false,
         initialValue: get(handler, 'definitionName', ''),
       },
 
@@ -69,6 +71,7 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         label: 'Definition Version',
         type: 'text',
         required: true,
+        enabled: false,
         initialValue: get(handler, 'definitionVersion', ''),
       },
       {
@@ -76,6 +79,7 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         label: 'Name',
         type: 'text',
         required: true,
+        enabled: false,
         initialValue: get(handler, 'name', ''),
       },
       {
@@ -83,13 +87,14 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         label: 'Description',
         type: 'textarea',
         required: true,
+        enabled: false,
         initialValue: get(handler, 'description', ''),
       },
       {
         name: 'status',
         label: 'Status',
         type: 'select',
-        required: false,
+        required: true,
         options: [
           { label: 'Active', value: 'Active' },
           { label: 'Paused', value: 'Paused' },
