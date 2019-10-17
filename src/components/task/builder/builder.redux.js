@@ -10,7 +10,7 @@ import {
   TreeBuilderState,
 } from './models';
 import {
-  createTree,
+  cloneTree,
   fetchTaskCategories,
   fetchTree2,
   updateTree2,
@@ -64,11 +64,13 @@ regSaga(
     const { name, sourceGroup, sourceName } = tree;
     // if a newName was passed we will be creating a new tree with the builder
     // contents, otherwise just an update
-    const { error } = yield newName
-      ? call(createTree, {
+    const { error, tree: newTree } = yield newName
+      ? call(cloneTree, {
+          name,
+          sourceGroup,
+          sourceName,
           tree: {
             name: newName,
-            title: `${sourceName} :: ${sourceGroup} :: ${name}`,
             ...serializeTree(tree, true),
           },
         })
@@ -86,7 +88,7 @@ regSaga(
             error: error.message || error,
             onError,
           })
-        : action('TREE_SAVE_SUCCESS', { treeKey, newName, onSave }),
+        : action('TREE_SAVE_SUCCESS', { treeKey, tree: newTree, onSave }),
     );
   }),
 );
@@ -130,13 +132,16 @@ regHandlers({
       error,
       saving: false,
     }),
-  TREE_SAVE_SUCCESS: (state, { payload: { newName, treeKey } }) =>
+  TREE_SAVE_SUCCESS: (state, { payload: { tree, treeKey } }) =>
     state
       .mergeIn(['trees', treeKey], {
         error: null,
         saving: false,
       })
-      .updateIn(['trees', treeKey, 'tree', 'name'], name => newName || name),
+      .mergeIn(['trees', treeKey, 'tree'], {
+        name: tree.name,
+        versionId: tree.versionId,
+      }),
   TREE_UNDO: (state, { payload: { treeKey } }) =>
     state.getIn(['trees', treeKey, 'undoStack']).isEmpty()
       ? state
