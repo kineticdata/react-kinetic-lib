@@ -25,7 +25,10 @@ const dataSource = ({ workflowType, sourceName, sourceGroup }) => ({
         : paramData.filters.getIn(['sourceGroup', 'value']),
       type: workflowType || 'Tree',
       include: 'details',
-      orderBy: paramData.sortColumn,
+      orderBy:
+        paramData.sortColumn === 'sourceName'
+          ? 'sourceRoot.name'
+          : paramData.sortColumn,
       direction: paramData.sortColumn ? paramData.sortDirection : undefined,
       limit: paramData.pageSize,
       offset: paramData.nextPageToken,
