@@ -6,7 +6,7 @@ const generateNextPageToken = data =>
 
 export const fetchTrees = (options = {}) =>
   axios
-    .get(`/app/components/task/app/api/v2/trees`, {
+    .get('/app/components/task/app/api/v2/trees', {
       params: {
         type: options.type,
         limit: options.limit,
@@ -84,7 +84,7 @@ export const updateTree2 = (options = {}) => {
       },
     })
     .then(response => ({
-      tree: response.data.tree,
+      tree: response.data,
     }))
     .catch(handleErrors);
 };
@@ -92,38 +92,13 @@ export const updateTree2 = (options = {}) => {
 export const createTree = (options = {}) => {
   validateOptions('createTree', ['tree'], options);
   return axios
-    .post(`/app/components/task/app/api/v2/trees`, options.tree, {
+    .post('/app/components/task/app/api/v2/trees', options.tree, {
       params: {
         include: options.include,
       },
     })
     .then(response => ({
-      tree: response.data.tree,
-    }))
-    .catch(handleErrors);
-};
-
-export const cloneTree = (options = {}) => {
-  validateOptions(
-    'cloneTree',
-    ['name', 'tree', 'sourceGroup', 'sourceName'],
-    options,
-  );
-  return axios
-    .post(
-      `/app/components/task/app/api/v2/trees`,
-      {
-        ...options.tree,
-        title: `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`,
-      },
-      {
-        params: {
-          include: options.include,
-        },
-      },
-    )
-    .then(response => ({
-      tree: response.data.tree,
+      tree: response.data,
     }))
     .catch(handleErrors);
 };
@@ -153,7 +128,7 @@ export const fetchTaskCategories = (options = {}) =>
 export const createTaskCategory = (options = {}) => {
   validateOptions('createTaskCategory', ['category'], options);
   return axios
-    .post(`/app/components/task/app/api/v2/categories`, options.category, {
+    .post('/app/components/task/app/api/v2/categories', options.category, {
       params: {
         include: options.include,
       },
@@ -367,54 +342,62 @@ export const fetchUsage = (options = {}) => {
     }));
 };
 
-export const stopEngine = (options = {}) => {
-  return axios
-    .post(`/app/components/task/app/api/v2/engine`, {
+export const stopEngine = (options = {}) =>
+  axios
+    .post('/app/components/task/app/api/v2/engine', {
       action: 'stop',
       asynchronous: options.asynchronous || 'false',
     })
-    .then(response => ({
-      ...response.data,
-    }));
-};
+    .then(response => response.data);
 
-export const startEngine = (options = {}) => {
-  return axios
-    .post(`/app/components/task/app/api/v2/engine`, {
+export const startEngine = (options = {}) =>
+  axios
+    .post('/app/components/task/app/api/v2/engine', {
       action: 'start',
       asynchronous: options.asynchronous || 'false',
     })
-    .then(response => ({
-      ...response.data,
-    }));
-};
+    .then(response => response.data);
 
-export const fetchEngineStatus = (options = {}) => {
-  return axios.get(`/app/components/task/app/api/v2/engine`).then(response => ({
-    ...response.data,
+export const fetchEngineStatus = () =>
+  axios
+    .get('/app/components/task/app/api/v2/engine')
+    .then(response => response.data);
+
+export const fetchEngineLicense = () =>
+  axios
+    .get('/app/components/task/app/api/v2/config/license')
+    .then(response => response.data);
+
+export const fetchEngineSettings = () =>
+  axios.get('/app/components/task/app/api/v2/config/engine').then(response => ({
+    settings: response.data.properties,
   }));
-};
 
-export const fetchEngineLicense = (options = {}) => {
-  return axios
-    .get(`/app/components/task/app/api/v2/config/license`)
-    .then(response => ({
-      ...response.data,
-    }));
-};
-
-export const fetchEngineSettings = (options = {}) => {
-  return axios
-    .get(`/app/components/task/app/api/v2/config/engine`)
-    .then(response => ({
-      settings: response.data.properties,
-    }));
-};
-
-export const updateEngineSettings = (options = {}) => {
-  return axios
-    .put(`/app/components/task/app/api/v2/config/engine`, options.settings)
+export const updateEngineSettings = (options = {}) =>
+  axios
+    .put('/app/components/task/app/api/v2/config/engine', options.settings)
     .then(response => ({
       message: response.data.message,
     }));
-};
+
+export const fetchTaskRuns = (options = {}) =>
+  axios
+    .get('/app/components/task/app/api/v2/runs', {
+      params: {
+        type: options.type,
+        limit: options.limit,
+        include: options.include,
+        offset: options.offset,
+        source: options.source || undefined,
+        group: options.group || undefined,
+        name: options.name || undefined,
+        ownerEmail: options.ownerEmail || undefined,
+        status: options.status || undefined,
+        orderBy: options.orderBy,
+        direction: options.direction,
+      },
+    })
+    .then(response => ({
+      runs: response.data.runs,
+      nextPageToken: generateNextPageToken(response.data),
+    }));
