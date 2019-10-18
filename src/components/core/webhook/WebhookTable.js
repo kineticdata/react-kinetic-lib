@@ -29,7 +29,6 @@ const columns = [
     filter: 'startsWith',
     type: 'text',
   },
-  { value: 'authStrategy', title: 'Authentication Strategy' },
   { value: 'event', title: 'Event', filter: 'startsWith', type: 'text' },
   { value: 'filter', title: 'Filter' },
   { value: 'name', title: 'Name', filter: 'startsWith', type: 'text' },
