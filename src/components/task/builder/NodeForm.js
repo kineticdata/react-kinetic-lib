@@ -5,6 +5,18 @@ import { NodeMessage } from './models';
 
 const dataSources = ({ node }) => {};
 
+const getOptions = menu =>
+  menu
+    .split(',')
+    .filter(value => !!value)
+    .map(value => ({ label: value, value }));
+
+const checkDependsOn = parameter =>
+  !parameter.dependsOnId ||
+  (({ values }) =>
+    values.get(`parameter_${parameter.dependsOnId}`) ===
+    parameter.dependsOnValue);
+
 const fields = ({ node }) => () => [
   {
     name: 'name',
@@ -42,11 +54,13 @@ const fields = ({ node }) => () => [
   ...node.parameters.map(parameter => ({
     name: `parameter_${parameter.id}`,
     label: parameter.label,
-    type: 'code',
+    type: parameter.menu ? 'select' : 'code',
     helpText: parameter.description,
     initialValue: parameter.value,
+    options: parameter.menu ? getOptions(parameter.menu) : [],
     required: parameter.required,
     transient: true,
+    visible: checkDependsOn(parameter),
   })),
   {
     name: 'parameters',

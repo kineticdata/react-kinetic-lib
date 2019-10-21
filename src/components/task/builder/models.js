@@ -33,6 +33,8 @@ export const Node = Record({
 });
 
 export const NodeParameter = Record({
+  dependsOnId: '',
+  dependsOnValue: '',
   description: '',
   id: '',
   label: '',
