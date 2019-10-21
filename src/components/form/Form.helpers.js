@@ -34,11 +34,12 @@ export const resolveFieldConfig = (
           .map(field => ({ ...field, transient: true })),
       ]
         .filter(field => !!field)
-        .map(({ name, type, ...fieldConfig }) => ({
+        .map(({ name, type, ...fieldConfig }, i) => ({
           ...fieldConfig,
           ...(alterFields[name] || {}),
           name,
           type,
+          i,
         }))
         .map(field => [field.name, field]),
     );
@@ -66,6 +67,7 @@ export const createField = formKey => ({
   transient,
   type,
   visible,
+  i,
 }) => {
   const defaultedValue =
     initialValue === undefined
@@ -73,7 +75,7 @@ export const createField = formKey => ({
       : fromJS(initialValue);
   return Field({
     // Derived options
-    id: `${formKey}-${name}`,
+    id: `${formKey}-${i}`,
     initialValue: defaultedValue,
     renderAttributes: fromJS(renderAttributes),
     value: defaultedValue,

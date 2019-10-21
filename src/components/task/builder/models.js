@@ -24,7 +24,7 @@ export const Node = Record({
   defers: false,
   definitionId: '',
   id: '',
-  messages: [],
+  messages: List(),
   name: '',
   parameters: List(),
   position: Point(),
@@ -40,6 +40,8 @@ export const NodeParameter = Record({
   required: false,
   value: '',
 });
+
+export const NodeMessage = Record({ type: '', value: '' });
 
 export const Connector = Record({
   condition: '',
@@ -69,9 +71,10 @@ export const TreeBuilderState = Record({
  * convert them to immutable records used by the builder implementation        *
  ******************************************************************************/
 
-export const deserializeNode = ({ position, parameters, ...props }) =>
+export const deserializeNode = ({ messages, position, parameters, ...props }) =>
   Node({
     ...props,
+    messages: List(messages.map(NodeMessage)),
     parameters: List(parameters.map(NodeParameter)),
     position: Point(position),
   });
