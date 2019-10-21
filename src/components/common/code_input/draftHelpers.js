@@ -149,11 +149,24 @@ export const closeTypeahead = editorState => {
   );
 };
 
-export const selectTypeaheadItem = (self, isTemplate) => (
-  label,
-  value,
-  selection,
-) => () => {
+export const selectTypeaheadItem = self => (label, value, selection) => () => {
+  // determine how the selected value should be wrapped based on the language of
+  // this CodeInput instance,
+  const text =
+    self.props.language === 'js-template'
+      ? `\${${value}}`
+      : self.props.language === 'erb'
+      ? `<%= ${value} %>`
+      : value;
+  // when a selection is passed with a value we need to accommodate for the
+  // number of characters we add when we wrap the value
+  const templateOffset =
+    self.props.language === 'js-template'
+      ? 2
+      : self.props.language === 'erb'
+      ? 4
+      : 0;
+
   const entities = getEntities(self.state.editorState);
   if (!value) {
     const { start, end, data } = entities.last();
@@ -179,11 +192,11 @@ export const selectTypeaheadItem = (self, isTemplate) => (
       apply(
         self.state.editorState,
         select({ anchor: start, focus: end }),
-        insertText({ text: isTemplate ? `\${${value}}` : value }),
+        insertText({ text }),
         selection &&
           select({
-            anchor: start + selection.get('start') + (isTemplate ? 2 : 0),
-            focus: start + selection.get('end') + (isTemplate ? 2 : 0),
+            anchor: start + selection.get('start') + templateOffset,
+            focus: start + selection.get('end') + templateOffset,
           }),
       ),
     );

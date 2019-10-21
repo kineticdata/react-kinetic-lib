@@ -34,12 +34,11 @@ export const resolveFieldConfig = (
           .map(field => ({ ...field, transient: true })),
       ]
         .filter(field => !!field)
-        .map(({ name, type, ...fieldConfig }, i) => ({
+        .map(({ name, type, ...fieldConfig }) => ({
           ...fieldConfig,
           ...(alterFields[name] || {}),
           name,
           type,
-          i,
         }))
         .map(field => [field.name, field]),
     );
@@ -53,6 +52,7 @@ export const createField = formKey => ({
   helpText,
   initialValue,
   label,
+  language,
   name,
   onChange,
   options,
@@ -67,7 +67,6 @@ export const createField = formKey => ({
   transient,
   type,
   visible,
-  i,
 }) => {
   const defaultedValue =
     initialValue === undefined
@@ -75,7 +74,7 @@ export const createField = formKey => ({
       : fromJS(initialValue);
   return Field({
     // Derived options
-    id: `${formKey}-${i}`,
+    id: btoa(`${formKey} ${name}`).replace(/=+$/, ''),
     initialValue: defaultedValue,
     renderAttributes: fromJS(renderAttributes),
     value: defaultedValue,
@@ -108,6 +107,7 @@ export const createField = formKey => ({
     constraint,
     constraintMessage,
     helpText,
+    language,
     name,
     onChange,
     pattern,

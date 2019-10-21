@@ -179,7 +179,8 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
     {
       name: 'submissionLabelExpression',
       label: 'Submission Label',
-      type: 'code-template',
+      type: 'code',
+      language: 'js-template',
       initialValue: get(form, 'submissionLabelExpression') || '',
       options: ({ space, kapp, form }) =>
         buildBindings({

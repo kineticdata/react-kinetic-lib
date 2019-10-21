@@ -95,6 +95,7 @@ const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
       name: 'rule',
       label: 'Rule',
       type: 'code',
+      language: 'js',
       required: true,
       options: ({ space, kapp, values }) =>
         buildBindings({ space, kapp, scope: values.get('type') }),

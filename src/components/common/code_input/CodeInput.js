@@ -110,10 +110,11 @@ export class CodeInput extends Component {
                                       active: i === active,
                                     })}
                                     key={label}
-                                    onClick={selectTypeaheadItem(
-                                      this,
-                                      this.props.template,
-                                    )(label, value, selection)}
+                                    onClick={selectTypeaheadItem(this)(
+                                      label,
+                                      value,
+                                      selection,
+                                    )}
                                     style={{
                                       userSelect: 'none',
                                       MozUserSelect: 'none',
@@ -160,13 +161,14 @@ export class CodeInput extends Component {
                     ' '.repeat(typeaheadEnd - typeaheadStart) +
                     contentBlock.getText().slice(typeaheadEnd)
                   : contentBlock.getText();
-              const processor = props.template
-                ? props.ruby
-                  ? processErbTemplate
-                  : processJavaScriptTemplate
-                : props.ruby
-                ? processRuby
-                : processJavaScript;
+              const processor =
+                props.language === 'js'
+                  ? processJavaScript
+                  : props.language === 'js-template'
+                  ? processJavaScriptTemplate
+                  : props.language === 'ruby'
+                  ? processRuby
+                  : processErbTemplate;
               this.tokenStarts = {};
               this.tokenEnds = {};
               processor(text)
@@ -195,7 +197,9 @@ export class CodeInput extends Component {
                   'code',
                   this.tokenStarts[start] || this.tokenEnds[end],
                   {
-                    interpolation: props.template,
+                    interpolation:
+                      props.language === 'js-template' ||
+                      props.language === 'erb',
                   },
                 )}
               >
@@ -318,11 +322,7 @@ export class CodeInput extends Component {
       const activeOption = options.get(active);
       if (activeOption) {
         const { label, value, selection } = activeOption;
-        selectTypeaheadItem(this, this.props.template)(
-          label,
-          value,
-          selection,
-        )();
+        selectTypeaheadItem(this)(label, value, selection)();
       }
     }
     if (command === 'next-typeahead-option') {

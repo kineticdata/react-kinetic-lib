@@ -55,6 +55,7 @@ const fields = ({ node }) => () => [
     name: `parameter_${parameter.id}`,
     label: parameter.label,
     type: parameter.menu ? 'select' : 'code',
+    language: parameter.menu ? null : 'erb',
     helpText: parameter.description,
     initialValue: parameter.value,
     options: parameter.menu ? getOptions(parameter.menu) : [],
@@ -75,6 +76,7 @@ const fields = ({ node }) => () => [
     name: 'message_Create',
     label: 'Create Message',
     type: 'code',
+    language: 'erb',
     initialValue: node.messages
       .filter(message => message.type === 'Create')
       .map(message => message.value)
@@ -86,6 +88,7 @@ const fields = ({ node }) => () => [
     name: 'message_Update',
     label: 'Update Message',
     type: 'code',
+    language: 'erb',
     initialValue: node.messages
       .filter(message => message.type === 'Update')
       .map(message => message.value)
@@ -97,6 +100,7 @@ const fields = ({ node }) => () => [
     name: 'message_Complete',
     label: 'Complete Message',
     type: 'code',
+    language: 'erb',
     initialValue: node.messages
       .filter(message => message.type === 'Complete')
       .map(message => message.value)

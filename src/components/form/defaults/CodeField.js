@@ -7,6 +7,7 @@ export const CodeField = props =>
       <label htmlFor={props.id || props.name}>{props.label}</label>
       <CodeInput
         id={props.id || props.name}
+        language={props.language}
         bindings={props.options}
         value={props.value}
         onBlur={props.onBlur}

@@ -79,7 +79,8 @@ const fields = ({ modelName, attributeName }) => ({ bridgeModelAttribute }) =>
     {
       name: 'mapping',
       label: 'Mapping',
-      type: 'code-template',
+      type: 'code',
+      language: 'js-template',
       required: true,
       initialValue: bridgeModelAttribute
         ? bridgeModelAttribute.get('structureField')

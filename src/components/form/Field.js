@@ -6,7 +6,6 @@ export const typeToComponent = {
   'text-multi': 'TextMultiField',
   checkbox: 'CheckboxField',
   code: 'CodeField',
-  'code-template': 'CodeTemplateField',
   form: 'FormField',
   'form-multi': 'FormMultiField',
   password: 'PasswordField',
