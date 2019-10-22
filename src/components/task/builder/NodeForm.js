@@ -1,7 +1,21 @@
 import React from 'react';
+import { List } from 'immutable';
 import { generateForm } from '../../form/Form';
+import { NodeMessage } from './models';
 
 const dataSources = ({ node }) => {};
+
+const getOptions = menu =>
+  menu
+    .split(',')
+    .filter(value => !!value)
+    .map(value => ({ label: value, value }));
+
+const checkDependsOn = parameter =>
+  !parameter.dependsOnId ||
+  (({ values }) =>
+    values.get(`parameter_${parameter.dependsOnId}`) ===
+    parameter.dependsOnValue);
 
 const fields = ({ node }) => () => [
   {
@@ -9,8 +23,9 @@ const fields = ({ node }) => () => [
     label: 'Name',
     type: 'text',
     initialValue: node.name,
+    required: true,
   },
-  {
+  node.deferrable && {
     name: 'defers',
     label: 'Defers',
     type: 'checkbox',
@@ -23,10 +38,11 @@ const fields = ({ node }) => () => [
     initialValue: node.visible,
   },
   {
-    name: 'parameter',
-    label: 'Parameter',
-    type: 'code',
-    initialValue: node.parameter,
+    name: 'definitionId',
+    label: 'Task Definition Id',
+    type: 'text',
+    initialValue: node.definitionId,
+    enabled: false,
   },
   {
     name: 'id',
@@ -34,6 +50,77 @@ const fields = ({ node }) => () => [
     type: 'text',
     enabled: false,
     initialValue: node.id,
+  },
+  ...node.parameters.map(parameter => ({
+    name: `parameter_${parameter.id}`,
+    label: parameter.label,
+    type: parameter.menu ? 'select' : 'code',
+    language: parameter.menu ? null : 'erb',
+    helpText: parameter.description,
+    initialValue: parameter.value,
+    options: parameter.menu ? getOptions(parameter.menu) : [],
+    required: parameter.required,
+    transient: true,
+    visible: checkDependsOn(parameter),
+  })),
+  {
+    name: 'parameters',
+    type: null,
+    visible: false,
+    serialize: ({ values }) =>
+      node.parameters.map(parameter =>
+        parameter.set('value', values.get(`parameter_${parameter.id}`)),
+      ),
+  },
+  {
+    name: 'message_Create',
+    label: 'Create Message',
+    type: 'code',
+    language: 'erb',
+    initialValue: node.messages
+      .filter(message => message.type === 'Create')
+      .map(message => message.value)
+      .first(''),
+    transient: true,
+    visible: ({ values }) => values.get('defers', false),
+  },
+  {
+    name: 'message_Update',
+    label: 'Update Message',
+    type: 'code',
+    language: 'erb',
+    initialValue: node.messages
+      .filter(message => message.type === 'Update')
+      .map(message => message.value)
+      .first(''),
+    transient: true,
+    visible: ({ values }) => values.get('defers', false),
+  },
+  {
+    name: 'message_Complete',
+    label: 'Complete Message',
+    type: 'code',
+    language: 'erb',
+    initialValue: node.messages
+      .filter(message => message.type === 'Complete')
+      .map(message => message.value)
+      .first(''),
+    transient: true,
+  },
+  {
+    name: 'messages',
+    type: null,
+    visible: false,
+    serialize: ({ values }) =>
+      List(
+        values.get('defers') ? ['Create', 'Update', 'Complete'] : ['Complete'],
+      )
+        .map(type =>
+          values.get(`message_${type}`)
+            ? NodeMessage({ type, value: values.get(`message_${type}`) })
+            : null,
+        )
+        .filter(message => message),
   },
 ];
 

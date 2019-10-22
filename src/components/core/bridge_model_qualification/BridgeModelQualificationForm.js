@@ -103,7 +103,8 @@ const fields = ({ modelName, qualificationName }) => ({
     {
       name: 'query',
       label: 'Query',
-      type: 'code-template',
+      type: 'code',
+      language: 'js-template',
       required: false,
       initialValue: bridgeModelQualificationMapping
         ? bridgeModelQualificationMapping.get('query', '')

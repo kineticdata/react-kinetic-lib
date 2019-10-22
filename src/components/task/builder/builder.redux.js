@@ -194,10 +194,16 @@ regHandlers({
   },
   TREE_UPDATE_NODE: (
     state,
-    { payload: { treeKey, id, name, defers, visible } },
+    { payload: { treeKey, id, messages, defers, name, parameters, visible } },
   ) =>
     remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
-      tree.mergeIn(['nodes', id], { name, defers, visible }),
+      tree.mergeIn(['nodes', id], {
+        defers,
+        messages,
+        name,
+        parameters,
+        visible,
+      }),
     ),
   TREE_UPDATE_NODE_POSITION: (state, { payload: { treeKey, id, position } }) =>
     remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>

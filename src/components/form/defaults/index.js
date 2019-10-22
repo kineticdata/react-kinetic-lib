@@ -7,7 +7,6 @@ import { FormError } from './FormError';
 import { FormField } from './FormField';
 import { FormMultiField } from './FormMultiField';
 import { FormLayout } from './FormLayout';
-import { CodeTemplateField } from './CodeTemplateField';
 import { PasswordField } from './PasswordField';
 import { RadioField } from './RadioField';
 import { TeamField } from './TeamField';
@@ -24,7 +23,6 @@ export const DefaultFieldConfig = Map({
   AttributesField,
   CheckboxField,
   CodeField,
-  CodeTemplateField,
   FormButtons,
   FormError,
   FormField,

@@ -95,6 +95,7 @@ const fields = ({ kappSlug, name }) => ({ webhook }) =>
       name: 'filter',
       label: 'Filter',
       type: 'code',
+      language: 'js',
       initialValue: webhook ? webhook.get('filter') : '',
       options: ({ space, kapp, values }) =>
         buildBindings({ space, kapp, scope: values.get('type') }),
@@ -102,7 +103,8 @@ const fields = ({ kappSlug, name }) => ({ webhook }) =>
     {
       name: 'url',
       label: 'URL',
-      type: 'code-template',
+      type: 'code',
+      language: 'js-template',
       required: true,
       initialValue: webhook ? webhook.get('url') : '',
       options: ({ space, kapp, values }) =>

@@ -52,6 +52,7 @@ export const createField = formKey => ({
   helpText,
   initialValue,
   label,
+  language,
   name,
   onChange,
   options,
@@ -73,7 +74,7 @@ export const createField = formKey => ({
       : fromJS(initialValue);
   return Field({
     // Derived options
-    id: `${formKey}-${name}`,
+    id: btoa(`${formKey} ${name}`).replace(/=+$/, ''),
     initialValue: defaultedValue,
     renderAttributes: fromJS(renderAttributes),
     value: defaultedValue,
@@ -106,6 +107,7 @@ export const createField = formKey => ({
     constraint,
     constraintMessage,
     helpText,
+    language,
     name,
     onChange,
     pattern,

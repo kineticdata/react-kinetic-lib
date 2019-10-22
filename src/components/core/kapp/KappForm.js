@@ -130,7 +130,8 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
     {
       name: 'defaultSubmissionLabelExpression',
       label: 'Submission Label',
-      type: 'code-template',
+      type: 'code',
+      language: 'js-template',
       initialValue: get(kapp, 'defaultSubmissionLabelExpression') || '',
       options: ({ space, kapp, attributeDefinitions }) =>
         buildBindings({

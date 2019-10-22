@@ -60,6 +60,7 @@ export const Field = Record({
   id: '',
   initialValue: null,
   label: '',
+  language: '',
   name: '',
   onChange: null,
   options: List(),

@@ -26,6 +26,7 @@ const fields = ({ connector }) => () => [
     name: 'condition',
     label: 'Condition',
     type: 'code',
+    language: 'ruby',
     initialValue: connector.condition,
   },
   {
