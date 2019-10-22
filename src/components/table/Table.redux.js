@@ -328,6 +328,7 @@ const applyClientSideFilters = (tableData, data) => {
 
   return List(data)
     .map(d => Map(d))
+
     .update(d => d.filter(clientSideRowFilter(filters)))
     .update(d =>
       sortColumn ? d.sortBy(r => r.get(sortColumn.get('value'))) : d,
@@ -336,11 +337,23 @@ const applyClientSideFilters = (tableData, data) => {
     .update(d => d.slice(startIndex, endIndex));
 };
 
+const transformData = (data, tableData) =>
+  data.map(row => {
+    const columns = tableData.get('columns');
+    return columns.reduce((rowData, column) => {
+      const valueTransform = column.get('valueTransform', v => v);
+
+      return rowData.update(column.get('value'), value =>
+        valueTransform(value, row),
+      );
+    }, row);
+  });
+
 const calculateRows = tableData => {
   const dataSource = tableData.get('dataSource')(tableData.get('tableOptions'));
-  const data = tableData.get('data');
 
   if (isClientSide(tableData)) {
+    const data = transformData(tableData.get('data'), tableData);
     const rows = applyClientSideFilters(tableData, data);
 
     return Promise.resolve({ rows, data });
@@ -357,12 +370,13 @@ const calculateRows = tableData => {
     return dataSource.fn(...params).then(response => {
       if (response.error) return response;
 
-      const { nextPageToken, data } = transform(response);
-      const rows = fromJS(data);
+      const { nextPageToken, data: responseData } = transform(response);
+      const data = fromJS(responseData);
+      const rows = transformData(data, tableData);
 
       return {
         nextPageToken,
-        data: List(data),
+        data,
         rows: dataSource.clientSideSearch
           ? applyClientSideFilters(tableData, rows)
           : rows,

@@ -390,6 +390,8 @@ export const fetchTaskRuns = (options = {}) =>
         offset: options.offset,
         source: options.source || undefined,
         group: options.group || undefined,
+        treeType: options.treeType || undefined,
+        sourceId: options.sourceId || undefined,
         name: options.name || undefined,
         ownerEmail: options.ownerEmail || undefined,
         status: options.status || undefined,

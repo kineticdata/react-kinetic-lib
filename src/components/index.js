@@ -112,6 +112,7 @@ export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 export { TreeBuilder } from './task/builder/TreeBuilder';
 export { ConnectorForm } from './task/builder/ConnectorForm';
 export { NodeForm } from './task/builder/NodeForm';
+export { RunTable } from './task/runs/RunTable';
 export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { WorkflowForm } from './task/workflows/WorkflowForm';
 export { SourceTable } from './task/sources/SourceTable';
