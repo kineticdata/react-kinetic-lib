@@ -164,7 +164,7 @@ const fields = () => ({
     },
     {
       name: 'bridgehubCustom',
-      label: 'Use Private Bridgehub',
+      label: 'Use custom Bridgehub',
       type: 'checkbox',
       visible: true,
       transient: true,
