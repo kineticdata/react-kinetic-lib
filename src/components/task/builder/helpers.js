@@ -1,4 +1,7 @@
 import * as constants from './constants';
+import { List, Map, OrderedMap } from 'immutable';
+import { Tree, Node, Connector } from './models';
+import { isObject } from 'lodash-es';
 
 export const isIE11 = document.documentMode === 11;
 
@@ -66,3 +69,84 @@ export const isPointInNode = point => node =>
   point.x <= node.position.x + constants.NODE_WIDTH &&
   point.y >= node.position.y &&
   point.y <= node.position.y + constants.NODE_HEIGHT;
+
+const concatMap = (map1, map2) =>
+  map2.reduce((reduction, value, key) => reduction.set(key, value), map1);
+
+// gets the parents for the given node by searching through the tree's
+// connectors by `headId` then retrieving the parent nodes from the tree's node
+// map
+const getParents = (tree, node) =>
+  tree.connectors
+    .toList()
+    .filter(connector => connector.headId === node.id)
+    .map(connector => tree.nodes.get(connector.tailId));
+
+// gets the ancestors for the given node by recursively traversing the parent
+// nodes, as a map, the result should not contain duplicates and this processes
+// in depth-first order
+export const getAncestors = (tree, node, result = Map()) =>
+  // get the direct parents of the node, adding them to the result and making
+  // recursive call from the parent if necessary
+  getParents(tree, node).reduce(
+    (reduction, parent) =>
+      // if the parent is already inside the result we do not want to re-add and
+      // definitely do not want to make a recursive call
+      reduction.has(parent.id)
+        ? reduction
+        : // make the recursive call for ancestors from the parent node (making
+          // sure to add it to the result map passed forward), then concat the
+          // result of the recursive call with the our current reduction value (so
+          // sibling recursive calls will not reprocess nodes already present)
+          concatMap(
+            reduction,
+            getAncestors(tree, parent, reduction.set(parent.id, parent)),
+          ),
+    result,
+  );
+
+// recursive helper that calls bindify if the current raw value is an object
+// or returns the leaf value object if not (removing the erb tags at the same
+// time)
+const bindify = raw =>
+  Map(raw).map(value =>
+    isObject(value)
+      ? Map({ children: bindify(value) })
+      : Map({ value: value.replace(/^<%=(.*)%>$/, '$1') }),
+  );
+
+export const buildBindings = (tree, tasks, node) => {
+  const ancestors = getAncestors(tree, node);
+  return ancestors.isEmpty()
+    ? bindify(tree.bindings)
+    : bindify(tree.bindings).set(
+        'Results',
+        Map({
+          children: ancestors
+            // convert the node map to use the name as the key
+            .mapKeys((_, node) => node.name)
+            // normalize the outputs / results property (routine / handler
+            // respectively)
+            .map(node => {
+              const task = tasks.get(node.definitionId);
+              return (task && task.results) || task.outputs || [];
+            })
+            // filter out any nodes that have no outputs / results
+            .filter(results => results.length > 0)
+            // convert the results list to the bindings map using the name property
+            // of each result object
+            .map((results, nodeNode) =>
+              Map({
+                children: OrderedMap(
+                  results.map(result => [
+                    result.name,
+                    Map({
+                      value: `@results['${nodeNode}']['${result.name}']`,
+                    }),
+                  ]),
+                ),
+              }),
+            ),
+        }),
+      );
+};

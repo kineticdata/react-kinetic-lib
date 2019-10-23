@@ -2,6 +2,7 @@ import React from 'react';
 import { List } from 'immutable';
 import { generateForm } from '../../form/Form';
 import { NodeMessage } from './models';
+import { buildBindings } from './helpers';
 
 const dataSources = ({ node }) => {};
 
@@ -17,7 +18,7 @@ const checkDependsOn = parameter =>
     values.get(`parameter_${parameter.dependsOnId}`) ===
     parameter.dependsOnValue);
 
-const fields = ({ node }) => () => [
+const fields = ({ tasks, tree, node }) => () => [
   {
     name: 'name',
     label: 'Name',
@@ -58,7 +59,9 @@ const fields = ({ node }) => () => [
     language: parameter.menu ? null : 'erb',
     helpText: parameter.description,
     initialValue: parameter.value,
-    options: parameter.menu ? getOptions(parameter.menu) : [],
+    options: parameter.menu
+      ? getOptions(parameter.menu)
+      : buildBindings(tree, tasks, node),
     required: parameter.required,
     transient: true,
     visible: checkDependsOn(parameter),
@@ -76,11 +79,12 @@ const fields = ({ node }) => () => [
     name: 'message_Create',
     label: 'Create Message',
     type: 'code',
-    language: 'erb',
     initialValue: node.messages
       .filter(message => message.type === 'Create')
       .map(message => message.value)
       .first(''),
+    language: 'erb',
+    options: buildBindings(tree, tasks, node),
     transient: true,
     visible: ({ values }) => values.get('defers', false),
   },
@@ -88,11 +92,12 @@ const fields = ({ node }) => () => [
     name: 'message_Update',
     label: 'Update Message',
     type: 'code',
-    language: 'erb',
     initialValue: node.messages
       .filter(message => message.type === 'Update')
       .map(message => message.value)
       .first(''),
+    language: 'erb',
+    options: buildBindings(tree, tasks, node),
     transient: true,
     visible: ({ values }) => values.get('defers', false),
   },
@@ -100,11 +105,12 @@ const fields = ({ node }) => () => [
     name: 'message_Complete',
     label: 'Complete Message',
     type: 'code',
-    language: 'erb',
     initialValue: node.messages
       .filter(message => message.type === 'Complete')
       .map(message => message.value)
       .first(''),
+    language: 'erb',
+    options: buildBindings(tree, tasks, node),
     transient: true,
   },
   {
@@ -127,7 +133,7 @@ const fields = ({ node }) => () => [
 const handleSubmit = ({ node }) => values => values.toObject();
 
 export const NodeForm = generateForm({
-  formOptions: ['node'],
+  formOptions: ['node', 'tasks', 'tree'],
   dataSources,
   fields,
   handleSubmit,
