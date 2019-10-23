@@ -125,6 +125,31 @@ export const fetchTaskCategories = (options = {}) =>
       categories: response.data.categories,
     }));
 
+export const cloneTree = (options = {}) => {
+  validateOptions(
+    'cloneTree',
+    ['name', 'tree', 'sourceGroup', 'sourceName'],
+    options,
+  );
+  return axios
+    .post(
+      `/app/components/task/app/api/v2/trees`,
+      {
+        ...options.tree,
+        title: `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`,
+      },
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      tree: response.data.tree,
+    }))
+    .catch(handleErrors);
+};
+
 export const createTaskCategory = (options = {}) => {
   validateOptions('createTaskCategory', ['category'], options);
   return axios
@@ -403,3 +428,13 @@ export const fetchTaskRuns = (options = {}) =>
       runs: response.data.runs,
       nextPageToken: generateNextPageToken(response.data),
     }));
+
+export const fetchTaskRun = (options = {}) => {
+  validateOptions('fetchTaskRun', ['runId'], options);
+
+  return axios
+    .get(`/app/components/task/app/api/v2/runs/${options.runId}`)
+    .then(response => ({
+      run: response.data.run,
+    }));
+};
