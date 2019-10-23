@@ -116,37 +116,35 @@ const bindify = raw =>
   );
 
 export const buildBindings = (tree, tasks, node) => {
-  const ancestors = getAncestors(tree, node);
-  return ancestors.isEmpty()
-    ? bindify(tree.bindings)
-    : bindify(tree.bindings).set(
-        'Results',
+  const ancestorResultBindings = Map({
+    children: getAncestors(tree, node)
+      // convert the node map to use the name as the key
+      .mapKeys((_, node) => node.name)
+      // normalize the outputs / results property (routine / handler
+      // respectively)
+      .map(node => {
+        const task = tasks.get(node.definitionId);
+        return (task && task.results) || task.outputs || [];
+      })
+      // filter out any nodes that have no outputs / results
+      .filter(results => results.length > 0)
+      // convert the results list to the bindings map using the name property
+      // of each result object
+      .map((results, nodeNode) =>
         Map({
-          children: ancestors
-            // convert the node map to use the name as the key
-            .mapKeys((_, node) => node.name)
-            // normalize the outputs / results property (routine / handler
-            // respectively)
-            .map(node => {
-              const task = tasks.get(node.definitionId);
-              return (task && task.results) || task.outputs || [];
-            })
-            // filter out any nodes that have no outputs / results
-            .filter(results => results.length > 0)
-            // convert the results list to the bindings map using the name property
-            // of each result object
-            .map((results, nodeNode) =>
+          children: OrderedMap(
+            results.map(result => [
+              result.name,
               Map({
-                children: OrderedMap(
-                  results.map(result => [
-                    result.name,
-                    Map({
-                      value: `@results['${nodeNode}']['${result.name}']`,
-                    }),
-                  ]),
-                ),
+                value: `@results['${nodeNode}']['${result.name}']`,
               }),
-            ),
+            ]),
+          ),
         }),
-      );
+      ),
+  });
+  const otherBindings = bindify(tree.bindings);
+  return ancestorResultBindings.get('children').isEmpty()
+    ? otherBindings
+    : otherBindings.set('Results', ancestorResultBindings);
 };
