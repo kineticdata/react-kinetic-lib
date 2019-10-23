@@ -73,12 +73,15 @@ const fields = ({ username }) => ({ user }) =>
       label: 'Enabled?',
       type: 'checkbox',
       initialValue: user ? get(user, 'enabled') : true,
+      helpText: 'Enabled users are allowed to login to the system.',
     },
     {
       name: 'spaceAdmin',
       label: 'Space Admin?',
       type: 'checkbox',
       initialValue: user ? get(user, 'spaceAdmin') : false,
+      helpText:
+        'Space Admins are users with full access within a space. Security Policies are not applied to any users that are Space Admins.',
     },
     {
       name: 'password',
@@ -122,6 +125,8 @@ const fields = ({ username }) => ({ user }) =>
       type: 'text',
       required: false,
       initialValue: get(user, 'allowedIps') || '',
+      helpText:
+        'Allowed IP Addresses allow administrators to restrict which IP addresses a user can login with. Setting this to * will allow the user to login from any IP Address. If you need to add more than one range, simply separate them with a comma, e.g. 108.171.123.0/24, 27.123.64.0/24.',
     },
     {
       name: 'preferredLocale',

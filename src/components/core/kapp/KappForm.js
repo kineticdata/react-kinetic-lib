@@ -132,6 +132,8 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
       label: 'Submission Label',
       type: 'code-template',
       initialValue: get(kapp, 'defaultSubmissionLabelExpression') || '',
+      // eslint-disable-next-line no-template-curly-in-string
+      helpText: "Default label for form submissions. Click the </> button to see available values derived from each submission. Example: ${form('name')}",
       options: ({ space, kapp, attributeDefinitions }) =>
         buildBindings({
           space,
@@ -150,6 +152,7 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
       })),
       enabled: ({ space }) => get(space, 'displayType') !== 'Single Page App',
       initialValue: get(kapp, 'displayType') || 'Display Page',
+      helpText: 'Determines how the application works. Set in Space Settings.',
     },
     {
       name: 'displayValue',
@@ -177,6 +180,7 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
       type: 'text',
       required: true,
       initialValue: get(kapp, 'name'),
+      helpText: 'User friendly name for the Kapp, used throughout the system.',
       onChange: ({ values }, { setValue }) => {
         if (values.get('linked')) {
           setValue('slug', slugify(values.get('name')), false);
@@ -196,6 +200,7 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
       type: 'text',
       required: true,
       initialValue: get(kapp, 'slug'),
+      helpText: 'Unique name used in the Kapp path.',
       onChange: (_bindings, { setValue }) => {
         setValue('linked', false);
       },
