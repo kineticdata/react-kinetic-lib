@@ -123,6 +123,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
       label: 'Anonymous',
       type: 'checkbox',
       initialValue: get(form, 'anonymous', false),
+      helpText: 'This setting controls whether a submission is submitted with the user\'s login information or with "anonymous". Note that this does not actually control access. That is done with the Form Display setting.',
     },
     {
       name: 'description',
@@ -141,6 +142,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
         }
       },
       initialValue: get(form, 'name'),
+      helpText: 'User friendly name for the form.'
     },
     {
       name: 'notes',
@@ -157,6 +159,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
         setValue('linked', false);
       },
       initialValue: get(form, 'slug'),
+      helpText: 'Unique name used in the form path.'
     },
     {
       name: 'linked',
@@ -175,6 +178,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
         label: status,
       })),
       initialValue: get(form, 'status', 'New'),
+      helpText: 'Used to determine availability for submissions and presentations.'
     },
     {
       name: 'submissionLabelExpression',
@@ -182,6 +186,8 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
       type: 'code',
       language: 'js-template',
       initialValue: get(form, 'submissionLabelExpression') || '',
+      // eslint-disable-next-line no-template-curly-in-string
+      helpText: "Custom label for form submissions. Click the </> button to see available values derived from each submission. Example: ${values('Customer Name')}",
       options: ({ space, kapp, form }) =>
         buildBindings({
           space,
@@ -204,6 +210,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
             )
           : [],
       initialValue: get(form, 'type'),
+      helpText: 'Used for organizing and displaying forms. Values in the dropdown are defined under Form Types.'
     },
     ...(formSlug
       ? Object.entries(securityEndpoints).map(
