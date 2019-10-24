@@ -82,7 +82,7 @@ const fields = ({ itemId, workflowType }) => ({ workflow }) =>
       required: false,
       options: ({ sources }) => sources,
       initialValue: workflow ? workflow.get('sourceName') : '',
-      helpText: 'The application that is calling and getting the results back from the workflow. The source provides information that can be used in parameters and connectors to pass information or do logic.',
+      helpText: 'The application that is calling and getting the results back from the workflow.',
     },
     {
       name: 'sourceGroup',
@@ -90,7 +90,7 @@ const fields = ({ itemId, workflowType }) => ({ workflow }) =>
       type: 'text',
       required: false,
       initialValue: workflow ? workflow.get('sourceGroup') : '',
-      helpText: 'Categorization within the Source. For Request CE it\'s the combination of the type (submission of form), Kapp Slug and the Form Slug separated by a greater than sign ( > ). Example: Submissions > services > onboarding.',
+      helpText: 'Categorization of the workflow based on rules provided by the Source. For Request CE it\'s the combination of the type (submission of form), Kapp Slug and the Form Slug separated by a greater than sign ( > ). Example: Submissions > services > onboarding.',
     },
     {
       name: 'status',

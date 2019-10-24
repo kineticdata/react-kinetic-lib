@@ -126,7 +126,7 @@ const fields = ({ username }) => ({ user }) =>
       required: false,
       initialValue: get(user, 'allowedIps') || '',
       helpText:
-        'Allowed IP Addresses allow administrators to restrict which IP addresses a user can login with. Setting this to * will allow the user to login from any IP Address. If you need to add more than one range, simply separate them with a comma, e.g. 108.171.123.0/24, 27.123.64.0/24.',
+        'Ability to restrict login by IP address. Use * for unrestricted. Separate by a comma for multiple ID addresses.',
     },
     {
       name: 'preferredLocale',

@@ -118,7 +118,7 @@ const fields = ({ modelName }) => ({ model, modelMapping, bridges }) =>
       type: 'text',
       required: true,
       initialValue: modelMapping ? modelMapping.get('structure') : '',
-      helpText: `Structures vary depending on the system. For Request CE Datastores, it's Datastore Submission. For other applications it could be a table name, domain, or form.`
+      helpText: `Structures vary depending on the system. They can be table names, forms, domains or other elements.`
     },
   ];
 

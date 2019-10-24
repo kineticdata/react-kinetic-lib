@@ -178,7 +178,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
         label: status,
       })),
       initialValue: get(form, 'status', 'New'),
-      helpText: 'Used by themes to determine which items render and are submittable.'
+      helpText: 'Used to determine availability for submissions and presentations.'
     },
     {
       name: 'submissionLabelExpression',
@@ -209,7 +209,7 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
             )
           : [],
       initialValue: get(form, 'type'),
-      helpText: 'Used for organizing forms. Values in the dropdown are defined under Form Types.'
+      helpText: 'Used for organizing and displaying forms. Values in the dropdown are defined under Form Types.'
     },
     ...(formSlug
       ? Object.entries(securityEndpoints).map(
