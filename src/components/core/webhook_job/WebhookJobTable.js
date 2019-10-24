@@ -3,13 +3,14 @@ import { generateTable } from '../../table/Table';
 
 const dataSource = ({ scope, kappSlug, status }) => ({
   fn: fetchWebhookJobs,
-  params: ({ pageSize }) => [
+  params: paramData => [
     {
       include: 'details',
-      limit: pageSize,
       scope,
       kappSlug,
       status,
+      limit: paramData.pageSize,
+      pageToken: paramData.nextPageToken,
     },
   ],
   transform: result => ({

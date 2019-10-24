@@ -15,6 +15,8 @@ export const fetchWebhookJobs = (options = {}) => {
       params: {
         ...paramBuilder(options),
         status,
+        limit: options.limit,
+        pageToken: options.pageToken,
       },
       headers: headerBuilder(options),
     })
