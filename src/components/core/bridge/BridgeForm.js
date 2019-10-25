@@ -76,6 +76,7 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
           type: 'text',
           required: true,
           initialValue: get(bridge, 'name', ''),
+          helpText: 'Friendly name used throughout the system.',
           onChange: ({ values }, { setValue }) => {
             if (values.get('linked')) {
               setValue('slug', slugify(values.get('name')), false);
@@ -88,6 +89,7 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
           type: 'text',
           required: true,
           initialValue: get(bridge, 'slug', ''),
+          helpText: 'Unique name used in the bridge path.',
           onChange: (_bindings, { setValue }) => {
             setValue('linked', false);
           },
