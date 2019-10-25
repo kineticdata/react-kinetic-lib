@@ -1,9 +1,10 @@
 import React from 'react';
 import { generateForm } from '../../form/Form';
+import { buildBindings } from './helpers';
 
 const dataSources = ({ connector }) => {};
 
-const fields = ({ connector }) => () => [
+const fields = ({ connector, tasks, tree }) => () => [
   {
     name: 'type',
     label: 'Type',
@@ -26,8 +27,9 @@ const fields = ({ connector }) => () => [
     name: 'condition',
     label: 'Condition',
     type: 'code',
-    language: 'ruby',
     initialValue: connector.condition,
+    language: 'ruby',
+    options: buildBindings(tree, tasks, tree.nodes.get(connector.headId)),
   },
   {
     name: 'from',
@@ -55,7 +57,7 @@ const fields = ({ connector }) => () => [
 const handleSubmit = ({ connector }) => values => values.toObject();
 
 export const ConnectorForm = generateForm({
-  formOptions: ['connector'],
+  formOptions: ['connector', 'tasks', 'tree'],
   dataSources,
   fields,
   handleSubmit,

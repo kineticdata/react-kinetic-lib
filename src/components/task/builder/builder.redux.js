@@ -1,4 +1,5 @@
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
+import { List, OrderedMap } from 'immutable';
 import { isFunction } from 'lodash-es';
 import { action, dispatch, regHandlers, regSaga } from '../../../store';
 import {
@@ -110,8 +111,6 @@ regSaga(
 );
 
 regHandlers({
-  TREE_SET_TASKS: (state, { payload: { categories } }) =>
-    state.setIn(['taskCategories'], categories),
   // the TreeBuilder component does nothing while the tree state is undefined,
   // on mount we set it to null to signal to the component to dispatch the
   // configure action with its configuration props
@@ -122,7 +121,18 @@ regHandlers({
   TREE_UNMOUNT: (state, { payload: { treeKey } }) =>
     state.deleteIn(['trees', treeKey]),
   TREE_LOADED: (state, { payload: { categories, treeKey, tree } }) =>
-    state.mergeIn(['trees', treeKey], { categories, loading: false, tree }),
+    state.mergeIn(['trees', treeKey], {
+      categories,
+      loading: false,
+      tasks: List(categories)
+        .flatMap(category => [...category.handlers, ...category.trees])
+        .sortBy(task => task.name)
+        .reduce(
+          (reduction, task) => reduction.set(task.definitionId, task),
+          OrderedMap(),
+        ),
+      tree,
+    }),
   TREE_SAVE: (state, { payload: { treeKey } }) =>
     state.mergeIn(['trees', treeKey], {
       saving: true,

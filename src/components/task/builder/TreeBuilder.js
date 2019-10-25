@@ -119,7 +119,7 @@ export class TreeBuilderComponent extends Component {
   render() {
     const { selected, treeBuilderState, treeKey } = this.props;
     if (treeBuilderState) {
-      const { saving, tree } = treeBuilderState;
+      const { saving, tasks, tree } = treeBuilderState;
       return this.props.children({
         actions: {
           deleteConnector: id =>
@@ -146,6 +146,8 @@ export class TreeBuilderComponent extends Component {
         },
         name: tree.name,
         saving,
+        tasks,
+        tree,
         treeBuilder: (
           <Fragment>
             <SvgCanvas ref={this.canvasRef}>

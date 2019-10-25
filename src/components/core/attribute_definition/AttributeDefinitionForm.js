@@ -39,6 +39,7 @@ const fields = ({ attributeName }) => ({ attributeDefinition }) =>
       type: 'text',
       required: true,
       initialValue: attributeDefinition ? attributeDefinition.get('name') : '',
+      helpText: 'Will be displayed in attribute dropdowns.'
     },
     {
       name: 'description',
@@ -57,6 +58,7 @@ const fields = ({ attributeName }) => ({ attributeDefinition }) =>
       initialValue: attributeDefinition
         ? attributeDefinition.get('allowsMultiple')
         : false,
+      helpText: 'Determines whether multiple values can be assigned to this attribute.',
     },
   ];
 

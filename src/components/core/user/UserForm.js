@@ -73,12 +73,15 @@ const fields = ({ username }) => ({ user }) =>
       label: 'Enabled?',
       type: 'checkbox',
       initialValue: user ? get(user, 'enabled') : true,
+      helpText: 'Enabled users are allowed to login to the system.',
     },
     {
       name: 'spaceAdmin',
       label: 'Space Admin?',
       type: 'checkbox',
       initialValue: user ? get(user, 'spaceAdmin') : false,
+      helpText:
+        'Space Admins are users with full access within a space. Security Policies are not applied to any users that are Space Admins.',
     },
     {
       name: 'password',
@@ -122,6 +125,8 @@ const fields = ({ username }) => ({ user }) =>
       type: 'text',
       required: false,
       initialValue: get(user, 'allowedIps') || '',
+      helpText:
+        'Ability to restrict login by IP address. Use * for unrestricted. Separate by a comma for multiple ID addresses.',
     },
     {
       name: 'preferredLocale',
