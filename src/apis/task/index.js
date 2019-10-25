@@ -433,8 +433,24 @@ export const fetchTaskRun = (options = {}) => {
   validateOptions('fetchTaskRun', ['runId'], options);
 
   return axios
-    .get(`/app/components/task/app/api/v2/runs/${options.runId}`)
+    .get(`/app/components/task/app/api/v2/runs/${options.runId}`, {
+      params: {
+        include: options.include,
+      },
+    })
     .then(response => ({
-      run: response.data.run,
+      run: response.data,
     }));
+};
+
+export const updateTaskRun = (options = {}) => {
+  validateOptions('updateTaskRun', ['runId', 'run'], options);
+
+  return axios.put(
+    `/app/components/task/app/api/v2/runs/${options.runId}`,
+    options.run,
+    {
+      include: options.include,
+    },
+  );
 };

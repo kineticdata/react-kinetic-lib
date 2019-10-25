@@ -4,11 +4,17 @@ import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { dispatch, regHandlers, regSaga } from '../../store';
 
 export const hasData = data => isarray(data) || data instanceof List;
+const noop = () => null;
+const getDataSource = tableData => {
+  const tableOptions = tableData.get('tableOptions');
+  const dataSourceFn = tableData.get('dataSource') || noop;
+
+  return dataSourceFn(tableOptions);
+};
 
 export const isClientSide = tableData => {
   const data = tableData.get('data');
-  const tableOptions = tableData.get('tableOptions');
-  const dataSource = tableData.get('dataSource', () => null)(tableOptions);
+  const dataSource = getDataSource(tableData);
 
   return (
     hasData(data) &&
@@ -105,7 +111,7 @@ regHandlers({
       : state.mergeIn(
           ['tables', tableKey],
           Map({
-            data: hasData(data) ? List(data) : data,
+            data: hasData(data) ? fromJS(data) : data,
             dataSource,
             tableOptions,
             columns,
@@ -350,7 +356,7 @@ const transformData = (data, tableData) =>
   });
 
 const calculateRows = tableData => {
-  const dataSource = tableData.get('dataSource')(tableData.get('tableOptions'));
+  const dataSource = getDataSource(tableData);
 
   if (isClientSide(tableData)) {
     const data = transformData(tableData.get('data'), tableData);
