@@ -80,7 +80,7 @@ const fields = ({ formSlug, indexName }) => ({ indexDefinition }) =>
       options: ({ fields }) =>
         fields
           ? fields
-              .map(field => field.get('name'))
+              .map(field => `values[${field.get('name')}]`)
               .sort()
               .concat(staticParts)
               .map(name => ({ label: name, value: name }))
