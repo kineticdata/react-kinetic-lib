@@ -175,7 +175,7 @@ const columns = [
     sortable: false,
     valueTransform: (_value, row) => row.getIn(['tree', 'type']),
   },
-  { value: 'createdAt', title: 'Created At', sortable: false },
+  { value: 'createdAt', title: 'Created', sortable: false },
   { value: 'createdBy', title: 'Created By', sortable: false },
   {
     value: 'id',
@@ -184,7 +184,7 @@ const columns = [
     type: 'text',
     sortable: false,
   },
-  { value: 'updatedAt', title: 'Updated At', sortable: true },
+  { value: 'updatedAt', title: 'Updated', sortable: true },
   { value: 'updatedBy', title: 'Updated By', sortable: false },
 ];
 

@@ -105,7 +105,7 @@ const columns = [
   },
   {
     value: 'createdAt',
-    title: 'Created At',
+    title: 'Created',
     type: 'text',
     sortable: true,
   },
@@ -170,7 +170,7 @@ const columns = [
   },
   {
     value: 'updatedAt',
-    title: 'Updated At',
+    title: 'Updated',
     type: 'text',
     sortable: false,
   },

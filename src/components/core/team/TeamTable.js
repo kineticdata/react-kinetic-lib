@@ -25,14 +25,14 @@ const columns = [
   },
   {
     value: 'updatedAt',
-    title: 'Updated At',
+    title: 'Updated',
     filter: 'equals',
     type: 'text',
     sortable: true,
   },
   {
     value: 'createdAt',
-    title: 'Created At',
+    title: 'Created',
     filter: 'startsWith',
     type: 'text',
     sortable: true,

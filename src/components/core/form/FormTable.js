@@ -40,7 +40,7 @@ const columns = [
   },
   {
     value: 'CreatedAt',
-    title: 'Created At',
+    title: 'Created',
     sortable: true,
     filter: 'equals',
     type: 'text',
@@ -51,7 +51,7 @@ const columns = [
   },
   {
     value: 'updatedAt',
-    title: 'Last Modified',
+    title: 'Updated',
     sortable: true,
     filter: 'equals',
     type: 'text',
