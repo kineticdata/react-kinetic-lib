@@ -41,7 +41,7 @@ export const updateWebhookJob = (options = {}) => {
   }
 
   return axios
-    .put(`${buildEndpoint(kappSlug, scope)}/${id}`, webhookJob, {
+    .put(`${buildEndpoint(scope, kappSlug)}/${id}`, webhookJob, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
