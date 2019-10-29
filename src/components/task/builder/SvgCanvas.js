@@ -91,6 +91,14 @@ export class SvgCanvas extends Component {
     this.watchDrag({ event, onMove: this.pan, scaled: false });
   };
 
+  focusPoint = ({ x, y }) => {
+    const height = this.canvas.current.clientHeight;
+    const width = this.canvas.current.clientWidth;
+    this.viewport.x = width / 2 - x * this.viewport.scale;
+    this.viewport.y = height / 2 - y * this.viewport.scale;
+    this.setTransform(constants.CANVAS_ZOOM_DURATION);
+  };
+
   pan = ({ dx, dy }) => {
     this.viewport.x += dx;
     this.viewport.y += dy;
@@ -130,17 +138,7 @@ export class SvgCanvas extends Component {
       scale => scale > this.viewport.scale,
     );
     if (scale) {
-      // make sure to adjust the x and y offsets so that we are zooming into
-      // the center of the canvas element
-      const height = this.canvas.current.clientHeight;
-      const width = this.canvas.current.clientWidth;
-      const scaleDelta = scale - this.viewport.scale;
-      const dx = (width / 2) * scaleDelta;
-      const dy = (height / 2) * scaleDelta;
-      this.viewport.x -= dx;
-      this.viewport.y -= dy;
-      this.viewport.scale = scale;
-      this.setTransform(constants.CANVAS_ZOOM_DURATION);
+      this.zoomToScale(scale);
     }
   };
 
@@ -149,18 +147,25 @@ export class SvgCanvas extends Component {
       .reverse()
       .find(scale => scale < this.viewport.scale);
     if (scale) {
-      // make sure to adjust the x and y offsets so that we are zooming from
-      // the center of the canvas element
-      const height = this.canvas.current.clientHeight;
-      const width = this.canvas.current.clientWidth;
-      const scaleDelta = this.viewport.scale - scale;
-      const dx = (width / 2) * scaleDelta;
-      const dy = (height / 2) * scaleDelta;
-      this.viewport.x += dx;
-      this.viewport.y += dy;
-      this.viewport.scale = scale;
-      this.setTransform(constants.CANVAS_ZOOM_DURATION);
+      this.zoomToScale(scale);
     }
+  };
+
+  zoomToScale = scale => {
+    // make sure to adjust the x and y offsets so that we are zooming to / from
+    // the center of the canvas element, use the following equation to determine
+    // the coordinate of the virtual center point
+    // cx = ( width / 2 - viewport.x ) / scale
+    const height = this.canvas.current.clientHeight;
+    const width = this.canvas.current.clientWidth;
+    const cx = (width / 2 - this.viewport.x) / this.viewport.scale;
+    const cy = (height / 2 - this.viewport.y) / this.viewport.scale;
+    // then compute the new x / y values by using the equation above and
+    // solving for x / y given the computed center coordinate
+    this.viewport.x = width / 2 - cx * scale;
+    this.viewport.y = height / 2 - cy * scale;
+    this.viewport.scale = scale;
+    this.setTransform(constants.CANVAS_ZOOM_DURATION);
   };
 
   onWheel = event => {
