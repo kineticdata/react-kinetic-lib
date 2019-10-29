@@ -500,6 +500,14 @@ class FormImplComponent extends Component {
     ) {
       this.focusRef.current.focus();
     }
+    // else if the autoFocus prop has been changed we will also focus the new
+    // resulting focus element
+    else if (
+      this.props.autoFocus !== prevProps.autoFocus &&
+      this.focusRef.current
+    ) {
+      this.focusRef.current.focus();
+    }
   }
 
   render() {
