@@ -10,7 +10,7 @@ import {
   OrderedMap,
   OrderedSet,
 } from 'immutable';
-import { pick } from 'lodash-es';
+import { isArray, isFunction, pick } from 'lodash-es';
 import { action, connect, dispatch, regHandlers, regSaga } from '../../store';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { generateKey } from '../../helpers';
@@ -296,18 +296,23 @@ regSaga(
 );
 
 regSaga(
-  takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet } }) {
+  takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet, onInvalid } }) {
     const { bindings, fields, onSubmit, onSave, onError } = yield select(
       selectForm(formKey),
     );
 
+    const computedFieldSet = computeFieldSet(fields, fieldSet);
+
     const values = fields
-      .filter(field => !field.transient && fieldSet.contains(field.name))
+      .filter(
+        field => !field.transient && computedFieldSet.contains(field.name),
+      )
       .map(field =>
         field.serialize ? field.serialize(bindings) : field.value,
       );
 
     const errors = fields
+      .filter(field => computedFieldSet.contains(field.name))
       .map(field => field.errors)
       .filter(errors => !errors.isEmpty());
 
@@ -332,6 +337,9 @@ regSaga(
         formKey,
         fieldNames: errors.keySeq(),
       });
+      if (isFunction(onInvalid)) {
+        onInvalid(errors);
+      }
     }
   }),
 );
@@ -397,6 +405,9 @@ export const resetForm = formKey => dispatch('RESET', { formKey });
 
 export const configureForm = config => dispatch('CONFIGURE_FORM', config);
 
+export const submitForm = (formKey, { fieldSet, onInvalid }) =>
+  dispatch('SUBMIT', { formKey, fieldSet, onInvalid });
+
 // Wraps the FormImpl to handle the formKey behavior. If this is passed a
 // formKey prop this wrapper is essentially a noop, but if it is not passed a
 // formKey then it generates one and stores it as component state and passes
@@ -442,6 +453,17 @@ export class Form extends Component {
     );
   }
 }
+
+const computeFieldSet = (fields, fieldSetProp) => {
+  const defaultFieldSet = OrderedSet(fields.keySeq());
+  return OrderedSet(
+    !fieldSetProp
+      ? defaultFieldSet
+      : typeof fieldSetProp === 'function'
+      ? fieldSetProp(defaultFieldSet)
+      : fieldSetProp,
+  );
+};
 
 class FormImplComponent extends Component {
   focusRef = createRef();
@@ -500,14 +522,7 @@ class FormImplComponent extends Component {
         .filter(fieldConfig => fieldConfig.component)
         .map(fieldConfig => fieldConfig.component);
 
-      const fullFieldSet = OrderedSet(fields.keySeq());
-      const computedFieldSet = OrderedSet(
-        !fieldSet
-          ? fullFieldSet
-          : typeof fieldSet === 'function'
-          ? fieldSet(fullFieldSet)
-          : fieldSet,
-      );
+      const computedFieldSet = computeFieldSet(fields, fieldSet);
       form = (
         <FormLayout
           formOptions={formOptions}
@@ -529,7 +544,7 @@ class FormImplComponent extends Component {
           buttons={
             <FormButtons
               reset={onReset(formKey)}
-              submit={onSubmit(formKey, computedFieldSet)}
+              submit={onSubmit(formKey, fieldSet)}
               submitting={submitting}
               dirty={fields.some(field => field.dirty)}
               error={error}
