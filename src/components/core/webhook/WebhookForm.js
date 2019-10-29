@@ -60,7 +60,8 @@ const fields = ({ kappSlug, name }) => ({ webhook }) =>
       type: 'text',
       required: true,
       initialValue: webhook ? webhook.get('name') : '',
-      helpText: 'User friendly name for the webhook. Generally a combination of Type and Event.'
+      helpText:
+        'User friendly name for the webhook. Generally a combination of Type and Event.',
     },
     {
       name: 'type',
@@ -100,7 +101,8 @@ const fields = ({ kappSlug, name }) => ({ webhook }) =>
       type: 'code',
       language: 'js',
       initialValue: webhook ? webhook.get('filter') : '',
-      helpText: 'Optional parameters limiting the events than can trigger a webhook. Click the </> button to see available insert values.',
+      helpText:
+        'Optional parameters limiting the events than can trigger a webhook. Click the </> button to see available insert values.',
       options: ({ space, kapp, values }) =>
         buildBindings({ space, kapp, scope: values.get('type') }),
     },
@@ -111,7 +113,8 @@ const fields = ({ kappSlug, name }) => ({ webhook }) =>
       language: 'js-template',
       required: true,
       initialValue: webhook ? webhook.get('url') : '',
-      helpText: 'Location of the platform workflow or external system to pass information to. Click the </> button to see available insert values.',
+      helpText:
+        'Location of the platform workflow or external system to pass information to. Click the </> button to see available insert values.',
       options: ({ space, kapp, values }) =>
         buildBindings({ space, kapp, scope: values.get('type') }),
     },

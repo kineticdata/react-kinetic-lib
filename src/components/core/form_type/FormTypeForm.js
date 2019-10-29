@@ -31,7 +31,7 @@ const fields = ({ name }) => ({ formType }) =>
       type: 'text',
       required: true,
       initialValue: formType ? formType.get('name') : '',
-      helpText: 'User friendly name for the form type.'
+      helpText: 'User friendly name for the form type.',
     },
   ];
 

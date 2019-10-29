@@ -56,7 +56,7 @@ const fields = ({ categoryName }) => ({ category }) =>
       type: 'text',
       required: true,
       initialValue: category ? category.get('name') : '',
-      helpText: 'User friendly name for the category.'
+      helpText: 'User friendly name for the category.',
     },
     {
       name: 'description',

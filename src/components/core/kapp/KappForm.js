@@ -134,7 +134,8 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
       language: 'js-template',
       initialValue: get(kapp, 'defaultSubmissionLabelExpression') || '',
       // eslint-disable-next-line no-template-curly-in-string
-      helpText: "Default label for form submissions. Click the </> button to see available values derived from each submission. Example: ${form('name')}",
+      helpText:
+        "Default label for form submissions. Click the </> button to see available values derived from each submission. Example: ${form('name')}",
       options: ({ space, kapp, attributeDefinitions }) =>
         buildBindings({
           space,

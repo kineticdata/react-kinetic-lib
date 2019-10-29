@@ -49,7 +49,7 @@ const fields = ({ clientId }) => ({ client }) =>
       type: 'text',
       required: true,
       initialValue: get(client, 'clientId') || '',
-      helpText: 'A unique identifier for this client'
+      helpText: 'A unique identifier for this client',
     },
     {
       name: 'clientSecret',
@@ -79,7 +79,7 @@ const fields = ({ clientId }) => ({ client }) =>
       type: 'text',
       required: true,
       initialValue: get(client, 'redirectUri') || '',
-      helpText: 'Identifier or location of OAuth callback'
+      helpText: 'Identifier or location of OAuth callback',
     },
   ];
 
