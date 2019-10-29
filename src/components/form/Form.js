@@ -476,6 +476,16 @@ class FormImplComponent extends Component {
 
   componentDidMount() {
     this.checkConfigure();
+    // if the form was mounted then hidden (by being unrendered) its possible
+    // that when its shown again the fields will already be ready to render so
+    // we need to check focus on mount as well
+    if (
+      this.props.formState &&
+      this.props.formState.fields &&
+      this.focusRef.current
+    ) {
+      this.focusRef.current.focus();
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -528,16 +538,19 @@ class FormImplComponent extends Component {
           formOptions={formOptions}
           fields={OrderedMap(
             computedFieldSet.map(name => [name, fields.get(name).toObject()]),
-          ).map(({ eventHandlers, ...props }) => (
+          ).mapEntries(([name, { eventHandlers, ...props }], index) => [
+            name,
             <Field
-              key={props.name}
+              key={name}
               {...props}
               {...eventHandlers.toObject()}
-              focusRef={props.name === autoFocus ? this.focusRef : null}
-              component={fieldComponents.get(props.name)}
+              focusRef={
+                name === autoFocus || index === autoFocus ? this.focusRef : null
+              }
+              component={fieldComponents.get(name)}
               components={components}
-            />
-          ))}
+            />,
+          ])}
           error={
             error && <FormError error={error} clear={clearError(formKey)} />
           }
