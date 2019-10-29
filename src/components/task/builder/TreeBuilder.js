@@ -143,6 +143,8 @@ export class TreeBuilderComponent extends Component {
               treeKey,
             });
           },
+          zoomIn: () => this.canvasRef.current.zoomIn(),
+          zoomOut: () => this.canvasRef.current.zoomOut(),
         },
         name: tree.name,
         saving,

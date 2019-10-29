@@ -1,5 +1,7 @@
 export const CANVAS_SCALE_MAX = 1.0;
 export const CANVAS_SCALE_MIN = 0.1;
+export const CANVAS_SCALE_OPTIONS = [0.1, 0.25, 0.5, 0.75, 1];
+export const CANVAS_ZOOM_DURATION = 200;
 export const CANVAS_ZOOM_MODIFIER = 2000;
 export const THROTTLE_DRAG = 16;
 export const THROTTLE_ZOOM = 16;
