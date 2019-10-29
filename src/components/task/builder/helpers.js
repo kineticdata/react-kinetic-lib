@@ -1,7 +1,9 @@
 import * as constants from './constants';
 import { List, Map, OrderedMap } from 'immutable';
-import { Tree, Node, Connector, NodeParameter } from './models';
 import { isObject } from 'lodash-es';
+import { dispatch } from '../../../store';
+import { Tree, Node, Connector, NodeParameter } from './models';
+import { NEW_TASK_DX, NEW_TASK_DY } from './constants';
 
 export const isIE11 = document.documentMode === 11;
 
@@ -149,48 +151,70 @@ export const buildBindings = (tree, tasks, node) => {
     : otherBindings.set('Results', ancestorResultBindings);
 };
 
-export const addNewTask = (tree, parent, dx, dy) => {
-  const { connectors, nextConnectorId, nextNodeId, nodes } = tree;
-  const position = parent.position
-    .update('x', x => x + dx)
-    .update('y', y => y + dy);
-  const connector = Connector({
-    id: nextConnectorId,
-    headId: nextNodeId,
-    headPosition: position,
-    tailId: parent.id,
-    tailPosition: parent.position,
-  });
-  const node = Node({ id: nextNodeId, position });
-  return {
-    connector,
-    node,
-    tree: tree.merge({
-      connectors: connectors.set(nextConnectorId, connector),
+// implements the process of adding a new task node and connector to the tree,
+// it curries some parameters that should be applied by the click event in the
+// parent node, then returns a function called selectTaskDefinition which the
+// should be called with a task definition, then it stubs out a node and
+// connector and passes a complete function which should be called with the
+// fully configured node and connector
+export const addNewTask = (treeKey, tree, parent) => ({
+  tree: tree,
+  selectTaskDefinition: task => {
+    const { connectors, nextConnectorId, nextNodeId, nodes } = tree;
+    const position = parent.position
+      .update('x', x => x + NEW_TASK_DX)
+      .update('y', y => y + NEW_TASK_DY);
+    const nodeId = `${task.definitionId}_${nextNodeId}`;
+    // stub out the new connector and node, these will be provided via return and
+    // are meant to be passed to <ConnectorForm> and <NodeForm> respectively to be
+    // further configured by the consumer of the <TreeBuilder>
+    const connector = Connector({
+      id: nextConnectorId,
+      headId: nodeId,
+      headPosition: position,
+      tailId: parent.id,
+      tailPosition: parent.position,
+    });
+    const node = Node({
+      id: nodeId,
+      position,
+      deferrable: task.deferrable,
+      defers: task.deferrable,
+      visible: task.visible,
+      parameters: List(task.parameters || task.inputs || []).map(
+        ({ name: label, id = label, ...props }) =>
+          NodeParameter({
+            id,
+            label,
+            ...props,
+          }),
+      ),
+    });
+    // add the stubbed connector and node to the current tree, this is done to
+    // accommodate the <CodeInput> bindings helper in <ConnectorForm> and
+    // <NodeForm>
+    const stagedTree = tree.merge({
+      connectors: connectors.set(connector.id, connector),
       nextConnectorId: nextConnectorId + 1,
       nextNodeId: nextNodeId + 1,
-      nodes: nodes.set(nextNodeId, node),
-    }),
-  };
-};
-
-// helper that updates a node's definition id and parameters to match the given
-// task (handler or routine), there are some property name differences to handle
-// here whether given a handler or routine
-export const mergeNodeTask = (node, task) =>
-  // if the the task is a handler use `parameters`, if its a routine use
-  // `inputs`
-  node.merge({
-    deferrable: task.deferrable,
-    defers: task.deferrable,
-    definitionId: task.definitionId,
-    parameters: List(task.parameters || task.inputs || []).map(
-      ({ name: label, id = label, ...props }) =>
-        NodeParameter({
-          id,
-          label,
-          ...props,
-        }),
-    ),
-    visible: task.visible,
-  });
+      nodes: nodes.set(node.id, node),
+    });
+    // return the pieces of data that will be passed to <ConnectorForm> and
+    // <NodeForm> instances and also pass a `complete` function that should be
+    // called with the final connector and node records that are to be added to
+    // the tree and persisted
+    return {
+      connector,
+      node,
+      stagedTree,
+      complete: ({ connector, node }) => {
+        return dispatch('TREE_UPDATE', {
+          treeKey,
+          tree: stagedTree
+            .setIn(['connectors', connector.id], connector)
+            .setIn(['nodes', node.id], node),
+        });
+      },
+    };
+  },
+});

@@ -19,8 +19,6 @@ export const mountTreeBuilder = treeKey => dispatch('TREE_MOUNT', { treeKey });
 export const unmountTreeBuilder = treeKey =>
   dispatch('TREE_UNMOUNT', { treeKey });
 export const configureTreeBuilder = props => dispatch('TREE_CONFIGURE', props);
-export const updateTreeBuilder = (treeKey, tree) =>
-  dispatch('TREE_UPDATE', { treeKey, tree });
 
 // Helper that adds the present state to the past stack and clears the future
 // stack. This should be called by reducer cases that will be undo/redo able.

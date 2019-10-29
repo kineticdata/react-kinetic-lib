@@ -26,7 +26,9 @@ export class Node extends Component {
 
   addNewNode = () => {
     if (isFunction(this.props.onNew)) {
-      this.props.onNew(addNewTask(this.props.tree, this.props.node, 0, 200));
+      this.props.onNew(
+        addNewTask(this.props.treeKey, this.props.tree, this.props.node),
+      );
     }
   };
 

@@ -13,6 +13,9 @@ export const CONNECTOR_LABEL_RADIUS = 3;
 
 export const ICON_SIZE = 24;
 
+export const NEW_TASK_DX = 0;
+export const NEW_TASK_DY = 200;
+
 export const NODE_BADGE_OFFSET = 6;
 export const NODE_RADIUS = 3;
 export const NODE_HEIGHT = 60;

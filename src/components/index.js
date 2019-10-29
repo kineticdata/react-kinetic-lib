@@ -25,9 +25,7 @@ export { Table } from './table/Table';
 export {
   mountTreeBuilder,
   unmountTreeBuilder,
-  updateTreeBuilder,
 } from './task/builder/builder.redux';
-export { mergeNodeTask } from './task/builder/helpers';
 
 // Discussions
 export { Discussion } from './discussions/Discussion';
