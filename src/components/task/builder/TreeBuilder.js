@@ -45,10 +45,10 @@ export class TreeBuilderComponent extends Component {
   }
 
   checkHighlight(prevProps = {}) {
-    if (this.props.treeBuilderState) {
+    if (this.props.treeBuilderState && !this.props.treeBuilderState.loading) {
       // one the first "real" render of the tree builder check for the highlight
       // node and focus if one is specified
-      if (!prevProps.treeBuilderState) {
+      if (!prevProps.treeBuilderState || prevProps.treeBuilderState.loading) {
         this.focusNode(this.props.highlight);
       }
       // otherwise check for changes to the highlight prop and focus if it changes
@@ -148,7 +148,7 @@ export class TreeBuilderComponent extends Component {
   watchDrag = (...args) => this.canvasRef.current.watchDrag(...args);
 
   render() {
-    const { selected, treeBuilderState, treeKey } = this.props;
+    const { highlight, selected, treeBuilderState, treeKey } = this.props;
     if (treeBuilderState) {
       const { saving, tasks, tree, undoStack } = treeBuilderState;
       return this.props.children({
@@ -218,6 +218,7 @@ export class TreeBuilderComponent extends Component {
                     ref={this.registerNode(node)}
                     treeKey={treeKey}
                     node={node}
+                    highlighted={highlight === node.name}
                     primary={selected.getIn([0, 'nodeId']) === node.id}
                     selected={selected.some(({ nodeId }) => nodeId === node.id)}
                     onNew={this.props.onNew}
