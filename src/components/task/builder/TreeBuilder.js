@@ -119,7 +119,7 @@ export class TreeBuilderComponent extends Component {
   render() {
     const { selected, treeBuilderState, treeKey } = this.props;
     if (treeBuilderState) {
-      const { saving, tasks, tree } = treeBuilderState;
+      const { saving, tasks, tree, undoStack } = treeBuilderState;
       return this.props.children({
         actions: {
           deleteConnector: id =>
@@ -143,6 +143,9 @@ export class TreeBuilderComponent extends Component {
               treeKey,
             });
           },
+          undo: !undoStack.isEmpty()
+            ? () => dispatch('TREE_UNDO', { treeKey })
+            : null,
           zoomIn: () => this.canvasRef.current.zoomIn(),
           zoomOut: () => this.canvasRef.current.zoomOut(),
         },
