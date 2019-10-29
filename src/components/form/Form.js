@@ -10,7 +10,7 @@ import {
   OrderedMap,
   OrderedSet,
 } from 'immutable';
-import { isArray, isFunction, pick } from 'lodash-es';
+import { isFunction, pick } from 'lodash-es';
 import { action, connect, dispatch, regHandlers, regSaga } from '../../store';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { generateKey } from '../../helpers';

@@ -2,7 +2,7 @@ import * as constants from './constants';
 import { List, Map, OrderedMap } from 'immutable';
 import { isObject } from 'lodash-es';
 import { dispatch } from '../../../store';
-import { Tree, Node, Connector, NodeParameter } from './models';
+import { Node, Connector, NodeParameter } from './models';
 import { NEW_TASK_DX, NEW_TASK_DY } from './constants';
 
 export const isIE11 = document.documentMode === 11;
@@ -180,6 +180,7 @@ export const addNewTask = (treeKey, tree, parent) => ({
       position,
       deferrable: task.deferrable,
       defers: task.deferrable,
+      definitionId: task.definitionId,
       visible: task.visible,
       parameters: List(task.parameters || task.inputs || []).map(
         ({ name: label, id = label, ...props }) =>

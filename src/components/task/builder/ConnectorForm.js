@@ -1,4 +1,3 @@
-import React from 'react';
 import { generateForm } from '../../form/Form';
 import { buildBindings } from './helpers';
 

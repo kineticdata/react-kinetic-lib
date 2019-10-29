@@ -1,4 +1,3 @@
-import React from 'react';
 import { List } from 'immutable';
 import { generateForm } from '../../form/Form';
 import { NodeMessage } from './models';

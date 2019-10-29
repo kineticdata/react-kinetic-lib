@@ -129,8 +129,8 @@ export class Node extends Component {
   }
 
   render() {
-    const { node, primary, selected, treeKey } = this.props;
-    const { defers, definitionId, highlighted, id, name } = node;
+    const { node, primary, selected } = this.props;
+    const { defers, definitionId, highlighted, name } = node;
     const invalid = !name;
     return (
       <g ref={this.el}>
