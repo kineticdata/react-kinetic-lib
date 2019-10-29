@@ -10,7 +10,7 @@ import {
   OrderedMap,
   OrderedSet,
 } from 'immutable';
-import { pick } from 'lodash-es';
+import { isFunction, pick } from 'lodash-es';
 import { action, connect, dispatch, regHandlers, regSaga } from '../../store';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { generateKey } from '../../helpers';
@@ -296,18 +296,23 @@ regSaga(
 );
 
 regSaga(
-  takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet } }) {
+  takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet, onInvalid } }) {
     const { bindings, fields, onSubmit, onSave, onError } = yield select(
       selectForm(formKey),
     );
 
+    const computedFieldSet = computeFieldSet(fields, fieldSet);
+
     const values = fields
-      .filter(field => !field.transient && fieldSet.contains(field.name))
+      .filter(
+        field => !field.transient && computedFieldSet.contains(field.name),
+      )
       .map(field =>
         field.serialize ? field.serialize(bindings) : field.value,
       );
 
     const errors = fields
+      .filter(field => computedFieldSet.contains(field.name))
       .map(field => field.errors)
       .filter(errors => !errors.isEmpty());
 
@@ -332,6 +337,9 @@ regSaga(
         formKey,
         fieldNames: errors.keySeq(),
       });
+      if (isFunction(onInvalid)) {
+        onInvalid(errors);
+      }
     }
   }),
 );
@@ -397,6 +405,9 @@ export const resetForm = formKey => dispatch('RESET', { formKey });
 
 export const configureForm = config => dispatch('CONFIGURE_FORM', config);
 
+export const submitForm = (formKey, { fieldSet, onInvalid }) =>
+  dispatch('SUBMIT', { formKey, fieldSet, onInvalid });
+
 // Wraps the FormImpl to handle the formKey behavior. If this is passed a
 // formKey prop this wrapper is essentially a noop, but if it is not passed a
 // formKey then it generates one and stores it as component state and passes
@@ -443,6 +454,17 @@ export class Form extends Component {
   }
 }
 
+const computeFieldSet = (fields, fieldSetProp) => {
+  const defaultFieldSet = OrderedSet(fields.keySeq());
+  return OrderedSet(
+    !fieldSetProp
+      ? defaultFieldSet
+      : typeof fieldSetProp === 'function'
+      ? fieldSetProp(defaultFieldSet)
+      : fieldSetProp,
+  );
+};
+
 class FormImplComponent extends Component {
   focusRef = createRef();
 
@@ -454,6 +476,16 @@ class FormImplComponent extends Component {
 
   componentDidMount() {
     this.checkConfigure();
+    // if the form was mounted then hidden (by being unrendered) its possible
+    // that when its shown again the fields will already be ready to render so
+    // we need to check focus on mount as well
+    if (
+      this.props.formState &&
+      this.props.formState.fields &&
+      this.focusRef.current
+    ) {
+      this.focusRef.current.focus();
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -464,6 +496,14 @@ class FormImplComponent extends Component {
       this.props.formState &&
       this.props.formState.fields &&
       !(prevProps.formState && prevProps.formState.fields) &&
+      this.focusRef.current
+    ) {
+      this.focusRef.current.focus();
+    }
+    // else if the autoFocus prop has been changed we will also focus the new
+    // resulting focus element
+    else if (
+      this.props.autoFocus !== prevProps.autoFocus &&
       this.focusRef.current
     ) {
       this.focusRef.current.focus();
@@ -500,36 +540,32 @@ class FormImplComponent extends Component {
         .filter(fieldConfig => fieldConfig.component)
         .map(fieldConfig => fieldConfig.component);
 
-      const fullFieldSet = OrderedSet(fields.keySeq());
-      const computedFieldSet = OrderedSet(
-        !fieldSet
-          ? fullFieldSet
-          : typeof fieldSet === 'function'
-          ? fieldSet(fullFieldSet)
-          : fieldSet,
-      );
+      const computedFieldSet = computeFieldSet(fields, fieldSet);
       form = (
         <FormLayout
           formOptions={formOptions}
           fields={OrderedMap(
             computedFieldSet.map(name => [name, fields.get(name).toObject()]),
-          ).map(({ eventHandlers, ...props }) => (
+          ).mapEntries(([name, { eventHandlers, ...props }], index) => [
+            name,
             <Field
-              key={props.name}
+              key={name}
               {...props}
               {...eventHandlers.toObject()}
-              focusRef={props.name === autoFocus ? this.focusRef : null}
-              component={fieldComponents.get(props.name)}
+              focusRef={
+                name === autoFocus || index === autoFocus ? this.focusRef : null
+              }
+              component={fieldComponents.get(name)}
               components={components}
-            />
-          ))}
+            />,
+          ])}
           error={
             error && <FormError error={error} clear={clearError(formKey)} />
           }
           buttons={
             <FormButtons
               reset={onReset(formKey)}
-              submit={onSubmit(formKey, computedFieldSet)}
+              submit={onSubmit(formKey, fieldSet)}
               submitting={submitting}
               dirty={fields.some(field => field.dirty)}
               error={error}

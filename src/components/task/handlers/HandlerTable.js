@@ -52,7 +52,7 @@ const columns = [
     type: 'text',
   },
   {
-    title: 'Created At',
+    title: 'Created',
     value: 'createdAt',
     filter: 'equals',
     type: 'text',
@@ -64,7 +64,7 @@ const columns = [
     type: 'text',
   },
   {
-    title: 'Updated At',
+    title: 'Updated',
     value: 'updatedAt',
     filter: 'equals',
     type: 'text',

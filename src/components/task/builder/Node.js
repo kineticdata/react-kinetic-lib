@@ -1,8 +1,9 @@
 import React, { Component, createRef } from 'react';
+import { isFunction } from 'lodash-es';
 import classNames from 'classnames';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
-import { isIE11 } from './helpers';
+import { addNewTask, isIE11 } from './helpers';
 import { Point } from './models';
 import { SvgText } from './SvgText';
 import routineIcon from '../../../assets/task/icons/routine.svg';
@@ -24,14 +25,15 @@ export class Node extends Component {
    ****************************************************************************/
 
   addNewNode = () => {
-    dispatch('TREE_ADD_NODE_WITH_CONNECTOR', {
-      treeKey: this.props.treeKey,
-      parentId: this.props.node.id,
-    });
+    if (isFunction(this.props.onNew)) {
+      this.props.onNew(
+        addNewTask(this.props.treeKey, this.props.tree, this.props.node),
+      );
+    }
   };
 
   onSelect = shiftKey => () => {
-    if (typeof this.props.onSelect === 'function') {
+    if (isFunction(this.props.onSelect)) {
       this.props.onSelect(this.props.node, shiftKey);
     }
   };
@@ -127,8 +129,8 @@ export class Node extends Component {
   }
 
   render() {
-    const { node, primary, selected, treeKey } = this.props;
-    const { defers, definitionId, highlighted, id, name } = node;
+    const { node, primary, selected } = this.props;
+    const { defers, definitionId, highlighted, name } = node;
     const invalid = !name;
     return (
       <g ref={this.el}>

@@ -20,7 +20,7 @@ const dataSource = ({ scope, kappSlug, status }) => ({
 });
 
 const columns = [
-  { value: 'createdAt', title: 'Created At' },
+  { value: 'createdAt', title: 'Created' },
   { value: 'createdBy', title: 'Created By' },
   { value: 'event', title: 'Event' },
   { value: 'id', title: 'ID' },
@@ -35,7 +35,7 @@ const columns = [
   { value: 'status', title: 'Status' },
   { value: 'summary', title: 'Summary' },
   { value: 'type', title: 'Type' },
-  { value: 'updatedAt', title: 'Updated At' },
+  { value: 'updatedAt', title: 'Updated' },
   { value: 'updatedBy', title: 'Updated By' },
   { value: 'url', title: 'URL' },
   { value: 'webhookId', title: 'Webhook ID' },

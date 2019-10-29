@@ -1,5 +1,6 @@
 import React, { createRef, Component } from 'react';
 import { throttle } from 'lodash-es';
+import { List } from 'immutable';
 import { isIE11 } from './helpers';
 import * as constants from './constants';
 import { Point } from './models';
@@ -124,6 +125,44 @@ export class SvgCanvas extends Component {
     }
   }, constants.THROTTLE_ZOOM);
 
+  zoomIn = () => {
+    const scale = constants.CANVAS_SCALE_OPTIONS.find(
+      scale => scale > this.viewport.scale,
+    );
+    if (scale) {
+      // make sure to adjust the x and y offsets so that we are zooming into
+      // the center of the canvas element
+      const height = this.canvas.current.clientHeight;
+      const width = this.canvas.current.clientWidth;
+      const scaleDelta = scale - this.viewport.scale;
+      const dx = (width / 2) * scaleDelta;
+      const dy = (height / 2) * scaleDelta;
+      this.viewport.x -= dx;
+      this.viewport.y -= dy;
+      this.viewport.scale = scale;
+      this.setTransform(constants.CANVAS_ZOOM_DURATION);
+    }
+  };
+
+  zoomOut = () => {
+    const scale = List(constants.CANVAS_SCALE_OPTIONS)
+      .reverse()
+      .find(scale => scale < this.viewport.scale);
+    if (scale) {
+      // make sure to adjust the x and y offsets so that we are zooming from
+      // the center of the canvas element
+      const height = this.canvas.current.clientHeight;
+      const width = this.canvas.current.clientWidth;
+      const scaleDelta = this.viewport.scale - scale;
+      const dx = (width / 2) * scaleDelta;
+      const dy = (height / 2) * scaleDelta;
+      this.viewport.x += dx;
+      this.viewport.y += dy;
+      this.viewport.scale = scale;
+      this.setTransform(constants.CANVAS_ZOOM_DURATION);
+    }
+  };
+
   onWheel = event => {
     event.preventDefault();
     event.stopPropagation();
@@ -135,7 +174,7 @@ export class SvgCanvas extends Component {
     const { scale, x, y } = this.viewport;
     if (!isIE11) {
       const transition = duration
-        ? `transition: transform ${duration}ms ease-in`
+        ? `transition: transform ${duration}ms ease-out`
         : '';
       this.transformer.current.setAttribute(
         'style',

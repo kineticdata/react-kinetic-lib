@@ -19,7 +19,7 @@ const dataSource = ({ scope, kappSlug }) => ({
 const columns = [
   {
     value: 'createdAt',
-    title: 'Created At',
+    title: 'Created',
     filter: 'equals',
     type: 'text',
   },
@@ -35,7 +35,7 @@ const columns = [
   { value: 'type', title: 'Type', filter: 'startsWith', type: 'text' },
   {
     value: 'updatedAt',
-    title: 'Updated At',
+    title: 'Updated',
     filter: 'startsWith',
     type: 'text',
   },

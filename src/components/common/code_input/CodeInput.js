@@ -38,7 +38,6 @@ export class CodeInput extends Component {
     super(props);
     this.newLine = '\n';
     this.indentation = '  ';
-    this.editor = null;
     this.state = {
       editorState: EditorState.createWithContent(
         convertFromRaw({
@@ -242,7 +241,7 @@ export class CodeInput extends Component {
     this.setState({ editorState });
   };
 
-  onChange = (editorState, focus) => {
+  onChange = editorState => {
     const nextEditorState = apply(
       editorState,
       checkFocus,
@@ -274,9 +273,6 @@ export class CodeInput extends Component {
               .getFirstBlock()
               .getText(),
           );
-        }
-        if (focus) {
-          this.focus();
         }
       },
     );
@@ -378,14 +374,6 @@ export class CodeInput extends Component {
     return getDefaultKeyBinding(event);
   };
 
-  handleRef = el => (this.editor = el);
-
-  focus = () => {
-    if (this.editor) {
-      this.editor.focus();
-    }
-  };
-
   stopEscape = event => {
     if (event.keyCode === 27) {
       event.stopPropagation();
@@ -406,7 +394,7 @@ export class CodeInput extends Component {
           onFocus={this.props.onFocus}
           onBlur={this.props.onBlur}
           onChange={this.onChange}
-          ref={this.handleRef}
+          ref={this.props.focusRef}
           handleDroppedFiles={this.handleDroppedFiles}
           handlePastedText={this.handlePastedText}
           handleKeyCommand={this.handleKeyCommand}

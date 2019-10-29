@@ -6,8 +6,6 @@ import {
   deserializeTree,
   serializeTree,
   Connector,
-  Node,
-  Point,
   TreeBuilderState,
 } from './models';
 import {
@@ -172,36 +170,8 @@ regHandlers({
             undoStack: builderState.undoStack.push(builderState.tree),
           }),
         ),
-  TREE_ADD_NODE_WITH_CONNECTOR: (state, { payload: { treeKey, parentId } }) => {
-    const { connectors, nextConnectorId, nextNodeId, nodes } = state.getIn([
-      'trees',
-      treeKey,
-      'tree',
-    ]);
-    const parentPosition = nodes.get(parentId).position;
-    const position = Point({
-      x: parentPosition.x + 300,
-      y: parentPosition.y + 300,
-    });
-    const node = Node({
-      id: `node_v0_${nextNodeId}`,
-      name: `Node ${nextNodeId}`,
-      position,
-    });
-    const connector = Connector({
-      id: nextConnectorId,
-      headId: node.id,
-      headPosition: position,
-      tailId: parentId,
-      tailPosition: parentPosition,
-    });
-    return remember(state, treeKey).mergeIn(['trees', treeKey, 'tree'], {
-      connectors: connectors.set(nextConnectorId, connector),
-      nextConnectorId: nextConnectorId + 1,
-      nextNodeId: nextNodeId + 1,
-      nodes: nodes.set(node.id, node),
-    });
-  },
+  TREE_UPDATE: (state, { payload: { tree, treeKey } }) =>
+    remember(state, treeKey).setIn(['trees', treeKey, 'tree'], tree),
   TREE_UPDATE_NODE: (
     state,
     { payload: { treeKey, id, messages, defers, name, parameters, visible } },
