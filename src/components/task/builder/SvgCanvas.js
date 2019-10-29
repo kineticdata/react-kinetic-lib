@@ -96,7 +96,7 @@ export class SvgCanvas extends Component {
     const width = this.canvas.current.clientWidth;
     this.viewport.x = width / 2 - x * this.viewport.scale;
     this.viewport.y = height / 2 - y * this.viewport.scale;
-    this.setTransform(constants.CANVAS_ZOOM_DURATION);
+    this.setTransform(constants.CANVAS_ZOOM_DURATION, 'ease-in');
   };
 
   pan = ({ dx, dy }) => {
@@ -165,7 +165,7 @@ export class SvgCanvas extends Component {
     this.viewport.x = width / 2 - cx * scale;
     this.viewport.y = height / 2 - cy * scale;
     this.viewport.scale = scale;
-    this.setTransform(constants.CANVAS_ZOOM_DURATION);
+    this.setTransform(constants.CANVAS_ZOOM_DURATION, 'ease-out');
   };
 
   onWheel = event => {
@@ -175,11 +175,11 @@ export class SvgCanvas extends Component {
     this.zoom(event);
   };
 
-  setTransform(duration) {
+  setTransform(duration, ease = '') {
     const { scale, x, y } = this.viewport;
     if (!isIE11) {
       const transition = duration
-        ? `transition: transform ${duration}ms ease-out`
+        ? `transition: transform ${duration}ms ${ease}`
         : '';
       this.transformer.current.setAttribute(
         'style',
