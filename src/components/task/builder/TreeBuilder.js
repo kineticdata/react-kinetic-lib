@@ -184,7 +184,9 @@ export class TreeBuilderComponent extends Component {
                     node={node}
                     primary={selected.getIn([0, 'nodeId']) === node.id}
                     selected={selected.some(({ nodeId }) => nodeId === node.id)}
+                    onNew={this.props.onNew}
                     onSelect={this.props.onSelectNode}
+                    tree={tree}
                   />
                 ))
                 .toList()}

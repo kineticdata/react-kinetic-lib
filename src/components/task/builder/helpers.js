@@ -1,6 +1,6 @@
 import * as constants from './constants';
 import { List, Map, OrderedMap } from 'immutable';
-import { Tree, Node, Connector } from './models';
+import { Tree, Node, Connector, NodeParameter } from './models';
 import { isObject } from 'lodash-es';
 
 export const isIE11 = document.documentMode === 11;
@@ -124,7 +124,7 @@ export const buildBindings = (tree, tasks, node) => {
       // respectively)
       .map(node => {
         const task = tasks.get(node.definitionId);
-        return (task && task.results) || task.outputs || [];
+        return (task && (task.results || task.outputs)) || [];
       })
       // filter out any nodes that have no outputs / results
       .filter(results => results.length > 0)
@@ -148,3 +148,49 @@ export const buildBindings = (tree, tasks, node) => {
     ? otherBindings
     : otherBindings.set('Results', ancestorResultBindings);
 };
+
+export const addNewTask = (tree, parent, dx, dy) => {
+  const { connectors, nextConnectorId, nextNodeId, nodes } = tree;
+  const position = parent.position
+    .update('x', x => x + dx)
+    .update('y', y => y + dy);
+  const connector = Connector({
+    id: nextConnectorId,
+    headId: nextNodeId,
+    headPosition: position,
+    tailId: parent.id,
+    tailPosition: parent.position,
+  });
+  const node = Node({ id: nextNodeId, position });
+  return {
+    connector,
+    node,
+    tree: tree.merge({
+      connectors: connectors.set(nextConnectorId, connector),
+      nextConnectorId: nextConnectorId + 1,
+      nextNodeId: nextNodeId + 1,
+      nodes: nodes.set(nextNodeId, node),
+    }),
+  };
+};
+
+// helper that updates a node's definition id and parameters to match the given
+// task (handler or routine), there are some property name differences to handle
+// here whether given a handler or routine
+export const mergeNodeTask = (node, task) =>
+  // if the the task is a handler use `parameters`, if its a routine use
+  // `inputs`
+  node.merge({
+    deferrable: task.deferrable,
+    defers: task.deferrable,
+    definitionId: task.definitionId,
+    parameters: List(task.parameters || task.inputs || []).map(
+      ({ name: label, id = label, ...props }) =>
+        NodeParameter({
+          id,
+          label,
+          ...props,
+        }),
+    ),
+    visible: task.visible,
+  });

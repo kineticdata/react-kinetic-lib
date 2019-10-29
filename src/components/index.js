@@ -9,7 +9,7 @@ export { StaticSelect } from './common/StaticSelect';
 export { onLogout } from './common/authentication/AuthenticationContainer';
 
 // Form
-export { mountForm, resetForm, unmountForm } from './form/Form';
+export { mountForm, resetForm, submitForm, unmountForm } from './form/Form';
 
 // Table
 export {
@@ -25,7 +25,9 @@ export { Table } from './table/Table';
 export {
   mountTreeBuilder,
   unmountTreeBuilder,
+  updateTreeBuilder,
 } from './task/builder/builder.redux';
+export { mergeNodeTask } from './task/builder/helpers';
 
 // Discussions
 export { Discussion } from './discussions/Discussion';
