@@ -223,6 +223,7 @@ export class TreeBuilderComponent extends Component {
                     selected={selected.some(({ nodeId }) => nodeId === node.id)}
                     onNew={this.props.onNew}
                     onSelect={this.props.onSelectNode}
+                    tasks={tasks}
                     tree={tree}
                   />
                 ))
