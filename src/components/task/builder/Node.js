@@ -99,7 +99,8 @@ export class Node extends Component {
     return (
       !this.props.node.equals(nextProps.node) ||
       this.props.primary !== nextProps.primary ||
-      this.props.selected !== nextProps.selected
+      this.props.selected !== nextProps.selected ||
+      this.props.highlighted !== nextProps.highlighted
     );
   }
 
