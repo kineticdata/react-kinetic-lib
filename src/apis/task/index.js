@@ -40,8 +40,11 @@ export const fetchTree = (options = {}) => {
 };
 
 export const fetchTree2 = (options = {}) => {
-  validateOptions('fetchTree', ['name', 'sourceGroup', 'sourceName'], options);
-  const id = `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`;
+  validateOptions('fetchTree', ['name'], options);
+  const id =
+    options.sourceName && options.sourceGroup
+      ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
+      : options.name;
   return axios
     .get(`/app/components/task/app/api/v2/trees/${id}`, {
       params: {
