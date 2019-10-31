@@ -74,12 +74,11 @@ export const updateTree = (options = {}) => {
 };
 
 export const updateTree2 = (options = {}) => {
-  validateOptions(
-    'updateTree2',
-    ['name', 'sourceGroup', 'sourceName', 'tree'],
-    options,
-  );
-  const id = `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`;
+  validateOptions('updateTree2', ['name', 'tree'], options);
+  const id =
+    options.sourceName && options.sourceGroup
+      ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
+      : options.name;
   return axios
     .put(`/app/components/task/app/api/v2/trees/${id}`, options.tree, {
       params: {
@@ -87,7 +86,7 @@ export const updateTree2 = (options = {}) => {
       },
     })
     .then(response => ({
-      tree: response.data,
+      tree: response.data.tree,
     }))
     .catch(handleErrors);
 };
