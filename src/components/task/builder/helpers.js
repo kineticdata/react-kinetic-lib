@@ -159,63 +159,70 @@ export const buildBindings = (tree, tasks, node) => {
 // fully configured node and connector
 export const addNewTask = (treeKey, tree, parent) => ({
   tree: tree,
-  selectTaskDefinition: task => {
-    const { connectors, nextConnectorId, nextNodeId, nodes } = tree;
-    const position = parent.position
-      .update('x', x => x + NEW_TASK_DX)
-      .update('y', y => y + NEW_TASK_DY);
-    const nodeId = `${task.definitionId}_${nextNodeId}`;
-    // stub out the new connector and node, these will be provided via return and
-    // are meant to be passed to <ConnectorForm> and <NodeForm> respectively to be
-    // further configured by the consumer of the <TreeBuilder>
-    const connector = Connector({
-      id: nextConnectorId,
-      headId: nodeId,
-      headPosition: position,
-      tailId: parent.id,
-      tailPosition: parent.position,
-    });
-    const node = Node({
-      id: nodeId,
-      position,
-      deferrable: task.deferrable,
-      defers: task.deferrable,
-      definitionId: task.definitionId,
-      visible: task.visible,
-      parameters: List(task.parameters || task.inputs || []).map(
-        ({ name: label, id = label, ...props }) =>
-          NodeParameter({
-            id,
-            label,
-            ...props,
-          }),
-      ),
-    });
-    // add the stubbed connector and node to the current tree, this is done to
-    // accommodate the <CodeInput> bindings helper in <ConnectorForm> and
-    // <NodeForm>
-    const stagedTree = tree.merge({
-      connectors: connectors.set(connector.id, connector),
-      nextConnectorId: nextConnectorId + 1,
-      nextNodeId: nextNodeId + 1,
-      nodes: nodes.set(node.id, node),
-    });
-    // return the pieces of data that will be passed to <ConnectorForm> and
-    // <NodeForm> instances and also pass a `complete` function that should be
-    // called with the final connector and node records that are to be added to
-    // the tree and persisted
-    return {
-      connector,
-      node,
-      stagedTree,
-      complete: ({ connector, node }) => {
-        return dispatch('TREE_UPDATE', {
-          treeKey,
-          tree: stagedTree
-            .setIn(['connectors', connector.id], connector)
-            .setIn(['nodes', node.id], node),
-        });
-      },
-    };
-  },
+  selectCloneNode: cloneNode =>
+    addNewTaskNext({ cloneNode, parent, tree, treeKey }),
+  selectTaskDefinition: task => addNewTaskNext({ parent, task, tree, treeKey }),
 });
+
+const addNewTaskNext = ({ cloneNode, parent, task, tree, treeKey }) => {
+  const { connectors, nextConnectorId, nextNodeId, nodes } = tree;
+  const position = parent.position
+    .update('x', x => x + NEW_TASK_DX)
+    .update('y', y => y + NEW_TASK_DY);
+  const definitionId = task ? task.definitionId : cloneNode.definitionId;
+  const nodeId = `${definitionId}_${nextNodeId}`;
+  // stub out the new connector and node, these will be provided via return and
+  // are meant to be passed to <ConnectorForm> and <NodeForm> respectively to be
+  // further configured by the consumer of the <TreeBuilder>
+  const connector = Connector({
+    id: nextConnectorId,
+    headId: nodeId,
+    headPosition: position,
+    tailId: parent.id,
+    tailPosition: parent.position,
+  });
+  const node = Node({
+    id: nodeId,
+    position,
+    deferrable: task ? task.deferrable : cloneNode.deferrable,
+    defers: task ? task.deferrable : cloneNode.defers,
+    definitionId,
+    visible: task ? task.visible : cloneNode.visible,
+    parameters: cloneNode
+      ? cloneNode.parameters
+      : List(task.parameters || task.inputs || []).map(
+          ({ name: label, id = label, ...props }) =>
+            NodeParameter({
+              id,
+              label,
+              ...props,
+            }),
+        ),
+  });
+  // add the stubbed connector and node to the current tree, this is done to
+  // accommodate the <CodeInput> bindings helper in <ConnectorForm> and
+  // <NodeForm>
+  const stagedTree = tree.merge({
+    connectors: connectors.set(connector.id, connector),
+    nextConnectorId: nextConnectorId + 1,
+    nextNodeId: nextNodeId + 1,
+    nodes: nodes.set(node.id, node),
+  });
+  // return the pieces of data that will be passed to <ConnectorForm> and
+  // <NodeForm> instances and also pass a `complete` function that should be
+  // called with the final connector and node records that are to be added to
+  // the tree and persisted
+  return {
+    connector,
+    node,
+    stagedTree,
+    complete: ({ connector, node }) => {
+      return dispatch('TREE_UPDATE', {
+        treeKey,
+        tree: stagedTree
+          .setIn(['connectors', connector.id], connector)
+          .setIn(['nodes', node.id], node),
+      });
+    },
+  };
+};

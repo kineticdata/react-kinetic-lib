@@ -123,6 +123,12 @@ export class Typeahead extends React.Component {
     }
   };
 
+  onHighlight = ({ suggestion }) => {
+    if (typeof this.props.onHighlight === 'function') {
+      this.props.onHighlight(suggestion);
+    }
+  };
+
   onSelect = (event, { method, suggestion }) => {
     if (method === 'enter') {
       event.preventDefault();
@@ -276,6 +282,7 @@ export class Typeahead extends React.Component {
 
   render() {
     const {
+      highlightFirstSuggestion = true,
       multiple,
       placeholder,
       getSuggestionLabel,
@@ -318,12 +325,13 @@ export class Typeahead extends React.Component {
               theme={{
                 suggestionsContainerOpen: 'OPEN',
               }}
-              highlightFirstSuggestion
+              highlightFirstSuggestion={highlightFirstSuggestion}
               alwaysRenderSuggestions={true}
               shouldRenderSuggestions={this.shouldRenderSuggestions}
               suggestions={this.state.touched ? suggestions : []}
               onSuggestionsFetchRequested={this.onSearch}
               onSuggestionsClearRequested={this.onClearSuggestions}
+              onSuggestionHighlighted={this.onHighlight}
               onSuggestionSelected={this.onSelect}
               renderSuggestion={this.renderSuggestion}
               renderSuggestionsContainer={this.renderSuggestionContainer}

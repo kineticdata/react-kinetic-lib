@@ -1,5 +1,5 @@
 import React, { Component, createRef } from 'react';
-import { isFunction } from 'lodash-es';
+import { isArray, isFunction } from 'lodash-es';
 import classNames from 'classnames';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
@@ -99,7 +99,8 @@ export class Node extends Component {
     return (
       !this.props.node.equals(nextProps.node) ||
       this.props.primary !== nextProps.primary ||
-      this.props.selected !== nextProps.selected
+      this.props.selected !== nextProps.selected ||
+      this.props.highlighted !== nextProps.highlighted
     );
   }
 
@@ -129,9 +130,13 @@ export class Node extends Component {
   }
 
   render() {
-    const { node, primary, selected } = this.props;
-    const { defers, definitionId, highlighted, name } = node;
+    const { node, highlighted, primary, selected, tasks } = this.props;
+    const { defers, definitionId, name } = node;
     const invalid = !name;
+    const isRoutine =
+      definitionId &&
+      tasks.get(definitionId) &&
+      isArray(tasks.get(definitionId).inputs);
     return (
       <g ref={this.el}>
         <rect
@@ -167,7 +172,7 @@ export class Node extends Component {
             y={-constants.ICON_CENTER}
           />
         )}
-        {definitionId && (
+        {isRoutine && (
           <image
             className="high-detail"
             xlinkHref={routineIcon}
