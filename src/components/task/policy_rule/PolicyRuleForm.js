@@ -45,7 +45,7 @@ const fields = ({ policyName, policyType }) => ({ policyRule }) =>
       type: 'text',
       required: true,
       initialValue: policyRule ? policyRule.get('name') : '',
-      helpText: 'User friendly name for the policy rule.'
+      helpText: 'User friendly name for the policy rule.',
     },
     {
       name: 'rule',
@@ -53,7 +53,7 @@ const fields = ({ policyName, policyType }) => ({ policyRule }) =>
       type: 'text',
       required: true,
       initialValue: policyRule ? policyRule.get('rule') : '',
-      helpText: `Ruby expression that is evaluated. If true access is granted. Example: @identity.get_property('spaceAdmin') == 'true'`
+      helpText: `Ruby expression that is evaluated. If true access is granted. Example: @identity.get_property('spaceAdmin') == 'true'`,
     },
     {
       name: 'message',
@@ -61,7 +61,7 @@ const fields = ({ policyName, policyType }) => ({ policyRule }) =>
       type: 'text',
       required: true,
       initialValue: policyRule ? policyRule.get('message') : '',
-      helpText: 'Returned to the user if the rule is called and does not pass.'
+      helpText: 'Returned to the user if the rule is called and does not pass.',
     },
     policyType === 'Category Access' && {
       name: 'categories',

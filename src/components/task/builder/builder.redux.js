@@ -31,26 +31,31 @@ const remember = (state, treeKey) =>
 
 regSaga(
   takeEvery('TREE_CONFIGURE', function*({ payload }) {
-    const { name, sourceGroup, sourceName, treeKey } = payload;
-    const [{ tree }, { categories }] = yield all([
-      call(fetchTree2, {
-        name,
-        sourceGroup,
-        sourceName,
-        include: 'bindings,details,treeJson',
-      }),
-      call(fetchTaskCategories, {
-        include:
-          'handlers.results,handlers.parameters,trees.parameters,trees.inputs,trees.outputs',
-      }),
-    ]);
-    yield put(
-      action('TREE_LOADED', {
-        categories,
-        treeKey,
-        tree: deserializeTree(tree),
-      }),
-    );
+    try {
+      const { name, sourceGroup, sourceName, treeKey } = payload;
+
+      const [{ tree }, { categories }] = yield all([
+        call(fetchTree2, {
+          name,
+          sourceGroup,
+          sourceName,
+          include: 'bindings,details,treeJson',
+        }),
+        call(fetchTaskCategories, {
+          include:
+            'handlers.results,handlers.parameters,trees.parameters,trees.inputs,trees.outputs',
+        }),
+      ]);
+      yield put(
+        action('TREE_LOADED', {
+          categories,
+          treeKey,
+          tree: deserializeTree(tree),
+        }),
+      );
+    } catch (e) {
+      console.log('Caught error loading tree', e);
+    }
   }),
 );
 

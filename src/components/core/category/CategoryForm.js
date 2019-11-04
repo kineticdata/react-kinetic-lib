@@ -50,7 +50,7 @@ const fields = ({ kappSlug, categorySlug }) => ({ category }) =>
           setValue('slug', slugify(values.get('name')), false);
         }
       },
-      helpText: 'User friendly name for the category.'
+      helpText: 'User friendly name for the category.',
     },
     {
       name: 'slug',
@@ -61,7 +61,7 @@ const fields = ({ kappSlug, categorySlug }) => ({ category }) =>
       onChange: (_bindings, { setValue }) => {
         setValue('linked', false);
       },
-      helpText: 'Unique name used in the category path.'
+      helpText: 'Unique name used in the category path.',
     },
     {
       name: 'linked',

@@ -40,8 +40,11 @@ export const fetchTree = (options = {}) => {
 };
 
 export const fetchTree2 = (options = {}) => {
-  validateOptions('fetchTree', ['name', 'sourceGroup', 'sourceName'], options);
-  const id = `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`;
+  validateOptions('fetchTree', ['name'], options);
+  const id =
+    options.sourceName && options.sourceGroup
+      ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
+      : options.name;
   return axios
     .get(`/app/components/task/app/api/v2/trees/${id}`, {
       params: {
@@ -72,12 +75,11 @@ export const updateTree = (options = {}) => {
 };
 
 export const updateTree2 = (options = {}) => {
-  validateOptions(
-    'updateTree2',
-    ['name', 'sourceGroup', 'sourceName', 'tree'],
-    options,
-  );
-  const id = `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`;
+  validateOptions('updateTree2', ['name', 'tree'], options);
+  const id =
+    options.sourceName && options.sourceGroup
+      ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
+      : options.name;
   return axios
     .put(`/app/components/task/app/api/v2/trees/${id}`, options.tree, {
       params: {
@@ -85,7 +87,7 @@ export const updateTree2 = (options = {}) => {
       },
     })
     .then(response => ({
-      tree: response.data,
+      tree: response.data.tree,
     }))
     .catch(handleErrors);
 };
@@ -471,6 +473,7 @@ export const fetchTaskTriggers = (options = {}) =>
         treeType: options.treeType || undefined,
         action: options.action || undefined,
         branchId: options.branchId || undefined,
+        runId: options.runId || undefined,
         managementAction: options.managementAction || undefined,
         selectionCriterion: options.selectionCriterion || undefined,
         status: options.status || undefined,
@@ -485,3 +488,48 @@ export const fetchTaskTriggers = (options = {}) =>
       triggers: response.data.triggers,
       nextPageToken: generateNextPageToken(response.data),
     }));
+
+export const fetchTaskRunErrors = (options = {}) =>
+  axios
+    .get('/app/components/task/app/api/v2/errors', {
+      params: {
+        limit: options.limit,
+        include: options.include,
+        offset: options.offset,
+        timeline: options.orderBy,
+        direction: options.direction,
+        start: options.start,
+        end: options.end,
+        status: options.status || undefined,
+        source: options.source || undefined,
+        sourceId: options.sourceId || undefined,
+        group: options.group || undefined,
+        tree: options.tree || undefined,
+        nodeId: options.nodeId || undefined,
+        handlerId: options.handlerId || undefined,
+        runId: options.runId || undefined,
+        type: options.type || undefined,
+        relatedItem1Id: options.relatedItem1Id || undefined,
+        relatedItem1Type: options.relatedItem1Type || undefined,
+        relatedItem2Id: options.relatedItem1Id || undefined,
+        relatedItem2Type: options.relatedItem1Type || undefined,
+      },
+    })
+    .then(response => ({
+      runErrors: response.data.errors,
+      nextPageToken: generateNextPageToken(response.data),
+    }));
+
+export const fetchTaskRunError = (options = {}) => {
+  validateOptions('fetchTaskRunError', ['errorId'], options);
+
+  return axios
+    .get(`/app/components/task/app/api/v2/errors/${options.errorId}`, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      runError: response.data,
+    }));
+};

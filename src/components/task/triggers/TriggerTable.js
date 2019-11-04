@@ -3,6 +3,7 @@ import { generateTable } from '../../table/Table';
 import { get, getIn } from 'immutable';
 
 const dataSource = ({
+  runId,
   sourceName,
   sourceGroup,
   tree,
@@ -13,6 +14,7 @@ const dataSource = ({
   fn: fetchTaskTriggers,
   params: paramData => [
     {
+      runId,
       source: sourceName
         ? sourceName
         : paramData.filters.getIn(['sourceName', 'value']),
@@ -189,7 +191,7 @@ const columns = [
 ];
 
 export const TriggerTable = generateTable({
-  tableOptions: [],
+  tableOptions: ['runId'],
   columns,
   dataSource,
 });

@@ -83,7 +83,7 @@ const fields = ({ modelName }) => ({ model, modelMapping, bridges }) =>
       type: 'text',
       required: true,
       initialValue: model ? model.get('name') : '',
-      helpText: 'User friendly name for the bridge model.'
+      helpText: 'User friendly name for the bridge model.',
     },
     {
       name: 'status',
@@ -101,7 +101,8 @@ const fields = ({ modelName }) => ({ model, modelMapping, bridges }) =>
       type: 'select',
       required: true,
       initialValue: modelMapping ? modelMapping.get('bridgeSlug') : '',
-      helpText: 'Unique name of the bridge to connect with this model. Bridges are configured under Plugins',
+      helpText:
+        'Unique name of the bridge to connect with this model. Bridges are configured under Plugins',
       options: ({ bridges }) =>
         bridges
           ? bridges.map(bridge =>
@@ -118,7 +119,7 @@ const fields = ({ modelName }) => ({ model, modelMapping, bridges }) =>
       type: 'text',
       required: true,
       initialValue: modelMapping ? modelMapping.get('structure') : '',
-      helpText: `Structures vary depending on the system. They can be table names, forms, domains or other elements.`
+      helpText: `Structures vary depending on the system. They can be table names, forms, domains or other elements.`,
     },
   ];
 

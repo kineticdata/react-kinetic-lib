@@ -252,7 +252,8 @@ const fields = () => ({
       })),
       required: true,
       initialValue: get(space, 'displayType') || 'Display Page',
-      helpText: 'Determines how the application works. For kinops, Single Page App is used.',
+      helpText:
+        'Determines how the application works. For kinops, Single Page App is used.',
     },
     {
       name: 'displayValueJSP',
@@ -295,7 +296,7 @@ const fields = () => ({
               .replace('spa.jsp', '')
               .replace('?location=', '')
           : '',
-      helpText: 'See explanation below for external and embedded asset modes.'
+      helpText: 'See explanation below for external and embedded asset modes.',
     },
     {
       name: 'displayValue',
@@ -373,7 +374,8 @@ const fields = () => ({
           setValue('slug', slugify(values.get('name')), false);
         }
       },
-      helpText: 'User friendly name for space, used throughout the application.',
+      helpText:
+        'User friendly name for space, used throughout the application.',
     },
     {
       name: 'resetPasswordPage',
@@ -422,7 +424,8 @@ const fields = () => ({
       label: 'Inactive Session Limit (in seconds)',
       type: 'text',
       initialValue: get(space, 'sessionInactiveLimitInSeconds'),
-      helpText: 'Users will be logged out automatically if inactive for this amount of time.',
+      helpText:
+        'Users will be logged out automatically if inactive for this amount of time.',
       serialize: ({ values }) =>
         parseInt(values.get('sessionInactiveLimitInSeconds')),
     },

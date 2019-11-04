@@ -1,5 +1,6 @@
 import React, { createRef, Component } from 'react';
 import { throttle } from 'lodash-es';
+import { List } from 'immutable';
 import { isIE11 } from './helpers';
 import * as constants from './constants';
 import { Point } from './models';
@@ -90,6 +91,14 @@ export class SvgCanvas extends Component {
     this.watchDrag({ event, onMove: this.pan, scaled: false });
   };
 
+  focusPoint = ({ x, y }) => {
+    const height = this.canvas.current.clientHeight;
+    const width = this.canvas.current.clientWidth;
+    this.viewport.x = width / 2 - x * this.viewport.scale;
+    this.viewport.y = height / 2 - y * this.viewport.scale;
+    this.setTransform(constants.CANVAS_ZOOM_DURATION, 'ease-in');
+  };
+
   pan = ({ dx, dy }) => {
     this.viewport.x += dx;
     this.viewport.y += dy;
@@ -124,6 +133,41 @@ export class SvgCanvas extends Component {
     }
   }, constants.THROTTLE_ZOOM);
 
+  zoomIn = () => {
+    const scale = constants.CANVAS_SCALE_OPTIONS.find(
+      scale => scale > this.viewport.scale,
+    );
+    if (scale) {
+      this.zoomToScale(scale);
+    }
+  };
+
+  zoomOut = () => {
+    const scale = List(constants.CANVAS_SCALE_OPTIONS)
+      .reverse()
+      .find(scale => scale < this.viewport.scale);
+    if (scale) {
+      this.zoomToScale(scale);
+    }
+  };
+
+  zoomToScale = scale => {
+    // make sure to adjust the x and y offsets so that we are zooming to / from
+    // the center of the canvas element, use the following equation to determine
+    // the coordinate of the virtual center point
+    // cx = ( width / 2 - viewport.x ) / scale
+    const height = this.canvas.current.clientHeight;
+    const width = this.canvas.current.clientWidth;
+    const cx = (width / 2 - this.viewport.x) / this.viewport.scale;
+    const cy = (height / 2 - this.viewport.y) / this.viewport.scale;
+    // then compute the new x / y values by using the equation above and
+    // solving for x / y given the computed center coordinate
+    this.viewport.x = width / 2 - cx * scale;
+    this.viewport.y = height / 2 - cy * scale;
+    this.viewport.scale = scale;
+    this.setTransform(constants.CANVAS_ZOOM_DURATION, 'ease-out');
+  };
+
   onWheel = event => {
     event.preventDefault();
     event.stopPropagation();
@@ -131,11 +175,11 @@ export class SvgCanvas extends Component {
     this.zoom(event);
   };
 
-  setTransform(duration) {
+  setTransform(duration, ease = '') {
     const { scale, x, y } = this.viewport;
     if (!isIE11) {
       const transition = duration
-        ? `transition: transform ${duration}ms ease-in`
+        ? `transition: transform ${duration}ms ${ease}`
         : '';
       this.transformer.current.setAttribute(
         'style',

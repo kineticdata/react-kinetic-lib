@@ -65,7 +65,7 @@ const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
       type: 'text',
       required: true,
       initialValue: securityPolicy ? securityPolicy.get('name') : '',
-      helpText: 'Will be displayed in security policy dropdowns.'
+      helpText: 'Will be displayed in security policy dropdowns.',
     },
     {
       name: 'type',
@@ -84,7 +84,8 @@ const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
         : kappSlug
         ? 'Kapp'
         : 'Space',
-      helpText: 'Determines what information is available to the definition rule, as well as what security policies the security definition can be applied to.'
+      helpText:
+        'Determines what information is available to the definition rule, as well as what security policies the security definition can be applied to.',
     },
     {
       name: 'message',
@@ -92,7 +93,7 @@ const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
       type: 'text',
       required: true,
       initialValue: securityPolicy ? securityPolicy.get('message') : '',
-      helpText: 'Returned to the user if permission is denied.'
+      helpText: 'Returned to the user if permission is denied.',
     },
     {
       name: 'rule',
@@ -103,7 +104,7 @@ const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
       options: ({ space, kapp, values }) =>
         buildBindings({ space, kapp, scope: values.get('type') }),
       initialValue: securityPolicy ? securityPolicy.get('rule') : '',
-      helpText: `Expression to evaluate to true or false. Click the </> button to see available values scoped to this Kapp or Space.`
+      helpText: `Expression to evaluate to true or false. Click the </> button to see available values scoped to this Kapp or Space.`,
     },
   ];
 

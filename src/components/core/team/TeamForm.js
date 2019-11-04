@@ -47,7 +47,8 @@ const fields = ({ teamSlug }) => ({ team }) =>
       required: false,
       transient: true,
       placeholder: 'Select a parent team...',
-      helpText: 'Teams are hierarchical and can be nested within each other. To nest a team within another team, simply add a parent team.',
+      helpText:
+        'Teams are hierarchical and can be nested within each other. To nest a team within another team, simply add a parent team.',
       options: [],
       initialValue: team
         ? {

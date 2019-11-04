@@ -2,6 +2,7 @@ import React, { createRef, Component, Fragment } from 'react';
 import { pick } from 'lodash-es';
 import { connect, dispatch } from '../../../store';
 import { configureTreeBuilder } from './builder.redux';
+import * as constants from './constants';
 import { isPointInNode } from './helpers';
 import { Connector as ConnectorModel } from './models';
 import { SvgCanvas } from './SvgCanvas';
@@ -23,10 +24,12 @@ export class TreeBuilderComponent extends Component {
 
   componentDidMount() {
     this.checkConfig();
+    this.checkHighlight();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     this.checkConfig();
+    this.checkHighlight(prevProps);
   }
 
   checkConfig() {
@@ -41,6 +44,24 @@ export class TreeBuilderComponent extends Component {
     }
   }
 
+  checkHighlight(prevProps = {}) {
+    if (this.props.treeBuilderState && !this.props.treeBuilderState.loading) {
+      // one the first "real" render of the tree builder check for the highlight
+      // node and focus if one is specified
+      if (!prevProps.treeBuilderState || prevProps.treeBuilderState.loading) {
+        this.focusNode(this.props.highlight);
+      }
+      // otherwise check for changes to the highlight prop and focus if it changes
+      // and its a truthy value
+      else if (
+        this.props.highlight &&
+        this.props.highlight !== prevProps.highlight
+      ) {
+        this.focusNode(this.props.highlight);
+      }
+    }
+  }
+
   findNodeByPoint = point => this.props.tree.nodes.find(isPointInNode(point));
 
   findDuplicateConnector = (nodeId1, nodeId2) =>
@@ -49,6 +70,16 @@ export class TreeBuilderComponent extends Component {
         (connector.headId === nodeId1 && connector.tailId === nodeId2) ||
         (connector.headId === nodeId2 && connector.tailId === nodeId1),
     );
+
+  focusNode = name => {
+    const node = this.props.tree.nodes.find(node => node.name === name);
+    if (node) {
+      this.canvasRef.current.focusPoint({
+        x: node.position.x + constants.NODE_CENTER_X,
+        y: node.position.y + constants.NODE_CENTER_Y,
+      });
+    }
+  };
 
   getConnectorsByHead = nodeId =>
     Object.values(this.connectorMap.byHead[nodeId] || {});
@@ -117,9 +148,9 @@ export class TreeBuilderComponent extends Component {
   watchDrag = (...args) => this.canvasRef.current.watchDrag(...args);
 
   render() {
-    const { selected, treeBuilderState, treeKey } = this.props;
+    const { highlight, selected, treeBuilderState, treeKey } = this.props;
     if (treeBuilderState) {
-      const { saving, tasks, tree } = treeBuilderState;
+      const { saving, tasks, tree, undoStack } = treeBuilderState;
       return this.props.children({
         actions: {
           deleteConnector: id =>
@@ -143,6 +174,11 @@ export class TreeBuilderComponent extends Component {
               treeKey,
             });
           },
+          undo: !undoStack.isEmpty()
+            ? () => dispatch('TREE_UNDO', { treeKey })
+            : null,
+          zoomIn: () => this.canvasRef.current.zoomIn(),
+          zoomOut: () => this.canvasRef.current.zoomOut(),
         },
         name: tree.name,
         saving,
@@ -182,10 +218,12 @@ export class TreeBuilderComponent extends Component {
                     ref={this.registerNode(node)}
                     treeKey={treeKey}
                     node={node}
+                    highlighted={highlight === node.name}
                     primary={selected.getIn([0, 'nodeId']) === node.id}
                     selected={selected.some(({ nodeId }) => nodeId === node.id)}
                     onNew={this.props.onNew}
                     onSelect={this.props.onSelectNode}
+                    tasks={tasks}
                     tree={tree}
                   />
                 ))
