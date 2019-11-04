@@ -10,7 +10,7 @@ import {
 export const fetchBridges = (options = {}) => {
   return axios
     .get(
-      `${bundle.spaceLocation()}/app/components/bridgehub/app/api/v1/bridges`,
+      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges`,
       {
         params: paramBuilder(options),
         headers: headerBuilder(options),
@@ -23,7 +23,7 @@ export const fetchBridges = (options = {}) => {
 export const fetchBridgeAdapters = (options = {}) => {
   return axios
     .get(
-      `${bundle.spaceLocation()}/app/components/bridgehub/app/api/v1/adapters`,
+      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/adapters?type=bridge`,
       {
         params: paramBuilder(options),
         headers: headerBuilder(options),
@@ -37,7 +37,7 @@ export const fetchBridge = (options = {}) => {
   validateOptions('fetchBridge', ['bridgeSlug'], options);
   return axios
     .get(
-      `${bundle.spaceLocation()}/app/components/bridgehub/app/api/v1/bridges/${
+      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges/${
         options.bridgeSlug
       }`,
       {
@@ -53,7 +53,7 @@ export const createBridge = (options = {}) => {
   validateOptions('createBridge', ['bridge'], options);
   return axios
     .post(
-      `${bundle.spaceLocation()}/app/components/bridgehub/app/api/v1/bridges/`,
+      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges/`,
       options.bridge,
       {
         params: paramBuilder(options),
@@ -68,7 +68,7 @@ export const updateBridge = (options = {}) => {
   validateOptions('updateBridge', ['bridgeSlug', 'bridge'], options);
   return axios
     .put(
-      `${bundle.spaceLocation()}/app/components/bridgehub/app/api/v1/bridges/${
+      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges/${
         options.bridgeSlug
       }`,
       options.bridge,
@@ -82,7 +82,7 @@ export const deleteBridge = (options = {}) => {
   validateOptions('deleteBridge', ['bridgeSlug'], options);
   return axios
     .delete(
-      `${bundle.spaceLocation()}/app/components/bridgehub/app/api/v1/bridges/${
+      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges/${
         options.bridgeSlug
       }`,
       {
