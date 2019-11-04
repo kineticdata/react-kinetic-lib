@@ -2,6 +2,10 @@ import * as constants from './constants';
 import { List, Map, OrderedMap } from 'immutable';
 import { isObject } from 'lodash-es';
 import { dispatch } from '../../../store';
+import {
+  processErbTemplate,
+  processRuby,
+} from '../../common/code_input/languageHelpers';
 import { Node, Connector, NodeParameter } from './models';
 import { NEW_TASK_DX, NEW_TASK_DY } from './constants';
 
@@ -226,3 +230,42 @@ const addNewTaskNext = ({ cloneNode, parent, task, tree, treeKey }) => {
     },
   };
 };
+
+// regular expression that extracts the content from a string token which will
+// be wrapped with the various delimiters
+const STRING_CONTENT_REGEX = /((?:%[qQiIwWxs]?)?.)(.*)(.)/;
+
+// takes a erb / ruby strings and checks for references to @results['Node name']
+// using the language helpers,
+export const checkForNodeDependencies = (value, erb) =>
+  (erb ? processErbTemplate : processRuby)(value).reduce(
+    ([reduction, index, last1, last2], token) => {
+      const [content, type] = token;
+      // if the current token is just whitespace we do not want to
+      // change the last1, last2 values, just increment the index
+      if ((type === undefined || type === 'erb') && content.match(/\s+/)) {
+        return [reduction, index + content.length, last1, last2];
+      }
+      // check to see if this token represents a node name dependency,
+      // if it is a string preceded by the [ punctuation preceded by the
+      // @results variable
+      const match =
+        type === 'string' &&
+        last1 &&
+        last1[0] === '[' &&
+        last1[1] === 'punctuation' &&
+        last2 &&
+        last2[0] === '@results' &&
+        last2[1] === 'variable'
+          ? content.match(STRING_CONTENT_REGEX)
+          : null;
+      // if it matched then we add the string's contents to the reduction along
+      // with the index of the contents (using the first part of the match to
+      // because there are different lengths of delimiters ", %^, %Q(, etc.)
+      const newReduction = match
+        ? [...reduction, [match[2], index + match[1].length]]
+        : reduction;
+      return [newReduction, index + content.length, token, last1];
+    },
+    [[], 0, null, null],
+  )[0];
