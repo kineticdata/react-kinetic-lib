@@ -54,8 +54,9 @@ const APP_COMPONENT_OPTIONS = [
   'core',
   'loghub',
   'task',
-  'bridgehub',
-  'filehub',
+  'agent',
+  // 'bridgehub',
+  // 'filehub',
   'ssl-trust-setup',
 ].map(component => ({
   label: component,
