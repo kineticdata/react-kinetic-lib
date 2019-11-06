@@ -6,7 +6,7 @@ import {
   processErbTemplate,
   processRuby,
 } from '../../common/code_input/languageHelpers';
-import { Node, Connector, NodeParameter } from './models';
+import { Node, Connector, NodeParameter, NodeResultDependency } from './models';
 import { NEW_TASK_DX, NEW_TASK_DY } from './constants';
 
 export const isIE11 = document.documentMode === 11;
@@ -237,7 +237,7 @@ const STRING_CONTENT_REGEX = /((?:%[qQiIwWxs]?)?.)(.*)(.)/;
 
 // takes a erb / ruby strings and checks for references to @results['Node name']
 // using the language helpers,
-export const checkForNodeDependencies = (value, erb) =>
+export const findNodeDependencies = (context, value, erb) =>
   (erb ? processErbTemplate : processRuby)(value).reduce(
     ([reduction, index, last1, last2], token) => {
       const [content, type] = token;
@@ -263,9 +263,15 @@ export const checkForNodeDependencies = (value, erb) =>
       // with the index of the contents (using the first part of the match to
       // because there are different lengths of delimiters ", %^, %Q(, etc.)
       const newReduction = match
-        ? [...reduction, [match[2], index + match[1].length]]
+        ? reduction.push(
+            NodeResultDependency({
+              context: List(context),
+              name: match[2],
+              index: index + match[1].length,
+            }),
+          )
         : reduction;
       return [newReduction, index + content.length, token, last1];
     },
-    [[], 0, null, null],
+    [List(), 0, null, null],
   )[0];

@@ -59,6 +59,7 @@ export const Connector = Record({
 
 export const TreeBuilderState = Record({
   categories: OrderedMap(),
+  dependencies: List(),
   error: null,
   loading: true,
   redoStack: List(),
@@ -66,6 +67,16 @@ export const TreeBuilderState = Record({
   tasks: OrderedMap(),
   tree: Tree(),
   undoStack: List(),
+});
+
+export const NodeResultDependency = Record({
+  // where the dependency was found, one of:
+  // connector id | node id message type | node id parameter id
+  context: List(),
+  // name of the node being referenced
+  name: '',
+  // position of the node name in the value
+  index: 0,
 });
 
 /*******************************************************************************

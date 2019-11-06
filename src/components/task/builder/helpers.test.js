@@ -1,50 +1,122 @@
-import { checkForNodeDependencies } from './helpers';
+import { List } from 'immutable';
+import { findNodeDependencies } from './helpers';
+import { NodeResultDependency } from './models';
 
-describe('checkForNodeDependencies', () => {
+describe('findNodeDependencies', () => {
   test('supports erb', () => {
     expect(
-      checkForNodeDependencies(
+      findNodeDependencies(
+        ['node', '2', 'parameter', '4'],
         'Hello <%= @results ["Person"]["First Name"] %> from <%= @results["Requester"]["Name"] %>',
         true,
       ),
-    ).toEqual([['Person', 21], ['Requester', 66]]);
+    ).toEqual(
+      List([
+        NodeResultDependency({
+          context: List(['node', '2', 'parameter', '4']),
+          name: 'Person',
+          index: 21,
+        }),
+        NodeResultDependency({
+          context: List(['node', '2', 'parameter', '4']),
+          name: 'Requester',
+          index: 66,
+        }),
+      ]),
+    );
   });
 
   test('supports ruby', () => {
     expect(
-      checkForNodeDependencies('"Hello " + @results["Person"]["First Name"]'),
-    ).toEqual([['Person', 21]]);
+      findNodeDependencies(
+        ['connector', '1'],
+        '"Hello " + @results["Person"]["First Name"]',
+      ),
+    ).toEqual(
+      List.of(
+        NodeResultDependency({
+          context: List(['connector', '1']),
+          name: 'Person',
+          index: 21,
+        }),
+      ),
+    );
   });
 
   test('supports %^...^ strings', () => {
     expect(
-      checkForNodeDependencies('"Hello " + @results[%^Person^]["First Name"]'),
-    ).toEqual([['Person', 22]]);
+      findNodeDependencies(
+        ['connector', '1'],
+        '"Hello " + @results[%^Person^]["First Name"]',
+      ),
+    ).toEqual(
+      List.of(
+        NodeResultDependency({
+          context: List(['connector', '1']),
+          name: 'Person',
+          index: 22,
+        }),
+      ),
+    );
   });
 
   test('supports %q^...^ strings', () => {
     expect(
-      checkForNodeDependencies('"Hello " + @results[%q^Person^]["First Name"]'),
-    ).toEqual([['Person', 23]]);
+      findNodeDependencies(
+        ['connector', '1'],
+        '"Hello " + @results[%q^Person^]["First Name"]',
+      ),
+    ).toEqual(
+      List.of(
+        NodeResultDependency({
+          context: List(['connector', '1']),
+          name: 'Person',
+          index: 23,
+        }),
+      ),
+    );
   });
 
   test('supports %(...) strings', () => {
     expect(
-      checkForNodeDependencies('"Hello " + @results[%(Person)]["First Name"]'),
-    ).toEqual([['Person', 22]]);
+      findNodeDependencies(
+        ['connector', '1'],
+        '"Hello " + @results[%(Person)]["First Name"]',
+      ),
+    ).toEqual(
+      List.of(
+        NodeResultDependency({
+          context: List(['connector', '1']),
+          name: 'Person',
+          index: 22,
+        }),
+      ),
+    );
   });
 
   test('allows whitespace between @results and [ and string', () => {
     expect(
-      checkForNodeDependencies(
+      findNodeDependencies(
+        ['connector', '1'],
         '"Hello " + @results [ "Person" ]["First Name"]',
       ),
-    ).toEqual([['Person', 23]]);
+    ).toEqual(
+      List.of(
+        NodeResultDependency({
+          context: List(['connector', '1']),
+          name: 'Person',
+          index: 23,
+        }),
+      ),
+    );
   });
 
   test('returns empty is no node dependencies', () => {
     expect(
-      checkForNodeDependencies('"Hello " + @other["Person"]["First Name"]'),
-    ).toEqual([]);
+      findNodeDependencies(
+        ['connector', '1'],
+        '"Hello " + @other["Person"]["First Name"]',
+      ),
+    ).toEqual(List());
   });
 });
