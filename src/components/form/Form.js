@@ -600,6 +600,7 @@ export const generateForm = ({
   formOptions,
 }) => configurationProps => (
   <Form
+    addDataSources={configurationProps.addDataSources}
     addFields={configurationProps.addFields}
     alterFields={configurationProps.alterFields}
     autoFocus={configurationProps.autoFocus}

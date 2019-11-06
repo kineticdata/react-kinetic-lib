@@ -1,4 +1,3 @@
-import React from 'react';
 import { List, Map } from 'immutable';
 import {
   createWebhook,
@@ -9,7 +8,7 @@ import {
   fetchSpaceWebhookEvents,
   updateWebhook,
 } from '../../../apis';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import { buildBindings } from '../../../helpers';
 
 const SPACE_INCLUDES =
@@ -120,31 +119,11 @@ const fields = ({ kappSlug, name }) => ({ webhook }) =>
     },
   ];
 
-export const WebhookForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  kappSlug,
-  name,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ kappSlug, name }}
-  >
-    {children}
-  </Form>
-);
+export const WebhookForm = generateForm({
+  formOptions: ['kappSlug', 'name'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+WebhookForm.displayName = 'WebhookForm';

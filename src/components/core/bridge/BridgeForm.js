@@ -1,6 +1,5 @@
-import React from 'react';
 import { get, getIn, List, Map } from 'immutable';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   fetchBridge,
   createBridge,
@@ -130,31 +129,11 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
   }
 };
 
-export const BridgeForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  bridgeSlug,
-  adapterClass,
-}) => (
-  <Form
-    formKey={formKey}
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ bridgeSlug, adapterClass }}
-  >
-    {children}
-  </Form>
-);
+export const BridgeForm = generateForm({
+  formOptions: ['bridgeSlug', 'adapterClass'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+BridgeForm.displayName = 'BridgeForm';

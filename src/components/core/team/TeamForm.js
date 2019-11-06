@@ -1,5 +1,4 @@
-import React from 'react';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   createTeam,
   updateTeam,
@@ -103,30 +102,11 @@ const fields = ({ teamSlug }) => ({ team }) =>
     },
   ];
 
-export const TeamForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  teamSlug,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ teamSlug }}
-  >
-    {children}
-  </Form>
-);
+export const TeamForm = generateForm({
+  formOptions: ['teamSlug'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+TeamForm.displayName = 'TeamForm';

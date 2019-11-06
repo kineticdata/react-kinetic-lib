@@ -1,4 +1,3 @@
-import React from 'react';
 import t from 'prop-types';
 import {
   createCategory,
@@ -6,7 +5,7 @@ import {
   fetchCategory,
   updateCategory,
 } from '../../../apis';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import { slugify } from '../../../helpers';
 
 const dataSources = ({ kappSlug, categorySlug }) => ({
@@ -81,34 +80,14 @@ const fields = ({ kappSlug, categorySlug }) => ({ category }) =>
     },
   ];
 
-export const CategoryForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  kappSlug,
-  categorySlug,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ kappSlug, categorySlug }}
-  >
-    {children}
-  </Form>
-);
+export const CategoryForm = generateForm({
+  formOptions: ['kappSlug', 'categorySlug'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+CategoryForm.displayName = 'CategoryForm';
 
 CategoryForm.propTypes = {
   /** The Slug of the kapp the category exists in, or should be created in */

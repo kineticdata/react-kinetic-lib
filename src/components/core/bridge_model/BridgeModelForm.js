@@ -1,5 +1,4 @@
-import React from 'react';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import { List, Map } from 'immutable';
 
 import {
@@ -123,30 +122,11 @@ const fields = ({ modelName }) => ({ model, modelMapping, bridges }) =>
     },
   ];
 
-export const BridgeModelForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  modelName,
-}) => (
-  <Form
-    formKey={formKey}
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ modelName }}
-  >
-    {children}
-  </Form>
-);
+export const BridgeModelForm = generateForm({
+  formOptions: ['modelName'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+BridgeModelForm.displayName = 'BridgeModelForm';

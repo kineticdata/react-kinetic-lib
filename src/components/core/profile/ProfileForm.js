@@ -1,5 +1,4 @@
-import React from 'react';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   fetchAttributeDefinitions,
   fetchProfile,
@@ -188,29 +187,11 @@ const fields = () => ({ profile }) =>
     },
   ];
 
-export const ProfileForm = ({
-  addFields,
-  alterFields,
-  children,
-  components,
-  fieldSet,
-  formKey,
-  onError,
-  onSave,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    components={components}
-    dataSources={dataSources}
-    fields={fields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    onError={onError}
-    onSave={onSave}
-    onSubmit={handleSubmit}
-    formOptions={{}}
-  >
-    {children}
-  </Form>
-);
+export const ProfileForm = generateForm({
+  formOptions: [],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+ProfileForm.displayName = 'ProfileForm';

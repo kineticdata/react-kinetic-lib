@@ -1,6 +1,5 @@
-import React from 'react';
 import { get } from 'immutable';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   fetchOAuthClient,
   createOAuthClient,
@@ -83,30 +82,11 @@ const fields = ({ clientId }) => ({ client }) =>
     },
   ];
 
-export const OAuthClientForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  clientId,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ clientId }}
-  >
-    {children}
-  </Form>
-);
+export const OAuthClientForm = generateForm({
+  formOptions: ['clientId'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+OAuthClientForm.displayName = 'OAuthClientForm';

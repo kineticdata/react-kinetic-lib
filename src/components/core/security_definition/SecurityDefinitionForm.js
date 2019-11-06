@@ -1,5 +1,4 @@
-import React from 'react';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   fetchSecurityPolicyDefinition,
   createSecurityPolicyDefinition,
@@ -108,31 +107,11 @@ const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
     },
   ];
 
-export const SecurityDefinitionForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  securityPolicyName,
-  kappSlug,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ kappSlug, securityPolicyName }}
-  >
-    {children}
-  </Form>
-);
+export const SecurityDefinitionForm = generateForm({
+  formOptions: ['kappSlug', 'securityPolicyName'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+SecurityDefinitionForm.displayName = 'SecurityDefinitionForm';

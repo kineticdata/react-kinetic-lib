@@ -1,6 +1,6 @@
 import React from 'react';
 import { get, Map } from 'immutable';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   fetchKapp,
   fetchSpace,
@@ -268,30 +268,11 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
     },
   ];
 
-export const KappForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  kappSlug,
-}) => (
-  <Form
-    formKey={formKey}
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ kappSlug }}
-  >
-    {children}
-  </Form>
-);
+export const KappForm = generateForm({
+  formOptions: ['kappSlug'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+KappForm.displayName = 'KappForm';

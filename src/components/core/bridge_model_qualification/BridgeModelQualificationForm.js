@@ -1,5 +1,4 @@
-import React from 'react';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   fetchBridgeModel,
   fetchBridgeModelQualification,
@@ -118,31 +117,11 @@ const fields = ({ modelName, qualificationName }) => ({
     },
   ];
 
-export const BridgeModelQualificationForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  modelName,
-  qualificationName,
-}) => (
-  <Form
-    formKey={formKey}
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ modelName, qualificationName }}
-  >
-    {children}
-  </Form>
-);
+export const BridgeModelQualificationForm = generateForm({
+  formOptions: ['modelName', 'qualificationName'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+BridgeModelQualificationForm.displayName = 'BridgeModelQualificationForm';
