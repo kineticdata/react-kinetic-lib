@@ -532,3 +532,27 @@ export const fetchTaskRunError = (options = {}) => {
       runError: response.data,
     }));
 };
+
+export const updateRunTaskResults = (options = {}) => {
+  validateOptions(
+    'updateRunTaskResults',
+    ['runId', 'taskId', 'results'],
+    options,
+  );
+
+  return axios
+    .put(
+      `/app/components/task/app/api/v2/runs/${options.runId}/tasks/${options.taskId}`,
+      { results: options.results },
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      message: response.data,
+    }));
+
+  console.log('update task results');
+};
