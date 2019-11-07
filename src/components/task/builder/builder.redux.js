@@ -14,6 +14,7 @@ import {
   fetchTree2,
   updateTree2,
 } from '../../../apis/task';
+import { renameDependencies } from './helpers';
 
 export const mountTreeBuilder = treeKey => dispatch('TREE_MOUNT', { treeKey });
 export const unmountTreeBuilder = treeKey =>
@@ -54,7 +55,7 @@ regSaga(
         }),
       );
     } catch (e) {
-      console.log('Caught error loading tree', e);
+      console.error('Caught error loading tree', e);
     }
   }),
 );
@@ -179,17 +180,31 @@ regHandlers({
     remember(state, treeKey).setIn(['trees', treeKey, 'tree'], tree),
   TREE_UPDATE_NODE: (
     state,
-    { payload: { treeKey, id, messages, defers, name, parameters, visible } },
+    {
+      payload: {
+        treeKey,
+        id,
+        messages,
+        defers,
+        dependencies,
+        name,
+        parameters,
+        visible,
+      },
+    },
   ) =>
-    remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
-      tree.mergeIn(['nodes', id], {
+    remember(state, treeKey)
+      .mergeIn(['trees', treeKey, 'tree', 'nodes', id], {
         defers,
         messages,
         name,
         parameters,
         visible,
-      }),
-    ),
+      })
+      .updateIn(
+        ['trees', treeKey, 'tree'],
+        renameDependencies(dependencies, name),
+      ),
   TREE_UPDATE_NODE_POSITION: (state, { payload: { treeKey, id, position } }) =>
     remember(state, treeKey).updateIn(['trees', treeKey, 'tree'], tree =>
       tree

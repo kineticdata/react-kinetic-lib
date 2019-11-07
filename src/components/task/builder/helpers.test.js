@@ -1,11 +1,11 @@
 import { List } from 'immutable';
-import { findNodeDependencies } from './helpers';
+import { parseNodeResultDependencies } from './helpers';
 import { NodeResultDependency } from './models';
 
-describe('findNodeDependencies', () => {
+describe('parseNodeResultDependencies', () => {
   test('supports erb', () => {
     expect(
-      findNodeDependencies(
+      parseNodeResultDependencies(
         ['node', '2', 'parameter', '4'],
         'Hello <%= @results ["Person"]["First Name"] %> from <%= @results["Requester"]["Name"] %>',
         true,
@@ -28,7 +28,7 @@ describe('findNodeDependencies', () => {
 
   test('supports ruby', () => {
     expect(
-      findNodeDependencies(
+      parseNodeResultDependencies(
         ['connector', '1'],
         '"Hello " + @results["Person"]["First Name"]',
       ),
@@ -45,7 +45,7 @@ describe('findNodeDependencies', () => {
 
   test('supports %^...^ strings', () => {
     expect(
-      findNodeDependencies(
+      parseNodeResultDependencies(
         ['connector', '1'],
         '"Hello " + @results[%^Person^]["First Name"]',
       ),
@@ -62,7 +62,7 @@ describe('findNodeDependencies', () => {
 
   test('supports %q^...^ strings', () => {
     expect(
-      findNodeDependencies(
+      parseNodeResultDependencies(
         ['connector', '1'],
         '"Hello " + @results[%q^Person^]["First Name"]',
       ),
@@ -79,7 +79,7 @@ describe('findNodeDependencies', () => {
 
   test('supports %(...) strings', () => {
     expect(
-      findNodeDependencies(
+      parseNodeResultDependencies(
         ['connector', '1'],
         '"Hello " + @results[%(Person)]["First Name"]',
       ),
@@ -96,7 +96,7 @@ describe('findNodeDependencies', () => {
 
   test('allows whitespace between @results and [ and string', () => {
     expect(
-      findNodeDependencies(
+      parseNodeResultDependencies(
         ['connector', '1'],
         '"Hello " + @results [ "Person" ]["First Name"]',
       ),
@@ -113,7 +113,7 @@ describe('findNodeDependencies', () => {
 
   test('returns empty is no node dependencies', () => {
     expect(
-      findNodeDependencies(
+      parseNodeResultDependencies(
         ['connector', '1'],
         '"Hello " + @other["Person"]["First Name"]',
       ),

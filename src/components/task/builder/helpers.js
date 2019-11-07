@@ -237,7 +237,7 @@ const STRING_CONTENT_REGEX = /((?:%[qQiIwWxs]?)?.)(.*)(.)/;
 
 // takes a erb / ruby strings and checks for references to @results['Node name']
 // using the language helpers,
-export const findNodeDependencies = (context, value, erb) =>
+export const parseNodeResultDependencies = (context, value, erb) =>
   (erb ? processErbTemplate : processRuby)(value).reduce(
     ([reduction, index, last1, last2], token) => {
       const [content, type] = token;
@@ -275,3 +275,54 @@ export const findNodeDependencies = (context, value, erb) =>
     },
     [List(), 0, null, null],
   )[0];
+
+export const getConnectorDependencies = ({ condition, id }) =>
+  parseNodeResultDependencies(['connectors', id, 'condition'], condition);
+
+export const getNodeDependencies = ({ id, messages, parameters }) =>
+  List().concat(
+    messages.flatMap(({ value }, i) =>
+      parseNodeResultDependencies(
+        ['nodes', id, 'messages', i, 'value'],
+        value,
+        true,
+      ),
+    ),
+    parameters.flatMap(({ value }, i) =>
+      parseNodeResultDependencies(
+        ['nodes', id, 'parameters', i, 'value'],
+        value,
+        true,
+      ),
+    ),
+  );
+
+export const searchNodeResultDependencies = (tree, nodeName) =>
+  List()
+    .concat(
+      tree.connectors.toList().flatMap(getConnectorDependencies),
+      tree.nodes.toList().flatMap(getNodeDependencies),
+    )
+    .filter(dependency => dependency.name === nodeName);
+
+// helper function that curries the dependency record and the new node name and
+// then it takes the value and it splices the new node name into the value at
+// the index defined in the dependency record also using the length of the old
+// name in the dependency record
+export const replace = (dependency, newName) => value =>
+  value.slice(0, dependency.index) +
+  newName +
+  value.slice(dependency.index + dependency.name.length);
+
+export const renameDependencies = (dependencies = List(), newName) => tree =>
+  dependencies
+    // sort the dependencies by index and reverse so that replacements made in
+    // the same value will not affect each other (renaming Fooo to Foo would
+    // change the index of following dependencies)
+    .sortBy(dep => dep.index)
+    .reverse()
+    .reduce(
+      (tree, dependency) =>
+        tree.updateIn(dependency.context, replace(dependency, newName)),
+      tree,
+    );

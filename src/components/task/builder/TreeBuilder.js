@@ -158,8 +158,8 @@ export class TreeBuilderComponent extends Component {
           deleteNode: id => dispatch('TREE_REMOVE_NODE', { treeKey, id }),
           updateConnector: values =>
             dispatch('TREE_UPDATE_CONNECTOR', { treeKey, ...values }),
-          updateNode: values =>
-            dispatch('TREE_UPDATE_NODE', { treeKey, ...values }),
+          updateNode: (values, dependencies) =>
+            dispatch('TREE_UPDATE_NODE', { treeKey, ...values, dependencies }),
           save: ({
             overwrite = false,
             newName = '',
