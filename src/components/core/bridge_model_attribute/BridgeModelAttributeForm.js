@@ -1,5 +1,4 @@
-import React from 'react';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   fetchBridgeModel,
   fetchBridgeModelAttributeMapping,
@@ -94,31 +93,11 @@ const fields = ({ modelName, attributeName }) => ({ bridgeModelAttribute }) =>
     },
   ];
 
-export const BridgeModelAttributeForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  modelName,
-  attributeName,
-}) => (
-  <Form
-    formKey={formKey}
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ modelName, attributeName }}
-  >
-    {children}
-  </Form>
-);
+export const BridgeModelAttributeForm = generateForm({
+  formOptions: ['modelName', 'attributeName'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+BridgeModelAttributeForm.displayName = 'BridgeModelAttributeForm';

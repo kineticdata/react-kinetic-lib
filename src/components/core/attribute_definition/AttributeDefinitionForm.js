@@ -1,6 +1,5 @@
-import React from 'react';
 import t from 'prop-types';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   createAttributeDefinition,
   updateAttributeDefinition,
@@ -67,35 +66,14 @@ const fields = ({ attributeName }) => ({ attributeDefinition }) =>
  * @component
  * A form for creating and updating Attribute Definitions within the Kinetic Platform
  */
-export const AttributeDefinitionForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  kappSlug,
-  attributeType,
-  attributeName,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ kappSlug, attributeType, attributeName }}
-  >
-    {children}
-  </Form>
-);
+export const AttributeDefinitionForm = generateForm({
+  formOptions: ['kappSlug', 'attributeType', 'attributeName'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+AttributeDefinitionForm.displayName = 'AttributeDefinitionForm';
 
 // Specifies the default values for props:
 AttributeDefinitionForm.defaultProps = {

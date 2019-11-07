@@ -1,6 +1,5 @@
-import React from 'react';
 import { fetchForm, updateForm } from '../../../apis';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 
 const staticParts = [
   'createdAt',
@@ -96,31 +95,11 @@ const fields = ({ formSlug, indexName }) => ({ indexDefinition }) =>
     },
   ];
 
-export const IndexDefinitionForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  formSlug,
-  indexName,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ formSlug, indexName }}
-  >
-    {children}
-  </Form>
-);
+export const IndexDefinitionForm = generateForm({
+  formOptions: ['formSlug', 'indexName'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+IndexDefinitionForm.displayName = 'IndexDefinitionForm';

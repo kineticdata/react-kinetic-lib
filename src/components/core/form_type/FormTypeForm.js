@@ -1,5 +1,4 @@
-import React from 'react';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import { createFormType, updateFormType, fetchFormType } from '../../../apis';
 
 const dataSources = ({ kappSlug, name }) => ({
@@ -35,31 +34,11 @@ const fields = ({ name }) => ({ formType }) =>
     },
   ];
 
-export const FormTypeForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-  kappSlug,
-  name,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ kappSlug, name }}
-  >
-    {children}
-  </Form>
-);
+export const FormTypeForm = generateForm({
+  formOptions: ['kappSlug', 'name'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+FormTypeForm.displayName = 'FormTypeForm';

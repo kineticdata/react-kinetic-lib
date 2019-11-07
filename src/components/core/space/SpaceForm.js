@@ -1,8 +1,6 @@
-import React from 'react';
 import { get, getIn, hasIn, Map } from 'immutable';
 import t from 'prop-types';
-
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   updateSpace,
   fetchSpace,
@@ -545,32 +543,14 @@ const fields = () => ({
     },
   ];
 
-export const SpaceForm = ({
-  addFields,
-  alterFields,
-  fieldSet,
-  formKey,
-  components,
-  onSave,
-  onError,
-  children,
-}) => (
-  <Form
-    formKey={formKey}
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{}}
-  >
-    {children}
-  </Form>
-);
+export const SpaceForm = generateForm({
+  formOptions: [],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+SpaceForm.displayName = 'SpaceForm';
 
 SpaceForm.propTypes = {
   /**

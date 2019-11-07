@@ -104,7 +104,7 @@ export class Typeahead extends React.Component {
     this.setState({
       newValue:
         !touched || (textMode && (match || customValue))
-          ? getSuggestionLabel(match || customValue)
+          ? getSuggestionLabel(match || customValue) || newValue
           : '',
       editing: multiple || textMode,
       touched: false,
@@ -297,6 +297,7 @@ export class Typeahead extends React.Component {
     return (
       <SelectionsContainer
         multiple={multiple}
+        value={value}
         selections={
           multiple
             ? value.map((selection, i) => (

@@ -1,7 +1,5 @@
-import React from 'react';
 import { get, List, Map } from 'immutable';
-
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   createUser,
   fetchAttributeDefinitions,
@@ -189,30 +187,11 @@ const fields = ({ username }) => ({ user }) =>
     },
   ];
 
-export const UserForm = ({
-  addFields,
-  alterFields,
-  children,
-  components,
-  fieldSet,
-  formKey,
-  onError,
-  onSave,
-  username,
-}) => (
-  <Form
-    addFields={addFields}
-    alterFields={alterFields}
-    components={components}
-    dataSources={dataSources}
-    fields={fields}
-    fieldSet={fieldSet}
-    formKey={formKey}
-    onError={onError}
-    onSave={onSave}
-    onSubmit={handleSubmit}
-    formOptions={{ username }}
-  >
-    {children}
-  </Form>
-);
+export const UserForm = generateForm({
+  formOptions: ['username'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+UserForm.displayName = 'UserForm';

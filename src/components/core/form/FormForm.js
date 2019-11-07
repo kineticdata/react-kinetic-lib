@@ -1,6 +1,5 @@
-import React from 'react';
 import { get, Map } from 'immutable';
-import { Form } from '../../form/Form';
+import { generateForm } from '../../form/Form';
 import {
   fetchForm,
   fetchKapp,
@@ -294,32 +293,11 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
     },
   ];
 
-export const FormForm = ({
-  formKey,
-  addFields,
-  alterFields,
-  fieldSet,
-  components,
-  onSave,
-  onError,
-  children,
-  formSlug,
-  kappSlug = null, // Setting to null because CoreAPI will try to use bundle.kappSlug if undefined
-  datastore,
-}) => (
-  <Form
-    formKey={formKey}
-    addFields={addFields}
-    alterFields={alterFields}
-    fieldSet={fieldSet}
-    components={components}
-    onSubmit={handleSubmit}
-    onSave={onSave}
-    onError={onError}
-    dataSources={dataSources}
-    fields={fields}
-    formOptions={{ formSlug, kappSlug, datastore }}
-  >
-    {children}
-  </Form>
-);
+export const FormForm = generateForm({
+  formOptions: ['formSlug', 'kappSlug', 'datastore'],
+  dataSources,
+  fields,
+  handleSubmit,
+});
+
+FormForm.displayName = 'FormForm';

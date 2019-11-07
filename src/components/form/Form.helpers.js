@@ -128,6 +128,7 @@ export const createDataSource = ({ fn, params, transform }) => {
 };
 
 export const createFormState = ({
+  addDataSources,
   addFields,
   alterFields,
   dataSources,
@@ -141,7 +142,9 @@ export const createFormState = ({
   FormState({
     addFields,
     alterFields,
-    dataSources: Map(dataSources(formOptions)).map(createDataSource),
+    dataSources: Map(addDataSources)
+      .merge(Map(dataSources(formOptions)))
+      .map(createDataSource),
     fieldsFn: fields,
     formKey,
     formOptions,
