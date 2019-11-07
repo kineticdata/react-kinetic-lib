@@ -154,10 +154,14 @@ export const cloneTree = (options = {}) => {
 };
 
 export const deleteTree = (options = {}) => {
+  const { title } = options;
+  if (!title) {
+    throw new Error('deleteTree failed! The option "title" is required.');
+  }
   return axios
-    .delete(`app/components/task/app/api/v2/trees/${options.title}`)
+    .delete(`app/components/task/app/api/v2/trees/${title}`)
     .then(response => ({
-      tree: response.data.tree,
+      tree: response.data,
     }))
     .catch(handleErrors);
 };
