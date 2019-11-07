@@ -51,13 +51,13 @@ const dataSource = () => ({
 });
 
 const APP_COMPONENT_OPTIONS = [
+  'agent',
   'core',
   'loghub',
+  'ssl-trust-setup',
   'task',
-  'agent',
   // 'bridgehub',
   // 'filehub',
-  'ssl-trust-setup',
 ].map(component => ({
   label: component,
   value: component,
