@@ -153,6 +153,15 @@ export const cloneTree = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const deleteTree = (options = {}) => {
+  return axios
+    .delete(`app/components/task/app/api/v2/trees/${options.title}`)
+    .then(response => ({
+      tree: response.data.tree,
+    }))
+    .catch(handleErrors);
+};
+
 export const createTaskCategory = (options = {}) => {
   validateOptions('createTaskCategory', ['category'], options);
   return axios
