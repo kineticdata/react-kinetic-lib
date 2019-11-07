@@ -104,15 +104,25 @@ const securityEndpoints = {
   },
 };
 
-const getBridgehubValue = values =>
-  values.get('bridgehubCustom')
+const getAgentValue = values =>
+  values.get('agentCustom')
     ? {
-        url: values.get('bridgehubUrl'),
-        ...(values.get('changeBridgehubSecret') && {
-          secret: values.get('bridgehubSecret'),
+        url: values.get('agentUrl'),
+        ...(values.get('changeAgentSecret') && {
+          secret: values.get('agentSecret'),
         }),
       }
     : null;
+
+// const getBridgehubValue = values =>
+//   values.get('bridgehubCustom')
+//     ? {
+//         url: values.get('bridgehubUrl'),
+//         ...(values.get('changeBridgehubSecret') && {
+//           secret: values.get('bridgehubSecret'),
+//         }),
+//       }
+//     : null;
 
 // const getFilehubValue = values =>
 //   values.get('filehubCustom')
@@ -152,43 +162,81 @@ const fields = () => ({
       visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
     },
     {
-      name: 'bridgehubUrl',
-      label: 'Bridgehub URL',
+      name: 'agentUrl',
+      label: 'Agent URL',
       type: 'text',
-      required: ({ values }) => values.get('bridgehubCustom'),
-      visible: ({ values }) => values.get('bridgehubCustom'),
+      required: ({ values }) => values.get('agentCustom'),
+      visible: ({ values }) => values.get('agentCustom'),
       transient: true,
-      initialValue: getIn(space, ['platformComponents', 'bridgehub', 'url']),
+      initialValue: getIn(space, ['platformComponents', 'agent', 'url']),
     },
+    // {
+    //   name: 'bridgehubUrl',
+    //   label: 'Bridgehub URL',
+    //   type: 'text',
+    //   required: ({ values }) => values.get('bridgehubCustom'),
+    //   visible: ({ values }) => values.get('bridgehubCustom'),
+    //   transient: true,
+    //   initialValue: getIn(space, ['platformComponents', 'bridgehub', 'url']),
+    // },
     {
-      name: 'bridgehubCustom',
-      label: 'Use custom Bridgehub',
+      name: 'agentCustom',
+      label: 'Use custom Agent',
       type: 'checkbox',
       visible: true,
       transient: true,
-      initialValue: hasIn(space, ['platformComponents', 'bridgehub', 'url']),
+      initialValue: hasIn(space, ['platformComponents', 'agent', 'url']),
     },
+    // {
+    //   name: 'bridgehubCustom',
+    //   label: 'Use custom Bridgehub',
+    //   type: 'checkbox',
+    //   visible: true,
+    //   transient: true,
+    //   initialValue: hasIn(space, ['platformComponents', 'bridgehub', 'url']),
+    // },
     {
-      name: 'bridgehubSecret',
-      label: 'Bridgehub Secret',
+      name: 'agentSecret',
+      label: 'Agent Secret',
       type: 'password',
-      visible: ({ values }) => values.get('changeBridgehubSecret'),
+      visible: ({ values }) => values.get('changeAgentSecret'),
       transient: true,
     },
+    // {
+    //   name: 'bridgehubSecret',
+    //   label: 'Bridgehub Secret',
+    //   type: 'password',
+    //   visible: ({ values }) => values.get('changeBridgehubSecret'),
+    //   transient: true,
+    // },
     {
-      name: 'changeBridgehubSecret',
-      label: 'Change Bridgehub Secret',
+      name: 'changeAgentSecret',
+      label: 'Change Agent Secret',
       type: 'checkbox',
       transient: true,
       // in "new" mode we do not show this toggle field and default it to true
-      visible: ({ space, values }) => !!space && values.get('bridgehubCustom'),
+      visible: ({ space, values }) => !!space && values.get('agentCustom'),
       initialValue: !space,
       onChange: ({ values }, { setValue }) => {
-        if (values.get('bridgehubSecret') !== '') {
-          setValue('bridgehubSecret', '');
+        if (values.get('agentSecret') !== '') {
+          setValue('agentSecret', '');
         }
       },
     },
+    // {
+    //   name: 'changeBridgehubSecret',
+    //   label: 'Change Bridgehub Secret',
+    //   type: 'checkbox',
+    //   transient: true,
+    //   // in "new" mode we do not show this toggle field and default it to true
+    //   visible: ({ space, values }) => !!space && values.get('bridgehubCustom'),
+    //   initialValue: !space,
+    //   onChange: ({ values }, { setValue }) => {
+    //     if (values.get('bridgehubSecret') !== '') {
+    //       setValue('bridgehubSecret', '');
+    //     }
+    //   },
+    // },
     {
       name: 'bundlePath',
       label: 'Bundle Path',
@@ -410,7 +458,8 @@ const fields = () => ({
       type: null,
       visible: false,
       serialize: ({ values }) => ({
-        bridgehub: getBridgehubValue(values),
+        agent: getAgentValue(values),
+        // bridgehub: getBridgehubValue(values),
         // Removing filehub until fileResources are implemented
         // filehub: getFilehubValue(values),
         task: getTaskValue(values),

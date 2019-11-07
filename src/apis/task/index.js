@@ -53,7 +53,8 @@ export const fetchTree2 = (options = {}) => {
     })
     .then(response => ({
       tree: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const updateTree = (options = {}) => {
