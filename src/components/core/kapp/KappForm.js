@@ -1,4 +1,3 @@
-import React from 'react';
 import { get, Map } from 'immutable';
 import { generateForm } from '../../form/Form';
 import {
@@ -133,8 +132,8 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
       type: 'code',
       language: 'js-template',
       initialValue: get(kapp, 'defaultSubmissionLabelExpression') || '',
-      // eslint-disable-next-line no-template-curly-in-string
       helpText:
+        // eslint-disable-next-line no-template-curly-in-string
         "Default label for form submissions. Click the </> button to see available values derived from each submission. Example: ${form('name')}",
       options: ({ space, kapp, attributeDefinitions }) =>
         buildBindings({

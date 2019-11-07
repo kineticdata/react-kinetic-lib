@@ -554,6 +554,4 @@ export const updateRunTaskResults = (options = {}) => {
     .then(response => ({
       message: response.data,
     }));
-
-  console.log('update task results');
 };

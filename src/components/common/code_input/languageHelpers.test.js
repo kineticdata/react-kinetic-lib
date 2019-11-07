@@ -74,6 +74,7 @@ describe('processJavaScript', () => {
 
   test('string with interpolation', () => {
     expect(
+      // eslint-disable-next-line no-template-curly-in-string
       processJavaScript("foo 'Prefix' + `Hello ${ values('First Name') }`"),
     ).toEqual([
       ['foo '],
@@ -96,6 +97,7 @@ describe('processJavaScript', () => {
   });
 
   test('nested interpolation', () => {
+    // eslint-disable-next-line no-template-curly-in-string
     expect(processJavaScript('`${`${2}`}`')).toEqual([
       ['`', 'template-punctuation', 'template-string'],
       ['${', 'interpolation-punctuation', 'interpolation', 'template-string'],
@@ -171,6 +173,7 @@ describe('processJavaScript', () => {
 
 describe('processJavaScriptTemplate', () => {
   test('simple tokens', () => {
+    // eslint-disable-next-line no-template-curly-in-string
     expect(processJavaScriptTemplate("Hello ${values('First Name')}")).toEqual([
       ['Hello '],
       ['${', 'opening-interpolation', 'js-template'],
@@ -184,6 +187,7 @@ describe('processJavaScriptTemplate', () => {
   });
 
   test('add some objects inside to test curly behavior', () => {
+    // eslint-disable-next-line no-template-curly-in-string
     expect(processJavaScriptTemplate('Hello ${{foo:{"bar":2}}}')).toEqual([
       ['Hello '],
       ['${', 'opening-interpolation', 'js-template'],
@@ -202,6 +206,7 @@ describe('processJavaScriptTemplate', () => {
   });
 
   test('multiple interpolations', () => {
+    // eslint-disable-next-line no-template-curly-in-string
     expect(processJavaScriptTemplate('Hello ${2} World${"1"}')).toEqual([
       ['Hello '],
       ['${', 'opening-interpolation', 'js-template'],
