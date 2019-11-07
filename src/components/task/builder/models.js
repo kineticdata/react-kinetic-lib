@@ -60,6 +60,7 @@ export const Connector = Record({
 export const TreeBuilderState = Record({
   categories: OrderedMap(),
   error: null,
+  lastSave: null,
   loading: true,
   redoStack: List(),
   saving: false,

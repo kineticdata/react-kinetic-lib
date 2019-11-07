@@ -127,6 +127,7 @@ regHandlers({
   TREE_LOADED: (state, { payload: { categories, treeKey, tree } }) =>
     state.mergeIn(['trees', treeKey], {
       categories,
+      lastSave: tree,
       loading: false,
       tasks: List(categories)
         .flatMap(category => [...category.handlers, ...category.trees])
@@ -146,16 +147,19 @@ regHandlers({
       error,
       saving: false,
     }),
-  TREE_SAVE_SUCCESS: (state, { payload: { tree, treeKey } }) =>
-    state
-      .mergeIn(['trees', treeKey], {
-        error: null,
-        saving: false,
-      })
-      .mergeIn(['trees', treeKey, 'tree'], {
-        name: tree.name,
-        versionId: tree.versionId,
-      }),
+  TREE_SAVE_SUCCESS: (state, { payload: { tree, treeKey } }) => {
+    const newTree = state.getIn(['trees', treeKey, 'tree']).merge({
+      name: tree.name,
+      versionId: tree.versionId,
+    });
+    return state.mergeIn(['trees', treeKey], {
+      dirty: false,
+      error: null,
+      lastSave: newTree,
+      saving: false,
+      tree: newTree,
+    });
+  },
   TREE_UNDO: (state, { payload: { treeKey } }) =>
     state.getIn(['trees', treeKey, 'undoStack']).isEmpty()
       ? state
