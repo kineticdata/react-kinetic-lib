@@ -6,10 +6,11 @@ module.exports = {
   setupFiles: ['./tests/setupTests.js'],
   setupTestFrameworkScriptFile: './tests/setupMatchers.js',
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  
+
   moduleNameMapper: {
     '@kineticdata/react': '<rootDir>/src/index',
-    "^[./a-zA-Z0-9$_-]+\\.png$": "<rootDir>/tests/utils/fileMock.js",
-    "\\.(css|less)$": "<rootDir>/tests/utils/styleMock.js"
-  }
+    "^[./a-zA-Z0-9$_-]+\\.(png|svg)$": "<rootDir>/tests/utils/fileMock.js",
+    "\\.(css|less)$": "<rootDir>/tests/utils/styleMock.js",
+    "^lodash-es$": "lodash"
+  },
 };

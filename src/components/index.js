@@ -27,6 +27,7 @@ export {
   mountTreeBuilder,
   unmountTreeBuilder,
 } from './task/builder/builder.redux';
+export { searchNodeResultDependencies } from './task/builder/helpers';
 
 // Discussions
 export { Discussion } from './discussions/Discussion';

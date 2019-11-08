@@ -170,36 +170,30 @@ export class CodeInput extends Component {
                   : processErbTemplate;
               this.tokenStarts = {};
               this.tokenEnds = {};
-              processor(text)
-                .filter(token => typeof token === 'object')
-                .forEach(({ content, index: start, type }) => {
-                  const end = start + content.length;
-                  this.tokenStarts[start] = type;
-                  this.tokenEnds[end] = type;
-                  if (start < typeaheadStart && end > typeaheadStart) {
-                    callback(start, typeaheadStart);
-                  }
-                  if (start < typeaheadEnd && end > typeaheadEnd) {
-                    callback(typeaheadEnd, end);
-                  }
-                  if (
-                    !(start < typeaheadStart && end > typeaheadStart) &&
-                    !(start < typeaheadEnd && end > typeaheadEnd)
-                  ) {
-                    callback(start, end);
-                  }
-                });
+              processor(text).reduce((start, [content, ...type]) => {
+                const end = start + content.length;
+                this.tokenStarts[start] = type;
+                this.tokenEnds[end] = type;
+                if (start < typeaheadStart && end > typeaheadStart) {
+                  callback(start, typeaheadStart);
+                }
+                if (start < typeaheadEnd && end > typeaheadEnd) {
+                  callback(typeaheadEnd, end);
+                }
+                if (
+                  !(start < typeaheadStart && end > typeaheadStart) &&
+                  !(start < typeaheadEnd && end > typeaheadEnd)
+                ) {
+                  callback(start, end);
+                }
+                return end;
+              }, 0);
             },
             component: ({ children, start, end }) => (
               <span
                 className={classNames(
                   'code',
                   this.tokenStarts[start] || this.tokenEnds[end],
-                  {
-                    interpolation:
-                      props.language === 'js-template' ||
-                      props.language === 'erb',
-                  },
                 )}
               >
                 {children}

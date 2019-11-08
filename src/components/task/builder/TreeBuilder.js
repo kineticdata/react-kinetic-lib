@@ -8,6 +8,7 @@ import { Connector as ConnectorModel } from './models';
 import { SvgCanvas } from './SvgCanvas';
 import { Node } from './Node';
 import { Connector } from './Connector';
+import { is } from 'immutable';
 
 export class TreeBuilderComponent extends Component {
   constructor(props) {
@@ -25,11 +26,20 @@ export class TreeBuilderComponent extends Component {
   componentDidMount() {
     this.checkConfig();
     this.checkHighlight();
+    window.addEventListener('beforeunload', this.beforeunload.bind(this));
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     this.checkConfig();
     this.checkHighlight(prevProps);
+    window.removeEventListener('beforeunload', this.beforeunload.bind(this));
+  }
+
+  beforeunload(e) {
+    if (this.isDirty(this.props.treeBuilderState)) {
+      e.preventDefault();
+      e.returnValue = true;
+    }
   }
 
   checkConfig() {
@@ -147,6 +157,9 @@ export class TreeBuilderComponent extends Component {
 
   watchDrag = (...args) => this.canvasRef.current.watchDrag(...args);
 
+  isDirty = treeBuilderState =>
+    treeBuilderState && !is(treeBuilderState.lastSave, treeBuilderState.tree);
+
   render() {
     const { highlight, selected, treeBuilderState, treeKey } = this.props;
     if (treeBuilderState) {
@@ -158,8 +171,8 @@ export class TreeBuilderComponent extends Component {
           deleteNode: id => dispatch('TREE_REMOVE_NODE', { treeKey, id }),
           updateConnector: values =>
             dispatch('TREE_UPDATE_CONNECTOR', { treeKey, ...values }),
-          updateNode: values =>
-            dispatch('TREE_UPDATE_NODE', { treeKey, ...values }),
+          updateNode: (values, dependencies) =>
+            dispatch('TREE_UPDATE_NODE', { treeKey, ...values, dependencies }),
           save: ({
             overwrite = false,
             newName = '',
@@ -180,6 +193,7 @@ export class TreeBuilderComponent extends Component {
           zoomIn: () => this.canvasRef.current.zoomIn(),
           zoomOut: () => this.canvasRef.current.zoomOut(),
         },
+        dirty: this.isDirty(treeBuilderState),
         name: tree.name,
         saving,
         tasks,

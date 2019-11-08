@@ -187,8 +187,8 @@ const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
       type: 'code',
       language: 'js-template',
       initialValue: get(form, 'submissionLabelExpression') || '',
-      // eslint-disable-next-line no-template-curly-in-string
       helpText:
+        // eslint-disable-next-line no-template-curly-in-string
         "Custom label for form submissions. Click the </> button to see available values derived from each submission. Example: ${values('Customer Name')}",
       options: ({ space, kapp, form }) =>
         buildBindings({

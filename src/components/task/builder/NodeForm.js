@@ -24,6 +24,13 @@ const fields = ({ tasks, tree, node }) => () => [
     type: 'text',
     initialValue: node.name,
     required: true,
+    constraint: ({ values }) =>
+      !tree.nodes.some(
+        other => other.name === values.get('name') && other.id !== node.id,
+      ),
+    constraintMessage: 'This name is already used by another node',
+    pattern: /^[^'"]*$/,
+    patternMessage: 'Node names may not contain apostrophes or quotes',
   },
   node.deferrable && {
     name: 'defers',
