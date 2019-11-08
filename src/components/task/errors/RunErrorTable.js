@@ -1,5 +1,6 @@
 import { fetchTaskRunErrors } from '../../../apis/task';
 import { generateTable } from '../../table/Table';
+import { getIn } from 'immutable';
 
 const dataSource = ({
   runId,
@@ -19,7 +20,7 @@ const dataSource = ({
       group: sourceGroup
         ? sourceGroup
         : paramData.filters.getIn(['sourceGroup', 'value']),
-      tree: tree ? tree : paramData.filters.getIn(['tree', 'value']),
+      tree: tree ? tree : paramData.filters.getIn(['treeName', 'value']),
       sourceId: sourceId
         ? sourceId
         : paramData.filters.getIn(['sourceId', 'value']),
@@ -96,8 +97,35 @@ const columns = [
   {
     value: 'status',
     title: 'Status',
+    filter: 'equals',
     type: 'text',
     sortable: false,
+  },
+  {
+    value: 'sourceName',
+    title: 'Source',
+    filter: 'equals',
+    type: 'text',
+    sortable: false,
+    valueTransform: (_value, row) =>
+      getIn(row, ['run', 'tree', 'sourceName'], ''),
+  },
+  {
+    value: 'sourceGroup',
+    title: 'Group',
+    filter: 'equals',
+    type: 'text',
+    sortable: false,
+    valueTransform: (_value, row) =>
+      getIn(row, ['run', 'tree', 'sourceGroup'], ''),
+  },
+  {
+    value: 'treeName',
+    title: 'Tree',
+    filter: 'equals',
+    type: 'text',
+    sortable: false,
+    valueTransform: (_value, row) => getIn(row, ['run', 'tree', 'name'], ''),
   },
   {
     value: 'Summary',

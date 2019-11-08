@@ -553,6 +553,25 @@ export const updateRunTaskResults = (options = {}) => {
     .then(response => ({
       message: response.data,
     }));
+};
 
-  console.log('update task results');
+export const resolveTaskErrors = (options = {}) => {
+  validateOptions(
+    'resolveTaskErrors',
+    ['ids', 'action', 'resolution'],
+    options,
+  );
+
+  return axios
+    .post('/app/components/task/app/api/v2/errors/resolve', {
+      ids: options.ids,
+      action: options.action,
+      resolution: options.resolution,
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      message: response.data,
+    }));
 };
