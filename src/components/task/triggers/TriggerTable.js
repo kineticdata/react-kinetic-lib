@@ -8,6 +8,7 @@ const dataSource = ({
   sourceGroup,
   tree,
   treeType,
+  triggerStatus,
   sourceId,
   status,
 }) => ({
@@ -15,6 +16,7 @@ const dataSource = ({
   params: paramData => [
     {
       runId,
+      triggerStatus,
       source: sourceName
         ? sourceName
         : paramData.filters.getIn(['sourceName', 'value']),
@@ -32,8 +34,8 @@ const dataSource = ({
       include: 'details,tree',
       limit: paramData.pageSize,
       offset: paramData.nextPageToken,
-      orderBy: 'createdAt',
-      direction: 'desc',
+      orderBy: paramData.sortColumn,
+      direction: paramData.sortDirection,
     },
   ],
   transform: result => ({
@@ -177,7 +179,7 @@ const columns = [
     sortable: false,
     valueTransform: (_value, row) => row.getIn(['tree', 'type']),
   },
-  { value: 'createdAt', title: 'Created', sortable: false },
+  { value: 'createdAt', title: 'Created', sortable: true },
   { value: 'createdBy', title: 'Created By', sortable: false },
   {
     value: 'id',
@@ -191,7 +193,7 @@ const columns = [
 ];
 
 export const TriggerTable = generateTable({
-  tableOptions: ['runId'],
+  tableOptions: ['runId', 'triggerStatus'],
   columns,
   dataSource,
 });

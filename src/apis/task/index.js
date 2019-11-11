@@ -460,30 +460,35 @@ export const updateTaskRun = (options = {}) => {
 
 export const fetchTaskTriggers = (options = {}) =>
   axios
-    .get('/app/components/task/app/api/v2/triggers', {
-      params: {
-        limit: options.limit,
-        include: options.include,
-        offset: options.offset,
-        source: options.source || undefined,
-        group: options.group || undefined,
-        sourceId: options.sourceId || undefined,
-        tree: options.treeName || undefined,
-        treeId: options.treeId || undefined,
-        treeType: options.treeType || undefined,
-        action: options.action || undefined,
-        branchId: options.branchId || undefined,
-        runId: options.runId || undefined,
-        managementAction: options.managementAction || undefined,
-        selectionCriterion: options.selectionCriterion || undefined,
-        status: options.status || undefined,
-        token: options.token || undefined,
-        timeline: options.orderBy,
-        direction: options.direction,
-        start: options.start,
-        end: options.end,
+    .get(
+      `/app/components/task/app/api/v2/triggers${
+        options.triggerStatus ? '/' + options.triggerStatus : ''
+      }`,
+      {
+        params: {
+          limit: options.limit,
+          include: options.include,
+          offset: options.offset,
+          source: options.source || undefined,
+          group: options.group || undefined,
+          sourceId: options.sourceId || undefined,
+          tree: options.treeName || undefined,
+          treeId: options.treeId || undefined,
+          treeType: options.treeType || undefined,
+          action: options.action || undefined,
+          branchId: options.branchId || undefined,
+          runId: options.runId || undefined,
+          managementAction: options.managementAction || undefined,
+          selectionCriterion: options.selectionCriterion || undefined,
+          status: options.status || undefined,
+          token: options.token || undefined,
+          timeline: options.orderBy,
+          direction: options.direction,
+          start: options.start,
+          end: options.end,
+        },
       },
-    })
+    )
     .then(response => ({
       triggers: response.data.triggers,
       nextPageToken: generateNextPageToken(response.data),
