@@ -57,6 +57,16 @@ export const slugify = text =>
     // Remove all non-word chars
     .replace(/[^A-Za-z0-9\u0080-\u00FF-]+/g, '');
 
+export const buildDefinitionId = text =>
+  text
+    .trim()
+    // Convert uppercase to lowercase
+    .toLowerCase()
+    // Replace spaces with _
+    .replace(/\s+/g, '_')
+    // Remove unwanted chars
+    .replace(/[^A-Za-z0-9_]+/g, '');
+
 const SUBMISSION_STATIC_BINDINGS = [
   ['Anonymous', 'anonymous'],
   ['Closed At', 'closedAt'],
