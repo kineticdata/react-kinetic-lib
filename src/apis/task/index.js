@@ -331,7 +331,6 @@ export const createHandler = (options = {}) => {
     data = new FormData();
     data.set('package', packageFile);
     headers = { 'Content-Type': 'multipart/form-data' };
-    console.log(packageFile);
   }
 
   return axios
@@ -342,12 +341,9 @@ export const createHandler = (options = {}) => {
       },
     })
     .then(response => response.data)
-    .catch(error => {
-      console.log(error.response);
-      return {
-        error: error.response.data,
-      };
-    });
+    .catch(error => ({
+      error: error.response.data,
+    }));
 };
 
 export const fetchUsage = (options = {}) => {
