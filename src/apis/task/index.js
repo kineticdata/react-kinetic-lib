@@ -320,7 +320,7 @@ export const fetchHandler = (options = {}) => {
 };
 
 export const createHandler = (options = {}) => {
-  const { packageUrl, packageFile } = options;
+  const { packageUrl, packageFile, force } = options;
 
   let data = {};
   let headers = {};
@@ -337,12 +337,17 @@ export const createHandler = (options = {}) => {
   return axios
     .post('/app/components/task/app/api/v2/handlers', data, {
       headers,
+      params: {
+        force,
+      },
     })
     .then(response => response.data)
-    .catch(() => ({
-      error:
-        'There was a problem uploading the handler. Please make sure it is a valid handler and is not already uploaded.',
-    }));
+    .catch(error => {
+      console.log(error.response);
+      return {
+        error: error.response.data,
+      };
+    });
 };
 
 export const fetchUsage = (options = {}) => {
