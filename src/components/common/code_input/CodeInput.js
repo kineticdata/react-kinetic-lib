@@ -167,27 +167,31 @@ export class CodeInput extends Component {
                   ? processJavaScriptTemplate
                   : props.language === 'ruby'
                   ? processRuby
-                  : processErbTemplate;
-              this.tokenStarts = {};
-              this.tokenEnds = {};
-              processor(text).reduce((start, [content, ...type]) => {
-                const end = start + content.length;
-                this.tokenStarts[start] = type;
-                this.tokenEnds[end] = type;
-                if (start < typeaheadStart && end > typeaheadStart) {
-                  callback(start, typeaheadStart);
-                }
-                if (start < typeaheadEnd && end > typeaheadEnd) {
-                  callback(typeaheadEnd, end);
-                }
-                if (
-                  !(start < typeaheadStart && end > typeaheadStart) &&
-                  !(start < typeaheadEnd && end > typeaheadEnd)
-                ) {
-                  callback(start, end);
-                }
-                return end;
-              }, 0);
+                  : props.language === 'erb'
+                  ? processErbTemplate
+                  : null;
+              if (processor) {
+                this.tokenStarts = {};
+                this.tokenEnds = {};
+                processor(text).reduce((start, [content, ...type]) => {
+                  const end = start + content.length;
+                  this.tokenStarts[start] = type;
+                  this.tokenEnds[end] = type;
+                  if (start < typeaheadStart && end > typeaheadStart) {
+                    callback(start, typeaheadStart);
+                  }
+                  if (start < typeaheadEnd && end > typeaheadEnd) {
+                    callback(typeaheadEnd, end);
+                  }
+                  if (
+                    !(start < typeaheadStart && end > typeaheadStart) &&
+                    !(start < typeaheadEnd && end > typeaheadEnd)
+                  ) {
+                    callback(start, end);
+                  }
+                  return end;
+                }, 0);
+              }
             },
             component: ({ children, start, end }) => (
               <span
@@ -378,9 +382,22 @@ export class CodeInput extends Component {
     this.onChange(startTypeahead(this.state.editorState));
   };
 
+  copy = () => {
+    const el = document.createElement('textarea');
+    el.value = this.state.editorState
+      .getCurrentContent()
+      .getFirstBlock()
+      .getText();
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  };
+
   render() {
     return this.props.children({
       wrapperProps: { onKeyUp: this.stopEscape },
+      copy: this.copy,
       editor: (
         <Editor
           readOnly={this.props.disabled}
