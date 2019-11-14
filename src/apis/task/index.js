@@ -106,6 +106,20 @@ export const createTree = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const exportTree = (options = {}) => {
+  validateOptions('exportTree', ['name'], options);
+  const id =
+    options.sourceName && options.sourceGroup
+      ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
+      : options.name;
+  return axios
+    .get(`/app/components/task/app/api/v2/trees/${id}/export`)
+    .then(response => ({
+      tree: response.data,
+    }))
+    .catch(handleErrors);
+}
+
 export const importTree = (options = {}) => {
   const { content, contentUrl, force } = options;
 
