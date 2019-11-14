@@ -359,6 +359,23 @@ export const createHandler = (options = {}) => {
     }));
 };
 
+export const updateHandler = (options = {}) => {
+  validateOptions('updateHandler', ['definitionId', 'handler'], options);
+  return axios
+    .put(
+      `/app/components/task/app/api/v2/handlers/${options.definitionId}`,
+      options.handler,
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      handler: response.data,
+    }));
+};
+
 export const fetchUsage = (options = {}) => {
   validateOptions('fetchUsage', ['definitionId', 'usageType'], options);
   const path =
