@@ -120,6 +120,7 @@ export { RunErrorTable } from './task/errors/RunErrorTable';
 export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { WorkflowForm } from './task/workflows/WorkflowForm';
 export { SourceTable } from './task/sources/SourceTable';
+export { SourceForm } from './task/sources/SourceForm';
 export { HandlerTable } from './task/handlers/HandlerTable';
 export { HandlerForm } from './task/handlers/HandlerForm';
 export { UsageTable } from './task/common/UsageTable';

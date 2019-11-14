@@ -117,6 +117,61 @@ export const fetchSources = (options = {}) =>
       sources: response.data.sourceRoots,
     }));
 
+export const fetchSource = (options = {}) => {
+  validateOptions('fetchSource', ['sourceName'], options);
+
+  return axios
+    .get(`/app/components/task/app/api/v2/sources/${options.sourceName}`, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      source: response.data,
+    }));
+};
+
+export const updateSource = (options = {}) => {
+  validateOptions('updateSource', ['sourceName', 'source'], options);
+  return axios
+    .put(
+      `/app/components/task/app/api/v2/sources/${options.sourceName}`,
+      options.source,
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      source: response.data,
+    }))
+    .catch(handleErrors);
+};
+
+export const createSource = (options = {}) => {
+  validateOptions('createTree', ['source'], options);
+  return axios
+    .post('/app/components/task/app/api/v2/sources', options.source, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      source: response.data,
+    }))
+    .catch(handleErrors);
+};
+
+export const fetchSourceAdapters = (options = {}) =>
+  axios
+    .get('/app/components/task/app/api/v2/meta/sourceAdapters', {
+      params: { include: options.include },
+    })
+    .then(response => ({
+      sourceAdapters: response.data.sourceAdapters,
+    }));
+
 export const fetchTaskCategories = (options = {}) =>
   axios
     .get('/app/components/task/app/api/v2/categories', {

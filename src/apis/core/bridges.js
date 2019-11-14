@@ -9,13 +9,10 @@ import {
 
 export const fetchBridges = (options = {}) => {
   return axios
-    .get(
-      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges`,
-      {
-        params: paramBuilder(options),
-        headers: headerBuilder(options),
-      },
-    )
+    .get(`${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges`, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
     .then(response => ({ bridges: response.data.bridges }))
     .catch(handleErrors);
 };
