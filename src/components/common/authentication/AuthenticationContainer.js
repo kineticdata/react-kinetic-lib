@@ -12,14 +12,20 @@ regHandlers({
       .setIn(['session', 'initialized'], true)
       .setIn(['session', 'authenticated'], action.payload),
   SET_AUTHENTICATED: (state, action) =>
-    state.updateIn(['session', 'authenticated'], false, () => action.payload),
+    state
+      .updateIn(['session', 'authenticated'], false, () => action.payload)
+      .setIn(['login', 'username'], '')
+      .setIn(['login', 'password'], ''),
   SET_TOKEN: (state, action) =>
     state.setIn(['session', 'token'], action.payload),
   SET_USERNAME: (state, action) =>
     state.setIn(['login', 'username'], action.payload),
   SET_PASSWORD: (state, action) =>
     state.setIn(['login', 'password'], action.payload),
-  SET_ERROR: (state, action) => state.setIn(['login', 'error'], action.payload),
+  SET_ERROR: (state, action) =>
+    state
+      .setIn(['login', 'error'], action.payload)
+      .setIn(['login', 'password'], ''),
 
   ATTEMPT_LOGIN: state => state.setIn(['login', 'error'], null),
   LOGOUT: state =>

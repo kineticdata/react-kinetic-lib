@@ -106,6 +106,31 @@ export const createTree = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const importTree = (options = {}) => {
+  const { content, contentUrl, force } = options;
+
+  let data = {};
+  let headers = {};
+
+  if (contentUrl) {
+    data = { contentUrl };
+  } else {
+    data = new FormData();
+    data.set('content', content);
+    headers = { 'Content-Type': 'multipart/form-data' };
+  }
+
+  return axios
+    .post('/app/components/task/app/api/v2/trees', data, {
+      headers,
+      params: {
+        force,
+      },
+    })
+    .then(response => ({ tree: response.data }))
+    .catch(handleErrors);
+};
+
 export const fetchSources = (options = {}) =>
   axios
     .get('/app/components/task/app/api/v2/sources', {
@@ -411,6 +436,23 @@ export const createHandler = (options = {}) => {
     .then(response => response.data)
     .catch(error => ({
       error: error.response.data,
+    }));
+};
+
+export const updateHandler = (options = {}) => {
+  validateOptions('updateHandler', ['definitionId', 'handler'], options);
+  return axios
+    .put(
+      `/app/components/task/app/api/v2/handlers/${options.definitionId}`,
+      options.handler,
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      handler: response.data,
     }));
 };
 

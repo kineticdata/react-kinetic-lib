@@ -1,5 +1,9 @@
 import React from 'react';
-import { fetchHandler, fetchTaskCategories } from '../../../apis';
+import {
+  fetchHandler,
+  fetchTaskCategories,
+  updateHandler,
+} from '../../../apis';
 import { Form } from '../../form/Form';
 import { get, Map, List } from 'immutable';
 
@@ -21,9 +25,17 @@ const dataSources = ({ definitionId }) => ({
   },
 });
 
-const handleSubmit = () => values => {
-  console.log('submitting values: ', values.toJS());
-  return Promise.resolve();
+const handleSubmit = ({ definitionId }) => values => {
+  updateHandler({ definitionId, handler: values.toJS() }).then(
+    ({ handler, error }) => {
+      if (error) {
+        throw (error.statusCode === 400 && error.message) ||
+          'There was an error saving the handler';
+      } else {
+        return handler;
+      }
+    },
+  );
 };
 
 const fields = ({ definitionId }) => ({ handler, categories }) => {
@@ -52,7 +64,7 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         name: 'definitionId',
         label: 'Definition ID',
         type: 'text',
-        required: true,
+        transient: true,
         enabled: false,
         initialValue: get(handler, 'definitionId', ''),
       },
@@ -61,7 +73,7 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         name: 'definitionName',
         label: 'Definition Name',
         type: 'text',
-        required: true,
+        transient: true,
         enabled: false,
         initialValue: get(handler, 'definitionName', ''),
       },
@@ -70,7 +82,7 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         name: 'definitionVersion',
         label: 'Definition Version',
         type: 'text',
-        required: true,
+        transient: true,
         enabled: false,
         initialValue: get(handler, 'definitionVersion', ''),
       },
@@ -78,15 +90,15 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         name: 'name',
         label: 'Name',
         type: 'text',
-        required: true,
+        transient: true,
         enabled: false,
         initialValue: get(handler, 'name', ''),
       },
       {
         name: 'description',
         label: 'Description',
-        type: 'textarea',
-        required: true,
+        type: 'text',
+        transient: true,
         enabled: false,
         initialValue: get(handler, 'description', ''),
       },
@@ -122,8 +134,12 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         visible: false,
         initialValue: get(handler, 'properties', []),
         serialize: ({ values }) =>
-          get(handler, 'properties', List([])).map(p =>
-            p.set('value', values.get(p.get('name'))),
+          get(handler, 'properties', List([])).reduce(
+            (properties, p) => ({
+              ...properties,
+              [p.get('name')]: values.get(p.get('name')),
+            }),
+            {},
           ),
       },
     ].concat(properties)
