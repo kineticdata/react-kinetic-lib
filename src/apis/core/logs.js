@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axios } from '../../store';
 import { bundle } from '../../helpers';
 import { handleErrors, headerBuilder } from '../http';
 

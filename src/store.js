@@ -3,23 +3,9 @@ import { applyMiddleware, compose, createStore } from 'redux';
 import { create as createAxiosInstance } from 'axios';
 import { connect as originalConnect } from 'react-redux';
 import { select, take } from 'redux-saga/effects';
-import { Map, setIn } from 'immutable';
+import { getIn, Map, setIn } from 'immutable';
 import { reducer, regHandlers } from './reducer';
 import { commitSagas, regSaga, runSaga, sagaMiddleware } from './saga';
-
-export const config = {};
-
-export const configure = getAuthToken => {
-  config.getAuthToken = getAuthToken;
-};
-
-export const axios = createAxiosInstance();
-axios.interceptors.request.use(request => {
-  if (config.getAuthToken) {
-    request.headers.Authorization = `Bearer ${config.getAuthToken()}`;
-  }
-  return request;
-});
 
 const composeEnhancers =
   typeof window !== `undefined` && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -44,6 +30,22 @@ const context = createContext();
 
 const connect = (...args) =>
   originalConnect(...setIn(args, [3, 'context'], context));
+
+export const config = {
+  getAuthToken: () => getIn(store.getState(), ['session', 'token'], null),
+};
+
+export const configure = getAuthToken => {
+  config.getAuthToken = getAuthToken;
+};
+
+export const axios = createAxiosInstance();
+axios.interceptors.request.use(request => {
+  if (config.getAuthToken) {
+    request.headers.Authorization = `Bearer ${config.getAuthToken()}`;
+  }
+  return request;
+});
 
 export {
   action,
