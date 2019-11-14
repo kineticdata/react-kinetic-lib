@@ -46,12 +46,17 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
   const properties = handler
     .get('properties')
     .map(property => ({
-      name: property.get('name'),
+      name: `property_${property.get('name')}`,
       label: property.get('name'),
       type: property.get('type') === 'Encrypted' ? 'password' : 'text',
       required: property.get('required'),
       transient: true,
-      initialValue: property.get('value'),
+      initialValue:
+        property.get('type') === 'Encrypted'
+          ? ''
+          : property.get('value') === null
+          ? ''
+          : property.get('value'),
     }))
     .toArray();
 
@@ -134,13 +139,19 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         visible: false,
         initialValue: get(handler, 'properties', []),
         serialize: ({ values }) =>
-          get(handler, 'properties', List([])).reduce(
-            (properties, p) => ({
-              ...properties,
-              [p.get('name')]: values.get(p.get('name')),
-            }),
-            {},
-          ),
+          get(handler, 'properties', List([]))
+            .filter(p =>
+              p.get('type') === 'Encrypted'
+                ? values.get(`property_${p.get('name')}`)
+                : true,
+            )
+            .reduce(
+              (properties, p) => ({
+                ...properties,
+                [p.get('name')]: values.get(`property_${p.get('name')}`),
+              }),
+              {},
+            ),
       },
     ].concat(properties)
   );
