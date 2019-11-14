@@ -20,15 +20,27 @@ export class Scroller extends Component {
     const parent = this.parent.current;
     const child = this.child.current;
     if (child) {
-      if (child.offsetTop > this.lastTop) {
+      // in case the parent has an offsetTop we need to subtract that from the
+      // child's for the calculations below
+      const childTop = child.offsetTop - parent.offsetTop;
+      // when scrolling down...
+      if (childTop > this.lastTop) {
+        // check to see if the bottom of the child element is below the bottom
+        // of the scrollable parent
         if (
-          child.offsetTop + child.clientHeight >
+          childTop + child.clientHeight >
           parent.scrollTop + parent.clientHeight
         ) {
+          // scroll the child into view (passing false which aligns by bottom)
           child.scrollIntoView(false);
         }
-      } else if (child.offsetTop < this.lastTop) {
-        if (child.offsetTop < parent.scrollTop) {
+      }
+      // when scrolling up...
+      else if (childTop < this.lastTop) {
+        // check to see if the top of the child element is above the top of the
+        // scrollable parent
+        if (childTop < parent.scrollTop) {
+          // scroll the child into view (passing true which aligns by top)
           child.scrollIntoView(true);
         }
       }
