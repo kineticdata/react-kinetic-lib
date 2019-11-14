@@ -6,6 +6,7 @@ export { UserSelect } from './common/UserSelect';
 export { TeamSelect } from './common/TeamSelect';
 export { TableInput } from './common/TableInput';
 export { FormSelect } from './common/FormSelect';
+export { Scroller } from './common/Scroller';
 export { StaticSelect } from './common/StaticSelect';
 export { onLogout } from './common/authentication/AuthenticationContainer';
 
