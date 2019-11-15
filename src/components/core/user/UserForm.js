@@ -124,7 +124,7 @@ const fields = ({ username }) => ({ user }) =>
       required: false,
       initialValue: get(user, 'allowedIps') || '',
       helpText:
-        'Ability to restrict login by IP address. Use * for unrestricted. Separate by a comma for multiple ID addresses.',
+        'Ability to restrict login by IP address. Use * for unrestricted. Separate by a comma for multiple IP addresses.',
     },
     {
       name: 'preferredLocale',

@@ -6,7 +6,6 @@ import {
   updateBridge,
   fetchBridgeAdapters,
 } from '../../../apis';
-import { slugify } from '../../../helpers';
 
 const dataSources = ({ bridgeSlug }) => ({
   bridge: {
@@ -33,7 +32,7 @@ const handleSubmit = ({ bridgeSlug }) => values =>
     return bridge;
   });
 
-const BRIDGE_FIELDS = ['name', 'slug', 'adapterClass', 'properties', 'linked'];
+const BRIDGE_FIELDS = ['slug', 'adapterClass', 'properties', 'linked'];
 
 const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
   let properties = [];
@@ -70,43 +69,19 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
       (!bridgeSlug || (bridgeSlug && bridge)) &&
       [
         {
-          name: 'name',
-          label: 'Name',
-          type: 'text',
-          required: true,
-          initialValue: get(bridge, 'name', ''),
-          helpText: 'Friendly name used throughout the system.',
-          onChange: ({ values }, { setValue }) => {
-            if (values.get('linked')) {
-              setValue('slug', slugify(values.get('name')), false);
-            }
-          },
-        },
-        {
           name: 'slug',
-          label: 'Slug',
+          label: 'Bridge Slug',
           type: 'text',
           required: true,
           initialValue: get(bridge, 'slug', ''),
           helpText: 'Unique name used in the bridge path.',
-          onChange: (_bindings, { setValue }) => {
-            setValue('linked', false);
-          },
-        },
-        {
-          name: 'linked',
-          label: 'Linked',
-          type: 'checkbox',
-          transient: true,
-          initialValue: bridge ? false : true,
-          visible: false,
         },
         {
           name: 'adapterClass',
           label: 'Adapter Class',
           type: bridgeSlug ? 'text' : 'select',
-          enabled: () => false,
-          required: () => false,
+          enabled: false,
+          required: false,
           initialValue: initialAdapterClass,
           options: adapters.map(adapter =>
             Map({

@@ -1,4 +1,3 @@
-import React from 'react';
 import { get, List, Map } from 'immutable';
 import {
   createSource,
