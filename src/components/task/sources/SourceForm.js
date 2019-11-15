@@ -60,7 +60,9 @@ const fields = ({ sourceName, sourceType }) => ({ source, sourceAdapters }) => {
         type: property.get('sensitive') ? 'password' : 'text',
         required: property.get('required'),
         transient: true,
-        initialValue: source.getIn(['properties', property.get('name')], ''),
+        initialValue: source
+          ? source.getIn(['properties', property.get('name')], '')
+          : '',
       }))
       .toArray();
 
