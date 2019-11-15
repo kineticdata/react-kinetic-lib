@@ -118,7 +118,7 @@ export const exportTree = (options = {}) => {
       tree: response.data,
     }))
     .catch(handleErrors);
-}
+};
 
 export const importTree = (options = {}) => {
   const { content, contentUrl, force } = options;
@@ -253,7 +253,7 @@ export const deleteTree = (options = {}) => {
     throw new Error('deleteTree failed! The option "title" is required.');
   }
   return axios
-    .delete(`app/components/task/app/api/v2/trees/${title}`)
+    .delete(`/app/components/task/app/api/v2/trees/${title}`)
     .then(response => ({
       tree: response.data,
     }))
