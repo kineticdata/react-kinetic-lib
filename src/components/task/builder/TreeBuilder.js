@@ -21,6 +21,7 @@ export class TreeBuilderComponent extends Component {
       byTail: {},
     };
     this.nodeMap = {};
+    this.sidebarRef = createRef();
   }
 
   componentDidMount() {
@@ -85,19 +86,33 @@ export class TreeBuilderComponent extends Component {
     if (type === 'node') {
       const node = this.props.tree.nodes.find(node => node.name === id);
       if (node) {
-        this.canvasRef.current.focusPoint({
-          x: node.position.x + constants.NODE_CENTER_X,
-          y: node.position.y + constants.NODE_CENTER_Y,
-        });
+        this.canvasRef.current.focusPoint(
+          {
+            x: node.position.x + constants.NODE_CENTER_X,
+            y: node.position.y + constants.NODE_CENTER_Y,
+          },
+          this.sidebarRef.current,
+        );
       }
     } else {
       const connector = this.props.tree.connectors.find(
         connector => connector.id === id,
       );
-      this.canvasRef.current.focusPoint({
-        x: (connector.headPosition.x + connector.tailPosition.x) / 2,
-        y: (connector.headPosition.y + connector.tailPosition.y) / 2,
-      });
+      this.canvasRef.current.focusPoint(
+        {
+          x:
+            (connector.headPosition.x +
+              connector.tailPosition.x +
+              constants.NODE_WIDTH) /
+            2,
+          y:
+            (connector.headPosition.y +
+              connector.tailPosition.y +
+              constants.NODE_HEIGHT) /
+            2,
+        },
+        this.sidebarRef.current,
+      );
     }
   };
 
@@ -207,6 +222,7 @@ export class TreeBuilderComponent extends Component {
         dirty: this.isDirty(treeBuilderState),
         name: tree.name,
         saving,
+        sidebarRef: this.sidebarRef,
         tasks,
         tree,
         treeBuilder: (
