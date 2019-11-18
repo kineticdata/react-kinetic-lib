@@ -145,6 +145,12 @@ export const importTree = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const fetchTreeCounts = (options = {}) =>
+  axios
+    .get(`/app/components/task/app/api/v2/trees/${options.title}/counts`)
+    .then(response => ({ counts: response.data }))
+    .catch(handleErrors);
+
 export const fetchSources = (options = {}) =>
   axios
     .get('/app/components/task/app/api/v2/sources', {
