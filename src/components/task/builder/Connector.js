@@ -128,6 +128,7 @@ export class Connector extends Component {
   shouldComponentUpdate(nextProps) {
     return (
       !this.props.connector.equals(nextProps.connector) ||
+      this.props.highlighted !== nextProps.highlighted ||
       this.props.primary !== nextProps.primary ||
       this.props.selected !== nextProps.selected
     );
@@ -177,12 +178,13 @@ export class Connector extends Component {
   };
 
   render() {
-    const { connector, primary, selected } = this.props;
+    const { connector, highlighted, primary, selected } = this.props;
     const { condition, id, label, type } = connector;
     const invalid = condition && !label;
     return (
       <g
         className={classNames('connector', {
+          highlighted,
           invalid,
           primary,
           selected,
@@ -218,15 +220,6 @@ export class Connector extends Component {
             className="connector-button"
             onClick={this.onSelect}
           >
-            <rect
-              className="high-detail"
-              x={-constants.ICON_CENTER}
-              y={-constants.ICON_CENTER}
-              height={constants.ICON_SIZE}
-              width={constants.ICON_SIZE}
-              rx={constants.CONNECTOR_LABEL_RADIUS}
-              ry={constants.CONNECTOR_LABEL_RADIUS}
-            />
             {label ? (
               <Fragment>
                 <rect
@@ -250,14 +243,25 @@ export class Connector extends Component {
                 </SvgText>
               </Fragment>
             ) : (
-              <image
-                className="high-detail"
-                xlinkHref={filter}
-                x={-constants.ICON_CENTER}
-                y={-constants.ICON_CENTER}
-                height={constants.ICON_SIZE}
-                width={constants.ICON_SIZE}
-              />
+              <Fragment>
+                <rect
+                  className="high-detail"
+                  x={-constants.ICON_CENTER}
+                  y={-constants.ICON_CENTER}
+                  height={constants.ICON_SIZE}
+                  width={constants.ICON_SIZE}
+                  rx={constants.CONNECTOR_LABEL_RADIUS}
+                  ry={constants.CONNECTOR_LABEL_RADIUS}
+                />
+                <image
+                  className="high-detail"
+                  xlinkHref={filter}
+                  x={-constants.ICON_CENTER}
+                  y={-constants.ICON_CENTER}
+                  height={constants.ICON_SIZE}
+                  width={constants.ICON_SIZE}
+                />
+              </Fragment>
             )}
           </g>
         )}

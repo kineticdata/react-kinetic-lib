@@ -59,15 +59,15 @@ export class TreeBuilderComponent extends Component {
       // one the first "real" render of the tree builder check for the highlight
       // node and focus if one is specified
       if (!prevProps.treeBuilderState || prevProps.treeBuilderState.loading) {
-        this.focusNode(this.props.highlight);
+        this.panTo(this.props.highlight);
       }
       // otherwise check for changes to the highlight prop and focus if it changes
       // and its a truthy value
       else if (
         this.props.highlight &&
-        this.props.highlight !== prevProps.highlight
+        !this.props.highlight.equals(prevProps.highlight)
       ) {
-        this.focusNode(this.props.highlight);
+        this.panTo(this.props.highlight);
       }
     }
   }
@@ -81,12 +81,22 @@ export class TreeBuilderComponent extends Component {
         (connector.headId === nodeId2 && connector.tailId === nodeId1),
     );
 
-  focusNode = name => {
-    const node = this.props.tree.nodes.find(node => node.name === name);
-    if (node) {
+  panTo = ([type, id]) => {
+    if (type === 'node') {
+      const node = this.props.tree.nodes.find(node => node.name === id);
+      if (node) {
+        this.canvasRef.current.focusPoint({
+          x: node.position.x + constants.NODE_CENTER_X,
+          y: node.position.y + constants.NODE_CENTER_Y,
+        });
+      }
+    } else {
+      const connector = this.props.tree.connectors.find(
+        connector => connector.id === id,
+      );
       this.canvasRef.current.focusPoint({
-        x: node.position.x + constants.NODE_CENTER_X,
-        y: node.position.y + constants.NODE_CENTER_Y,
+        x: (connector.headPosition.x + connector.tailPosition.x) / 2,
+        y: (connector.headPosition.y + connector.tailPosition.y) / 2,
       });
     }
   };
@@ -162,6 +172,7 @@ export class TreeBuilderComponent extends Component {
 
   render() {
     const { highlight, selected, treeBuilderState, treeKey } = this.props;
+    const [highlightType, highlightId] = highlight || [];
     if (treeBuilderState) {
       const { saving, tasks, tree, undoStack } = treeBuilderState;
       return this.props.children({
@@ -208,6 +219,10 @@ export class TreeBuilderComponent extends Component {
                     ref={this.registerConnector(connector)}
                     treeKey={treeKey}
                     connector={connector}
+                    highlighted={
+                      highlightType === 'connector' &&
+                      highlightId === connector.id
+                    }
                     primary={
                       selected.getIn([0, 'connectorId']) === connector.id
                     }
@@ -232,7 +247,9 @@ export class TreeBuilderComponent extends Component {
                     ref={this.registerNode(node)}
                     treeKey={treeKey}
                     node={node}
-                    highlighted={highlight === node.name}
+                    highlighted={
+                      highlightType === 'node' && highlightId === node.name
+                    }
                     primary={selected.getIn([0, 'nodeId']) === node.id}
                     selected={selected.some(({ nodeId }) => nodeId === node.id)}
                     onNew={this.props.onNew}
