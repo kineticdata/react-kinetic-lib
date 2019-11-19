@@ -59,7 +59,10 @@ export class TreeBuilderComponent extends Component {
     if (this.props.treeBuilderState && !this.props.treeBuilderState.loading) {
       // one the first "real" render of the tree builder check for the highlight
       // node and focus if one is specified
-      if (!prevProps.treeBuilderState || prevProps.treeBuilderState.loading) {
+      if (
+        (!prevProps.treeBuilderState || prevProps.treeBuilderState.loading) &&
+        this.props.highlight
+      ) {
         this.panTo(this.props.highlight);
       }
       // otherwise check for changes to the highlight prop and focus if it changes
