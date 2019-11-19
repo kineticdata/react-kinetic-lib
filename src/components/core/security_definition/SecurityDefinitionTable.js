@@ -1,5 +1,9 @@
 import { generateTable } from '../../table/Table';
 import { fetchSecurityPolicyDefinitions } from '../../../apis';
+import {
+  KAPP_SECURITY_DEFINITION_TYPES,
+  SPACE_SECURITY_DEFINITION_TYPES,
+} from './SecurityDefinitionForm';
 
 const dataSource = ({ kappSlug }) => ({
   fn: fetchSecurityPolicyDefinitions,
@@ -36,9 +40,19 @@ const columns = [
   {
     value: 'type',
     title: 'Type',
-    filter: 'startsWith',
+    filter: 'equals',
     type: 'text',
     sortable: true,
+    options: kappSlug =>
+      kappSlug.kappSlug
+        ? KAPP_SECURITY_DEFINITION_TYPES.map(el => ({
+            value: el,
+            label: el,
+          }))
+        : SPACE_SECURITY_DEFINITION_TYPES.map(el => ({
+            value: el,
+            label: el,
+          })),
   },
 ];
 

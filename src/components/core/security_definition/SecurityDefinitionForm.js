@@ -8,7 +8,7 @@ import {
 } from '../../../apis';
 import { buildBindings } from '../../../helpers';
 
-const SPACE_SECURITY_DEFINITION_TYPES = [
+export const SPACE_SECURITY_DEFINITION_TYPES = [
   'Space',
   'Datastore Form',
   'Datastore Submission',
@@ -16,7 +16,7 @@ const SPACE_SECURITY_DEFINITION_TYPES = [
   'User',
 ];
 
-const KAPP_SECURITY_DEFINITION_TYPES = ['Kapp', 'Form', 'Submission'];
+export const KAPP_SECURITY_DEFINITION_TYPES = ['Kapp', 'Form', 'Submission'];
 
 const SPACE_INCLUDES =
   'datastoreFormAttributeDefinitions,spaceAttributeDefinitions,teamAttributeDefinitions,userAttributeDefinitions,userProfileAttributeDefinitions';
