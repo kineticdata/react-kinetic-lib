@@ -4,7 +4,7 @@ import {
   fetchBridge,
   createBridge,
   updateBridge,
-  fetchBridgeAdapters,
+  fetchAdapters,
 } from '../../../apis';
 
 const dataSources = ({ bridgeSlug }) => ({
@@ -14,8 +14,8 @@ const dataSources = ({ bridgeSlug }) => ({
     transform: result => result.bridge,
   },
   adapters: {
-    fn: fetchBridgeAdapters,
-    params: [{ include: 'details' }],
+    fn: fetchAdapters,
+    params: [{ include: 'details', type: 'bridge' }],
     transform: result => result.adapters,
   },
 });
@@ -79,7 +79,7 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
         {
           name: 'adapterClass',
           label: 'Adapter Class',
-          type: bridgeSlug ? 'text' : 'select',
+          type: 'text',
           enabled: false,
           required: false,
           initialValue: initialAdapterClass,
