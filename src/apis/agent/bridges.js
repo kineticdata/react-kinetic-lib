@@ -17,19 +17,6 @@ export const fetchBridges = (options = {}) => {
     .catch(handleErrors);
 };
 
-export const fetchBridgeAdapters = (options = {}) => {
-  return axios
-    .get(
-      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/adapters?type=bridge`,
-      {
-        params: paramBuilder(options),
-        headers: headerBuilder(options),
-      },
-    )
-    .then(response => ({ adapters: response.data.adapters }))
-    .catch(handleErrors);
-};
-
 export const fetchBridge = (options = {}) => {
   validateOptions('fetchBridge', ['bridgeSlug'], options);
   return axios

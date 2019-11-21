@@ -150,7 +150,7 @@ const fields = ({ username }) => ({ user }) =>
           ? timezones.map(timezone =>
               Map({
                 value: timezone.get('id'),
-                label: timezone.get('name'),
+                label: `${timezone.get('name')} (${timezone.get('id')})`,
               }),
             )
           : List(),

@@ -91,9 +91,11 @@ export class SvgCanvas extends Component {
     this.watchDrag({ event, onMove: this.pan, scaled: false });
   };
 
-  focusPoint = ({ x, y }) => {
+  focusPoint = ({ x, y }, sidebar) => {
     const height = this.canvas.current.clientHeight;
-    const width = this.canvas.current.clientWidth;
+    const width = sidebar
+      ? sidebar.offsetLeft
+      : this.canvas.current.clientWidth;
     this.viewport.x = width / 2 - x * this.viewport.scale;
     this.viewport.y = height / 2 - y * this.viewport.scale;
     this.setTransform(constants.CANVAS_ZOOM_DURATION, 'ease-in');

@@ -3,7 +3,6 @@ export * from './core/activity';
 export * from './core/attributeDefinitions';
 export * from './core/authentication';
 export * from './core/backgroundJobs';
-export * from './core/bridges';
 export * from './core/bridgedresources';
 export * from './core/bridgeModels';
 export * from './core/bridgeModelAttributes';
@@ -46,3 +45,8 @@ export { socket, socketIdentify } from './socket';
 
 // Task
 export * from './task';
+
+// Agent
+export * from './agent/adapters';
+export * from './agent/bridges';
+export * from './agent/handlers';

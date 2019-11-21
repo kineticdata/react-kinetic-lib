@@ -336,8 +336,7 @@ export class CodeInput extends Component {
   keyBindingFn = event => {
     if (this.state.typeaheadOpen) {
       if (event.keyCode === 27) {
-        event.preventDefault();
-        event.stopPropagation();
+        this.stopEscape = true;
         return 'close-typeahead';
       } else if (event.keyCode === 9 || event.keyCode === 13) {
         return 'select-typeahead-option';
@@ -372,8 +371,12 @@ export class CodeInput extends Component {
     return getDefaultKeyBinding(event);
   };
 
-  stopEscape = event => {
-    if (event.keyCode === 27) {
+  onKeyUp = event => {
+    // since we are not able to stop propagation in keyBindingFn above, we set a
+    // boolean there and this onKeyUp handler (that fires afterwards) checks for
+    // that boolean and stop's propagation if necessary and resets the boolean
+    if (event.keyCode === 27 && this.stopEscape) {
+      this.stopEscape = false;
       event.stopPropagation();
     }
   };
@@ -396,7 +399,7 @@ export class CodeInput extends Component {
 
   render() {
     return this.props.children({
-      wrapperProps: { onKeyUp: this.stopEscape },
+      wrapperProps: { onKeyUp: this.onKeyUp },
       copy: this.copy,
       editor: (
         <Editor
