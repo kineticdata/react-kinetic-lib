@@ -39,7 +39,7 @@ const columns = [
     sortable: true,
   },
   {
-    value: 'CreatedAt',
+    value: 'createdAt',
     title: 'Created',
     sortable: true,
     filter: 'equals',
