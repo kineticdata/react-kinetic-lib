@@ -583,6 +583,24 @@ export const updateTaskRun = (options = {}) => {
   );
 };
 
+export const createTaskRun = (options = {}) => {
+  validateOptions('createTaskRun', ['run'], options);
+
+  return axios
+    .post('/app/components/task/app/api/v2/runs', options.run, {
+      include: options.include,
+      params: {
+        sourceName: options.sourceName || undefined,
+        sourceGroup: options.sourceGroup || undefined,
+        name: options.name || undefined,
+      },
+    })
+    .then(response => ({
+      run: response.data,
+    }))
+    .catch(handleErrors);
+};
+
 export const fetchTaskTriggers = (options = {}) =>
   axios
     .get(
