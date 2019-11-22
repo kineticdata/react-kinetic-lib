@@ -503,9 +503,11 @@ export const fetchUsage = (options = {}) => {
 
 export const fetchHandlerDurations = (options = {}) => {
   return axios
-  .get(`/app/components/task/app/api/v2/handlers/${options.definitionId}/durations`)
-  .then(response => response.data)
-  .catch(handleErrors)
+    .get(
+      `/app/components/task/app/api/v2/handlers/${options.definitionId}/durations`,
+    )
+    .then(response => response.data)
+    .catch(handleErrors);
 };
 
 export const stopEngine = (options = {}) =>
