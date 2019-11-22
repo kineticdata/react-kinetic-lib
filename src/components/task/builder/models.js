@@ -23,7 +23,7 @@ export const Node = Record({
   deferrable: false,
   defers: false,
   definitionId: '',
-  id: '',
+  id: null,
   messages: List(),
   name: '',
   parameters: List(),
@@ -85,38 +85,65 @@ export const NodeResultDependency = Record({
  * convert them to immutable records used by the builder implementation        *
  ******************************************************************************/
 
-export const deserializeNode = ({ messages, position, parameters, ...props }) =>
-  Node({
+const deserializeNodeId = id => {
+  const match = id.match(/_(\d+)$/);
+  // the start node will not match the pattern above so we give that an id of 0
+  return match ? parseInt(match[1]) : 0;
+};
+
+const serializeNodeId = node =>
+  node.id === 0 ? 'start' : `${node.definitionId}_${node.id}`;
+
+export const deserializeNode = ({
+  id,
+  messages,
+  parameters,
+  position,
+  ...props
+}) => {
+  return Node({
     ...props,
+    id: deserializeNodeId(id),
     messages: List(messages.map(NodeMessage)),
     parameters: List(parameters.map(NodeParameter)),
     position: Point(position),
   });
+};
 
-export const serializeNode = node => node.toJS();
+export const serializeNode = node =>
+  node.set('id', serializeNodeId(node)).toJS();
 
 export const deserializeConnector = nodes => (
   { from, label, to, type, value },
   id,
-) =>
-  Connector({
+) => {
+  const headId = deserializeNodeId(to);
+  const tailId = deserializeNodeId(from);
+  return Connector({
     condition: value,
-    headId: to,
-    headPosition: nodes.getIn([to, 'position']),
+    headId,
+    headPosition: nodes.getIn([headId, 'position']),
     id,
     label,
-    tailId: from,
-    tailPosition: nodes.getIn([from, 'position']),
+    tailId,
+    tailPosition: nodes.getIn([tailId, 'position']),
     type,
   });
+};
 
-export const serializeConnector = ({
+export const serializeConnector = nodes => ({
   condition,
   headId,
   label,
   tailId,
   type,
-}) => ({ from: tailId, label, to: headId, type, value: condition });
+}) => ({
+  from: serializeNodeId(nodes.get(tailId)),
+  label,
+  to: serializeNodeId(nodes.get(headId)),
+  type,
+  value: condition,
+});
 
 export const deserializeTree = ({
   bindings,
@@ -152,7 +179,7 @@ export const serializeTree = (
   treeJson: {
     connectors: connectors
       .toList()
-      .map(serializeConnector)
+      .map(serializeConnector(nodes))
       .toJS(),
     lastId: nextNodeId - 1,
     nodes: nodes

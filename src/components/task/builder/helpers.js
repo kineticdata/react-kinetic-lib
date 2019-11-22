@@ -174,19 +174,18 @@ const addNewTaskNext = ({ cloneNode, parent, task, tree, treeKey }) => {
     .update('x', x => x + NEW_TASK_DX)
     .update('y', y => y + NEW_TASK_DY);
   const definitionId = task ? task.definitionId : cloneNode.definitionId;
-  const nodeId = `${definitionId}_${nextNodeId}`;
   // stub out the new connector and node, these will be provided via return and
   // are meant to be passed to <ConnectorForm> and <NodeForm> respectively to be
   // further configured by the consumer of the <TreeBuilder>
   const connector = Connector({
     id: nextConnectorId,
-    headId: nodeId,
+    headId: nextNodeId,
     headPosition: position,
     tailId: parent.id,
     tailPosition: parent.position,
   });
   const node = Node({
-    id: nodeId,
+    id: nextNodeId,
     position,
     deferrable: task ? task.deferrable : cloneNode.deferrable,
     defers: task ? task.deferrable : cloneNode.defers,
