@@ -194,14 +194,9 @@ const addNewTaskNext = ({ cloneNode, parent, task, tree, treeKey }) => {
     visible: task ? task.visible : cloneNode.visible,
     parameters: cloneNode
       ? cloneNode.parameters
-      : List(task.parameters || task.inputs || []).map(
-          ({ name: label, id = label, ...props }) =>
-            NodeParameter({
-              id,
-              label,
-              ...props,
-            }),
-        ),
+      : List(task.parameters || task.inputs || [])
+          .map(normalizeParameter)
+          .map(NodeParameter),
   });
   // add the stubbed connector and node to the current tree, this is done to
   // accommodate the <CodeInput> bindings helper in <ConnectorForm> and
@@ -326,3 +321,12 @@ export const renameDependencies = (dependencies = List(), newName) => tree =>
         tree.updateIn(dependency.context, replace(dependency, newName)),
       tree,
     );
+
+// routines have `inputs` and handlers have `parameters` with slightly different
+// properties so this is a helper function to take one or the other and return
+// a consistent object
+export const normalizeParameter = ({ name, id, ...rest }) => ({
+  id: name,
+  label: name,
+  ...rest,
+});
