@@ -528,6 +528,7 @@ class FormImplComponent extends Component {
       const { FormButtons, FormError, FormLayout } = components.toObject();
       const { error, fields, formOptions, submitting } = formState;
       // Build a map of components by field, merging the fields, addFields, and
+      const dirty = fields.some(field => field.dirty);
       // alterFields options. Note that we get those from the parent props not
       // redux store because we want to see new components on HMR updates.
       const fieldComponents = resolveFieldConfig(
@@ -559,6 +560,7 @@ class FormImplComponent extends Component {
               components={components}
             />,
           ])}
+          dirty={dirty}
           error={
             error && <FormError error={error} clear={clearError(formKey)} />
           }
@@ -567,7 +569,7 @@ class FormImplComponent extends Component {
               reset={onReset(formKey)}
               submit={onSubmit(formKey, fieldSet)}
               submitting={submitting}
-              dirty={fields.some(field => field.dirty)}
+              dirty={dirty}
               error={error}
               clearError={clearError(formKey)}
             />

@@ -189,7 +189,9 @@ regHandlers({
         treeKey,
         id,
         messages,
+        deferrable,
         defers,
+        definitionId,
         dependencies,
         name,
         parameters,
@@ -199,7 +201,9 @@ regHandlers({
   ) =>
     remember(state, treeKey)
       .mergeIn(['trees', treeKey, 'tree', 'nodes', id], {
+        deferrable,
         defers,
+        definitionId,
         messages,
         name,
         parameters,
