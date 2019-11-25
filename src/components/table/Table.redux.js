@@ -190,7 +190,7 @@ regHandlers({
               ? sortDirection === 'desc'
                 ? 'asc'
                 : 'desc'
-              : 'desc',
+              : 'asc',
           )
           .set('sortColumn', column)
           .set('error', null)
@@ -213,7 +213,7 @@ regHandlers({
         .set('pageTokens', List())
         .set('error', null),
     ),
-  REFECTH_TABLE_DATA: (state, { payload: { tableKey } }) =>
+  REFETCH_TABLE_DATA: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
       tableData.get('dataSource')
         ? tableData
@@ -262,7 +262,7 @@ regSaga(takeEvery('PREV_PAGE', calculateRowsTask));
 regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
 regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
-regSaga(takeEvery('REFECTH_TABLE_DATA', calculateRowsTask));
+regSaga(takeEvery('REFETCH_TABLE_DATA', calculateRowsTask));
 
 export const operations = Map({
   startsWith: (cv, v) =>
@@ -401,6 +401,6 @@ export const configureTable = payload => {
   dispatch('CONFIGURE_TABLE', payload);
 };
 export const refetchTable = tableKey =>
-  dispatch('REFECTH_TABLE_DATA', { tableKey });
+  dispatch('REFETCH_TABLE_DATA', { tableKey });
 export const clearFilters = tableKey =>
   dispatch('CLEAR_TABLE_FILTERS', { tableKey });

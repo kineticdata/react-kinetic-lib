@@ -215,7 +215,7 @@ export const generateCESearchParams = ({
   nextPageToken,
 }) => ({
   limit: pageSize,
-  nextPageToken,
+  pageToken: nextPageToken,
   ...searchFilters(filters),
   ...generateSortParams(sortColumn, sortDirection),
 });

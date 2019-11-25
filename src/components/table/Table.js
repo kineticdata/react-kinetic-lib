@@ -116,6 +116,11 @@ const buildFilterLayout = ({
     dispatch('APPLY_FILTERS', { tableKey });
   };
 
+  const onClear = e => {
+    e.preventDefault();
+    dispatch('CLEAR_TABLE_FILTERS', { tableKey });
+  };
+
   const onChangeFilter = (value, filterName) => {
     dispatch('SET_FILTER', {
       tableKey,
@@ -133,6 +138,7 @@ const buildFilterLayout = ({
       validFilters={validFilters}
       onSearch={onSearch}
       onReset={onReset}
+      onClear={onClear}
       onChangeFilter={onChangeFilter}
       columnSet={columnSet}
       loading={loading}
@@ -166,6 +172,7 @@ const buildPaginationControl = props => {
   const {
     tableKey,
     data,
+    rows,
     dataSource,
     tableOptions,
     pageTokens,
@@ -197,11 +204,31 @@ const buildPaginationControl = props => {
     ? onNextPage(tableKey)
     : null;
 
+  const startIndex =
+    pageOffset !== 0
+      ? pageOffset + 1
+      : pageTokens.size > 0
+      ? pageTokens.size * pageSize + 1
+      : 1;
+
+  const endIndex =
+    pageOffset !== 0
+      ? data.size > pageOffset + pageSize
+        ? pageOffset + pageSize
+        : pageOffset + (pageSize - rows.size - 1)
+      : pageTokens.size > 0
+      ? rows.size < pageSize
+        ? (pageTokens.size + 1) * pageSize - (pageSize - rows.size)
+        : (pageTokens.size + 1) * pageSize
+      : pageSize;
+
   return (
     <PaginationControl
       prevPage={prevPage}
       nextPage={nextPage}
       loading={loading}
+      startIndex={startIndex}
+      endIndex={endIndex}
     />
   );
 };
