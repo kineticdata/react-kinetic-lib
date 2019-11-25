@@ -325,7 +325,7 @@ export const renameDependencies = (dependencies = List(), newName) => tree =>
 // properties so this is a helper function to take one or the other and return
 // a consistent object
 export const normalizeParameter = ({ name, id, ...rest }) => ({
-  id: name,
+  id: id || name,
   label: name,
   ...rest,
 });
