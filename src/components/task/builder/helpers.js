@@ -174,19 +174,18 @@ const addNewTaskNext = ({ cloneNode, parent, task, tree, treeKey }) => {
     .update('x', x => x + NEW_TASK_DX)
     .update('y', y => y + NEW_TASK_DY);
   const definitionId = task ? task.definitionId : cloneNode.definitionId;
-  const nodeId = `${definitionId}_${nextNodeId}`;
   // stub out the new connector and node, these will be provided via return and
   // are meant to be passed to <ConnectorForm> and <NodeForm> respectively to be
   // further configured by the consumer of the <TreeBuilder>
   const connector = Connector({
     id: nextConnectorId,
-    headId: nodeId,
+    headId: nextNodeId,
     headPosition: position,
     tailId: parent.id,
     tailPosition: parent.position,
   });
   const node = Node({
-    id: nodeId,
+    id: nextNodeId,
     position,
     deferrable: task ? task.deferrable : cloneNode.deferrable,
     defers: task ? task.deferrable : cloneNode.defers,
@@ -326,7 +325,7 @@ export const renameDependencies = (dependencies = List(), newName) => tree =>
 // properties so this is a helper function to take one or the other and return
 // a consistent object
 export const normalizeParameter = ({ name, id, ...rest }) => ({
-  id: name,
+  id: id || name,
   label: name,
   ...rest,
 });

@@ -5,6 +5,7 @@ import * as constants from './constants';
 import { getRectIntersections, isIE11 } from './helpers';
 import { SvgText } from './SvgText';
 import filter from '../../../assets/task/icons/filter.svg';
+import { isNumber } from 'lodash-es';
 
 export class Connector extends Component {
   constructor(props) {
@@ -67,7 +68,7 @@ export class Connector extends Component {
       node.id !== tailId &&
       !this.treeBuilder.findDuplicateConnector(node.id, tailId)
     ) {
-      id
+      isNumber(id)
         ? dispatch('TREE_UPDATE_CONNECTOR_HEAD', {
             treeKey: this.props.treeKey,
             id,
