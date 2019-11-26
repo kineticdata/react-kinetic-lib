@@ -13,7 +13,7 @@ export class SvgCanvas extends Component {
     // Since the scroll event is throttled and we get the incremental scroll
     // changes we need to accumulate them outside of the throttled logic.
     this.scrollDelta = 0;
-    this.viewport = { scale: 1.0, x: 0, y: 0 };
+    this.viewport = { largeMode: false, scale: 1.0, x: 0, y: 0 };
   }
 
   watchDrag = ({
@@ -115,12 +115,16 @@ export class SvgCanvas extends Component {
     let scale =
       this.viewport.scale - this.scrollDelta / constants.CANVAS_ZOOM_MODIFIER;
     this.scrollDelta = 0;
+    const min = constants.CANVAS_SCALE_OPTIONS.first();
+    const max = this.viewport.largeMode
+      ? constants.CANVAS_SCALE_OPTIONS.last()
+      : 1.0;
     // If the newly computed scale value is less than the minimum or more than
     // the maximum we use those values instead.
-    if (scale < constants.CANVAS_SCALE_MIN) {
-      scale = constants.CANVAS_SCALE_MIN;
-    } else if (scale > constants.CANVAS_SCALE_MAX) {
-      scale = constants.CANVAS_SCALE_MAX;
+    if (scale < min) {
+      scale = min;
+    } else if (scale > max) {
+      scale = max;
     }
     if (scale !== this.viewport.scale) {
       // In order to keep the mouse cursor in the same position relative to the
@@ -140,15 +144,21 @@ export class SvgCanvas extends Component {
       scale => scale > this.viewport.scale,
     );
     if (scale) {
+      if (scale > 1) {
+        this.viewport.largeMode = true;
+      }
       this.zoomToScale(scale);
     }
   };
 
   zoomOut = () => {
-    const scale = List(constants.CANVAS_SCALE_OPTIONS)
-      .reverse()
-      .find(scale => scale < this.viewport.scale);
+    const scale = constants.CANVAS_SCALE_OPTIONS.reverse().find(
+      scale => scale < this.viewport.scale,
+    );
     if (scale) {
+      if (scale <= 1) {
+        this.viewport.largeMode = false;
+      }
       this.zoomToScale(scale);
     }
   };
@@ -194,20 +204,20 @@ export class SvgCanvas extends Component {
       );
     }
     if (
-      this.viewport.scale < 0.4 &&
+      this.viewport.scale < 0.26 &&
       this.transformer.current.className.baseVal !== 'min-detail'
     ) {
       this.transformer.current.className.baseVal = 'min-detail';
     }
     if (
-      this.viewport.scale >= 0.4 &&
-      this.viewport.scale < 0.75 &&
+      this.viewport.scale >= 0.26 &&
+      this.viewport.scale < 0.5 &&
       this.transformer.current.className.baseVal !== 'med-detail'
     ) {
       this.transformer.current.className.baseVal = 'med-detail';
     }
     if (
-      this.viewport.scale >= 0.75 &&
+      this.viewport.scale >= 0.5 &&
       this.transformer.current.className.baseVal !== ''
     ) {
       this.transformer.current.className.baseVal = '';

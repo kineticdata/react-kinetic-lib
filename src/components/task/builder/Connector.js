@@ -201,6 +201,7 @@ export class Connector extends Component {
             x1="0"
             y1="0"
             y2="0"
+            strokeWidth={constants.CONNECTOR_STROKE_WIDTH}
           />
           <circle
             ref={this.connectorTail}
