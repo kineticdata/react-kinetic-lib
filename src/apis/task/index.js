@@ -194,6 +194,21 @@ export const updateSource = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const deleteSource = (options = {}) => {
+  const { sourceName } = options;
+  if (!sourceName) {
+    throw new Error(
+      'deleteSource failed! The option "sourceName" is required.',
+    );
+  }
+  return axios
+    .delete(`/app/components/task/app/api/v2/sources/${sourceName}`)
+    .then(response => ({
+      source: response.data,
+    }))
+    .catch(handleErrors);
+};
+
 export const createSource = (options = {}) => {
   validateOptions('createTree', ['source'], options);
   return axios
@@ -474,6 +489,21 @@ export const updateHandler = (options = {}) => {
     .then(response => ({
       handler: response.data,
     }));
+};
+
+export const deleteHandler = (options = {}) => {
+  const { definitionId } = options;
+  if (!definitionId) {
+    throw new Error(
+      'deleteHandler failed! The option "definitionId" is required.',
+    );
+  }
+  return axios
+    .delete(`/app/components/task/app/api/v2/handlers/${definitionId}`)
+    .then(response => ({
+      handler: response.data,
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchUsage = (options = {}) => {
