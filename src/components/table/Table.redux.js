@@ -227,6 +227,11 @@ regHandlers({
       ['tables', tableKey, 'filters'],
       generateFilters(tableKey, state.getIn(['tables', tableKey, 'columns'])),
     ),
+  CLEAR_SELECTED_FILTERS: (state, { payload: { tableKey } }) =>
+    state.setIn(
+      ['tables', tableKey, 'filters'],
+      state.getIn(['tables', tableKey, 'appliedFilters']),
+    ),
 });
 
 function* calculateRowsTask({ payload }) {
