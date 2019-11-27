@@ -1,6 +1,5 @@
 import React, { createRef, Component } from 'react';
 import { throttle } from 'lodash-es';
-import { List } from 'immutable';
 import { isIE11 } from './helpers';
 import * as constants from './constants';
 import { Point } from './models';
