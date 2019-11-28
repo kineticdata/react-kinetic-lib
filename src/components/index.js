@@ -67,6 +67,13 @@ export {
 } from './core/bridge_model_qualification/BridgeModelQualificationTable';
 export { CategoryForm } from './core/category/CategoryForm';
 export { CategoryTable } from './core/category/CategoryTable';
+export {
+  AgentComponentTable,
+} from './core/platform_component/AgentComponentTable';
+export {
+  AgentComponentForm,
+} from './core/platform_component/AgentComponentForm';
+export { TaskComponentForm } from './core/platform_component/TaskComponentForm';
 export { FormForm } from './core/form/FormForm';
 export { FormTable } from './core/form/FormTable';
 export { FormTypeForm } from './core/form_type/FormTypeForm';

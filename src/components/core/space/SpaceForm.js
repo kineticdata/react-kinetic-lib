@@ -1,4 +1,4 @@
-import { get, getIn, hasIn, Map } from 'immutable';
+import { get, Map } from 'immutable';
 import t from 'prop-types';
 import { generateForm } from '../../form/Form';
 import {
@@ -18,7 +18,7 @@ const dataSources = () => ({
     fn: fetchSpace,
     params: [
       {
-        include: 'attributesMap,securityPolicies,details,platformComponents',
+        include: 'attributesMap,securityPolicies,details',
       },
     ],
     transform: result => result.space,
@@ -104,43 +104,6 @@ const securityEndpoints = {
   },
 };
 
-const getAgentValue = values =>
-  values.get('agentCustom')
-    ? {
-        url: values.get('agentUrl'),
-        ...(values.get('changeAgentSecret') && {
-          secret: values.get('agentSecret'),
-        }),
-      }
-    : null;
-
-// const getBridgehubValue = values =>
-//   values.get('bridgehubCustom')
-//     ? {
-//         url: values.get('bridgehubUrl'),
-//         ...(values.get('changeBridgehubSecret') && {
-//           secret: values.get('bridgehubSecret'),
-//         }),
-//       }
-//     : null;
-
-// const getFilehubValue = values =>
-//   values.get('filehubCustom')
-//     ? {
-//         url: values.get('filehubUrl'),
-//         ...(values.get('changeFilehubSecret') && {
-//           secret: values.get('filehubSecret'),
-//         }),
-//       }
-//     : null;
-
-const getTaskValue = values => ({
-  url: values.get('taskUrl'),
-  ...(values.get('changeTaskSecret') && {
-    secret: values.get('taskSecret'),
-  }),
-});
-
 const fields = () => ({
   attributeDefinitions,
   locales,
@@ -161,82 +124,6 @@ const fields = () => ({
       placeholder: ({ space }) => `/${get(space, 'slug')}`,
       visible: ({ values }) => get(values, 'displayType') !== 'Single Page App',
     },
-    {
-      name: 'agentUrl',
-      label: 'Agent URL',
-      type: 'text',
-      required: ({ values }) => values.get('agentCustom'),
-      visible: ({ values }) => values.get('agentCustom'),
-      transient: true,
-      initialValue: getIn(space, ['platformComponents', 'agent', 'url']),
-    },
-    // {
-    //   name: 'bridgehubUrl',
-    //   label: 'Bridgehub URL',
-    //   type: 'text',
-    //   required: ({ values }) => values.get('bridgehubCustom'),
-    //   visible: ({ values }) => values.get('bridgehubCustom'),
-    //   transient: true,
-    //   initialValue: getIn(space, ['platformComponents', 'bridgehub', 'url']),
-    // },
-    {
-      name: 'agentCustom',
-      label: 'Use custom Agent',
-      type: 'checkbox',
-      visible: true,
-      transient: true,
-      initialValue: hasIn(space, ['platformComponents', 'agent', 'url']),
-    },
-    // {
-    //   name: 'bridgehubCustom',
-    //   label: 'Use custom Bridgehub',
-    //   type: 'checkbox',
-    //   visible: true,
-    //   transient: true,
-    //   initialValue: hasIn(space, ['platformComponents', 'bridgehub', 'url']),
-    // },
-    {
-      name: 'agentSecret',
-      label: 'Agent Secret',
-      type: 'password',
-      visible: ({ values }) => values.get('changeAgentSecret'),
-      transient: true,
-    },
-    // {
-    //   name: 'bridgehubSecret',
-    //   label: 'Bridgehub Secret',
-    //   type: 'password',
-    //   visible: ({ values }) => values.get('changeBridgehubSecret'),
-    //   transient: true,
-    // },
-    {
-      name: 'changeAgentSecret',
-      label: 'Change Agent Secret',
-      type: 'checkbox',
-      transient: true,
-      // in "new" mode we do not show this toggle field and default it to true
-      visible: ({ space, values }) => !!space && values.get('agentCustom'),
-      initialValue: !space,
-      onChange: ({ values }, { setValue }) => {
-        if (values.get('agentSecret') !== '') {
-          setValue('agentSecret', '');
-        }
-      },
-    },
-    // {
-    //   name: 'changeBridgehubSecret',
-    //   label: 'Change Bridgehub Secret',
-    //   type: 'checkbox',
-    //   transient: true,
-    //   // in "new" mode we do not show this toggle field and default it to true
-    //   visible: ({ space, values }) => !!space && values.get('bridgehubCustom'),
-    //   initialValue: !space,
-    //   onChange: ({ values }, { setValue }) => {
-    //     if (values.get('bridgehubSecret') !== '') {
-    //       setValue('bridgehubSecret', '');
-    //     }
-    //   },
-    // },
     {
       name: 'bundlePath',
       label: 'Bundle Path',
@@ -362,45 +249,6 @@ const fields = () => ({
           : displayValueJSP;
       },
     },
-    // Removing filehub until fileResources are implemented
-    // {
-    //   name: 'filehubUrl',
-    //   label: 'Filehub URL',
-    //   type: 'text',
-    //   visible: ({ values }) => values.get('filehubCustom'),
-    //   required: ({ values }) => values.get('filehubCustom'),
-    //   transient: true,
-    //   initialValue: getIn(space, ['platformComponents', 'filehub', 'url']),
-    // },
-    // {
-    //   name: 'filehubCustom',
-    //   label: 'Use Private Filehub',
-    //   type: 'checkbox',
-    //   visible: true,
-    //   transient: true,
-    //   initialValue: hasIn(space, ['platformComponents', 'filehub', 'url']),
-    // },
-    // {
-    //   name: 'filehubSecret',
-    //   label: 'Filehub Secret',
-    //   type: 'password',
-    //   visible: ({ values }) => values.get('changeFilehubSecret'),
-    //   transient: true,
-    // },
-    // {
-    //   name: 'changeFilehubSecret',
-    //   label: 'Change Filehub Secret',
-    //   type: 'checkbox',
-    //   transient: true,
-    //   // in "new" mode we do not show this toggle field and default it to true
-    //   visible: ({ space, values }) => !!space && values.get('filehubCustom'),
-    //   initialValue: !space,
-    //   onChange: ({ values }, { setValue }) => {
-    //     if (values.get('filehubSecret') !== '') {
-    //       setValue('filehubSecret', '');
-    //     }
-    //   },
-    // },
     {
       name: 'loginPage',
       label: 'Login Page',
@@ -453,20 +301,6 @@ const fields = () => ({
       },
     },
     {
-      name: 'platformComponents',
-      label: 'Platform Components',
-      type: null,
-      visible: false,
-      serialize: ({ values }) => ({
-        agent: getAgentValue(values),
-        // bridgehub: getBridgehubValue(values),
-        // Removing filehub until fileResources are implemented
-        // filehub: getFilehubValue(values),
-        task: getTaskValue(values),
-      }),
-      initialValue: get(space, 'platformComponents'),
-    },
-    {
       name: 'sessionInactiveLimitInSeconds',
       label: 'Inactive Session Limit (in seconds)',
       type: 'text',
@@ -501,35 +335,6 @@ const fields = () => ({
       transient: true,
       initialValue: true,
       visible: false,
-    },
-    {
-      name: 'taskUrl',
-      label: 'Task URL',
-      type: 'text',
-      visible: true,
-      transient: true,
-      initialValue: getIn(space, ['platformComponents', 'task', 'url']),
-    },
-    {
-      name: 'taskSecret',
-      label: 'Task Secret',
-      type: 'password',
-      visible: ({ values }) => values.get('changeTaskSecret'),
-      transient: true,
-    },
-    {
-      name: 'changeTaskSecret',
-      label: 'Change Task Secret',
-      type: 'checkbox',
-      transient: true,
-      // in "new" mode we do not show this toggle field and default it to true
-      visible: ({ space }) => !!space,
-      initialValue: !space,
-      onChange: ({ values }, { setValue }) => {
-        if (values.get('taskSecret') !== '') {
-          setValue('taskSecret', '');
-        }
-      },
     },
     {
       name: 'trustedFrameDomains',
