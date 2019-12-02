@@ -8,7 +8,11 @@ const getOptions = menu =>
     .filter(value => !!value)
     .map(value => ({ label: value, value }));
 
-const dataSources = ({ node, task, tasks, tree }) => ({
+const dataSources = ({ task, tasks, tree, node }) => ({
+  bindings: {
+    fn: buildBindings,
+    params: [tree, tasks, node],
+  },
   parameters: {
     fn: () => task.inputs || task.parameters,
     params: [],
@@ -16,7 +20,8 @@ const dataSources = ({ node, task, tasks, tree }) => ({
   },
 });
 
-const fields = ({ node, task, tasks, tree }) => ({ parameters }) =>
+const fields = ({ node, task, tasks, tree }) => ({ bindings, parameters }) =>
+  bindings &&
   parameters && [
     ...node.parameters.map(parameter => ({
       name: `oldParameter_${parameter.id}`,
@@ -25,9 +30,7 @@ const fields = ({ node, task, tasks, tree }) => ({ parameters }) =>
       language: parameter.menu ? null : 'erb',
       helpText: parameter.description,
       initialValue: parameter.value,
-      options: parameter.menu
-        ? getOptions(parameter.menu)
-        : buildBindings(tree, tasks, node),
+      options: parameter.menu ? getOptions(parameter.menu) : bindings,
       required: parameter.required,
       transient: true,
       enabled: false,
@@ -45,9 +48,7 @@ const fields = ({ node, task, tasks, tree }) => ({ parameters }) =>
         initialValue: matchingParameter
           ? matchingParameter.value
           : parameter.defaultValue,
-        options: parameter.menu
-          ? getOptions(parameter.menu)
-          : buildBindings(tree, tasks, node),
+        options: parameter.menu ? getOptions(parameter.menu) : bindings,
         required: parameter.required,
         transient: true,
       };
