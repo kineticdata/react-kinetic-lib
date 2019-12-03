@@ -54,7 +54,6 @@ const APP_COMPONENT_OPTIONS = [
   'agent',
   'core',
   'loghub',
-  'ssl-trust-setup',
   'task',
   // 'bridgehub',
   // 'filehub',
