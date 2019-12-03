@@ -1,10 +1,16 @@
 import { generateTable } from '../../table/Table';
 import { fetchUsage } from '../../../apis';
 
-const dataSource = ({ definitionId, usageType }) => ({
+const dataSource = ({
+  definitionId,
+  sourceName,
+  sourceGroup,
+  name,
+  usageType,
+}) => ({
   fn: fetchUsage,
   clientSideSearch: true,
-  params: () => [{ definitionId, usageType }],
+  params: () => [{ definitionId, sourceName, sourceGroup, name, usageType }],
   transform: result => ({
     data: result.usages,
   }),
@@ -56,7 +62,13 @@ const columns = [
 ];
 
 export const UsageTable = generateTable({
-  tableOptions: ['definitionId', 'usageType'],
+  tableOptions: [
+    'definitionId',
+    'sourceName',
+    'sourceGroup',
+    'name',
+    'usageType',
+  ],
   columns,
   dataSource,
 });
