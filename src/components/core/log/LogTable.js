@@ -63,6 +63,13 @@ const APP_COMPONENT_OPTIONS = [
   value: component,
 }));
 
+const LEVEL_OPTIONS = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'].map(
+  level => ({
+    label: level,
+    value: level,
+  }),
+);
+
 const columns = [
   {
     value: 'app.component',
@@ -206,6 +213,9 @@ const columns = [
     value: 'level',
     title: 'Level',
     sortable: false,
+    type: 'text',
+    filter: 'equals',
+    options: () => LEVEL_OPTIONS,
   },
   {
     value: 'message',
