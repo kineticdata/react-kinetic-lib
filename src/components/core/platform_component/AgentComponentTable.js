@@ -4,7 +4,7 @@ import { fetchAgentComponents } from '../../../apis';
 const dataSource = () => ({
   fn: fetchAgentComponents,
   clientSideSearch: true,
-  params: () => [{ include: 'platformComponents' }],
+  params: () => [],
   transform: result => ({
     data: result.agents,
   }),

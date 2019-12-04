@@ -1,56 +1,47 @@
 import axios from 'axios';
-import { List } from 'immutable';
 
 import { bundle } from '../../helpers';
 import {
   handleErrors,
   headerBuilder,
-  //   paramBuilder,
+  paramBuilder,
   validateOptions,
 } from '../http';
 
-const pluckAgentBySlug = (agents, slug) =>
-  agents.find(agent => agent.slug === slug);
-
 export const fetchTaskComponent = (options = {}) => {
-  validateOptions('fetchTask', [], options);
+  validateOptions('fetchTaskComponent', [], options);
   return axios
-    .get(`${bundle.apiLocation()}/space`, {
-      params: { include: 'platformComponents' },
+    .get(`${bundle.apiLocation()}/platformComponents/task`, {
+      params: paramBuilder(options),
       headers: headerBuilder(options),
     })
     .then(response => ({
-      task: response.data.space.platformComponents.task,
+      task: response.data.task,
     }))
     .catch(handleErrors);
 };
 
 export const updateTaskComponent = async (options = {}) => {
   validateOptions('updateTaskComponent', ['task'], options);
-  const payload = {
-    platformComponents: {
-      task: options.task,
-    },
-  };
   return axios
-    .put(`${bundle.apiLocation()}/space`, payload, {
-      params: { include: 'platformComponents' },
+    .put(`${bundle.apiLocation()}/platformComponents/task`, options.task, {
+      params: paramBuilder(options),
       headers: headerBuilder(options),
     })
     .then(response => ({
-      task: response.data.space.platformComponents.task,
+      task: response.data.task,
     }))
     .catch(handleErrors);
 };
 
 export const fetchAgentComponents = (options = {}) => {
   return axios
-    .get(`${bundle.apiLocation()}/space`, {
-      params: { include: 'platformComponents' },
+    .get(`${bundle.apiLocation()}/platformComponents/agents`, {
+      params: paramBuilder(options),
       headers: headerBuilder(options),
     })
     .then(response => ({
-      agents: response.data.space.platformComponents.agents,
+      agents: response.data.agents,
     }))
     .catch(handleErrors);
 };
@@ -58,101 +49,58 @@ export const fetchAgentComponents = (options = {}) => {
 export const fetchAgentComponent = (options = {}) => {
   validateOptions('fetchAgentComponent', ['slug'], options);
   return axios
-    .get(`${bundle.apiLocation()}/space`, {
-      params: { include: 'platformComponents' },
+    .get(`${bundle.apiLocation()}/platformComponents/agents/${options.slug}`, {
+      params: paramBuilder(options),
       headers: headerBuilder(options),
     })
     .then(response => ({
-      agent: pluckAgentBySlug(
-        response.data.space.platformComponents.agents,
-        options.slug,
-      ),
+      agent: response.data.agent,
     }))
     .catch(handleErrors);
 };
 
 export const createAgentComponent = async (options = {}) => {
   validateOptions('createAgentComponent', ['agent'], options);
-  const { agents, error } = await fetchAgentComponents();
-  if (agents) {
-    const payload = {
-      platformComponents: {
-        agents: [...agents, options.agent],
-      },
-    };
-    return axios
-      .put(`${bundle.apiLocation()}/space`, payload, {
-        params: { include: 'platformComponents' },
-        headers: headerBuilder(options),
-      })
-      .then(response => ({
-        agent: pluckAgentBySlug(
-          response.data.space.platformComponents.agents,
-          options.agent.slug,
-        ),
-      }))
-      .catch(handleErrors);
-  } else {
-    return error;
-  }
+  return axios
+    .post(`${bundle.apiLocation()}/platformComponents/agents`, options.agent, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({
+      agent: response.data.agent,
+    }))
+    .catch(handleErrors);
 };
 
 export const updateAgentComponent = async (options = {}) => {
   validateOptions('updateAgentComponent', ['slug', 'agent'], options);
-  const { agents, error } = await fetchAgentComponents();
-  if (agents) {
-    const agentIndex = agents.findIndex(agent => agent.slug === options.slug);
-    const payload = {
-      platformComponents: {
-        agents: List(agents)
-          .update(agentIndex, options.agent)
-          .toJS(),
-      },
-    };
-
-    return axios
-      .put(`${bundle.apiLocation()}/space`, payload, {
-        params: { include: 'platformComponents' },
+  return axios
+    .put(
+      `${bundle.apiLocation()}/platformComponents/agents/${options.slug}`,
+      options.agent,
+      {
+        params: paramBuilder(options),
         headers: headerBuilder(options),
-      })
-      .then(response => ({
-        agent: pluckAgentBySlug(
-          response.data.space.platformComponents.agents,
-          options.agent.slug,
-        ),
-      }))
-      .catch(handleErrors);
-  } else {
-    return error;
-  }
+      },
+    )
+    .then(response => ({
+      agent: response.data.agent,
+    }))
+    .catch(handleErrors);
 };
 
 export const deleteAgentComponent = async (options = {}) => {
   validateOptions('deleteAgentComponent', ['slug'], options);
-  const { agents, error } = await fetchAgentComponents();
-  if (agents) {
-    const agentIndex = agents.findIndex(agent => agent.slug === options.slug);
-    const payload = {
-      platformComponents: {
-        agents: List(agents)
-          .delete(agentIndex)
-          .toJS(),
-      },
-    };
-
-    return axios
-      .put(`${bundle.apiLocation()}/space`, payload, {
-        params: { include: 'platformComponents' },
+  return axios
+    .delete(
+      `${bundle.apiLocation()}/platformComponents/agents/${options.slug}`,
+      {
+        params: paramBuilder(options),
         headers: headerBuilder(options),
-      })
-      .then(response => ({
-        agent: pluckAgentBySlug(
-          response.data.space.platformComponents.agents,
-          options.agent.slug,
-        ),
-      }))
-      .catch(handleErrors);
-  } else {
-    return error;
-  }
+      },
+    )
+    .then(response => ({
+      agent: response.data.agent,
+    }))
+    .catch(handleErrors);
 };

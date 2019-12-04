@@ -16,7 +16,7 @@ const handleSubmit = () => values =>
   }).then(({ task, error }) => {
     if (error) {
       throw (error.statusCode === 400 && error.message) ||
-        'There was an error saving the Agent';
+        'There was an error saving the Task component';
     }
     return task;
   });
@@ -27,18 +27,17 @@ const fields = () => ({ task }) =>
       name: 'secret',
       label: 'Task Secret',
       type: 'password',
-      transient: ({ values }) => values.get('changeSecret'),
       visible: ({ values }) => values.get('changeSecret'),
       required: ({ values }) => values.get('changeSecret'),
+      transient: ({ values }) => !values.get('changeSecret'),
     },
     {
       name: 'changeSecret',
       label: 'Change Task Secret',
       type: 'checkbox',
       transient: true,
-      // in "new" mode we do not show this toggle field and default it to true
-      visible: !!task,
-      initialValue: !task,
+      visible: true,
+      initialValue: false,
       onChange: ({ values }, { setValue }) => {
         if (values.get('secret') !== '') {
           setValue('secret', '');

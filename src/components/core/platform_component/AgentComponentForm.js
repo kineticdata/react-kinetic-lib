@@ -39,9 +39,9 @@ const fields = ({ slug }) => ({ agent }) =>
       name: 'secret',
       label: 'Agent Secret',
       type: 'password',
-      transient: ({ values }) => values.get('changeSecret'),
       visible: ({ values }) => values.get('changeSecret'),
       required: ({ values }) => values.get('changeSecret'),
+      transient: ({ values }) => !values.get('changeSecret'),
     },
     {
       name: 'changeSecret',
