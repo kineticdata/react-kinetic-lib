@@ -24,7 +24,7 @@ const SPACE_INCLUDES =
 const KAPP_INCLUDES =
   'formAttributeDefinitions,kappAttributeDefinitions,fields';
 const PROFILE_INCLUDES =
-  'attributes,profileAttributes';
+  'attributesMap,profileAttributesMap';
 
 const dataSources = ({ securityPolicyName, kappSlug }) => ({
   space: {
