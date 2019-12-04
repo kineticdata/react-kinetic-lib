@@ -1,8 +1,9 @@
 import React, { Component, createRef, Fragment } from 'react';
 import classNames from 'classnames';
+import { is } from 'immutable';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
-import { getRectIntersections, isIE11 } from './helpers';
+import { getNodeType, getRectIntersections, isIE11 } from './helpers';
 import { SvgText } from './SvgText';
 import filter from '../../../assets/task/icons/filter.svg';
 import { isNumber } from 'lodash-es';
@@ -61,7 +62,7 @@ export class Connector extends Component {
 
   dropHead = () => {
     const node = this.treeBuilder.findNodeByPoint(this.head);
-    const { headId, headPosition, id, tailId } = this.props.connector;
+    const { headId, id, tailId } = this.props.connector;
     if (
       node &&
       node.id !== headId &&
@@ -79,14 +80,16 @@ export class Connector extends Component {
             tailId: this.props.connector.tailId,
             headId: node.id,
           });
-    } else {
-      this.setHead(headPosition, false);
+    }
+    // when dropping a new connector the `headNode` prop will be undefined
+    else if (this.props.headNode) {
+      this.setHead(this.props.headNode.position, false);
     }
   };
 
   dropTail = () => {
     const node = this.treeBuilder.findNodeByPoint(this.tail);
-    const { headId, id, tailId, tailPosition } = this.props.connector;
+    const { headId, id, tailId } = this.props.connector;
     if (
       node &&
       node.id !== headId &&
@@ -99,7 +102,7 @@ export class Connector extends Component {
         nodeId: node.id,
       });
     } else {
-      this.setTail(tailPosition, false);
+      this.setTail(this.props.tailNode.position, false);
     }
   };
 
@@ -128,7 +131,9 @@ export class Connector extends Component {
 
   shouldComponentUpdate(nextProps) {
     return (
-      !this.props.connector.equals(nextProps.connector) ||
+      !is(this.props.connector, nextProps.connector) ||
+      !is(this.props.headNode, nextProps.headNode) ||
+      !is(this.props.tailNode, nextProps.tailNode) ||
       this.props.highlighted !== nextProps.highlighted ||
       this.props.primary !== nextProps.primary ||
       this.props.selected !== nextProps.selected
@@ -136,17 +141,25 @@ export class Connector extends Component {
   }
 
   componentDidMount() {
-    this.dragging = this.props.connector.dragging;
-    this.tail = this.props.connector.tailPosition;
-    this.head = this.props.connector.headPosition;
-    this.draw();
+    this.sync();
   }
 
   componentDidUpdate() {
-    this.dragging = this.props.connector.dragging;
-    this.tail = this.props.connector.tailPosition;
-    this.head = this.props.connector.headPosition;
-    this.draw();
+    this.sync();
+  }
+
+  sync() {
+    this.dragging = null;
+    this.tail = this.props.tailNode.position;
+    this.tailType = getNodeType(this.props.tailNode);
+    // when dragging a new connector, there will not be a `headNode` prop passed
+    // so in that case do not want to call draw until `this.head` is set after
+    // mouse move
+    if (this.props.headNode) {
+      this.head = this.props.headNode.position;
+      this.headType = getNodeType(this.props.headNode);
+      this.draw();
+    }
   }
 
   /*****************************************************************************
@@ -171,7 +184,9 @@ export class Connector extends Component {
       ? `translate(${x1 + dx / 2} ${y1 + dy / 2})`
       : `transform: translate(${x1 + dx / 2}px, ${y1 + dy / 2}px)`;
     this.connector.current.setAttribute(attribute, connectorValue);
-    this.connectorTail.current.setAttribute('cx', length);
+    if (this.connectorTail.current) {
+      this.connectorTail.current.setAttribute('cx', length);
+    }
     this.connectorBody.current.setAttribute('x2', length);
     if (this.connectorLabel.current) {
       this.connectorLabel.current.setAttribute(attribute, connectorLabelValue);
@@ -179,14 +194,25 @@ export class Connector extends Component {
   };
 
   render() {
-    const { connector, highlighted, primary, selected } = this.props;
+    const {
+      connector,
+      headNode,
+      highlighted,
+      primary,
+      selected,
+      tailNode,
+    } = this.props;
     const { condition, id, label, type } = connector;
     const invalid = condition && !label;
+    const loop =
+      getNodeType(tailNode) === 'loop-head' &&
+      getNodeType(headNode) === 'loop-tail';
     return (
       <g
         className={classNames('connector', {
           highlighted,
           invalid,
+          loop,
           primary,
           selected,
           complete: type === 'Complete',
@@ -203,18 +229,22 @@ export class Connector extends Component {
             y2="0"
             strokeWidth={constants.CONNECTOR_STROKE_WIDTH}
           />
-          <circle
-            ref={this.connectorTail}
-            className="connector-tail high-detail"
-            r={constants.CONNECTOR_TAIL_RADIUS}
-            cy="0"
-            onMouseDown={this.dragTail}
-          />
-          <polygon
-            className="connector-head high-detail"
-            points={constants.CONNECTOR_HEAD_POINTS}
-            onMouseDown={this.dragHead}
-          />
+          {!loop && (
+            <circle
+              ref={this.connectorTail}
+              className="connector-tail high-detail"
+              r={constants.CONNECTOR_TAIL_RADIUS}
+              cy="0"
+              onMouseDown={this.dragTail}
+            />
+          )}
+          {!loop && (
+            <polygon
+              className="connector-head high-detail"
+              points={constants.CONNECTOR_HEAD_POINTS}
+              onMouseDown={this.dragHead}
+            />
+          )}
         </g>
         {id !== null && (
           <g
@@ -222,7 +252,18 @@ export class Connector extends Component {
             className="connector-button"
             onClick={this.onSelect}
           >
-            {label ? (
+            {loop ? (
+              <g transform="rotate(45)">
+                <rect
+                  x={-constants.ICON_CENTER}
+                  y={-constants.ICON_CENTER}
+                  height={constants.ICON_SIZE}
+                  width={constants.ICON_SIZE}
+                  rx={constants.CONNECTOR_LABEL_RADIUS}
+                  ry={constants.CONNECTOR_LABEL_RADIUS}
+                />
+              </g>
+            ) : label ? (
               <Fragment>
                 <rect
                   className="high-detail"

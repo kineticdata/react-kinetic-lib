@@ -101,18 +101,12 @@ export class TreeBuilderComponent extends Component {
       const connector = this.props.tree.connectors.find(
         connector => connector.id === id,
       );
+      const headPosition = this.props.tree.nodes.get(connector.headId).position;
+      const tailPosition = this.props.tree.nodes.get(connector.tailId).position;
       this.canvasRef.current.focusPoint(
         {
-          x:
-            (connector.headPosition.x +
-              connector.tailPosition.x +
-              constants.NODE_WIDTH) /
-            2,
-          y:
-            (connector.headPosition.y +
-              connector.tailPosition.y +
-              constants.NODE_HEIGHT) /
-            2,
+          x: (headPosition.x + tailPosition.x + constants.NODE_WIDTH) / 2,
+          y: (headPosition.y + tailPosition.y + constants.NODE_HEIGHT) / 2,
         },
         this.sidebarRef.current,
       );
@@ -134,14 +128,7 @@ export class TreeBuilderComponent extends Component {
   dragNewConnector = node => position => {
     if (!this.state.newConnector) {
       this.setState(state => ({
-        newConnector:
-          state.newConnector ||
-          ConnectorModel({
-            dragging: 'head',
-            headPosition: position,
-            tailId: node.id,
-            tailPosition: node.position,
-          }),
+        newConnector: state.newConnector || ConnectorModel({ tailId: node.id }),
       }));
     }
     if (this.newConnector.current) {
@@ -241,6 +228,8 @@ export class TreeBuilderComponent extends Component {
                     ref={this.registerConnector(connector)}
                     treeKey={treeKey}
                     connector={connector}
+                    headNode={tree.nodes.get(connector.headId)}
+                    tailNode={tree.nodes.get(connector.tailId)}
                     highlighted={
                       highlightType === 'connector' &&
                       highlightId === connector.id
@@ -260,6 +249,7 @@ export class TreeBuilderComponent extends Component {
                   ref={this.newConnector}
                   treeKey={treeKey}
                   connector={this.state.newConnector}
+                  tailNode={tree.nodes.get(this.state.newConnector.tailId)}
                 />
               )}
               {tree.nodes
