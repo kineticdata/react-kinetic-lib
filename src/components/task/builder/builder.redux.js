@@ -11,8 +11,8 @@ import {
 import {
   cloneTree,
   fetchTaskCategories,
-  fetchTree2,
-  updateTree2,
+  fetchTree,
+  updateTree,
 } from '../../../apis/task';
 import { renameDependencies } from './helpers';
 
@@ -36,7 +36,7 @@ regSaga(
       const { name, sourceGroup, sourceName, treeKey } = payload;
 
       const [{ tree }, { categories }] = yield all([
-        call(fetchTree2, {
+        call(fetchTree, {
           name,
           sourceGroup,
           sourceName,
@@ -79,7 +79,7 @@ regSaga(
             ...serializeTree(tree, true),
           },
         })
-      : call(updateTree2, {
+      : call(updateTree, {
           name,
           sourceGroup,
           sourceName,
