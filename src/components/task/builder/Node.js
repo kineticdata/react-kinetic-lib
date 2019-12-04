@@ -3,11 +3,9 @@ import { isArray, isFunction } from 'lodash-es';
 import classNames from 'classnames';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
-import { addNewTask, isIE11 } from './helpers';
+import { addNewTask, getNodeType, isIE11 } from './helpers';
 import { Point } from './models';
 import { SvgText } from './SvgText';
-import routineIcon from '../../../assets/task/icons/routine.svg';
-import deferIcon from '../../../assets/task/icons/defer.svg';
 import plusIcon from '../../../assets/task/icons/plus_small.svg';
 
 export class Node extends Component {
@@ -134,61 +132,81 @@ export class Node extends Component {
     const { defers, definitionId, name } = node;
     const invalid = !name;
     const isRoutine =
-      definitionId &&
-      tasks.get(definitionId) &&
-      isArray(tasks.get(definitionId).inputs);
+      tasks.get(definitionId) && isArray(tasks.get(definitionId).inputs);
+    const type = getNodeType(node);
+    const height =
+      type === 'join' || type === 'junction'
+        ? constants.NODE_JOIN_JUNCTION_HEIGHT
+        : type === 'start'
+        ? constants.NODE_START_RADIUS * 2
+        : constants.NODE_HEIGHT;
+    const width =
+      type === 'start' ? constants.NODE_START_RADIUS * 2 : constants.NODE_WIDTH;
     return (
       <g ref={this.el}>
-        <rect
-          className={classNames('node', {
-            highlighted,
-            invalid,
-            selected,
-            primary,
-          })}
-          height={constants.NODE_HEIGHT}
-          width={constants.NODE_WIDTH}
-          rx={constants.NODE_RADIUS}
-          ry={constants.NODE_RADIUS}
-          onMouseDown={this.drag}
-        />
-        <SvgText
-          className="node-name med-detail"
-          x={0}
-          y={0}
-          height={constants.NODE_HEIGHT}
-          width={constants.NODE_WIDTH}
-          padding={constants.NODE_NAME_PADDING}
-        >
-          {name}
-        </SvgText>
-        {defers && (
-          <image
-            className="high-detail"
-            xlinkHref={deferIcon}
-            height={constants.ICON_SIZE}
-            width={constants.ICON_SIZE}
-            x={constants.NODE_BADGE_OFFSET}
-            y={-constants.ICON_CENTER}
+        {type === 'start' ? (
+          <circle
+            className={classNames('node', type, {
+              highlighted,
+              invalid,
+              primary,
+              selected,
+            })}
+            cx={constants.NODE_START_RADIUS}
+            cy={constants.NODE_START_RADIUS}
+            r={constants.NODE_START_RADIUS}
+            strokeWidth={constants.NODE_STROKE_WIDTH}
+            onMouseDown={this.drag}
+          />
+        ) : (
+          <rect
+            className={classNames('node', type, {
+              highlighted,
+              invalid,
+              primary,
+              selected,
+            })}
+            height={height}
+            width={constants.NODE_WIDTH}
+            rx={constants.NODE_RADIUS}
+            ry={constants.NODE_RADIUS}
+            strokeWidth={constants.NODE_STROKE_WIDTH}
+            onMouseDown={this.drag}
           />
         )}
+        <SvgText
+          className={classNames('node-name med-detail', type)}
+          x={0}
+          y={0}
+          height={height}
+          width={width}
+          padding={constants.NODE_NAME_PADDING}
+        >
+          {type === 'junction' ? 'Junction' : type === 'join' ? 'Join' : name}
+        </SvgText>
         {isRoutine && (
-          <image
-            className="high-detail"
-            xlinkHref={routineIcon}
-            height={constants.ICON_SIZE}
-            width={constants.ICON_SIZE}
-            x={constants.NODE_BADGE_OFFSET}
-            y={constants.NODE_HEIGHT - constants.ICON_CENTER}
-          />
+          <path d={constants.NODE_LEFT_BAR_PATH} className="routine-bar" />
+        )}
+        {type === 'loop-head' && (
+          <path d={constants.NODE_BOTTOM_BAR_PATH} className="loop-bar" />
+        )}
+        {type === 'loop-tail' && (
+          <path d={constants.NODE_TOP_BAR_PATH} className="loop-bar" />
+        )}
+        {defers && (
+          <path d={constants.NODE_CORNER_TAB_PATH} className="defers-tab" />
         )}
         <image
           className="high-detail"
           xlinkHref={plusIcon}
           height={constants.ICON_SIZE}
           width={constants.ICON_SIZE}
-          x={constants.NODE_CENTER_X - constants.ICON_CENTER}
-          y={constants.NODE_HEIGHT - constants.ICON_CENTER}
+          x={
+            (type === 'start'
+              ? constants.NODE_START_RADIUS
+              : constants.NODE_CENTER_X) - constants.ICON_CENTER
+          }
+          y={height - constants.ICON_CENTER}
           onMouseDown={this.dragPlus}
         />
       </g>

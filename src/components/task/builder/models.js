@@ -47,13 +47,10 @@ export const NodeMessage = Record({ type: '', value: '' });
 
 export const Connector = Record({
   condition: '',
-  dragging: null,
   headId: null,
-  headPosition: Point(),
   id: null,
   label: '',
   tailId: null,
-  tailPosition: Point(),
   type: 'Complete',
 });
 
@@ -113,20 +110,15 @@ export const deserializeNode = ({
 export const serializeNode = node =>
   node.set('id', serializeNodeId(node)).toJS();
 
-export const deserializeConnector = nodes => (
-  { from, label, to, type, value },
-  id,
-) => {
+export const deserializeConnector = ({ from, label, to, type, value }, id) => {
   const headId = deserializeNodeId(to);
   const tailId = deserializeNodeId(from);
   return Connector({
     condition: value,
     headId,
-    headPosition: nodes.getIn([headId, 'position']),
     id,
     label,
     tailId,
-    tailPosition: nodes.getIn([tailId, 'position']),
     type,
   });
 };
@@ -152,25 +144,20 @@ export const deserializeTree = ({
   sourceName,
   treeJson,
   versionId,
-}) => {
-  const nodes = OrderedMap(
-    treeJson.nodes.map(deserializeNode).map(n => [n.id, n]),
-  );
-  const connectors = OrderedMap(
-    treeJson.connectors.map(deserializeConnector(nodes)).map(c => [c.id, c]),
-  );
-  return Tree({
+}) =>
+  Tree({
     bindings,
-    connectors,
+    connectors: OrderedMap(
+      treeJson.connectors.map(deserializeConnector).map(c => [c.id, c]),
+    ),
     name,
     nextNodeId: treeJson.lastId + 1,
-    nextConnectorId: connectors.size,
-    nodes,
+    nextConnectorId: treeJson.connectors.length,
+    nodes: OrderedMap(treeJson.nodes.map(deserializeNode).map(n => [n.id, n])),
     sourceGroup,
     sourceName,
     versionId,
   });
-};
 
 export const serializeTree = (
   { connectors, nextNodeId, nodes, versionId },
