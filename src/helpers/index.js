@@ -67,6 +67,15 @@ export const buildDefinitionId = text =>
     // Remove unwanted chars
     .replace(/[^A-Za-z0-9_]+/g, '');
 
+const labelToValue = text => {
+  const lower = text
+    .trim()
+    // Remove spaces
+    .replace(/\s/g, '');
+  // Uncapitalize first character and return string
+  return lower.charAt(0).toLowerCase() + lower.substring(1);
+};
+
 const SUBMISSION_STATIC_BINDINGS = [
   ['Anonymous', 'anonymous'],
   ['Closed At', 'closedAt'],
@@ -109,11 +118,11 @@ const bindifyProfile = (fnName, staticMap, attributes, profileAttributes) => {
   const combinedMap = OrderedMap(staticMap)
     .merge(attributes)
     .merge(profileAttributes);
-  // console.log('combinedMap:', combinedMap);
-  return combinedMap.map(value => {
+  return combinedMap.map((value, label) => {
     return Map({
-      // value: `${fnName}('${List.isList(value) ? value.get(0) : value}')`,
-      value: `${fnName}('${value}')`,
+      value: List.isList(value)
+        ? `${fnName}('${labelToValue(label)}')`
+        : `${fnName}('${value}')`,
       tags: [],
     });
   });
