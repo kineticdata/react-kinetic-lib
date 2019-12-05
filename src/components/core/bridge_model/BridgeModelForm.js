@@ -8,6 +8,7 @@ import {
   updateBridgeModel,
   updateBridgeModelMapping,
   fetchBridges,
+  fetchAgentComponents,
 } from '../../../apis';
 
 const getMapping = model =>
@@ -28,9 +29,17 @@ const dataSources = ({ modelName }) => ({
     fn: getMapping,
     params: ({ model }) => modelName && model && [model],
   },
+  agents: {
+    fn: fetchAgentComponents,
+    params: [{ include: 'details' }],
+    transform: result => result.agents,
+  },
   bridges: {
     fn: fetchBridges,
-    params: [{ include: 'details' }],
+    params: ({ values }) =>
+      values && [
+        { agentSlug: values.get('agentSlug', 'system'), include: 'details' },
+      ],
     transform: result => result.bridges,
   },
 });
@@ -38,7 +47,7 @@ const dataSources = ({ modelName }) => ({
 const handleSubmit = ({ modelName }) => async (values, { modelMapping }) => {
   // destructure the values of the fields because they will be used in different
   // payloads below
-  const { name, status, bridgeSlug, structure } = values.toJS();
+  const { name, status, bridgeSlug, agentSlug, structure } = values.toJS();
 
   // determine if we are creating / updating a model
   const modelMethod = modelName ? updateBridgeModel : createBridgeModel;
@@ -63,7 +72,7 @@ const handleSubmit = ({ modelName }) => async (values, { modelMapping }) => {
   const { error: mappingError } = await mappingMethod({
     modelName: name,
     mappingName,
-    bridgeModelMapping: { name, bridgeSlug, structure },
+    bridgeModelMapping: { name, bridgeSlug, agentSlug, structure },
   });
 
   if (mappingError) {
@@ -74,8 +83,8 @@ const handleSubmit = ({ modelName }) => async (values, { modelMapping }) => {
   return bridgeModel;
 };
 
-const fields = ({ modelName }) => ({ model, modelMapping, bridges }) =>
-  (!modelName || (model && modelMapping && bridges)) && [
+const fields = ({ modelName }) => ({ model, modelMapping, agents }) =>
+  (!modelName || (model && modelMapping && agents)) && [
     {
       name: 'name',
       label: 'Name',
@@ -107,9 +116,37 @@ const fields = ({ modelName }) => ({ model, modelMapping, bridges }) =>
           ? bridges.map(bridge =>
               Map({
                 value: bridge.get('slug'),
-                label: bridge.get('name'),
+                label: bridge.get('slug'),
               }),
             )
+          : List(),
+    },
+    {
+      name: 'agentSlug',
+      label: 'Agent Slug',
+      type: 'select',
+      required: true,
+      visible: ({ agents }) => agents && agents.size > 0,
+      initialValue: modelMapping
+        ? modelMapping.get('agentSlug', 'system')
+        : 'system',
+      helpText:
+        'Unique name of the agent this bridge model is connected to. Bridges are configured under Plugins',
+      options: ({ agents }) =>
+        agents
+          ? agents
+              .map(agent =>
+                Map({
+                  value: agent.get('slug'),
+                  label: agent.get('slug'),
+                }),
+              )
+              .unshift(
+                Map({
+                  value: 'system',
+                  label: 'system',
+                }),
+              )
           : List(),
     },
     {
