@@ -4,27 +4,18 @@ import { fetchBridges } from '../../../apis';
 const dataSource = ({ agentSlug }) => ({
   fn: fetchBridges,
   clientSideSearch: true,
-  params: paramData => [
+  params: () => [
     {
-      agentSlug: agentSlug
-        ? agentSlug
-        : paramData.filters.getIn(['agentSlug', 'value']),
+      agentSlug,
       include: 'details',
     },
   ],
-  transform: (result, filters) => ({
+  transform: result => ({
     data: result.bridges,
   }),
 });
 
 const columns = [
-  {
-    value: 'name',
-    title: 'Name',
-    filter: 'startsWith',
-    type: 'text',
-    sortable: true,
-  },
   {
     value: 'slug',
     title: 'Slug',
@@ -38,13 +29,6 @@ const columns = [
     filter: 'startsWith',
     type: 'text',
     sortable: true,
-  },
-  {
-    value: 'agentSlug',
-    title: 'Agent Slug',
-    filter: 'equals',
-    type: 'text',
-    sortable: false,
   },
 ];
 

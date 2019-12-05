@@ -1,4 +1,4 @@
-import { get, getIn, List } from 'immutable';
+import { get, getIn, List, Map } from 'immutable';
 import { generateForm } from '../../form/Form';
 import {
   fetchBridge,
@@ -33,7 +33,7 @@ const handleSubmit = ({ bridgeSlug, agentSlug }) => values =>
     return bridge;
   });
 
-const BRIDGE_FIELDS = ['slug', 'adapterClass', 'properties', 'linked'];
+const BRIDGE_FIELDS = ['slug', 'adapterClass', 'properties'];
 
 const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
   let properties = [];
@@ -84,6 +84,12 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
           enabled: false,
           required: false,
           initialValue: initialAdapterClass,
+          options: adapters.map(adapter =>
+            Map({
+              value: adapter.get('class'),
+              label: adapter.get('name'),
+            }),
+          ),
         },
         {
           name: 'properties',
