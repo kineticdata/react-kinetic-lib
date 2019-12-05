@@ -31,15 +31,13 @@ const dataSources = ({ modelName }) => ({
   },
   agents: {
     fn: fetchAgentComponents,
-    params: [{ include: 'details' }],
+    params: [],
     transform: result => result.agents,
   },
   bridges: {
     fn: fetchBridges,
     params: ({ values }) =>
-      values && [
-        { agentSlug: values.get('agentSlug', 'system'), include: 'details' },
-      ],
+      values && [{ agentSlug: values.get('agentSlug', 'system') }],
     transform: result => result.bridges,
   },
 });
@@ -126,7 +124,15 @@ const fields = ({ modelName }) => ({ model, modelMapping, agents }) =>
       label: 'Agent Slug',
       type: 'select',
       required: true,
-      visible: ({ agents }) => agents && agents.size > 0,
+      // We want to show the agents field if agents are defined within the space OR if
+      // the agentSlug that a modelMapping is defined with no longer exists
+      visible: ({ agents }) =>
+        agents &&
+        (agents.size > 0 ||
+          (modelMapping &&
+            modelMapping.get('agentSlug') !== 'system' &&
+            agents.filter(a => a.get('slug') === modelMapping.get('agentSlug'))
+              .size === 0)),
       initialValue: modelMapping
         ? modelMapping.get('agentSlug', 'system')
         : 'system',
