@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { bundle } from '../../helpers';
+import { buildAgentPath } from '../../helpers';
 import { handleErrors, headerBuilder, paramBuilder } from '../http';
 
 const validateOptions = (functionName, requiredOptions, options) => {
@@ -29,9 +29,7 @@ export const fetchAdapters = (options = {}) => {
   validateOptions('fetchAdapters', ['type'], options);
   return axios
     .get(
-      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/adapters?type=${
-        options.type
-      }`,
+      `${buildAgentPath(options)}/app/api/v1/adapters?type=${options.type}`,
       {
         params: paramBuilder(options),
         headers: headerBuilder(options),

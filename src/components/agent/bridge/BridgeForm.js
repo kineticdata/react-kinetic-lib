@@ -1,4 +1,4 @@
-import { get, getIn, List, Map } from 'immutable';
+import { get, getIn, List } from 'immutable';
 import { generateForm } from '../../form/Form';
 import {
   fetchBridge,
@@ -7,22 +7,23 @@ import {
   fetchAdapters,
 } from '../../../apis';
 
-const dataSources = ({ bridgeSlug }) => ({
+const dataSources = ({ bridgeSlug, agentSlug }) => ({
   bridge: {
     fn: fetchBridge,
-    params: bridgeSlug && [{ bridgeSlug, include: 'details' }],
+    params: bridgeSlug && [{ agentSlug, bridgeSlug, include: 'details' }],
     transform: result => result.bridge,
   },
   adapters: {
     fn: fetchAdapters,
-    params: [{ include: 'details', type: 'bridge' }],
+    params: [{ include: 'details', type: 'bridge', agentSlug }],
     transform: result => result.adapters,
   },
 });
 
-const handleSubmit = ({ bridgeSlug }) => values =>
+const handleSubmit = ({ bridgeSlug, agentSlug }) => values =>
   (bridgeSlug ? updateBridge : createBridge)({
     bridgeSlug,
+    agentSlug,
     bridge: values.toJS(),
   }).then(({ bridge, error }) => {
     if (error) {
@@ -83,12 +84,6 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
           enabled: false,
           required: false,
           initialValue: initialAdapterClass,
-          options: adapters.map(adapter =>
-            Map({
-              value: adapter.get('class'),
-              label: adapter.get('name'),
-            }),
-          ),
         },
         {
           name: 'properties',
@@ -105,7 +100,7 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
 };
 
 export const BridgeForm = generateForm({
-  formOptions: ['bridgeSlug', 'adapterClass'],
+  formOptions: ['bridgeSlug', 'adapterClass', 'agentSlug'],
   dataSources,
   fields,
   handleSubmit,

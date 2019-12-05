@@ -1,15 +1,18 @@
 import { generateTable } from '../../table/Table';
 import { fetchBridges } from '../../../apis';
 
-const dataSource = () => ({
+const dataSource = ({ agentSlug }) => ({
   fn: fetchBridges,
   clientSideSearch: true,
-  params: () => [
+  params: paramData => [
     {
+      agentSlug: agentSlug
+        ? agentSlug
+        : paramData.filters.getIn(['agentSlug', 'value']),
       include: 'details',
     },
   ],
-  transform: result => ({
+  transform: (result, filters) => ({
     data: result.bridges,
   }),
 });
@@ -36,9 +39,17 @@ const columns = [
     type: 'text',
     sortable: true,
   },
+  {
+    value: 'agentSlug',
+    title: 'Agent Slug',
+    filter: 'equals',
+    type: 'text',
+    sortable: false,
+  },
 ];
 
 export const BridgeTable = generateTable({
+  tableOptions: ['agentSlug'],
   columns,
   dataSource,
 });

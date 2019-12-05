@@ -213,3 +213,8 @@ export const buildBindings = ({ space, kapp, form, scope }) =>
   ]).filter(
     o => (o.get('children') && !o.get('children').isEmpty()) || o.has('value'),
   );
+
+export const buildAgentPath = options =>
+  `${bundle.spaceLocation()}/app/components/agents/${
+    options.agentSlug ? options.agentSlug : 'system'
+  }`;
