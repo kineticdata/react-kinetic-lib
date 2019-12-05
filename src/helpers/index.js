@@ -67,15 +67,6 @@ export const buildDefinitionId = text =>
     // Remove unwanted chars
     .replace(/[^A-Za-z0-9_]+/g, '');
 
-const labelToValue = text => {
-  const lower = text
-    .trim()
-    // Remove spaces
-    .replace(/\s/g, '');
-  // Uncapitalize first character and return string
-  return lower.charAt(0).toLowerCase() + lower.substring(1);
-};
-
 const SUBMISSION_STATIC_BINDINGS = [
   ['Anonymous', 'anonymous'],
   ['Closed At', 'closedAt'],
@@ -114,15 +105,32 @@ const IDENTITY_STATIC_BINDINGS = [
   ['Is Space Admin?', 'spaceAdmin'],
 ];
 
-const bindifyProfile = (fnName, staticMap, attributes, profileAttributes) => {
+const bindifyProfile = (
+  fnName,
+  staticMap,
+  attributes,
+  profileAttributes,
+  attributeTag = 'Attribute',
+  profileAttributeTag = 'Profile Attribute',
+) => {
+  const attributesMap = attributes.map((value, label) =>
+    Map({
+      value: `${fnName}('attribute:${label}')`,
+      tags: [attributeTag],
+    }),
+  );
+  const profileAttributesMap = profileAttributes.map((value, label) =>
+    Map({
+      value: `${fnName}('profile attribute:${label}')`,
+      tags: [profileAttributeTag],
+    }),
+  );
   const combinedMap = OrderedMap(staticMap)
-    .merge(attributes)
-    .merge(profileAttributes);
+    .merge(attributesMap)
+    .merge(profileAttributesMap);
   return combinedMap.map((value, label) => {
     return Map({
-      value: List.isList(value)
-        ? `${fnName}('${labelToValue(label)}')`
-        : `${fnName}('${value}')`,
+      value: Map.isMap(value) ? value.get('value') : `${fnName}('${value}')`,
       tags: [],
     });
   });
