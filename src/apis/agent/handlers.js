@@ -8,7 +8,7 @@ import {
 import { buildAgentPath } from '../../helpers';
 
 export const fetchAgentHandlers = (options = {}) => {
-  validateOptions('fetchAgentHandlers', options);
+  validateOptions('fetchAgentHandlers', [], options);
   return axios
     .get(`${buildAgentPath(options)}/app/api/v1/handlers`, {
       params: paramBuilder(options),
