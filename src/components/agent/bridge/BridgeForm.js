@@ -7,22 +7,23 @@ import {
   fetchAdapters,
 } from '../../../apis';
 
-const dataSources = ({ bridgeSlug }) => ({
+const dataSources = ({ bridgeSlug, agentSlug }) => ({
   bridge: {
     fn: fetchBridge,
-    params: bridgeSlug && [{ bridgeSlug, include: 'details' }],
+    params: bridgeSlug && [{ agentSlug, bridgeSlug, include: 'details' }],
     transform: result => result.bridge,
   },
   adapters: {
     fn: fetchAdapters,
-    params: [{ include: 'details', type: 'bridge' }],
+    params: [{ include: 'details', type: 'bridge', agentSlug }],
     transform: result => result.adapters,
   },
 });
 
-const handleSubmit = ({ bridgeSlug }) => values =>
+const handleSubmit = ({ bridgeSlug, agentSlug }) => values =>
   (bridgeSlug ? updateBridge : createBridge)({
     bridgeSlug,
+    agentSlug,
     bridge: values.toJS(),
   }).then(({ bridge, error }) => {
     if (error) {
@@ -32,7 +33,7 @@ const handleSubmit = ({ bridgeSlug }) => values =>
     return bridge;
   });
 
-const BRIDGE_FIELDS = ['slug', 'adapterClass', 'properties', 'linked'];
+const BRIDGE_FIELDS = ['slug', 'adapterClass', 'properties'];
 
 const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
   let properties = [];
@@ -105,7 +106,7 @@ const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
 };
 
 export const BridgeForm = generateForm({
-  formOptions: ['bridgeSlug', 'adapterClass'],
+  formOptions: ['bridgeSlug', 'adapterClass', 'agentSlug'],
   dataSources,
   fields,
   handleSubmit,

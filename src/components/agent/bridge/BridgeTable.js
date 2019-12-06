@@ -1,11 +1,12 @@
 import { generateTable } from '../../table/Table';
 import { fetchBridges } from '../../../apis';
 
-const dataSource = () => ({
+const dataSource = ({ agentSlug }) => ({
   fn: fetchBridges,
   clientSideSearch: true,
   params: () => [
     {
+      agentSlug,
       include: 'details',
     },
   ],
@@ -15,13 +16,6 @@ const dataSource = () => ({
 });
 
 const columns = [
-  {
-    value: 'name',
-    title: 'Name',
-    filter: 'startsWith',
-    type: 'text',
-    sortable: true,
-  },
   {
     value: 'slug',
     title: 'Slug',
@@ -39,6 +33,7 @@ const columns = [
 ];
 
 export const BridgeTable = generateTable({
+  tableOptions: ['agentSlug'],
   columns,
   dataSource,
 });
