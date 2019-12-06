@@ -73,9 +73,7 @@ export const createTree = (options = {}) => {
         include: options.include,
       },
     })
-    .then(response => ({
-      tree: response.data,
-    }))
+    .then(response => response.data)
     .catch(handleErrors);
 };
 
