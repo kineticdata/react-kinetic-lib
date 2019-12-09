@@ -94,6 +94,47 @@ const USER_STATIC_BINDINGS = [
 const FORM_STATIC_BINDINGS = [['Name', 'name'], ['Slug', 'slug']];
 const KAPP_STATIC_BINDINGS = [['Name', 'name'], ['Slug', 'slug']];
 const SPACE_STATIC_BINDINGS = [['Name', 'name'], ['Slug', 'slug']];
+const IDENTITY_STATIC_BINDINGS = [
+  ['Username', 'username'],
+  ['Display Name', 'displayName'],
+  ['Email Address', 'email'],
+  ['Groups', 'groups'],
+  ['Session Token', 'sessionToken'],
+  ['Is Anonymous?', 'anonymous'],
+  ['Is Authenticated?', 'authenticated'],
+  ['Is Space Admin?', 'spaceAdmin'],
+];
+
+const bindifyProfile = (
+  fnName,
+  staticMap,
+  attributes,
+  profileAttributes,
+  attributeTag = 'Attribute',
+  profileAttributeTag = 'Profile Attribute',
+) => {
+  const attributesMap = attributes.map((value, label) =>
+    Map({
+      value: `${fnName}('attribute:${label}')`,
+      tags: [attributeTag],
+    }),
+  );
+  const profileAttributesMap = profileAttributes.map((value, label) =>
+    Map({
+      value: `${fnName}('profile attribute:${label}')`,
+      tags: [profileAttributeTag],
+    }),
+  );
+  const combinedMap = OrderedMap(staticMap)
+    .merge(attributesMap)
+    .merge(profileAttributesMap);
+  return combinedMap.map((value, label) => {
+    return Map({
+      value: Map.isMap(value) ? value.get('value') : `${fnName}('${value}')`,
+      tags: [],
+    });
+  });
+};
 
 const bindify = (
   fnName,
@@ -118,8 +159,21 @@ const bindify = (
     ),
   );
 
-export const buildBindings = ({ space, kapp, form, scope }) =>
-  OrderedMap([
+export const buildBindings = ({ space, kapp, form, scope, profile }) => {
+  return OrderedMap([
+    [
+      'Identity',
+      Map({
+        children:
+          profile &&
+          bindifyProfile(
+            'identity',
+            IDENTITY_STATIC_BINDINGS,
+            get(profile, 'attributesMap'),
+            get(profile, 'profileAttributesMap'),
+          ),
+      }),
+    ],
     [
       'Form',
       Map({

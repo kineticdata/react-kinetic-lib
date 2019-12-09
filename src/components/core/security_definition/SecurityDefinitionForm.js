@@ -5,6 +5,7 @@ import {
   updateSecurityPolicyDefinition,
   fetchSpace,
   fetchKapp,
+  fetchProfile,
 } from '../../../apis';
 import { buildBindings } from '../../../helpers';
 
@@ -22,6 +23,8 @@ const SPACE_INCLUDES =
   'datastoreFormAttributeDefinitions,spaceAttributeDefinitions,teamAttributeDefinitions,userAttributeDefinitions,userProfileAttributeDefinitions';
 const KAPP_INCLUDES =
   'formAttributeDefinitions,kappAttributeDefinitions,fields';
+const PROFILE_INCLUDES =
+  'attributesMap,profileAttributesMap';
 
 const dataSources = ({ securityPolicyName, kappSlug }) => ({
   space: {
@@ -39,6 +42,11 @@ const dataSources = ({ securityPolicyName, kappSlug }) => ({
     params: securityPolicyName && [{ securityPolicyName, kappSlug }],
     transform: result => result.securityPolicyDefinition,
   },
+  profile: {
+    fn: fetchProfile,
+    params: [{ include: PROFILE_INCLUDES }],
+    transform: result => result.profile
+  }
 });
 
 const handleSubmit = ({ securityPolicyName, kappSlug }) => values =>
@@ -100,8 +108,8 @@ const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
       type: 'code',
       language: 'js',
       required: true,
-      options: ({ space, kapp, values }) =>
-        buildBindings({ space, kapp, scope: values.get('type') }),
+      options: ({ space, kapp, values, profile }) => 
+        buildBindings({ space, kapp, scope: values.get('type'), profile }),
       initialValue: securityPolicy ? securityPolicy.get('rule') : '',
       helpText: `Expression to evaluate to true or false. Click the </> button to see available values scoped to this Kapp or Space.`,
     },
