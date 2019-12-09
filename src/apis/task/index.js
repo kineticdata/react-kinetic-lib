@@ -220,12 +220,13 @@ export const cloneTree = (options = {}) => {
     ['name', 'tree', 'sourceGroup', 'sourceName'],
     options,
   );
+  const title = buildTreeId(options);
   return axios
     .post(
       `/app/components/task/app/api/v2/trees`,
       {
         ...options.tree,
-        title: `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`,
+        title,
       },
       {
         params: {
@@ -240,12 +241,11 @@ export const cloneTree = (options = {}) => {
 };
 
 export const deleteTree = (options = {}) => {
-  const { title } = options;
-  if (!title) {
-    throw new Error('deleteTree failed! The option "title" is required.');
-  }
+  validateOptions('fetchTree', ['name'], options);
+  const id = buildTreeId(options);
+
   return axios
-    .delete(`/app/components/task/app/api/v2/trees/${title}`)
+    .delete(`/app/components/task/app/api/v2/trees/${id}`)
     .then(response => ({
       tree: response.data,
     }))
