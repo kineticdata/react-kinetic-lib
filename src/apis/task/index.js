@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { handleErrors, validateOptions } from '../http';
 
+export const buildTreeId = options =>
+  options.definitionId
+    ? options.definitionId
+    : options.sourceName && options.sourceGroup
+    ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
+    : options.name;
+
 const generateNextPageToken = data =>
   data.offset + data.limit > data.count ? null : data.limit + data.offset;
 
@@ -27,24 +34,9 @@ export const fetchTrees = (options = {}) =>
     }));
 
 export const fetchTree = (options = {}) => {
-  validateOptions('fetchTree', ['itemId'], options);
-  return axios
-    .get(`/app/components/task/app/api/v2/trees/${options.itemId}`, {
-      params: {
-        include: options.include,
-      },
-    })
-    .then(response => ({
-      tree: response.data,
-    }));
-};
-
-export const fetchTree2 = (options = {}) => {
   validateOptions('fetchTree', ['name'], options);
-  const id =
-    options.sourceName && options.sourceGroup
-      ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
-      : options.name;
+  const id = buildTreeId(options);
+
   return axios
     .get(`/app/components/task/app/api/v2/trees/${id}`, {
       params: {
@@ -58,28 +50,9 @@ export const fetchTree2 = (options = {}) => {
 };
 
 export const updateTree = (options = {}) => {
-  validateOptions('updateTree', ['itemId', 'tree'], options);
-  return axios
-    .put(
-      `/app/components/task/app/api/v2/trees/${options.itemId}`,
-      options.tree,
-      {
-        params: {
-          include: options.include,
-        },
-      },
-    )
-    .then(response => ({
-      tree: response.data,
-    }));
-};
+  validateOptions('updateTree', ['name', 'tree'], options);
+  const id = buildTreeId(options);
 
-export const updateTree2 = (options = {}) => {
-  validateOptions('updateTree2', ['name', 'tree'], options);
-  const id =
-    options.sourceName && options.sourceGroup
-      ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
-      : options.name;
   return axios
     .put(`/app/components/task/app/api/v2/trees/${id}`, options.tree, {
       params: {
@@ -100,18 +73,14 @@ export const createTree = (options = {}) => {
         include: options.include,
       },
     })
-    .then(response => ({
-      tree: response.data,
-    }))
+    .then(response => response.data)
     .catch(handleErrors);
 };
 
 export const exportTree = (options = {}) => {
   validateOptions('exportTree', ['name'], options);
-  const id =
-    options.sourceName && options.sourceGroup
-      ? `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`
-      : options.name;
+  const id = buildTreeId(options);
+
   return axios
     .get(`/app/components/task/app/api/v2/trees/${id}/export`)
     .then(response => ({
@@ -145,11 +114,13 @@ export const importTree = (options = {}) => {
     .catch(handleErrors);
 };
 
-export const fetchTreeCounts = (options = {}) =>
-  axios
-    .get(`/app/components/task/app/api/v2/trees/${options.title}/counts`)
+export const fetchTreeCounts = (options = {}) => {
+  const id = buildTreeId(options);
+  return axios
+    .get(`/app/components/task/app/api/v2/trees/${id}/counts`)
     .then(response => ({ counts: response.data }))
     .catch(handleErrors);
+};
 
 export const fetchSources = (options = {}) =>
   axios
@@ -188,6 +159,21 @@ export const updateSource = (options = {}) => {
         },
       },
     )
+    .then(response => ({
+      source: response.data,
+    }))
+    .catch(handleErrors);
+};
+
+export const deleteSource = (options = {}) => {
+  const { sourceName } = options;
+  if (!sourceName) {
+    throw new Error(
+      'deleteSource failed! The option "sourceName" is required.',
+    );
+  }
+  return axios
+    .delete(`/app/components/task/app/api/v2/sources/${sourceName}`)
     .then(response => ({
       source: response.data,
     }))
@@ -234,12 +220,13 @@ export const cloneTree = (options = {}) => {
     ['name', 'tree', 'sourceGroup', 'sourceName'],
     options,
   );
+  const title = buildTreeId(options);
   return axios
     .post(
       `/app/components/task/app/api/v2/trees`,
       {
         ...options.tree,
-        title: `${options.sourceName} :: ${options.sourceGroup} :: ${options.name}`,
+        title,
       },
       {
         params: {
@@ -254,12 +241,11 @@ export const cloneTree = (options = {}) => {
 };
 
 export const deleteTree = (options = {}) => {
-  const { title } = options;
-  if (!title) {
-    throw new Error('deleteTree failed! The option "title" is required.');
-  }
+  validateOptions('fetchTree', ['name'], options);
+  const id = buildTreeId(options);
+
   return axios
-    .delete(`/app/components/task/app/api/v2/trees/${title}`)
+    .delete(`/app/components/task/app/api/v2/trees/${id}`)
     .then(response => ({
       tree: response.data,
     }))
@@ -476,12 +462,28 @@ export const updateHandler = (options = {}) => {
     }));
 };
 
+export const deleteHandler = (options = {}) => {
+  const { definitionId } = options;
+  if (!definitionId) {
+    throw new Error(
+      'deleteHandler failed! The option "definitionId" is required.',
+    );
+  }
+  return axios
+    .delete(`/app/components/task/app/api/v2/handlers/${definitionId}`)
+    .then(response => ({
+      handler: response.data,
+    }))
+    .catch(handleErrors);
+};
+
 export const fetchUsage = (options = {}) => {
-  validateOptions('fetchUsage', ['definitionId', 'usageType'], options);
+  const id = buildTreeId(options);
   const path =
     options.usageType === 'handler'
       ? `/app/components/task/app/api/v2/handlers/${options.definitionId}/usage`
-      : `/app/components/task/app/api/v2/trees/${options.definitionId}/usage`;
+      : `/app/components/task/app/api/v2/trees/${id}/usage`;
+
   return axios
     .get(path, {
       params: {

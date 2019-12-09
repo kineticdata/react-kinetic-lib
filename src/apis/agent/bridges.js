@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { bundle } from '../../helpers';
+import { buildAgentPath } from '../../helpers';
 import {
   handleErrors,
   headerBuilder,
@@ -8,8 +8,9 @@ import {
 } from '../http';
 
 export const fetchBridges = (options = {}) => {
+  validateOptions('fetchBridges', [], options);
   return axios
-    .get(`${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges`, {
+    .get(`${buildAgentPath(options)}/app/api/v1/bridges`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -21,9 +22,7 @@ export const fetchBridge = (options = {}) => {
   validateOptions('fetchBridge', ['bridgeSlug'], options);
   return axios
     .get(
-      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges/${
-        options.bridgeSlug
-      }`,
+      `${buildAgentPath(options)}/app/api/v1/bridges/${options.bridgeSlug}`,
       {
         params: paramBuilder(options),
         headers: headerBuilder(options),
@@ -36,14 +35,10 @@ export const fetchBridge = (options = {}) => {
 export const createBridge = (options = {}) => {
   validateOptions('createBridge', ['bridge'], options);
   return axios
-    .post(
-      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges/`,
-      options.bridge,
-      {
-        params: paramBuilder(options),
-        headers: headerBuilder(options),
-      },
-    )
+    .post(`${buildAgentPath(options)}/app/api/v1/bridges/`, options.bridge, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
     .then(response => ({ bridge: response.data.bridge }))
     .catch(handleErrors);
 };
@@ -52,9 +47,7 @@ export const updateBridge = (options = {}) => {
   validateOptions('updateBridge', ['bridgeSlug', 'bridge'], options);
   return axios
     .put(
-      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges/${
-        options.bridgeSlug
-      }`,
+      `${buildAgentPath(options)}/app/api/v1/bridges/${options.bridgeSlug}`,
       options.bridge,
       { params: paramBuilder(options), headers: headerBuilder(options) },
     )
@@ -66,9 +59,7 @@ export const deleteBridge = (options = {}) => {
   validateOptions('deleteBridge', ['bridgeSlug'], options);
   return axios
     .delete(
-      `${bundle.spaceLocation()}/app/components/agent/app/api/v1/bridges/${
-        options.bridgeSlug
-      }`,
+      `${buildAgentPath(options)}/app/api/v1/bridges/${options.bridgeSlug}`,
       {
         params: paramBuilder(options),
         headers: headerBuilder(options),

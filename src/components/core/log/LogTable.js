@@ -54,7 +54,6 @@ const APP_COMPONENT_OPTIONS = [
   'agent',
   'core',
   'loghub',
-  'ssl-trust-setup',
   'task',
   // 'bridgehub',
   // 'filehub',
@@ -62,6 +61,13 @@ const APP_COMPONENT_OPTIONS = [
   label: component,
   value: component,
 }));
+
+const LEVEL_OPTIONS = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'].map(
+  level => ({
+    label: level,
+    value: level,
+  }),
+);
 
 const columns = [
   {
@@ -206,6 +212,9 @@ const columns = [
     value: 'level',
     title: 'Level',
     sortable: false,
+    type: 'text',
+    filter: 'equals',
+    options: () => LEVEL_OPTIONS,
   },
   {
     value: 'message',

@@ -63,7 +63,10 @@ const fields = ({ categoryName }) => ({ category }) =>
       label: 'Description',
       type: 'text',
       required: false,
-      initialValue: category ? category.get('description') : '',
+      initialValue:
+        category && category.get('description') !== null
+          ? category.get('description')
+          : '',
     },
     {
       name: 'handlers',

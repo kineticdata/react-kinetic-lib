@@ -7,21 +7,22 @@ import {
   fetchAdapters,
 } from '../../../apis';
 
-const dataSources = ({ handlerSlug }) => ({
+const dataSources = ({ handlerSlug, agentSlug }) => ({
   handler: {
     fn: fetchAgentHandler,
-    params: handlerSlug && [{ handlerSlug, include: 'details' }],
+    params: handlerSlug && [{ agentSlug, handlerSlug, include: 'details' }],
     transform: result => result.handler,
   },
   adapters: {
     fn: fetchAdapters,
-    params: [{ include: 'details', type: 'handler' }],
+    params: [{ include: 'details', type: 'handler', agentSlug }],
     transform: result => result.adapters,
   },
 });
 
-const handleSubmit = ({ handlerSlug }) => values =>
+const handleSubmit = ({ handlerSlug, agentSlug }) => values =>
   (handlerSlug ? updateAgentHandler : createAgentHandler)({
+    agentSlug,
     handlerSlug,
     handler: values.toJS(),
   }).then(({ handler, error }) => {
@@ -107,7 +108,7 @@ const fields = ({ handlerSlug, definitionId }) => ({ handler, adapters }) => {
 };
 
 export const AgentHandlerForm = generateForm({
-  formOptions: ['handlerSlug', 'definitionId'],
+  formOptions: ['agentSlug', 'handlerSlug', 'definitionId'],
   dataSources,
   fields,
   handleSubmit,

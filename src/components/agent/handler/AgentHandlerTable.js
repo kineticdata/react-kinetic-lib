@@ -1,11 +1,12 @@
 import { generateTable } from '../../table/Table';
 import { fetchAgentHandlers } from '../../../apis';
 
-const dataSource = () => ({
+const dataSource = ({ agentSlug }) => ({
   fn: fetchAgentHandlers,
   clientSideSearch: true,
   params: () => [
     {
+      agentSlug,
       include: 'details',
     },
   ],
@@ -32,6 +33,7 @@ const columns = [
 ];
 
 export const AgentHandlerTable = generateTable({
+  tableOptions: ['agentSlug'],
   columns,
   dataSource,
 });

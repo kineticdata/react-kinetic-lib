@@ -18,6 +18,7 @@ export * from './core/logs';
 export * from './core/memberships';
 export * from './core/meta';
 export * from './core/oauthClients';
+export * from './core/platformComponents';
 export * from './core/profile';
 export * from './core/securityPolicyDefinitions';
 export * from './core/space';

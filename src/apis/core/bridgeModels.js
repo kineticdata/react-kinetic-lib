@@ -28,6 +28,38 @@ export const fetchBridgeModel = (options = {}) => {
     .catch(handleErrors);
 };
 
+const TEST_METHODS = ['retrieve', 'search', 'count'];
+export const testBridgeModel = (options = {}) => {
+  validateOptions(
+    'testBridgeModel',
+    ['modelName', 'qualificationName', 'method'],
+    options,
+  );
+
+  const { modelName, qualificationName, attributes = [] } = options;
+  const method = TEST_METHODS.includes(options.method)
+    ? options.method
+    : 'retrieve';
+  const parameters = options.parameters.reduce((params, parameter) => {
+    params[`parameters[${parameter.name}]`] = parameter.value;
+    return params;
+  }, {});
+  return axios
+    .post(
+      `${bundle.spaceLocation()}/app/models/${modelName}/qualifications/${qualificationName}/${method}`,
+      null,
+      {
+        params: {
+          ...paramBuilder(options),
+          attributes: attributes.join(','),
+          ...parameters,
+        },
+        headers: headerBuilder(options),
+      },
+    )
+    .catch(handleErrors);
+};
+
 export const createBridgeModel = (options = {}) => {
   validateOptions('createBridgeModel', ['bridgeModel'], options);
   return axios
