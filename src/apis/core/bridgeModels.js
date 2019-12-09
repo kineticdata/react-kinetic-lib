@@ -44,7 +44,6 @@ export const testBridgeModel = (options = {}) => {
     params[`parameters[${parameter.name}]`] = parameter.value;
     return params;
   }, {});
-  console.log(parameters);
   return axios
     .post(
       `${bundle.spaceLocation()}/app/models/${modelName}/qualifications/${qualificationName}/${method}`,
