@@ -16,8 +16,19 @@ const handleSubmit = ({ kappSlug, name }) => values =>
     name,
   }).then(({ formType, error }) => {
     if (error) {
-      throw (error.statusCode === 400 && error.message) ||
-        'There was an error saving the form type';
+      if (error.statusCode === 400) {
+        // Currently the server side returns "Invalid Kapp" because
+        // form types are embedded in the kapp. This workaround updates
+        // the message returned to the end user.
+        const message = error.message.replace(
+          'Invalid Kapp',
+          'Invalid Form Type',
+        );
+        throw message;
+      } else {
+        const message = 'There was an error saving the form type';
+        throw message;
+      }
     }
     return formType;
   });
