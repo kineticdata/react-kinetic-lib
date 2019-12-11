@@ -103,6 +103,7 @@ const columns = [
     filter: 'equals',
     type: 'text',
     sortable: false,
+    initial: 'Active',
   },
   {
     value: 'sourceName',
