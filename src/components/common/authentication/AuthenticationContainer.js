@@ -119,9 +119,13 @@ export class AuthenticationComponent extends Component {
       error,
       username,
       password,
+      clientId,
     } = this.props;
-    const loggedIn = authenticated && token ? true : false;
-    const loggingIn = authenticated && !token ? true : false;
+
+    const okToken = clientId ? token : true;
+
+    const loggedIn = authenticated && okToken;
+    const loggingIn = authenticated && !okToken;
 
     // First we need to check to see if this is a redirect with an OAuth token.
     // If it is we need to process the token and save it in Redux. Since this
@@ -139,7 +143,7 @@ export class AuthenticationComponent extends Component {
 
     return (
       <Fragment>
-        {authenticated && !token && (
+        {clientId && loggingIn && (
           <RetrieveJwtIframe clientId={this.props.clientId} />
         )}
         {this.props.children({
