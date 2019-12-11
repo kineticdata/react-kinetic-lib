@@ -23,7 +23,7 @@ const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'startsWith',
+    filter: 'includes',
     sortable: false,
   },
   {

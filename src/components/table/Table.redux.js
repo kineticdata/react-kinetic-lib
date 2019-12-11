@@ -270,6 +270,7 @@ regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
 regSaga(takeEvery('REFETCH_TABLE_DATA', calculateRowsTask));
 
 export const operations = Map({
+  includes: (cv, v) => cv.toLocaleLowerCase().includes(v.toLocaleLowerCase()),
   startsWith: (cv, v) =>
     cv.toLocaleLowerCase().startsWith(v.toLocaleLowerCase()),
   equals: (cv, v) =>

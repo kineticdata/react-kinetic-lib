@@ -19,7 +19,7 @@ const columns = [
   {
     value: 'name',
     title: 'Model Name',
-    filter: 'startsWith',
+    filter: 'includes',
     type: 'text',
     sortable: true,
   },

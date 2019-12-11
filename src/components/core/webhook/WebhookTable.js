@@ -31,7 +31,7 @@ const columns = [
   },
   { value: 'event', title: 'Event', filter: 'startsWith', type: 'text' },
   { value: 'filter', title: 'Filter' },
-  { value: 'name', title: 'Name', filter: 'startsWith', type: 'text' },
+  { value: 'name', title: 'Name', filter: 'includes', type: 'text' },
   { value: 'type', title: 'Type', filter: 'startsWith', type: 'text' },
   {
     value: 'updatedAt',

@@ -590,6 +590,7 @@ Table.propTypes = {
       value: PropTypes.string,
       /** Flag that determines if the column can be used as a filter. */
       filter: PropTypes.oneOf([
+        'includes', // clientSide searching only
         'equals',
         'startsWith',
         'in',
