@@ -109,8 +109,11 @@ export const TableInput = props => {
     const fields = rowConfig.reduce((fields, config) => {
       const Field = fieldFromConfig(config, appliedComponents);
       const value = row.get(config.get('name'));
-      const handleChangeField = e =>
-        onChange(rows.setIn([index, config.get('name')], e.target.value));
+      const handleChangeField = e => {
+        const value =
+          config.get('type') === 'checkbox' ? e.target.checked : e.target.value;
+        return onChange(rows.setIn([index, config.get('name')], value));
+      };
 
       return fields.set(
         config.get('name'),
