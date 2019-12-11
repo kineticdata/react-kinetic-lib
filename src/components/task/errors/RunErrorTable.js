@@ -9,6 +9,7 @@ const dataSource = ({
   sourceId,
   tree,
   status,
+  id,
 }) => ({
   fn: fetchTaskRunErrors,
   params: paramData => [
@@ -24,6 +25,7 @@ const dataSource = ({
       sourceId: sourceId
         ? sourceId
         : paramData.filters.getIn(['sourceId', 'value']),
+      id: id ? id : paramData.filters.getIn(['id', 'value']),
       status: status ? status : paramData.filters.getIn(['status', 'value']),
       nodeId: paramData.filters.getIn(['nodeId', 'value']),
       handlerId: paramData.filters.getIn(['handlerId', 'value']),
@@ -35,8 +37,8 @@ const dataSource = ({
       include: 'details,run,messages',
       limit: paramData.pageSize,
       offset: paramData.nextPageToken,
-      orderBy: 'createdAt',
-      direction: 'desc',
+      timeline: paramData.sortColumn,
+      direction: paramData.sortColumn ? paramData.sortDirection : undefined,
     },
   ],
   transform: result => ({
@@ -50,7 +52,7 @@ const columns = [
     value: 'createdAt',
     title: 'Created At',
     type: 'text',
-    sortable: false,
+    sortable: true,
   },
   {
     value: 'createdBy',
@@ -66,8 +68,9 @@ const columns = [
   },
   {
     value: 'id',
-    title: 'ID',
+    title: 'Error Id',
     type: 'text',
+    filter: 'equals',
     sortable: false,
   },
   {
@@ -121,7 +124,7 @@ const columns = [
   },
   {
     value: 'treeName',
-    title: 'Tree',
+    title: 'Name',
     filter: 'equals',
     type: 'text',
     sortable: false,
@@ -142,14 +145,16 @@ const columns = [
   {
     value: 'type',
     title: 'Type',
+    filter: 'equals',
     type: 'text',
+    // options: [{ label: 'a', value: 'a' }],
     sortable: false,
   },
   {
     value: 'updatedAt',
     title: 'Updated At',
     type: 'text',
-    sortable: false,
+    sortable: true,
   },
   {
     value: 'updatedBy',
