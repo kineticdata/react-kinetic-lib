@@ -24,7 +24,7 @@ const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'startsWith',
+    filter: 'includes',
     type: 'text',
     sortable: true,
   },

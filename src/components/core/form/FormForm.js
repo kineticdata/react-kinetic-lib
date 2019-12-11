@@ -17,7 +17,7 @@ const FORM_STATUSES = ['New', 'Active', 'Inactive', 'Delete'];
 const FORM_INCLUDES =
   'details,attributesMap,securityPolicies,indexDefinitions,backgroundJobs,fields,categorizations';
 const KAPP_INCLUDES =
-  'fields,formTypes,formAttributeDefinitions,kappAttributeDefinitions';
+  'fields,formTypes,formAttributeDefinitions,kappAttributeDefinitions,securityPolicies';
 const SPACE_INCLUDES =
   'spaceAttributeDefinitions,datastoreFormAttributeDefinitions';
 
@@ -115,7 +115,7 @@ const securityEndpoints = {
   },
 };
 
-const fields = ({ formSlug, kappSlug, datastore }) => ({ form }) =>
+const fields = ({ formSlug, kappSlug }) => ({ form, kapp }) =>
   (!formSlug || form) && [
     !!kappSlug && {
       name: 'anonymous',
