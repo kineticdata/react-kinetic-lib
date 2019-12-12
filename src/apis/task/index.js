@@ -181,7 +181,7 @@ export const deleteSource = (options = {}) => {
 };
 
 export const createSource = (options = {}) => {
-  validateOptions('createTree', ['source'], options);
+  validateOptions('createSource', ['source'], options);
   return axios
     .post('/app/components/task/app/api/v2/sources', options.source, {
       params: {
@@ -191,6 +191,22 @@ export const createSource = (options = {}) => {
     .then(response => ({
       source: response.data,
     }))
+    .catch(handleErrors);
+};
+
+export const validateSource = (options = {}) => {
+  validateOptions('validateSource', ['sourceName'], options);
+  return axios
+    .put(
+      `/app/components/task/app/api/v2/sources/${options.sourceName}/validate`,
+      null,
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => response.data)
     .catch(handleErrors);
 };
 
