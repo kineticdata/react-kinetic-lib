@@ -2,6 +2,7 @@ import React from 'react';
 import {
   fetchTree,
   fetchSources,
+  fetchSource,
   updateTree,
   createTree,
   fetchTaskCategories,
@@ -34,6 +35,18 @@ const dataSources = ({ workflowType, sourceName, sourceGroup, name }) => {
         },
       ],
       transform: result => result.tree,
+    },
+    selectedSource: {
+      fn: fetchSource,
+      params: ({ values }) =>
+        values &&
+        values.get('sourceName') && [
+          {
+            sourceName: values.get('sourceName'),
+            include: 'predefinedSourceGroups,predefinedTreeNames',
+          },
+        ],
+      transform: result => result.source,
     },
     sources: {
       fn: fetchSources,
@@ -87,6 +100,12 @@ const fields = ({ name, workflowType }) => ({ workflow, categories }) =>
       label: 'Source Group',
       type: 'text',
       required: true,
+      options: ({ selectedSource }) =>
+        selectedSource &&
+        selectedSource
+          .get('predefinedSourceGroups')
+          .map(g => Map({ label: g, value: g })),
+
       initialValue: workflow
         ? workflow.get('sourceGroup')
         : workflowType === 'routines'
@@ -100,6 +119,11 @@ const fields = ({ name, workflowType }) => ({ workflow, categories }) =>
       label: 'Name',
       type: 'text',
       required: true,
+      options: ({ selectedSource }) =>
+        selectedSource &&
+        selectedSource
+          .get('predefinedTreeNames')
+          .map(n => Map({ label: n, value: n })),
       onChange: ({ values }, { setValue }) => {
         if (values.has('definitionId') && values.get('linked')) {
           setValue(
@@ -156,7 +180,6 @@ const fields = ({ name, workflowType }) => ({ workflow, categories }) =>
           ? ''
           : get(workflow, 'ownerEmail'),
     },
-
     {
       name: 'status',
       label: 'Status',
