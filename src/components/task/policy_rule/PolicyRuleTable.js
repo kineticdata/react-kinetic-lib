@@ -1,10 +1,10 @@
 import { generateTable } from '../../table/Table';
 import { fetchPolicyRules } from '../../../apis';
 
-const dataSource = ({ policyType }) => ({
+const dataSource = () => ({
   fn: fetchPolicyRules,
   clientSideSearch: true,
-  params: () => [{ type: policyType, include: 'details' }],
+  params: () => [{ include: 'details' }],
   transform: result => ({ data: result.policyRules }),
 });
 
@@ -65,7 +65,6 @@ const columns = [
 ];
 
 export const PolicyRuleTable = generateTable({
-  tableOptions: ['policyType'],
   columns,
   dataSource,
 });
