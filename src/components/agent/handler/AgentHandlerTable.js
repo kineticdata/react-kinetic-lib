@@ -19,14 +19,14 @@ const columns = [
   {
     value: 'slug',
     title: 'Slug',
-    filter: 'startsWith',
+    filter: 'includes',
     type: 'text',
     sortable: true,
   },
   {
     value: 'definitionId',
     title: 'Handler Adapter',
-    filter: 'startsWith',
+    filter: 'includes',
     type: 'text',
     sortable: true,
   },

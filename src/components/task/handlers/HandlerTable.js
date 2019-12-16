@@ -18,7 +18,7 @@ const columns = [
   {
     title: 'Name',
     value: 'name',
-    filter: 'startsWith',
+    filter: 'includes',
     type: 'text',
   },
   {

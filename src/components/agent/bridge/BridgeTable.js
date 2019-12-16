@@ -19,14 +19,14 @@ const columns = [
   {
     value: 'slug',
     title: 'Slug',
-    filter: 'startsWith',
+    filter: 'includes',
     type: 'text',
     sortable: true,
   },
   {
     value: 'adapterClass',
     title: 'Adapter Class',
-    filter: 'startsWith',
+    filter: 'includes',
     type: 'text',
     sortable: true,
   },
