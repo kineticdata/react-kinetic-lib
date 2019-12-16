@@ -4,14 +4,14 @@ import { List, Map } from 'immutable';
 
 const fields = [{ name: 'label' }, { name: 'value' }];
 
-const searchOptions = ({ options, search }) => (field, value) => {
+const searchOptions = ({ allowNew, options, search }) => (field, value) => {
   const searchFields =
     Map.isMap(search) && search.has('fields') && !search.get('fields').isEmpty()
       ? search.get('fields').toJS()
       : fields;
 
   // Static Options
-  if (List.isList(options) && !options.isEmpty()) {
+  if (List.isList(options) && (allowNew || !options.isEmpty())) {
     const filter =
       typeof search === 'function'
         ? search
@@ -31,7 +31,10 @@ const searchOptions = ({ options, search }) => (field, value) => {
   }
   // Server Side Fetching
   else {
-    return Promise.resolve({ error: 'No options provided.' });
+    return Promise.resolve({
+      error: 'No options provided.',
+      suggestions: [],
+    });
   }
 };
 
@@ -45,7 +48,7 @@ const getStatusProps = props => ({
   warning:
     props.error || props.empty
       ? props.error
-        ? 'There was an error with the options.'
+        ? props.error
         : props.empty
         ? 'No matches found.'
         : null

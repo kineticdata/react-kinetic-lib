@@ -101,10 +101,11 @@ const fields = ({ name, workflowType }) => ({ workflow, categories }) =>
       type: 'text',
       required: true,
       options: ({ selectedSource }) =>
-        selectedSource &&
         selectedSource
-          .get('predefinedSourceGroups')
-          .map(g => Map({ label: g, value: g })),
+          ? selectedSource
+              .get('predefinedSourceGroups')
+              .map(g => Map({ label: g, value: g }))
+          : List(),
 
       initialValue: workflow
         ? workflow.get('sourceGroup')
@@ -120,10 +121,11 @@ const fields = ({ name, workflowType }) => ({ workflow, categories }) =>
       type: 'text',
       required: true,
       options: ({ selectedSource }) =>
-        selectedSource &&
         selectedSource
-          .get('predefinedTreeNames')
-          .map(n => Map({ label: n, value: n })),
+          ? selectedSource
+              .get('predefinedTreeNames')
+              .map(n => Map({ label: n, value: n }))
+          : List(),
       onChange: ({ values }, { setValue }) => {
         if (values.has('definitionId') && values.get('linked')) {
           setValue(
