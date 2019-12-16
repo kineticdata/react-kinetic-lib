@@ -233,21 +233,17 @@ export const fetchTaskCategories = (options = {}) =>
 export const cloneTree = (options = {}) => {
   validateOptions(
     'cloneTree',
-    ['name', 'tree', 'sourceGroup', 'sourceName'],
+    ['name', 'newName', 'sourceGroup', 'sourceName', 'title'],
     options,
   );
-  const title = buildTreeId(options);
   return axios
     .post(
-      `/app/components/task/app/api/v2/trees`,
+      `/app/components/task/app/api/v2/trees/${options.title}/clone`,
       {
-        ...options.tree,
-        title,
-      },
-      {
-        params: {
-          include: options.include,
-        },
+        name: options.newName,
+        sourceName: options.newSourceName,
+        sourceGroup: options.sourceGroup,
+        definitionId: options.definitionId
       },
     )
     .then(response => ({
@@ -328,9 +324,9 @@ export const updateTaskCategory = (options = {}) => {
 };
 
 export const fetchPolicyRules = (options = {}) => {
-  validateOptions('fetchPolicyRules', ['type'], options);
+  // validateOptions('fetchPolicyRules', ['type'], options);
   return axios
-    .get(`/app/components/task/app/api/v2/policyRules/${options.type}`, {
+    .get(`/app/components/task/app/api/v2/policyRules`, {
       params: {
         include: options.include,
       },

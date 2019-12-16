@@ -34,11 +34,13 @@ const dataSource = ({
       relatedItem1Type: paramData.filters.getIn(['relatedItem1Type', 'value']),
       relatedItem2Id: paramData.filters.getIn(['relatedItem2Id', 'value']),
       relatedItem2Type: paramData.filters.getIn(['relatedItem2Type', 'value']),
-      include: 'details,run,messages',
+      include: 'details,run,messages,messages.details',
       limit: paramData.pageSize,
       offset: paramData.nextPageToken,
       timeline: paramData.sortColumn,
-      direction: paramData.sortColumn ? paramData.sortDirection : undefined,
+      direction: paramData.sortColumn
+        ? paramData.sortDirection.toUpperCase()
+        : undefined,
     },
   ],
   transform: result => ({
@@ -103,7 +105,6 @@ const columns = [
     filter: 'equals',
     type: 'text',
     sortable: false,
-    initial: 'Active',
   },
   {
     value: 'sourceName',

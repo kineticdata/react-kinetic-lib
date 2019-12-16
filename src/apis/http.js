@@ -20,6 +20,8 @@ export const addResponseInterceptor = (fulfilled, rejected) => {
   axios.interceptors.response.use(fulfilled, rejected);
 };
 
+axios.defaults.withCredentials = true;
+
 const types = {
   400: 'badRequest',
   401: 'unauthorized',

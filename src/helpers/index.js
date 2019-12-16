@@ -1,14 +1,27 @@
 import { get, List, Map, OrderedMap } from 'immutable';
 
 export const K = typeof window !== `undefined` ? window.K : () => {};
+// platform consoles and other apps may not load app head content that
+// instantiates the bundle object used by some of these helpers so we create a
+// mock version here
 export const bundle =
   typeof window !== `undefined` && window.bundle
     ? window.bundle
     : {
-        apiLocation: () => '/app/api/v1',
-        spaceLocation: () => '',
+        apiLocation: () => `${process.env.REACT_APP_API_HOST || ''}/app/api/v1`,
+        spaceLocation: () => process.env.REACT_APP_API_HOST || '',
         kappSlug: () => '',
       };
+// when running the bundle in dev mode there will already be a bundle object but
+// we want to prefix the locations with the REACT_APP_API_HOST value
+if (typeof window.bundle !== 'undefined' && process.env.REACT_APP_API_HOST) {
+  const spaceLocation = window.bundle.spaceLocation();
+  const apiLocation = window.bundle.apiLocation();
+  window.bundle.spaceLocation = () =>
+    process.env.REACT_APP_API_HOST + spaceLocation;
+  window.bundle.apiLocation = () =>
+    process.env.REACT_APP_API_HOST + apiLocation;
+}
 
 export const splitTeamName = team => {
   const [local, ...parents] = team

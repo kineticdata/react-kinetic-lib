@@ -160,7 +160,7 @@ const fields = () => ({
             label: locale.get('name'),
           }),
         ),
-      initialValue: get(space, 'defaultLocale'),
+      initialValue: get(space, 'defaultLocale') || '',
     },
     {
       name: 'defaultTimezone',
@@ -173,7 +173,7 @@ const fields = () => ({
             label: `${timezone.get('name')} (${timezone.get('id')})`,
           }),
         ),
-      initialValue: get(space, 'defaultTimezone'),
+      initialValue: get(space, 'defaultTimezone') || '',
     },
     {
       name: 'displayType',
@@ -367,8 +367,12 @@ const fields = () => ({
         initialValue: space
           ? space
               .get('securityPolicies')
-              .find(pol => pol.get('endpoint') === endpoint.endpoint)
-              .get('name')
+              .find(
+                pol => pol.get('endpoint') === endpoint.endpoint,
+                null,
+                Map({}),
+              )
+              .get('name', '')
           : '',
         transient: true,
       }),
