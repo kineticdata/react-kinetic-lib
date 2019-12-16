@@ -13,6 +13,7 @@ export const Tree = Record({
   nextNodeId: 0,
   nextConnectorId: 0,
   nodes: OrderedMap(),
+  schemaVersion: '',
   sourceGroup: '',
   sourceName: '',
   versionId: '0',
@@ -154,13 +155,14 @@ export const deserializeTree = ({
     nextNodeId: treeJson.lastId + 1,
     nextConnectorId: treeJson.connectors.length,
     nodes: OrderedMap(treeJson.nodes.map(deserializeNode).map(n => [n.id, n])),
+    schemaVersion: treeJson.schemaVersion,
     sourceGroup,
     sourceName,
     versionId,
   });
 
 export const serializeTree = (
-  { connectors, nextNodeId, nodes, versionId },
+  { connectors, nextNodeId, nodes, schemaVersion, versionId },
   overwrite = false,
 ) => ({
   treeJson: {
@@ -173,6 +175,7 @@ export const serializeTree = (
       .toList()
       .map(serializeNode)
       .toJS(),
+    schemaVersion,
   },
   versionId: overwrite ? null : versionId,
 });

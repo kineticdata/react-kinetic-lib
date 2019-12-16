@@ -7,7 +7,13 @@ import {
   processErbTemplate,
   processRuby,
 } from '../../common/code_input/languageHelpers';
-import { Node, Connector, NodeParameter, NodeResultDependency } from './models';
+import {
+  Node,
+  Connector,
+  NodeParameter,
+  NodeResultDependency,
+  NodeMessage,
+} from './models';
 import { NEW_TASK_DX, NEW_TASK_DY } from './constants';
 
 export const isIE11 = document.documentMode === 11;
@@ -214,6 +220,11 @@ const addNewTaskNext = ({ cloneNode, parent, task, tree, treeKey }) => {
       : List(task.parameters || task.inputs || [])
           .map(normalizeParameter)
           .map(NodeParameter),
+    messages: cloneNode
+      ? cloneNode.messages
+      : List(
+          task.deferrable ? ['Create', 'Update', 'Complete'] : ['Complete'],
+        ).map(type => NodeMessage({ type, value: '' })),
   });
   // add the stubbed connector and node to the current tree, this is done to
   // accommodate the <CodeInput> bindings helper in <ConnectorForm> and

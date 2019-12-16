@@ -38,6 +38,13 @@ const fields = ({ tasks, tree, node }) => ({ bindings }) =>
       pattern: /^[^'"]*$/,
       patternMessage: 'Node names may not contain apostrophes or quotes',
     },
+    {
+      name: 'deferrable',
+      label: 'Deferrable',
+      type: 'checkbox',
+      initialValue: node.deferrable,
+      visible: false,
+    },
     node.deferrable && {
       name: 'defers',
       label: 'Defers',
@@ -132,13 +139,9 @@ const fields = ({ tasks, tree, node }) => ({ bindings }) =>
           values.get('defers')
             ? ['Create', 'Update', 'Complete']
             : ['Complete'],
-        )
-          .map(type =>
-            values.get(`message_${type}`)
-              ? NodeMessage({ type, value: values.get(`message_${type}`) })
-              : null,
-          )
-          .filter(message => message),
+        ).map(type =>
+          NodeMessage({ type, value: values.get(`message_${type}`) }),
+        ),
     },
   ];
 
