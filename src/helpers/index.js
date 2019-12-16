@@ -134,7 +134,7 @@ const bindifyProfile = (
   );
   const profileAttributesMap = profileAttributes.map((value, label) =>
     Map({
-      value: `${fnName}('profile attribute:${label}')`,
+      value: `${fnName}('profileAttribute:${label}')`,
       tags: [profileAttributeTag],
     }),
   );
