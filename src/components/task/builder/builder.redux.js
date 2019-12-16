@@ -62,54 +62,66 @@ regSaga(
 
 regSaga(
   takeEvery('TREE_SAVE', function*({ payload }) {
-    // because of the optimistic locking functionality newName / overwrite can
-    // be passed as options to the builder's save function
-    const { newName, onError, onSave, overwrite, treeKey } = payload;
-    const { tree } = yield select(state => state.getIn(['trees', treeKey]));
-    const { name, sourceGroup, sourceName } = tree;
-    // if a newName was passed we will be creating a new tree with the builder
-    // contents, otherwise just an update
-    const { error, tree: newTree } = yield newName
-      ? call(cloneTree, {
-          name,
-          sourceGroup,
-          sourceName,
-          tree: {
-            name: newName,
-            ...serializeTree(tree, true),
-          },
-        })
-      : call(updateTree, {
-          name,
-          sourceGroup,
-          sourceName,
-          tree: serializeTree(tree, overwrite),
-        });
-    // dispatch the appropriate action based on the result of the call above
-    yield put(
-      error
-        ? action('TREE_SAVE_ERROR', {
-            treeKey,
-            error: error.message || error,
-            onError,
+    try {
+      // because of the optimistic locking functionality newName / overwrite can
+      // be passed as options to the builder's save function
+      const { newName, onError, onSave, overwrite, treeKey } = payload;
+      const { tree } = yield select(state => state.getIn(['trees', treeKey]));
+      const { name, sourceGroup, sourceName } = tree;
+      // if a newName was passed we will be creating a new tree with the builder
+      // contents, otherwise just an update
+      const { error, tree: newTree } = yield newName
+        ? call(cloneTree, {
+            name,
+            sourceGroup,
+            sourceName,
+            tree: {
+              name: newName,
+              ...serializeTree(tree, true),
+            },
           })
-        : action('TREE_SAVE_SUCCESS', { treeKey, tree: newTree, onSave }),
-    );
+        : call(updateTree, {
+            name,
+            sourceGroup,
+            sourceName,
+            tree: serializeTree(tree, overwrite),
+          });
+      // dispatch the appropriate action based on the result of the call above
+      yield put(
+        error
+          ? action('TREE_SAVE_ERROR', {
+              treeKey,
+              error: error.message || error,
+              onError,
+            })
+          : action('TREE_SAVE_SUCCESS', { treeKey, tree: newTree, onSave }),
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }),
 );
 
 regSaga(
   takeEvery('TREE_SAVE_ERROR', function*({ payload: { error, onError } }) {
-    if (isFunction(onError)) {
-      yield call(onError, error);
+    try {
+      if (isFunction(onError)) {
+        yield call(onError, error);
+      }
+    } catch (e) {
+      console.error(e);
     }
   }),
 );
 
 regSaga(
   takeEvery('TREE_SAVE_SUCCESS', function*({ payload: { onSave, tree } }) {
-    if (isFunction(onSave)) {
-      yield call(onSave, tree);
+    try {
+      if (isFunction(onSave)) {
+        yield call(onSave, tree);
+      }
+    } catch (e) {
+      console.error(e);
     }
   }),
 );

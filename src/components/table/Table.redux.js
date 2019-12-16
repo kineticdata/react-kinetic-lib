@@ -235,29 +235,33 @@ regHandlers({
 });
 
 function* calculateRowsTask({ payload }) {
-  const { tableKey } = payload;
-  const tableData = yield select(state => state.getIn(['tables', tableKey]));
+  try {
+    const { tableKey } = payload;
+    const tableData = yield select(state => state.getIn(['tables', tableKey]));
 
-  const response = yield call(calculateRows, tableData);
+    const response = yield call(calculateRows, tableData);
 
-  const { rows, data, nextPageToken, error } = response;
+    const { rows, data, nextPageToken, error } = response;
 
-  if (error) {
-    yield put({
-      type: 'SET_ROWS',
-      payload: {
-        tableKey,
-        error,
-        rows: List(),
-        data: List(),
-        nextPageToken: null,
-      },
-    });
-  } else {
-    yield put({
-      type: 'SET_ROWS',
-      payload: { tableKey, rows, data, nextPageToken },
-    });
+    if (error) {
+      yield put({
+        type: 'SET_ROWS',
+        payload: {
+          tableKey,
+          error,
+          rows: List(),
+          data: List(),
+          nextPageToken: null,
+        },
+      });
+    } else {
+      yield put({
+        type: 'SET_ROWS',
+        payload: { tableKey, rows, data, nextPageToken },
+      });
+    }
+  } catch (e) {
+    console.error(e);
   }
 }
 

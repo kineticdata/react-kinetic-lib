@@ -251,27 +251,35 @@ regSaga('CHECK_DATA_SOURCES', function*() {
 
   // Putting the above pieces together to call data sources when appropriate.
   yield takeEvery(checkActions, function*({ payload: { formKey } }) {
-    const formState = yield select(selectForm(formKey));
-    if (formState) {
-      yield all(
-        formState.dataSources
-          .filter(shouldCall)
-          .map(callAction(formKey))
-          .valueSeq()
-          .toArray(),
-      );
+    try {
+      const formState = yield select(selectForm(formKey));
+      if (formState) {
+        yield all(
+          formState.dataSources
+            .filter(shouldCall)
+            .map(callAction(formKey))
+            .valueSeq()
+            .toArray(),
+        );
+      }
+    } catch (e) {
+      console.error(e);
     }
   });
 });
 
 regSaga(
   takeEvery('CALL_DATA_SOURCE', function*({ payload: { formKey, name } }) {
-    const { fn, rawParams } = yield select(selectDataSource(formKey, name));
-    const data = yield call(fn, ...rawParams);
-    const timestamp = yield call(getTimestamp);
-    yield put(
-      action('RESOLVE_DATA_SOURCE', { formKey, name, data, timestamp }),
-    );
+    try {
+      const { fn, rawParams } = yield select(selectDataSource(formKey, name));
+      const data = yield call(fn, ...rawParams);
+      const timestamp = yield call(getTimestamp);
+      yield put(
+        action('RESOLVE_DATA_SOURCE', { formKey, name, data, timestamp }),
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }),
 );
 
@@ -279,12 +287,16 @@ regSaga(
   takeEvery('SET_VALUE', function*({
     payload: { formKey, name, triggerChange },
   }) {
-    if (triggerChange) {
-      const { bindings, fields } = yield select(selectForm(formKey));
-      const { onChange } = fields.get(name);
-      if (onChange) {
-        yield call(onChange, bindings, bindActions(formKey));
+    try {
+      if (triggerChange) {
+        const { bindings, fields } = yield select(selectForm(formKey));
+        const { onChange } = fields.get(name);
+        if (onChange) {
+          yield call(onChange, bindings, bindActions(formKey));
+        }
       }
+    } catch (e) {
+      console.error(e);
     }
   }),
 );
@@ -297,49 +309,53 @@ regSaga(
 
 regSaga(
   takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet, onInvalid } }) {
-    const { bindings, fields, onSubmit, onSave, onError } = yield select(
-      selectForm(formKey),
-    );
-
-    const computedFieldSet = computeFieldSet(fields, fieldSet);
-
-    const values = fields
-      .filter(
-        field => !field.transient && computedFieldSet.contains(field.name),
-      )
-      .map(field =>
-        field.serialize ? field.serialize(bindings) : field.value,
+    try {
+      const { bindings, fields, onSubmit, onSave, onError } = yield select(
+        selectForm(formKey),
       );
 
-    const errors = fields
-      .filter(field => computedFieldSet.contains(field.name))
-      .map(field => field.errors)
-      .filter(errors => !errors.isEmpty());
+      const computedFieldSet = computeFieldSet(fields, fieldSet);
 
-    if (errors.isEmpty()) {
-      try {
-        const result = yield call(onSubmit, values, bindings);
-        dispatch('SUBMIT_SUCCESS', { formKey });
-        if (onSave) yield call(onSave, result);
-      } catch (error) {
-        dispatch('SUBMIT_ERROR', {
-          formKey,
-          error:
-            typeof error === 'string' ? error : 'Unexpected error occurred',
-        });
-        if (typeof error !== 'string') {
-          console.error('Error handling  form submit', error);
+      const values = fields
+        .filter(
+          field => !field.transient && computedFieldSet.contains(field.name),
+        )
+        .map(field =>
+          field.serialize ? field.serialize(bindings) : field.value,
+        );
+
+      const errors = fields
+        .filter(field => computedFieldSet.contains(field.name))
+        .map(field => field.errors)
+        .filter(errors => !errors.isEmpty());
+
+      if (errors.isEmpty()) {
+        try {
+          const result = yield call(onSubmit, values, bindings);
+          dispatch('SUBMIT_SUCCESS', { formKey });
+          if (onSave) yield call(onSave, result);
+        } catch (error) {
+          dispatch('SUBMIT_ERROR', {
+            formKey,
+            error:
+              typeof error === 'string' ? error : 'Unexpected error occurred',
+          });
+          if (typeof error !== 'string') {
+            console.error('Error handling  form submit', error);
+          }
+          if (onError) yield call(onError, error);
         }
-        if (onError) yield call(onError, error);
+      } else {
+        dispatch('SUBMIT_FIELD_ERRORS', {
+          formKey,
+          fieldNames: errors.keySeq(),
+        });
+        if (isFunction(onInvalid)) {
+          onInvalid(errors);
+        }
       }
-    } else {
-      dispatch('SUBMIT_FIELD_ERRORS', {
-        formKey,
-        fieldNames: errors.keySeq(),
-      });
-      if (isFunction(onInvalid)) {
-        onInvalid(errors);
-      }
+    } catch (e) {
+      console.error(e);
     }
   }),
 );

@@ -36,30 +36,42 @@ regHandlers({
 
 regSaga(
   takeEvery('ATTEMPT_LOGIN', function*() {
-    const { username, password } = yield select(state => ({
-      username: state.getIn(['login', 'username']),
-      password: state.getIn(['login', 'password']),
-    }));
-    const { error } = yield call(login, { username, password });
+    try {
+      const { username, password } = yield select(state => ({
+        username: state.getIn(['login', 'username']),
+        password: state.getIn(['login', 'password']),
+      }));
+      const { error } = yield call(login, { username, password });
 
-    if (error) {
-      yield put({ type: 'SET_ERROR', payload: error.message });
-    } else {
-      yield put({ type: 'SET_AUTHENTICATED', payload: true });
+      if (error) {
+        yield put({ type: 'SET_ERROR', payload: error.message });
+      } else {
+        yield put({ type: 'SET_AUTHENTICATED', payload: true });
+      }
+    } catch (e) {
+      console.error(e);
     }
   }),
 );
 
 regSaga(
   takeEvery('FETCH_META', function*() {
-    const { profile } = yield call(fetchProfile);
-    dispatch('SET_INITIALIZED', !!profile);
+    try {
+      const { profile } = yield call(fetchProfile);
+      dispatch('SET_INITIALIZED', !!profile);
+    } catch (e) {
+      console.error(e);
+    }
   }),
 );
 
 regSaga(
   takeEvery('LOGOUT', function*() {
-    yield call(logout);
+    try {
+      yield call(logout);
+    } catch (e) {
+      console.error(e);
+    }
   }),
 );
 

@@ -165,29 +165,41 @@ const selectMessageToken = discussionId => state =>
 
 regSaga(
   takeEvery(SEND_MESSAGE, function*(action) {
-    yield call(sendMessage, action.payload);
+    try {
+      yield call(sendMessage, action.payload);
+    } catch (e) {
+      console.error(e);
+    }
   }),
 );
 
 regSaga(
   takeEvery(SEND_MESSAGE_UPDATE, function*(action) {
-    yield call(updateMessage, action.payload);
+    try {
+      yield call(updateMessage, action.payload);
+    } catch (e) {
+      console.error(e);
+    }
   }),
 );
 regSaga(
   takeEvery(FETCH_MORE_MESSAGES, function*(action) {
-    const pageToken = yield select(selectMessageToken(action.payload));
+    try {
+      const pageToken = yield select(selectMessageToken(action.payload));
 
-    const { messages, nextPageToken } = yield call(
-      fetchMessages,
-      action.payload,
-      pageToken,
-    );
+      const { messages, nextPageToken } = yield call(
+        fetchMessages,
+        action.payload,
+        pageToken,
+      );
 
-    yield put({
-      type: SET_MORE_MESSAGES,
-      payload: { id: action.payload, messages, nextPageToken },
-    });
+      yield put({
+        type: SET_MORE_MESSAGES,
+        payload: { id: action.payload, messages, nextPageToken },
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }),
 );
 
