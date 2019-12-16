@@ -23,8 +23,7 @@ const SPACE_INCLUDES =
   'datastoreFormAttributeDefinitions,spaceAttributeDefinitions,teamAttributeDefinitions,userAttributeDefinitions,userProfileAttributeDefinitions';
 const KAPP_INCLUDES =
   'formAttributeDefinitions,kappAttributeDefinitions,fields';
-const PROFILE_INCLUDES =
-  'attributesMap,profileAttributesMap';
+const PROFILE_INCLUDES = 'attributesMap,profileAttributesMap';
 
 const dataSources = ({ securityPolicyName, kappSlug }) => ({
   space: {
@@ -45,8 +44,8 @@ const dataSources = ({ securityPolicyName, kappSlug }) => ({
   profile: {
     fn: fetchProfile,
     params: [{ include: PROFILE_INCLUDES }],
-    transform: result => result.profile
-  }
+    transform: result => result.profile,
+  },
 });
 
 const handleSubmit = ({ securityPolicyName, kappSlug }) => values =>
@@ -108,7 +107,7 @@ const fields = ({ securityPolicyName, kappSlug }) => ({ securityPolicy }) =>
       type: 'code',
       language: 'js',
       required: true,
-      options: ({ space, kapp, values, profile }) => 
+      options: ({ space, kapp, values, profile }) =>
         buildBindings({ space, kapp, scope: values.get('type'), profile }),
       initialValue: securityPolicy ? securityPolicy.get('rule') : '',
       helpText: `Expression to evaluate to true or false. Click the </> button to see available values scoped to this Kapp or Space.`,
