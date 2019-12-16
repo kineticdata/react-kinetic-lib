@@ -12,7 +12,7 @@ export class SvgCanvas extends Component {
     // Since the scroll event is throttled and we get the incremental scroll
     // changes we need to accumulate them outside of the throttled logic.
     this.scrollDelta = 0;
-    this.viewport = { largeMode: false, scale: 1.0, x: 0, y: 0 };
+    this.viewport = { largeMode: false, scale: 1.0, x: 80, y: 32 };
   }
 
   watchDrag = ({
