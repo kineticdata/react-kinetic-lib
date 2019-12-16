@@ -221,15 +221,12 @@ export const cloneTree = (options = {}) => {
     options,
   );
   return axios
-    .post(
-      `/app/components/task/app/api/v2/trees/${options.title}/clone`,
-      {
-        name: options.newName,
-        sourceName: options.newSourceName,
-        sourceGroup: options.sourceGroup,
-        definitionId: options.definitionId
-      },
-    )
+    .post(`/app/components/task/app/api/v2/trees/${options.title}/clone`, {
+      name: options.newName,
+      sourceName: options.newSourceName,
+      sourceGroup: options.sourceGroup,
+      definitionId: options.definitionId,
+    })
     .then(response => ({
       tree: response.data.tree,
     }))
@@ -308,11 +305,11 @@ export const updateTaskCategory = (options = {}) => {
 };
 
 export const fetchPolicyRules = (options = {}) => {
-  // validateOptions('fetchPolicyRules', ['type'], options);
   return axios
     .get(`/app/components/task/app/api/v2/policyRules`, {
       params: {
         include: options.include,
+        type: options.type,
       },
     })
     .then(response => ({
