@@ -100,7 +100,9 @@ const fields = ({ sourceName, sourceType }) => ({ source, sourceAdapters }) => {
                 .map(policyRule => policyRule.get('name'))
             : [],
           serialize: ({ values }) =>
-            values.get('policyRules').map(name => name),
+            values
+              .get('policyRules')
+              .map(name => ({ type: 'API Access', name: name })),
         },
         {
           name: 'properties',
