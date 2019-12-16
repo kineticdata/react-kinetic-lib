@@ -4,6 +4,15 @@ import { coreOauthAuthorizeUrl } from '../../../apis';
 import { dispatch } from '../../../store';
 
 const setToken = token => dispatch('SET_TOKEN', token);
+const jwtTokenListener = e => {
+  const checkedOrigin = process.env.REACT_APP_API_HOST
+    ? process.env.REACT_APP_API_HOST
+    : window.location.origin;
+
+  if (e.origin === checkedOrigin && e.data.token) {
+    setToken(e.data.token);
+  }
+};
 
 const RetrieveJwt = ({ frameRef, clientId }) => (
   <iframe
@@ -34,7 +43,11 @@ export const RetrieveJwtIframe = compose(
       };
     },
     componentDidMount() {
+      window.addEventListener('message', jwtTokenListener);
       this.props.getFrameRef().onload = this.props.handleFrameLoad;
+    },
+    componentWillUnmount() {
+      window.removeEventListener('message', jwtTokenListener);
     },
   }),
 )(RetrieveJwt);
