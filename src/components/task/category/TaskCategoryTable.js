@@ -63,8 +63,6 @@ export const TaskCategoryTable = generateTable({
   tableOptions: [],
   columns,
   dataSource,
-  defaultSortColumn: 'name',
-  defaultSortDirection: 'desc',
 });
 TaskCategoryTable.propTypes = {};
 TaskCategoryTable.displayName = 'TaskCategoryTable';
