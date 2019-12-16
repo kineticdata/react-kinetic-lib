@@ -242,7 +242,7 @@ const fields = ({ formSlug, kappSlug }) => ({ form, kapp }) =>
                     null,
                     Map(), // If no Security Endpoints were ever set, we need to default to an empty map so the next line doesn't fail
                   )
-                  .get('name')
+                  .get('name', '')
               : '',
             transient: true,
           }),

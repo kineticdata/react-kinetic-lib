@@ -236,8 +236,12 @@ const fields = ({ kappSlug }) => ({ kapp }) =>
             initialValue: kapp
               ? kapp
                   .get('securityPolicies')
-                  .find(pol => pol.get('endpoint') === endpoint.endpoint)
-                  .get('name')
+                  .find(
+                    pol => pol.get('endpoint') === endpoint.endpoint,
+                    null,
+                    Map({}),
+                  )
+                  .get('name', '')
               : '',
             transient: true,
           }),
