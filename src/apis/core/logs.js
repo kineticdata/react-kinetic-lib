@@ -29,7 +29,7 @@ export const fetchLogs = (options = {}) => {
     .then(response => {
       if (typeof response.data === 'object') {
         return {
-          logs: [],
+          logs: [response.data],
           nextPageToken: response.data.metadata
             ? response.data.metadata.nextPageToken
             : null,
