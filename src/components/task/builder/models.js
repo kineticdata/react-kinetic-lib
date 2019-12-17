@@ -16,6 +16,7 @@ export const Tree = Record({
   schemaVersion: '',
   sourceGroup: '',
   sourceName: '',
+  taskDefinition: null,
   versionId: '0',
 });
 
@@ -158,11 +159,12 @@ export const deserializeTree = ({
     schemaVersion: treeJson.schemaVersion,
     sourceGroup,
     sourceName,
+    taskDefinition: treeJson.taskDefinition,
     versionId,
   });
 
 export const serializeTree = (
-  { connectors, nextNodeId, nodes, schemaVersion, versionId },
+  { connectors, nextNodeId, nodes, schemaVersion, taskDefinition, versionId },
   overwrite = false,
 ) => ({
   treeJson: {
@@ -176,6 +178,7 @@ export const serializeTree = (
       .map(serializeNode)
       .toJS(),
     schemaVersion,
+    ...(taskDefinition ? { taskDefinition } : {}),
   },
   versionId: overwrite ? null : versionId,
 });
