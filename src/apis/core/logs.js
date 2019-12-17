@@ -24,13 +24,15 @@ export const fetchLogs = (options = {}) => {
         start: options.start,
         end: options.end,
       },
-      headers: headerBuilder(options),
+      headers: headerBuilder({ ...options, authAssumed: false }),
     })
     .then(response => {
       if (typeof response.data === 'object') {
         return {
           logs: [],
-          nextPageToken: response.data.metadata.nextPageToken,
+          nextPageToken: response.data.metadata
+            ? response.data.metadata.nextPageToken
+            : null,
         };
       } else if (
         typeof response.data === 'string' &&
