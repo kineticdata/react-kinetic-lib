@@ -28,80 +28,107 @@ const handleSubmit = ({ bridgeSlug, agentSlug }) => values =>
   }).then(({ bridge, error }) => {
     if (error) {
       throw (error.statusCode === 400 && error.message) ||
-        'There was an error saving the model';
+        'There was an error saving the bridge';
     }
     return bridge;
   });
 
-const BRIDGE_FIELDS = ['slug', 'adapterClass', 'properties'];
-
 const fields = ({ bridgeSlug, adapterClass }) => ({ bridge, adapters }) => {
-  let properties = [];
-  const initialAdapterClass = get(bridge, 'adapterClass', adapterClass);
-
-  if (adapters) {
-    const adapter = adapters.find(a => a.get('class') === initialAdapterClass);
-
+  if (adapters && (!bridgeSlug || bridge)) {
+    const isNew = !bridge;
+    const appliedAdapterClass = bridge
+      ? bridge.get('adapterClass')
+      : adapterClass;
+    const adapter = adapters.find(
+      adapter => adapter.get('class') === appliedAdapterClass,
+    );
     const adapterProperties = adapter
       ? List(adapter.get('properties'))
       : List();
-
-    properties = !adapterProperties.isEmpty()
-      ? adapterProperties
-          .map(property => ({
-            name: property.get('name'),
-            label: property.get('name'),
-            type: property.get('sensitive') ? 'password' : 'text',
-            required: property.get('required'),
-            transient: true,
-            initialValue: getIn(
-              bridge,
-              ['properties', property.get('name')],
-              '',
-            ),
-          }))
-          .toArray()
-      : [];
-  }
-
-  if (adapters && (!bridgeSlug || (bridgeSlug && bridge))) {
-    const fields =
-      adapters &&
-      (!bridgeSlug || (bridgeSlug && bridge)) &&
-      [
-        {
-          name: 'slug',
-          label: 'Bridge Slug',
-          type: 'text',
-          required: true,
-          initialValue: get(bridge, 'slug', ''),
-          helpText: 'Unique name used in the bridge path.',
-        },
-        {
-          name: 'adapterClass',
-          label: 'Adapter Class',
-          type: 'text',
-          enabled: false,
-          required: false,
-          initialValue: initialAdapterClass,
-          options: adapters.map(adapter =>
-            Map({
-              value: adapter.get('class'),
-              label: adapter.get('name'),
-            }),
-          ),
-        },
-        {
-          name: 'properties',
-          visible: false,
-          initialValue: get(bridge, 'properties', {}),
-          serialize: ({ values }) =>
-            values.filter((v, k) => !BRIDGE_FIELDS.includes(k)).toJS(),
-        },
-      ].concat(properties);
-    return fields;
-  } else {
-    return false;
+    return [
+      {
+        name: 'slug',
+        label: 'Bridge Slug',
+        type: 'text',
+        required: true,
+        initialValue: get(bridge, 'slug', ''),
+        helpText: 'Unique name used in the bridge path.',
+      },
+      {
+        name: 'adapterClass',
+        label: 'Adapter Class',
+        type: 'text',
+        enabled: false,
+        required: false,
+        initialValue: appliedAdapterClass,
+        options: adapters.map(adapter =>
+          Map({
+            value: adapter.get('class'),
+            label: adapter.get('name'),
+          }),
+        ),
+      },
+      ...adapterProperties
+        .flatMap(property => {
+          const name = property.get('name');
+          return !property.get('sensitive') || isNew
+            ? [
+                {
+                  name: `property_${name}`,
+                  label: name,
+                  type: property.get('sensitive') ? 'password' : 'text',
+                  required: property.get('required'),
+                  transient: true,
+                  initialValue: getIn(bridge, ['properties', name], ''),
+                },
+              ]
+            : [
+                {
+                  name: `property_${name}`,
+                  label: name,
+                  type: 'password',
+                  required: property.get('required')
+                    ? ({ values }) => values.get(`changeProperty_${name}`)
+                    : false,
+                  transient: true,
+                  initialValue: getIn(bridge, ['properties', name], ''),
+                  visible: ({ values }) => values.get(`changeProperty_${name}`),
+                },
+                {
+                  name: `changeProperty_${name}`,
+                  label: `Change ${name}`,
+                  type: 'checkbox',
+                  transient: true,
+                  onChange: ({ values }, { setValue }) => {
+                    if (values.get(`property_${name}`) !== '') {
+                      setValue(`property_${name}`, '');
+                    }
+                  },
+                },
+              ];
+        })
+        .toArray(),
+      {
+        name: 'properties',
+        visible: false,
+        initialValue: get(bridge, 'properties', {}),
+        serialize: ({ values }) =>
+          adapterProperties
+            .filter(
+              prop =>
+                isNew ||
+                !prop.get('sensitive') ||
+                values.get(`changeProperty_${prop.get('name')}`),
+            )
+            .map(prop => prop.get('name'))
+            .reduce(
+              (reduction, propName) =>
+                reduction.set(propName, values.get(`property_${propName}`)),
+              Map(),
+            )
+            .toObject(),
+      },
+    ];
   }
 };
 
