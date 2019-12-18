@@ -358,3 +358,26 @@ export const normalizeParameter = ({ name, id, ...rest }) => ({
   label: name,
   ...rest,
 });
+
+export const treeReturnTask = tree => ({
+  deferrable: false,
+  definitionId: 'system_tree_return_v1',
+  definitionName: 'system_tree_return',
+  definitionVersion: '1',
+  description: 'Complete a task tree.',
+  name: 'Tree Return',
+  selectionCriterion: null,
+  status: 'Active',
+  visible: false,
+  parameters: tree.taskDefinition.outputs.map(output => ({
+    name: output.name,
+    defaultValue: '',
+    menu: null,
+    dependsOnId: null,
+    dependsOnValue: null,
+    description: output.description,
+    id: output.name,
+    required: false,
+  })),
+  results: [],
+});

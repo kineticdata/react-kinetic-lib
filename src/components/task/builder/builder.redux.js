@@ -14,7 +14,7 @@ import {
   fetchTree,
   updateTree,
 } from '../../../apis/task';
-import { renameDependencies } from './helpers';
+import { renameDependencies, treeReturnTask } from './helpers';
 
 export const mountTreeBuilder = treeKey => dispatch('TREE_MOUNT', { treeKey });
 export const unmountTreeBuilder = treeKey =>
@@ -142,6 +142,14 @@ regHandlers({
       lastSave: tree,
       loading: false,
       tasks: List(categories)
+        .map(category =>
+          tree.taskDefinition && category.name === 'System Controls'
+            ? {
+                ...category,
+                handlers: [...category.handlers, treeReturnTask(tree)],
+              }
+            : category,
+        )
         .flatMap(category => [...category.handlers, ...category.trees])
         .sortBy(task => task.name)
         .reduce(
