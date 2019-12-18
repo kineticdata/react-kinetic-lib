@@ -53,7 +53,7 @@ const dataSources = ({ workflowType, sourceName, sourceGroup, name }) => {
       params: [],
       transform: result =>
         result.sources.map(s => ({
-          label: s.name === '-' ? 'Adhoc' : s.name,
+          label: s.name,
           value: s.name,
         })),
     },

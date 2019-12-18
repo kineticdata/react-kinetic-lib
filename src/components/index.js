@@ -128,6 +128,7 @@ export { ConnectorForm } from './task/builder/ConnectorForm';
 export { NodeForm } from './task/builder/NodeForm';
 export { NodeParametersForm } from './task/builder/NodeParametersForm';
 export { RunTable } from './task/runs/RunTable';
+export { CreateManualTriggerForm } from './task/runs/CreateManualTriggerForm';
 export { TriggerTable } from './task/triggers/TriggerTable';
 export { RunErrorTable } from './task/errors/RunErrorTable';
 export { WorkflowTable } from './task/workflows/WorkflowTable';

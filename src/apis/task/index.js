@@ -250,7 +250,7 @@ export const cloneTree = (options = {}) => {
 };
 
 export const deleteTree = (options = {}) => {
-  validateOptions('fetchTree', ['name'], options);
+  validateOptions('deleteTree', ['name'], options);
   const id = buildTreeId(options);
 
   return axios
@@ -664,6 +664,17 @@ export const fetchTaskTriggers = (options = {}) =>
       triggers: response.data.triggers,
       nextPageToken: generateNextPageToken(response.data),
     }));
+
+export const createTaskTrigger = (options = {}) => {
+  validateOptions('createTaskTrigger', ['runId', 'nodeId'], options);
+  return axios
+    .post(`/app/components/task/app/api/v2/runs/${options.runId}/triggers`, {
+      nodeId: options.nodeId,
+      branchId: options.branchId || undefined,
+      loopIndex: options.loopIndex || undefined,
+    })
+    .then(response => response.data);
+};
 
 export const fetchTaskRunErrors = (options = {}) =>
   axios
