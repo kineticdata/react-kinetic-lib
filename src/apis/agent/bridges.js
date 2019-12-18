@@ -70,18 +70,17 @@ export const deleteBridge = (options = {}) => {
 };
 
 export const validateBridge = (options = {}) => {
-  validateOptions('validateBridge', ['bridgeSlug'], options);
+  validateOptions('validateBridge', ['bridge'], options);
+  const endpoint =
+    buildAgentPath(options) +
+    (options.bridgeSlug
+      ? `/app/api/v1/bridges/${options.bridgeSlug}/validate`
+      : `/app/api/v1/adapters/validate?type=bridge`);
   return axios
-    .post(
-      `${buildAgentPath(options)}/app/api/v1/bridges/${
-        options.bridgeSlug
-      }/validate`,
-      options.bridge,
-      {
-        params: paramBuilder(options),
-        headers: headerBuilder(options),
-      },
-    )
+    .post(endpoint, options.bridge, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
     .then(response => ({ successMessage: response.data.message }))
     .catch(handleErrors);
 };

@@ -591,6 +591,7 @@ class FormImplComponent extends Component {
           }
           buttons={
             <FormButtons
+              formOptions={formOptions}
               reset={onReset(formKey)}
               submit={onSubmit(formKey, fieldSet)}
               submitting={submitting}
