@@ -17,6 +17,7 @@ export * from './core/kapps';
 export * from './core/logs';
 export * from './core/memberships';
 export * from './core/meta';
+export * from './core/notices';
 export * from './core/oauthClients';
 export * from './core/platformComponents';
 export * from './core/profile';
