@@ -35,7 +35,9 @@ const dataSource = ({
       limit: paramData.pageSize,
       offset: paramData.nextPageToken,
       orderBy: paramData.sortColumn,
-      direction: paramData.sortDirection,
+      direction: paramData.sortColumn
+        ? paramData.sortDirection.toUpperCase()
+        : undefined,
     },
   ],
   transform: result => ({
