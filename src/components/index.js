@@ -117,7 +117,7 @@ export { TeamForm } from './core/team/TeamForm';
 export { TeamTable } from './core/team/TeamTable';
 export { UserForm } from './core/user/UserForm';
 export { UserTable } from './core/user/UserTable';
-export { LogTable } from './core/log/LogTable';
+export { LogTable, generateLogQuery } from './core/log/LogTable';
 export { WebhookForm } from './core/webhook/WebhookForm';
 export { WebhookTable } from './core/webhook/WebhookTable';
 export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';

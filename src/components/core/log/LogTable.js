@@ -3,36 +3,46 @@ import { fetchLogs } from '../../../apis';
 import { List } from 'immutable';
 import moment from 'moment';
 
+export const generateLogQuery = appliedFilters => {
+  const filters = JSON.stringify(
+    appliedFilters
+      .filter((_v, k) => k !== 'timestamp')
+      .map(filter => filter.get('value'))
+      .filter(filter => filter !== '')
+      .toJSON(),
+  );
+
+  const q = filters === '{}' ? undefined : filters;
+  const [startDate, endDate] = appliedFilters.getIn(
+    ['timestamp', 'value'],
+    List(['', '']),
+  );
+
+  console.log(`'${startDate}'`, `'${endDate}'`);
+  const start =
+    startDate === '' && endDate === ''
+      ? moment()
+          .subtract(60, 'minutes')
+          .toISOString()
+      : startDate === '' && endDate !== ''
+      ? moment(endDate)
+          .subtract(60, 'minutes')
+          .toISOString()
+      : moment(startDate).toISOString();
+  const end =
+    endDate === '' ? moment().toISOString() : moment(endDate).toISOString();
+
+  return {
+    q,
+    start,
+    end,
+  };
+};
+
 const dataSource = () => ({
   fn: fetchLogs,
   params: paramData => {
-    const filters = JSON.stringify(
-      paramData.filters
-        .filter((_v, k) => k !== 'timestamp')
-        .map(filter => filter.get('value'))
-        .filter(filter => filter !== '')
-        .toJSON(),
-    );
-
-    const q = filters === '{}' ? undefined : filters;
-    const [startDate, endDate] = paramData.filters.getIn(
-      ['timestamp', 'value'],
-      List(['', '']),
-    );
-
-    const start =
-      startDate === '' && endDate === ''
-        ? moment()
-            .subtract(60, 'minutes')
-            .toISOString()
-        : startDate === '' && endDate !== ''
-        ? moment(endDate)
-            .subtract(60, 'minutes')
-            .toISOString()
-        : moment(startDate).toISOString();
-    const end =
-      endDate === '' ? moment().toISOString() : moment(endDate).toISOString();
-
+    const { q, start, end } = generateLogQuery(paramData.filters);
     const fetchParams = [
       {
         q,
@@ -45,22 +55,17 @@ const dataSource = () => ({
     return fetchParams;
   },
   transform: result => ({
-    data: result.logs,
+    data: result.logs.filter(entry => entry.hasOwnProperty('app.component')),
     nextPageToken: result.nextPageToken,
   }),
 });
 
-const APP_COMPONENT_OPTIONS = [
-  'agent',
-  'core',
-  'loghub',
-  'task',
-  // 'bridgehub',
-  // 'filehub',
-].map(component => ({
-  label: component,
-  value: component,
-}));
+const APP_COMPONENT_OPTIONS = ['agent', 'core', 'loghub', 'task'].map(
+  component => ({
+    label: component,
+    value: component,
+  }),
+);
 
 const LEVEL_OPTIONS = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'].map(
   level => ({
