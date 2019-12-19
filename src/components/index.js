@@ -11,7 +11,13 @@ export { StaticSelect } from './common/StaticSelect';
 export { onLogout } from './common/authentication/AuthenticationContainer';
 
 // Form
-export { mountForm, resetForm, submitForm, unmountForm } from './form/Form';
+export {
+  mountForm,
+  resetForm,
+  serializeForm,
+  submitForm,
+  unmountForm,
+} from './form/Form';
 
 // Table
 export {

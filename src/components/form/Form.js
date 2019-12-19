@@ -11,7 +11,14 @@ import {
   OrderedSet,
 } from 'immutable';
 import { isFunction, pick } from 'lodash-es';
-import { action, connect, dispatch, regHandlers, regSaga } from '../../store';
+import {
+  action,
+  connect,
+  dispatch,
+  regHandlers,
+  regSaga,
+  store,
+} from '../../store';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { generateKey } from '../../helpers';
 import { DATA_SOURCE_STATUS } from './Form.models';
@@ -315,15 +322,7 @@ regSaga(
       );
 
       const computedFieldSet = computeFieldSet(fields, fieldSet);
-
-      const values = fields
-        .filter(
-          field => !field.transient && computedFieldSet.contains(field.name),
-        )
-        .map(field =>
-          field.serialize ? field.serialize(bindings) : field.value,
-        );
-
+      const values = serializeImpl({ bindings, fields }, fieldSet);
       const errors = fields
         .filter(field => computedFieldSet.contains(field.name))
         .map(field => field.errors)
@@ -423,6 +422,16 @@ export const configureForm = config => dispatch('CONFIGURE_FORM', config);
 
 export const submitForm = (formKey, { fieldSet, onInvalid }) =>
   dispatch('SUBMIT', { formKey, fieldSet, onInvalid });
+
+export const serializeForm = (formKey, { fieldSet } = {}) =>
+  serializeImpl(selectForm(formKey)(store.getState()), fieldSet);
+
+const serializeImpl = ({ bindings, fields }, fieldSet) => {
+  const computedFieldSet = computeFieldSet(fields, fieldSet);
+  return fields
+    .filter(field => !field.transient && computedFieldSet.contains(field.name))
+    .map(field => (field.serialize ? field.serialize(bindings) : field.value));
+};
 
 // Wraps the FormImpl to handle the formKey behavior. If this is passed a
 // formKey prop this wrapper is essentially a noop, but if it is not passed a
@@ -582,6 +591,7 @@ class FormImplComponent extends Component {
           }
           buttons={
             <FormButtons
+              formOptions={formOptions}
               reset={onReset(formKey)}
               submit={onSubmit(formKey, fieldSet)}
               submitting={submitting}

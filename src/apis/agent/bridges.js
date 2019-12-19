@@ -68,3 +68,19 @@ export const deleteBridge = (options = {}) => {
     .then(response => ({ bridge: response.data.bridge }))
     .catch(handleErrors);
 };
+
+export const validateBridge = (options = {}) => {
+  validateOptions('validateBridge', ['bridge'], options);
+  const endpoint =
+    buildAgentPath(options) +
+    (options.bridgeSlug
+      ? `/app/api/v1/bridges/${options.bridgeSlug}/validate`
+      : `/app/api/v1/adapters/validate?type=bridge`);
+  return axios
+    .post(endpoint, options.bridge, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ successMessage: response.data.message }))
+    .catch(handleErrors);
+};
