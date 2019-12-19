@@ -18,7 +18,6 @@ export const generateLogQuery = appliedFilters => {
     List(['', '']),
   );
 
-  console.log(`'${startDate}'`, `'${endDate}'`);
   const start =
     startDate === '' && endDate === ''
       ? moment()
