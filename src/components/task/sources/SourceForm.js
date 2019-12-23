@@ -1,4 +1,4 @@
-import { get, List, Map } from 'immutable';
+import { get, getIn, List, Map } from 'immutable';
 import {
   createSource,
   fetchPolicyRules,
@@ -7,8 +7,9 @@ import {
   updateSource,
 } from '../../../apis/task';
 import { generateForm } from '../../form/Form';
+import { buildPropertyFields } from '../../form/Form.helpers';
 
-const dataSources = ({ sourceName }) => ({
+const dataSources = ({ sourceName, sourceType }) => ({
   source: {
     fn: fetchSource,
     params: sourceName && [
@@ -26,6 +27,17 @@ const dataSources = ({ sourceName }) => ({
     params: [{ include: 'details' }],
     transform: result => result.sourceAdapters,
   },
+  adapterProperties: {
+    fn: (sourceAdapters, source) => {
+      const sourceAdapterType = source ? source.get('type') : sourceType;
+      const adapter = sourceAdapters.find(
+        adapter => adapter.get('name') === sourceAdapterType,
+      );
+      return adapter ? List(adapter.get('properties')) : List();
+    },
+    params: ({ source, sourceAdapters }) =>
+      (!sourceName || source) && sourceAdapters && [sourceAdapters, source],
+  },
 });
 
 const handleSubmit = ({ sourceName }) => values =>
@@ -40,94 +52,66 @@ const handleSubmit = ({ sourceName }) => values =>
     return source;
   });
 
-const fields = ({ sourceName, sourceType }) => ({ source, sourceAdapters }) => {
-  let properties = [];
-  const initialSourceAdapter = get(source, 'type', sourceType);
-
-  if (sourceAdapters) {
-    const sourceAdapter = sourceAdapters.find(
-      a => a.get('name') === initialSourceAdapter,
-    );
-    const adapterProperties = sourceAdapter
-      ? List(sourceAdapter.get('properties'))
-      : List([]);
-
-    properties = adapterProperties
-      .map(property => ({
-        name: `property_${property.get('name')}`,
-        label: property.get('name'),
-        type: property.get('sensitive') ? 'password' : 'text',
-        required: property.get('required'),
-        transient: true,
-        initialValue: source
-          ? source.getIn(['properties', property.get('name')], '')
-          : '',
-      }))
-      .toArray();
-
-    return (
-      (!sourceName || source) && [
-        {
-          name: 'type',
-          label: 'Type',
-          required: true,
-          enabled: false,
-          initialValue: sourceType ? sourceType : get(source, 'type', ''),
-        },
-        {
-          name: 'name',
-          label: 'Name',
-          required: true,
-          initialValue: get(source, 'name', ''),
-        },
-        {
-          name: 'policyRules',
-          label: 'Policy Rules',
-          type: 'select-multi',
-          required: false,
-          options: ({ policyRules }) =>
-            policyRules
-              ? policyRules.map(policyRule =>
-                  Map({
-                    label: policyRule.get('name'),
-                    value: policyRule.get('name'),
-                  }),
-                )
-              : [],
-          initialValue: source
-            ? source
-                .get('policyRules')
-                .map(policyRule => policyRule.get('name'))
-            : [],
-          serialize: ({ values }) =>
-            values
-              .get('policyRules')
-              .map(name => ({ type: 'API Access', name: name })),
-        },
-        {
-          name: 'properties',
-          visible: false,
-          initialValue: get(source, 'properties', []),
-          serialize: ({ values }) =>
-            get(sourceAdapter, 'properties', List([]))
-              .filter(p =>
-                p.get('sensitive')
-                  ? values.get(`property_${p.get('name')}`)
-                  : true,
-              )
-              .reduce(
-                (properties, p) => ({
-                  ...properties,
-                  [p.get('name')]: values.get(`property_${p.get('name')}`),
+const fields = ({ sourceName, sourceType }) => ({
+  adapterProperties,
+  source,
+  sourceAdapters,
+}) => {
+  if (adapterProperties) {
+    const { propertiesFields, propertiesSerialize } = buildPropertyFields({
+      isNew: !source,
+      properties: adapterProperties,
+      getName: property => property.get('name'),
+      getRequired: property => property.get('required'),
+      getSensitive: property => property.get('sensitive'),
+      getValue: property =>
+        getIn(source, ['properties', property.get('name')], ''),
+    });
+    return [
+      {
+        name: 'type',
+        label: 'Type',
+        required: true,
+        enabled: false,
+        initialValue: sourceType ? sourceType : get(source, 'type', ''),
+      },
+      {
+        name: 'name',
+        label: 'Name',
+        required: true,
+        initialValue: get(source, 'name', ''),
+      },
+      {
+        name: 'policyRules',
+        label: 'Policy Rules',
+        type: 'select-multi',
+        required: false,
+        options: ({ policyRules }) =>
+          policyRules
+            ? policyRules.map(policyRule =>
+                Map({
+                  label: policyRule.get('name'),
+                  value: policyRule.get('name'),
                 }),
-                {},
-              ),
-        },
-        ...properties,
-      ]
-    );
+              )
+            : [],
+        initialValue: source
+          ? source.get('policyRules').map(policyRule => policyRule.get('name'))
+          : [],
+        serialize: ({ values }) =>
+          values
+            .get('policyRules')
+            .map(name => ({ type: 'API Access', name: name })),
+      },
+      {
+        name: 'properties',
+        visible: false,
+        initialValue: get(source, 'properties', []),
+        serialize: propertiesSerialize,
+      },
+      ...propertiesFields,
+    ];
   }
-  return false;
 };
 
 export const SourceForm = generateForm({
