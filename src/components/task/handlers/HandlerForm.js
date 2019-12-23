@@ -6,6 +6,10 @@ import {
 } from '../../../apis';
 import { Form } from '../../form/Form';
 import { get, Map, List } from 'immutable';
+import {
+  buildPropertyFields,
+  serializePropertyFields,
+} from '../../form/Form.helpers';
 
 const dataSources = ({ definitionId }) => ({
   handler: {
@@ -43,22 +47,19 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
     return false;
   }
 
-  const properties = handler
-    .get('properties')
-    .map(property => ({
-      name: `property_${property.get('name')}`,
-      label: property.get('name'),
-      type: property.get('type') === 'Encrypted' ? 'password' : 'text',
-      required: property.get('required'),
-      transient: true,
-      initialValue:
-        property.get('type') === 'Encrypted'
-          ? ''
-          : property.get('value') === null
-          ? ''
-          : property.get('value'),
-    }))
-    .toArray();
+  const properties = buildPropertyFields({
+    isNew: false,
+    properties: handler.get('properties'),
+    getName: property => property.get('name'),
+    getRequired: property => property.get('required'),
+    getSensitive: property => property.get('type') === 'Encrypted',
+    getValue: property =>
+      property.get('type') === 'Encrypted'
+        ? ''
+        : property.get('value') === null
+        ? ''
+        : property.get('value'),
+  });
 
   return (
     definitionId &&
@@ -138,20 +139,12 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         name: 'properties',
         visible: false,
         initialValue: get(handler, 'properties', []),
-        serialize: ({ values }) =>
-          get(handler, 'properties', List([]))
-            .filter(p =>
-              p.get('type') === 'Encrypted'
-                ? values.get(`property_${p.get('name')}`)
-                : true,
-            )
-            .reduce(
-              (properties, p) => ({
-                ...properties,
-                [p.get('name')]: values.get(`property_${p.get('name')}`),
-              }),
-              {},
-            ),
+        serialize: serializePropertyFields({
+          isNew: false,
+          properties: handler.get('properties'),
+          getName: property => property.get('name'),
+          getSensitive: property => property.get('type') === 'Encrypted',
+        }),
       },
     ].concat(properties)
   );

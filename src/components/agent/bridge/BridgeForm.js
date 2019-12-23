@@ -1,11 +1,15 @@
 import { get, getIn, List, Map } from 'immutable';
 import { generateForm } from '../../form/Form';
 import {
-  fetchBridge,
   createBridge,
-  updateBridge,
   fetchAdapters,
+  fetchBridge,
+  updateBridge,
 } from '../../../apis';
+import {
+  buildPropertyFields,
+  serializePropertyFields,
+} from '../../form/Form.helpers';
 
 const dataSources = ({ bridgeSlug, agentSlug, adapterClass }) => ({
   bridge: {
@@ -74,65 +78,25 @@ const fields = ({ bridgeSlug, adapterClass }) => ({
         }),
       ),
     },
-    ...adapterProperties
-      .flatMap(property => {
-        const name = property.get('name');
-        return !property.get('sensitive') || !bridge
-          ? [
-              {
-                name: `property_${name}`,
-                label: name,
-                type: property.get('sensitive') ? 'password' : 'text',
-                required: property.get('required'),
-                transient: true,
-                initialValue: getIn(bridge, ['properties', name], ''),
-              },
-            ]
-          : [
-              {
-                name: `property_${name}`,
-                label: name,
-                type: 'password',
-                required: property.get('required')
-                  ? ({ values }) => values.get(`changeProperty_${name}`)
-                  : false,
-                transient: true,
-                initialValue: getIn(bridge, ['properties', name], ''),
-                visible: ({ values }) => values.get(`changeProperty_${name}`),
-              },
-              {
-                name: `changeProperty_${name}`,
-                label: `Change ${name}`,
-                type: 'checkbox',
-                transient: true,
-                onChange: ({ values }, { setValue }) => {
-                  if (values.get(`property_${name}`) !== '') {
-                    setValue(`property_${name}`, '');
-                  }
-                },
-              },
-            ];
-      })
-      .toArray(),
+    ...buildPropertyFields({
+      isNew: !bridge,
+      properties: adapterProperties,
+      getName: property => property.get('name'),
+      getRequired: property => property.get('required'),
+      getSensitive: property => property.get('sensitive'),
+      getValue: property =>
+        getIn(bridge, ['properties', property.get('name')], ''),
+    }),
     {
       name: 'properties',
       visible: false,
       initialValue: get(bridge, 'properties', {}),
-      serialize: ({ values }) =>
-        adapterProperties
-          .filter(
-            prop =>
-              !bridge ||
-              !prop.get('sensitive') ||
-              values.get(`changeProperty_${prop.get('name')}`),
-          )
-          .map(prop => prop.get('name'))
-          .reduce(
-            (reduction, propName) =>
-              reduction.set(propName, values.get(`property_${propName}`)),
-            Map(),
-          )
-          .toObject(),
+      serialize: serializePropertyFields({
+        isNew: !bridge,
+        properties: adapterProperties,
+        getName: property => property.get('name'),
+        getSensitive: property => property.get('sensitive'),
+      }),
     },
   ];
 

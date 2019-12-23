@@ -1,4 +1,5 @@
-import { fromJS, List, Map, OrderedMap } from 'immutable';
+import { fromJS, getIn, List, Map, OrderedMap } from 'immutable';
+import { isFunction } from 'lodash-es';
 import {
   DataSource,
   Field,
@@ -152,3 +153,78 @@ export const createFormState = ({
     onSave: onSave && onSave(formOptions),
     onSubmit: onSubmit && onSubmit(formOptions),
   });
+
+export const buildPropertyFields = ({
+  isNew,
+  properties,
+  getName,
+  getRequired,
+  getSensitive,
+  getValue,
+}) =>
+  properties
+    .flatMap(property => {
+      const name = getName(property);
+      const required = isFunction(getRequired) && getRequired(property);
+      const sensitive = isFunction(getSensitive) && getSensitive(property);
+      const value = getValue(property);
+      return !sensitive || isNew
+        ? [
+            {
+              name: `property_${name}`,
+              label: name,
+              type: sensitive ? 'password' : 'text',
+              required: required,
+              transient: true,
+              initialValue: value,
+            },
+          ]
+        : [
+            {
+              name: `property_${name}`,
+              label: name,
+              type: 'password',
+              required: required
+                ? ({ values }) => values.get(`changeProperty_${name}`)
+                : false,
+              transient: true,
+              initialValue: '',
+              visible: ({ values }) => values.get(`changeProperty_${name}`),
+            },
+            {
+              name: `changeProperty_${name}`,
+              label: `Change ${name}`,
+              type: 'checkbox',
+              transient: true,
+              initialValue: false,
+              onChange: ({ values }, { setValue }) => {
+                if (values.get(`property_${name}`) !== '') {
+                  setValue(`property_${name}`, '');
+                }
+              },
+            },
+          ];
+    })
+    .toArray();
+
+export const serializePropertyFields = ({
+  isNew,
+  properties,
+  getName,
+  getSensitive,
+}) => ({ values }) =>
+  properties
+    .filter(
+      prop =>
+        isNew ||
+        !isFunction(getSensitive) ||
+        !getSensitive(prop) ||
+        values.get(`changeProperty_${getName(prop)}`),
+    )
+    .map(getName)
+    .reduce(
+      (reduction, propName) =>
+        reduction.set(propName, values.get(`property_${propName}`)),
+      Map(),
+    )
+    .toObject();
