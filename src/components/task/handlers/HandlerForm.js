@@ -6,10 +6,7 @@ import {
 } from '../../../apis';
 import { Form } from '../../form/Form';
 import { get, Map, List } from 'immutable';
-import {
-  buildPropertyFields,
-  serializePropertyFields,
-} from '../../form/Form.helpers';
+import { buildPropertyFields } from '../../form/Form.helpers';
 
 const dataSources = ({ definitionId }) => ({
   handler: {
@@ -47,7 +44,7 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
     return false;
   }
 
-  const properties = buildPropertyFields({
+  const { propertiesFields, propertiesSerialize } = buildPropertyFields({
     isNew: false,
     properties: handler.get('properties'),
     getName: property => property.get('name'),
@@ -139,14 +136,9 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         name: 'properties',
         visible: false,
         initialValue: get(handler, 'properties', []),
-        serialize: serializePropertyFields({
-          isNew: false,
-          properties: handler.get('properties'),
-          getName: property => property.get('name'),
-          getSensitive: property => property.get('type') === 'Encrypted',
-        }),
+        serialize: propertiesSerialize,
       },
-    ].concat(properties)
+    ].concat(propertiesFields)
   );
 };
 

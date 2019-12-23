@@ -6,10 +6,7 @@ import {
   fetchBridge,
   updateBridge,
 } from '../../../apis';
-import {
-  buildPropertyFields,
-  serializePropertyFields,
-} from '../../form/Form.helpers';
+import { buildPropertyFields } from '../../form/Form.helpers';
 
 const dataSources = ({ bridgeSlug, agentSlug, adapterClass }) => ({
   bridge: {
@@ -54,31 +51,9 @@ const fields = ({ bridgeSlug, adapterClass }) => ({
   bridge,
   adapters,
   adapterProperties,
-}) =>
-  adapterProperties && [
-    {
-      name: 'slug',
-      label: 'Bridge Slug',
-      type: 'text',
-      required: true,
-      initialValue: get(bridge, 'slug', ''),
-      helpText: 'Unique name used in the bridge path.',
-    },
-    {
-      name: 'adapterClass',
-      label: 'Adapter Class',
-      type: 'text',
-      enabled: false,
-      required: false,
-      initialValue: bridge ? bridge.get('adapterClass') : adapterClass,
-      options: adapters.map(adapter =>
-        Map({
-          value: adapter.get('class'),
-          label: adapter.get('name'),
-        }),
-      ),
-    },
-    ...buildPropertyFields({
+}) => {
+  if (adapterProperties) {
+    const { propertiesFields, propertiesSerialize } = buildPropertyFields({
       isNew: !bridge,
       properties: adapterProperties,
       getName: property => property.get('name'),
@@ -86,19 +61,41 @@ const fields = ({ bridgeSlug, adapterClass }) => ({
       getSensitive: property => property.get('sensitive'),
       getValue: property =>
         getIn(bridge, ['properties', property.get('name')], ''),
-    }),
-    {
-      name: 'properties',
-      visible: false,
-      initialValue: get(bridge, 'properties', {}),
-      serialize: serializePropertyFields({
-        isNew: !bridge,
-        properties: adapterProperties,
-        getName: property => property.get('name'),
-        getSensitive: property => property.get('sensitive'),
-      }),
-    },
-  ];
+    });
+
+    return [
+      {
+        name: 'slug',
+        label: 'Bridge Slug',
+        type: 'text',
+        required: true,
+        initialValue: get(bridge, 'slug', ''),
+        helpText: 'Unique name used in the bridge path.',
+      },
+      {
+        name: 'adapterClass',
+        label: 'Adapter Class',
+        type: 'text',
+        enabled: false,
+        required: false,
+        initialValue: bridge ? bridge.get('adapterClass') : adapterClass,
+        options: adapters.map(adapter =>
+          Map({
+            value: adapter.get('class'),
+            label: adapter.get('name'),
+          }),
+        ),
+      },
+      ...propertiesFields,
+      {
+        name: 'properties',
+        visible: false,
+        initialValue: get(bridge, 'properties', {}),
+        serialize: propertiesSerialize,
+      },
+    ];
+  }
+};
 
 export const BridgeForm = generateForm({
   formOptions: ['bridgeSlug', 'adapterClass', 'agentSlug'],

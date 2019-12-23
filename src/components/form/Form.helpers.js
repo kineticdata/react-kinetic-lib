@@ -161,8 +161,8 @@ export const buildPropertyFields = ({
   getRequired,
   getSensitive,
   getValue,
-}) =>
-  properties
+}) => ({
+  propertiesFields: properties
     .flatMap(property => {
       const name = getName(property);
       const required = isFunction(getRequired) && getRequired(property);
@@ -205,26 +205,21 @@ export const buildPropertyFields = ({
             },
           ];
     })
-    .toArray();
-
-export const serializePropertyFields = ({
-  isNew,
-  properties,
-  getName,
-  getSensitive,
-}) => ({ values }) =>
-  properties
-    .filter(
-      prop =>
-        isNew ||
-        !isFunction(getSensitive) ||
-        !getSensitive(prop) ||
-        values.get(`changeProperty_${getName(prop)}`),
-    )
-    .map(getName)
-    .reduce(
-      (reduction, propName) =>
-        reduction.set(propName, values.get(`property_${propName}`)),
-      Map(),
-    )
-    .toObject();
+    .toArray(),
+  propertiesSerialize: ({ values }) =>
+    properties
+      .filter(
+        prop =>
+          isNew ||
+          !isFunction(getSensitive) ||
+          !getSensitive(prop) ||
+          values.get(`changeProperty_${getName(prop)}`),
+      )
+      .map(getName)
+      .reduce(
+        (reduction, propName) =>
+          reduction.set(propName, values.get(`property_${propName}`)),
+        Map(),
+      )
+      .toObject(),
+});
