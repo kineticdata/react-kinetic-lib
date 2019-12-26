@@ -14,7 +14,11 @@ export const bundle =
       };
 // when running the bundle in dev mode there will already be a bundle object but
 // we want to prefix the locations with the REACT_APP_API_HOST value
-if (typeof window.bundle !== 'undefined' && process.env.REACT_APP_API_HOST) {
+if (
+  typeof window !== `undefined` &&
+  window.bundle &&
+  process.env.REACT_APP_API_HOST
+) {
   const spaceLocation = window.bundle.spaceLocation();
   const apiLocation = window.bundle.apiLocation();
   window.bundle.spaceLocation = () =>
