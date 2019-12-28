@@ -521,6 +521,30 @@ export const fetchHandlerDurations = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const fetchMissingRoutines = (options = {}) => {
+  return axios
+    .get(`/app/components/task/app/api/v2/trees/missing`, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      missingRoutines: response.data.missingRoutines,
+    }));
+};
+
+export const fetchMissingHandlers = (options = {}) => {
+  return axios
+    .get(`/app/components/task/app/api/v2/handlers/missing`, {
+      params: {
+        include: options.include,
+      },
+    })
+    .then(response => ({
+      missingHandlers: response.data.missingHandlers,
+    }));
+};
+
 export const stopEngine = (options = {}) =>
   axios
     .post('/app/components/task/app/api/v2/engine', {
