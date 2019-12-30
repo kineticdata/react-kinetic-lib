@@ -219,6 +219,37 @@ export const fetchSourceAdapters = (options = {}) =>
       sourceAdapters: response.data.sourceAdapters,
     }));
 
+export const updateDeferredTask = (options = {}) => {
+  validateOptions('updateDeferredTask', ['sourceName', 'token'], options);
+  return axios
+    .post(
+      `/app/components/task/app/api/v1/update-deferred-task/${options.sourceName}`,
+      {
+        token: options.token,
+        message: options.message || '',
+      },
+    )
+    .then(response => response.data);
+};
+
+export const completeDeferredTask = (options = {}) => {
+  validateOptions(
+    'completeDeferredTask',
+    ['sourceName', 'token', 'results'],
+    options,
+  );
+  return axios
+    .post(
+      `/app/components/task/app/api/v1/complete-deferred-task/${options.sourceName}`,
+      {
+        token: options.token,
+        results: options.results,
+        message: options.message || '',
+      },
+    )
+    .then(response => response.data);
+};
+
 export const fetchTaskCategories = (options = {}) =>
   axios
     .get('/app/components/task/app/api/v2/categories', {
