@@ -668,15 +668,20 @@ export const updateTaskRun = (options = {}) => {
 
 export const createTaskRun = (options = {}) => {
   validateOptions('createTaskRun', ['run'], options);
+  const data =
+    options.run.sourceData || options.run.sourceData === ''
+      ? options.run.sourceData
+      : options.run;
 
   return axios
-    .post('/app/components/task/app/api/v2/runs', options.run, {
+    .post('/app/components/task/app/api/v2/runs', data, {
       include: options.include,
       params: {
         sourceName: options.sourceName || undefined,
         sourceGroup: options.sourceGroup || undefined,
         name: options.name || undefined,
       },
+      headers: { 'Content-Type': 'text/plain' },
     })
     .then(response => ({
       run: response.data,
