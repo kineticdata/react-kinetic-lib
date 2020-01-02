@@ -104,3 +104,17 @@ export const deleteAgentComponent = async (options = {}) => {
     }))
     .catch(handleErrors);
 };
+
+export const validateAgent = async (options = {}) => {
+  validateOptions('validateAgent', ['slug'], options);
+  const endpoint = `app/components/agents/${options.slug}/app/api/v1/bridges`;
+  return axios
+    .post(endpoint, options.agent, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({
+      successMessage: `${options.slug} has been successfully validated.`,
+    }))
+    .catch(handleErrors);
+};
