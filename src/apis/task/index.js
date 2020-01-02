@@ -595,7 +595,8 @@ export const startEngine = (options = {}) =>
 export const fetchEngineStatus = () =>
   axios
     .get('/app/components/task/app/api/v2/engine')
-    .then(response => response.data);
+    .then(response => response.data)
+    .catch(handleErrors);
 
 export const fetchEngineLicense = () =>
   axios
