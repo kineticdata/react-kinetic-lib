@@ -152,7 +152,7 @@ const fields = () => ({
     {
       name: 'defaultLocale',
       label: 'Default Locale',
-      type: 'select',
+      type: 'text',
       options: ({ locales }) =>
         locales.map(locale =>
           Map({
@@ -165,7 +165,7 @@ const fields = () => ({
     {
       name: 'defaultTimezone',
       label: 'Default Timezone',
-      type: 'select',
+      type: 'text',
       options: ({ timezones }) =>
         timezones.map(timezone =>
           Map({
