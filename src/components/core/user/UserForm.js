@@ -129,7 +129,7 @@ const fields = ({ username }) => ({ user }) =>
     {
       name: 'preferredLocale',
       label: 'Preferred Locale',
-      type: 'select',
+      type: 'text',
       options: ({ locales }) =>
         locales
           ? locales.map(locale =>
@@ -144,7 +144,7 @@ const fields = ({ username }) => ({ user }) =>
     {
       name: 'timezone',
       label: 'Timezone',
-      type: 'select',
+      type: 'text',
       options: ({ timezones }) =>
         timezones
           ? timezones.map(timezone =>

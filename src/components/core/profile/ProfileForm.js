@@ -127,7 +127,7 @@ const fields = () => ({ profile }) =>
     {
       name: 'preferredLocale',
       label: 'Preferred Locale',
-      type: 'select',
+      type: 'text',
       options: ({ locales }) =>
         locales
           ? locales.map(locale =>
@@ -142,7 +142,7 @@ const fields = () => ({ profile }) =>
     {
       name: 'timezone',
       label: 'Timezone',
-      type: 'select',
+      type: 'text',
       options: ({ timezones }) =>
         timezones
           ? timezones.map(timezone =>
