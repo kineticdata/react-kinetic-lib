@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { bundle } from '../../helpers';
+import { bundle, buildAgentPath } from '../../helpers';
 import {
   handleErrors,
   headerBuilder,
@@ -21,7 +21,7 @@ export const fetchTaskComponent = (options = {}) => {
     .catch(handleErrors);
 };
 
-export const updateTaskComponent = async (options = {}) => {
+export const updateTaskComponent = (options = {}) => {
   validateOptions('updateTaskComponent', ['task'], options);
   return axios
     .put(`${bundle.apiLocation()}/platformComponents/task`, options.task, {
@@ -59,7 +59,7 @@ export const fetchAgentComponent = (options = {}) => {
     .catch(handleErrors);
 };
 
-export const createAgentComponent = async (options = {}) => {
+export const createAgentComponent = (options = {}) => {
   validateOptions('createAgentComponent', ['agent'], options);
   return axios
     .post(`${bundle.apiLocation()}/platformComponents/agents`, options.agent, {
@@ -72,7 +72,7 @@ export const createAgentComponent = async (options = {}) => {
     .catch(handleErrors);
 };
 
-export const updateAgentComponent = async (options = {}) => {
+export const updateAgentComponent = (options = {}) => {
   validateOptions('updateAgentComponent', ['slug', 'agent'], options);
   return axios
     .put(
@@ -89,7 +89,7 @@ export const updateAgentComponent = async (options = {}) => {
     .catch(handleErrors);
 };
 
-export const deleteAgentComponent = async (options = {}) => {
+export const deleteAgentComponent = (options = {}) => {
   validateOptions('deleteAgentComponent', ['slug'], options);
   return axios
     .delete(
@@ -105,16 +105,15 @@ export const deleteAgentComponent = async (options = {}) => {
     .catch(handleErrors);
 };
 
-export const validateAgent = async (options = {}) => {
-  validateOptions('validateAgent', ['slug'], options);
-  const endpoint = `app/components/agents/${options.slug}/app/api/v1/bridges`;
+export const validateAgent = (options = {}) => {
+  validateOptions('validateAgent', [], options);
   return axios
-    .post(endpoint, options.agent, {
+    .get(`${buildAgentPath(options)}/app/api/v1/bridges`, {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
     .then(response => ({
-      successMessage: `${options.slug} has been successfully validated.`,
+      successMessage: `${options.agentSlug} has been successfully validated.`,
     }))
     .catch(handleErrors);
 };
