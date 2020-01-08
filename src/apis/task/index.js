@@ -258,14 +258,13 @@ export const fetchSourceAdapters = (options = {}) =>
     }));
 
 export const updateDeferredTask = (options = {}) => {
-  validateOptions('updateDeferredTask', ['sourceName', 'token'], options);
+  validateOptions('updateDeferredTask', ['token'], options);
   return axios
-    .post(
-      `${bundle.spaceLocation()}/app/components/task/app/api/v1/update-deferred-task/${
-        options.sourceName
+    .put(
+      `${bundle.spaceLocation()}/app/components/task/app/api/v2/runs/task/${
+        options.token
       }`,
       {
-        token: options.token,
         message: options.message || '',
       },
     )
@@ -273,18 +272,13 @@ export const updateDeferredTask = (options = {}) => {
 };
 
 export const completeDeferredTask = (options = {}) => {
-  validateOptions(
-    'completeDeferredTask',
-    ['sourceName', 'token', 'results'],
-    options,
-  );
+  validateOptions('completeDeferredTask', ['token', 'results'], options);
   return axios
     .post(
-      `${bundle.spaceLocation()}/app/components/task/app/api/v1/complete-deferred-task/${
-        options.sourceName
+      `${bundle.spaceLocation()}/app/components/task/app/api/v2/runs/task/${
+        options.token
       }`,
       {
-        token: options.token,
         results: options.results,
         message: options.message || '',
       },
@@ -962,13 +956,14 @@ export const updateRunTaskResults = (options = {}) => {
     ['runId', 'taskId', 'results'],
     options,
   );
+  const resultKey = options.type || 'results';
 
   return axios
     .put(
       `${bundle.spaceLocation()}/app/components/task/app/api/v2/runs/${
         options.runId
       }/tasks/${options.taskId}`,
-      { results: options.results },
+      { [resultKey]: options.results },
       {
         params: {
           include: options.include,
