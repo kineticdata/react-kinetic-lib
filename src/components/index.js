@@ -137,6 +137,7 @@ export { RunTable } from './task/runs/RunTable';
 export { CreateManualTriggerForm } from './task/runs/CreateManualTriggerForm';
 export { TriggerTable } from './task/triggers/TriggerTable';
 export { RunErrorTable } from './task/errors/RunErrorTable';
+export { SystemErrorsTable } from './task/errors/SystemErrorsTable';
 export { WorkflowTable } from './task/workflows/WorkflowTable';
 export { MissingRoutineTable } from './task/workflows/MissingRoutineTable';
 export { WorkflowForm } from './task/workflows/WorkflowForm';
