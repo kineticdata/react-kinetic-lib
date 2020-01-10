@@ -535,18 +535,16 @@ export const fetchSystemError = (options = {}) => {
         },
       },
     )
-    .then(response => ({ systemError: response.data.errors }))
-    .catch(error => ({
-      error: error.response.data,
-    }));
+    .then(response => ({ systemError: response.data }))
+    .catch(handleErrors);
 };
 
 export const resolveSystemError = (options = {}) => {
-  validateOptions('resolveSystemError', ['errorId', 'message'], options);
+  validateOptions('resolveSystemError', ['ids', 'resolution'], options);
   return axios
     .post(
-      `${bundle.spaceLocation()}/app/components/task/app/api/v2/sysemErrors/resolve`,
-      { ids: [options.errorId], resolution: options.message },
+      `${bundle.spaceLocation()}/app/components/task/app/api/v2/systemErrors/resolve`,
+      { ids: options.ids, resolution: options.resolution },
     )
     .then(response => ({
       message: response.data.message,
