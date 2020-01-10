@@ -19,7 +19,14 @@ const KeyWrapper = ({ children }) => children;
 
 const TableComponent = props => {
   if (props.configured) {
-    const { children, loading, initializing, rows, error } = props;
+    const {
+      children,
+      loading,
+      initializing,
+      rows,
+      error,
+      appliedFilters,
+    } = props;
     const table = buildTable(props);
     const filter = buildFilterLayout(props);
     const pagination = buildPaginationControl(props);
@@ -27,6 +34,7 @@ const TableComponent = props => {
     return children({
       table,
       filter,
+      appliedFilters,
       pagination,
       initializing,
       loading,
