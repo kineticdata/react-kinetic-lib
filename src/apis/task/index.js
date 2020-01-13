@@ -169,7 +169,8 @@ export const fetchSource = (options = {}) => {
     )
     .then(response => ({
       source: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const updateSource = (options = {}) => {
@@ -303,7 +304,7 @@ export const fetchTaskCategories = (options = {}) =>
 export const cloneTree = (options = {}) => {
   validateOptions(
     'cloneTree',
-    ['name', 'newName', 'sourceGroup', 'sourceName', 'title'],
+    ['newName', 'title'],
     options,
   );
   return axios
@@ -314,7 +315,7 @@ export const cloneTree = (options = {}) => {
       {
         name: options.newName,
         sourceName: options.newSourceName,
-        sourceGroup: options.sourceGroup,
+        sourceGroup: options.newSourceGroup,
         definitionId: options.definitionId,
       },
     )
