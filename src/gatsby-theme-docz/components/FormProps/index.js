@@ -24,6 +24,15 @@ export const fieldTypeComponents = {
   'user-multi': 'UserMultiField',
 };
 
+const getBindingsType = dataSources =>
+  dataSources.reduce(
+    (reduction, dataSource) => ({
+      ...reduction,
+      [dataSource.name]: dataSource.type,
+    }),
+    {},
+  );
+
 const getFormOptionsType = formOptions =>
   formOptions.reduce(
     (reduction, formOption) => ({
@@ -120,7 +129,7 @@ const OrderedSetLink = ({ type = 'T' }) => (
   </>
 );
 
-export const FormProps = ({ bindings, fields, formOptions }) => {
+export const FormProps = ({ dataSources, fields, formOptions }) => {
   const [showingTypes, setShowingTypes] = useState([{ name: 'Props' }]);
   const showType = name => type => (...typeParams) => () => {
     setShowingTypes([...showingTypes, { name, type, typeParams }]);
@@ -164,7 +173,7 @@ export const FormProps = ({ bindings, fields, formOptions }) => {
       </h5>
       {currentType === 'Field' ? (
         <FieldProps
-          bindings={bindings}
+          bindings={getBindingsType(dataSources)}
           type={showingTypes[showingTypes.length - 1]['typeParams'][0]}
           showType={showType}
         />
