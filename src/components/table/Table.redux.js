@@ -218,6 +218,10 @@ regHandlers({
       tableData.get('dataSource')
         ? tableData
             .set('loading', true)
+            .set('pageOffset', 0)
+            .set('currentPageToken', null)
+            .set('nextPageToken', null)
+            .set('pageTokens', List())
             .set('data', null)
             .set('error', null)
         : tableData,

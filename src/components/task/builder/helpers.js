@@ -29,7 +29,7 @@ export const getRectIntersections = ({
   // accounting for intersections. This will either be between the center of two
   // rects or from a dragging point to the center of a rect.
   const headCenter = dragging === 'head' ? head : getNodeCenter(headType, head);
-  const tailCenter = dragging === 'head' ? head : getNodeCenter(tailType, tail);
+  const tailCenter = dragging === 'tail' ? tail : getNodeCenter(tailType, tail);
   // Loop connectors are special in that we just draw them from the center of
   // the two nodes rather than calculating the intersections and drawing from
   // there.
@@ -149,9 +149,10 @@ const bindify = raw =>
 
 export const buildBindings = (tree, tasks, node) => {
   const ancestorResultBindings = Map({
-    children: getAncestors(tree, node)
+    children: tree.nodes
       // convert the node map to use the name as the key
       .mapKeys((_, node) => node.name)
+      .sortBy((value, key) => key)
       // normalize the outputs / results property (routine / handler
       // respectively)
       .map(node => {

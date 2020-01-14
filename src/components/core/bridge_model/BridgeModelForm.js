@@ -16,7 +16,9 @@ const getMapping = model =>
     model.get('mappings') &&
     model
       .get('mappings')
-      .find(mapping => mapping.get('name') === model.get('name'))) ||
+      .find(
+        mapping => mapping.get('name') === model.get('activeMappingName'),
+      )) ||
   {};
 
 const dataSources = ({ modelName }) => ({
