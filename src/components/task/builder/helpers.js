@@ -149,9 +149,10 @@ const bindify = raw =>
 
 export const buildBindings = (tree, tasks, node) => {
   const ancestorResultBindings = Map({
-    children: getAncestors(tree, node)
+    children: tree.nodes
       // convert the node map to use the name as the key
       .mapKeys((_, node) => node.name)
+      .sortBy((value, key) => key)
       // normalize the outputs / results property (routine / handler
       // respectively)
       .map(node => {
