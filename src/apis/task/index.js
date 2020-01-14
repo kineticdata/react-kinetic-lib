@@ -89,6 +89,43 @@ export const createTree = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const deleteTree = (options = {}) => {
+  validateOptions('deleteTree', ['name'], options);
+  const id = buildTreeId(options);
+
+  return axios
+    .delete(
+      `${bundle.spaceLocation()}/app/components/task/app/api/v2/trees/${id}`,
+    )
+    .then(response => ({
+      tree: response.data,
+    }))
+    .catch(handleErrors);
+};
+
+export const cloneTree = (options = {}) => {
+  validateOptions('cloneTree', ['newName', 'name'], options);
+  const id = buildTreeId(options);
+
+  return axios
+    .post(
+      `${bundle.spaceLocation()}/app/components/task/app/api/v2/trees/${
+        id
+      }/clone`,
+      {
+        name: options.newName,
+        sourceName: options.newSourceName,
+        sourceGroup: options.newSourceGroup,
+        definitionId: options.newDefinitionId,
+      },
+    )
+    .then(response => ({
+      tree: response.data.tree,
+    }))
+    .catch(handleErrors);
+};
+
+
 export const exportTree = (options = {}) => {
   validateOptions('exportTree', ['name'], options);
   const id = buildTreeId(options);
@@ -300,44 +337,6 @@ export const fetchTaskCategories = (options = {}) =>
     .then(response => ({
       categories: response.data.categories,
     }));
-
-export const cloneTree = (options = {}) => {
-  validateOptions(
-    'cloneTree',
-    ['newName', 'title'],
-    options,
-  );
-  return axios
-    .post(
-      `${bundle.spaceLocation()}/app/components/task/app/api/v2/trees/${
-        options.title
-      }/clone`,
-      {
-        name: options.newName,
-        sourceName: options.newSourceName,
-        sourceGroup: options.newSourceGroup,
-        definitionId: options.definitionId,
-      },
-    )
-    .then(response => ({
-      tree: response.data.tree,
-    }))
-    .catch(handleErrors);
-};
-
-export const deleteTree = (options = {}) => {
-  validateOptions('deleteTree', ['name'], options);
-  const id = buildTreeId(options);
-
-  return axios
-    .delete(
-      `${bundle.spaceLocation()}/app/components/task/app/api/v2/trees/${id}`,
-    )
-    .then(response => ({
-      tree: response.data,
-    }))
-    .catch(handleErrors);
-};
 
 export const createTaskCategory = (options = {}) => {
   validateOptions('createTaskCategory', ['category'], options);
