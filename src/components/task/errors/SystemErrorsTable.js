@@ -17,32 +17,36 @@ const columns = [
   },
   {
     value: 'type',
-    title: 'Type',
+    title: 'Error Type',
     type: 'text',
+    filter: 'startsWith',
     sortable: true,
   },
   {
     value: 'createdAt',
     title: 'Occurred',
     type: 'text',
+    filter: 'startsWith',
     sortable: true,
   },
   {
     value: 'createdBy',
     title: 'Created By',
     type: 'text',
-    sortable: true,
-  },
-  {
-    value: 'engineIdentification',
-    title: 'Engine ID',
-    type: 'text',
+    filter: 'startsWith',
     sortable: true,
   },
   {
     value: 'status',
     title: 'Status',
-    type: 'text',
+    type: 'select',
+    filter: 'startsWith',
+    initialValue: 'Active',
+    options: () =>
+      ['Active', 'Handled'].map(s => ({
+        value: s,
+        label: s,
+      })),
     sortable: true,
   },
   {
@@ -53,20 +57,23 @@ const columns = [
   },
   {
     value: 'id',
-    title: 'ID',
+    title: 'Error ID',
     type: 'text',
+    filter: 'includes',
     sortable: true,
   },
   {
     value: 'updatedAt',
     title: 'Updated At',
     type: 'text',
+    filter: 'startsWith',
     sortable: true,
   },
   {
     value: 'updatedBy',
     title: 'Updated By',
     type: 'text',
+    filter: 'startsWith',
     sortable: true,
   },
 ];
