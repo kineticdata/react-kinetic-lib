@@ -32,7 +32,8 @@ export const fetchTrees = (options = {}) =>
     .then(response => ({
       trees: response.data.trees,
       nextPageToken: generateNextPageToken(response.data),
-    }));
+    }))
+    .catch(handleErrors);
 
 export const fetchTree = (options = {}) => {
   validateOptions('fetchTree', ['name'], options);
@@ -109,9 +110,7 @@ export const cloneTree = (options = {}) => {
 
   return axios
     .post(
-      `${bundle.spaceLocation()}/app/components/task/app/api/v2/trees/${
-        id
-      }/clone`,
+      `${bundle.spaceLocation()}/app/components/task/app/api/v2/trees/${id}/clone`,
       {
         name: options.newName,
         sourceName: options.newSourceName,
@@ -124,7 +123,6 @@ export const cloneTree = (options = {}) => {
     }))
     .catch(handleErrors);
 };
-
 
 export const exportTree = (options = {}) => {
   validateOptions('exportTree', ['name'], options);
@@ -188,7 +186,8 @@ export const fetchSources = (options = {}) =>
     })
     .then(response => ({
       sources: response.data.sourceRoots,
-    }));
+    }))
+    .catch(handleErrors);
 
 export const fetchSource = (options = {}) => {
   validateOptions('fetchSource', ['sourceName'], options);
@@ -293,7 +292,8 @@ export const fetchSourceAdapters = (options = {}) =>
     )
     .then(response => ({
       sourceAdapters: response.data.sourceAdapters,
-    }));
+    }))
+    .catch(handleErrors);
 
 export const updateDeferredTask = (options = {}) => {
   validateOptions('updateDeferredTask', ['token'], options);
@@ -306,7 +306,8 @@ export const updateDeferredTask = (options = {}) => {
         message: options.message || '',
       },
     )
-    .then(response => response.data);
+    .then(response => response.data)
+    .catch(handleErrors);
 };
 
 export const completeDeferredTask = (options = {}) => {
@@ -321,7 +322,8 @@ export const completeDeferredTask = (options = {}) => {
         message: options.message || '',
       },
     )
-    .then(response => response.data);
+    .then(response => response.data)
+    .catch(handleErrors);
 };
 
 export const fetchTaskCategories = (options = {}) =>
@@ -336,7 +338,8 @@ export const fetchTaskCategories = (options = {}) =>
     )
     .then(response => ({
       categories: response.data.categories,
-    }));
+    }))
+    .catch(handleErrors);
 
 export const createTaskCategory = (options = {}) => {
   validateOptions('createTaskCategory', ['category'], options);
@@ -352,7 +355,8 @@ export const createTaskCategory = (options = {}) => {
     )
     .then(response => ({
       category: response.data.category,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchTaskCategory = (options = {}) => {
@@ -370,7 +374,8 @@ export const fetchTaskCategory = (options = {}) => {
     )
     .then(response => ({
       category: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const deleteTaskCategory = (options = {}) => {
@@ -388,7 +393,8 @@ export const deleteTaskCategory = (options = {}) => {
     )
     .then(response => ({
       category: response.data.category,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const updateTaskCategory = (options = {}) => {
@@ -407,7 +413,8 @@ export const updateTaskCategory = (options = {}) => {
     )
     .then(response => ({
       category: response.data.category,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchPolicyRules = (options = {}) => {
@@ -423,7 +430,8 @@ export const fetchPolicyRules = (options = {}) => {
     )
     .then(response => ({
       policyRules: response.data.policyRules,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const createPolicyRule = (options = {}) => {
@@ -442,7 +450,8 @@ export const createPolicyRule = (options = {}) => {
     )
     .then(response => ({
       policyRule: response.data.policyRule,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchPolicyRule = (options = {}) => {
@@ -460,7 +469,8 @@ export const fetchPolicyRule = (options = {}) => {
     )
     .then(response => ({
       policyRule: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const deletePolicyRule = (options = {}) => {
@@ -478,7 +488,8 @@ export const deletePolicyRule = (options = {}) => {
     )
     .then(response => ({
       policyRule: response.data.policyRule,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const updatePolicyRule = (options = {}) => {
@@ -501,7 +512,8 @@ export const updatePolicyRule = (options = {}) => {
     )
     .then(response => ({
       policyRule: response.data.policyRule,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchSystemErrors = (options = {}) =>
@@ -514,7 +526,8 @@ export const fetchSystemErrors = (options = {}) =>
         },
       },
     )
-    .then(response => ({ systemErrors: response.data.errors }));
+    .then(response => ({ systemErrors: response.data.errors }))
+    .catch(handleErrors);
 
 export const fetchSystemError = (options = {}) => {
   validateOptions('fetchSystemError', ['errorId'], options);
@@ -555,7 +568,8 @@ export const fetchHandlers = (options = {}) =>
     })
     .then(response => ({
       handlers: response.data.handlers,
-    }));
+    }))
+    .catch(handleErrors);
 
 export const fetchHandler = (options = {}) => {
   validateOptions('fetchHandler', ['definitionId'], options);
@@ -572,7 +586,8 @@ export const fetchHandler = (options = {}) => {
     )
     .then(response => ({
       handler: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const createHandler = (options = {}) => {
@@ -622,7 +637,8 @@ export const updateHandler = (options = {}) => {
     )
     .then(response => ({
       handler: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const deleteHandler = (options = {}) => {
@@ -667,7 +683,8 @@ export const fetchUsage = (options = {}) => {
       totalTrees: response.data.totalTrees,
       totalRoutines: response.data.totalRoutines,
       totalNodes: response.data.totalNodes,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchHandlerDurations = (options = {}) => {
@@ -693,7 +710,8 @@ export const fetchMissingRoutines = (options = {}) => {
     )
     .then(response => ({
       missingRoutines: response.data.missingRoutines,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const fetchMissingHandlers = (options = {}) => {
@@ -708,7 +726,8 @@ export const fetchMissingHandlers = (options = {}) => {
     )
     .then(response => ({
       missingHandlers: response.data.missingHandlers,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const stopEngine = (options = {}) =>
@@ -717,7 +736,8 @@ export const stopEngine = (options = {}) =>
       action: 'stop',
       asynchronous: options.asynchronous || 'false',
     })
-    .then(response => response.data);
+    .then(response => response.data)
+    .catch(handleErrors);
 
 export const startEngine = (options = {}) =>
   axios
@@ -725,7 +745,8 @@ export const startEngine = (options = {}) =>
       action: 'start',
       asynchronous: options.asynchronous || 'false',
     })
-    .then(response => response.data);
+    .then(response => response.data)
+    .catch(handleErrors);
 
 export const fetchEngineStatus = () =>
   axios
@@ -738,7 +759,8 @@ export const fetchEngineLicense = () =>
     .get(
       `${bundle.spaceLocation()}/app/components/task/app/api/v2/config/license`,
     )
-    .then(response => response.data);
+    .then(response => response.data)
+    .catch(handleErrors);
 
 export const fetchEngineSettings = () =>
   axios
@@ -747,7 +769,8 @@ export const fetchEngineSettings = () =>
     )
     .then(response => ({
       settings: response.data.properties,
-    }));
+    }))
+    .catch(handleErrors);
 
 export const updateEngineSettings = (options = {}) =>
   axios
@@ -757,7 +780,8 @@ export const updateEngineSettings = (options = {}) =>
     )
     .then(response => ({
       message: response.data.message,
-    }));
+    }))
+    .catch(handleErrors);
 
 export const fetchTaskRuns = (options = {}) =>
   axios
@@ -783,7 +807,8 @@ export const fetchTaskRuns = (options = {}) =>
     .then(response => ({
       runs: response.data.runs,
       nextPageToken: generateNextPageToken(response.data),
-    }));
+    }))
+    .catch(handleErrors);
 
 export const fetchTaskRun = (options = {}) => {
   validateOptions('fetchTaskRun', ['runId'], options);
@@ -801,7 +826,8 @@ export const fetchTaskRun = (options = {}) => {
     )
     .then(response => ({
       run: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const updateTaskRun = (options = {}) => {
@@ -879,7 +905,8 @@ export const fetchTaskTriggers = (options = {}) =>
     .then(response => ({
       triggers: response.data.triggers,
       nextPageToken: generateNextPageToken(response.data),
-    }));
+    }))
+    .catch(handleErrors);
 
 export const createTaskTrigger = (options = {}) => {
   validateOptions('createTaskTrigger', ['runId', 'nodeId'], options);
@@ -894,7 +921,8 @@ export const createTaskTrigger = (options = {}) => {
         loopIndex: options.loopIndex || undefined,
       },
     )
-    .then(response => response.data);
+    .then(response => response.data)
+    .catch(handleErrors);
 };
 
 export const fetchTaskRunErrors = (options = {}) =>
@@ -927,7 +955,8 @@ export const fetchTaskRunErrors = (options = {}) =>
     .then(response => ({
       runErrors: response.data.errors,
       nextPageToken: generateNextPageToken(response.data),
-    }));
+    }))
+    .catch(handleErrors);
 
 export const fetchTaskRunError = (options = {}) => {
   validateOptions('fetchTaskRunError', ['errorId'], options);
@@ -945,7 +974,8 @@ export const fetchTaskRunError = (options = {}) => {
     )
     .then(response => ({
       runError: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const updateRunTaskResults = (options = {}) => {
@@ -970,7 +1000,8 @@ export const updateRunTaskResults = (options = {}) => {
     )
     .then(response => ({
       message: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
 
 export const resolveTaskErrors = (options = {}) => {
@@ -994,5 +1025,6 @@ export const resolveTaskErrors = (options = {}) => {
     )
     .then(response => ({
       message: response.data,
-    }));
+    }))
+    .catch(handleErrors);
 };
