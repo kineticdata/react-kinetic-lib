@@ -15,6 +15,7 @@ export const PropsTable = props => (
   <table style={tableStyle}>
     <tbody>
       {props.children
+        .flat()
         .filter(child => child)
         .map((child, i) => (
           <tr key={i} style={rowStyle(i % 2 === 0)}>
