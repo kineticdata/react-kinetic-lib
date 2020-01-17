@@ -124,9 +124,14 @@ const fields = ({ definitionId }) => ({ handler, categories }) => {
         initialValue: get(handler, 'categories', List()).map(c =>
           c.get('name'),
         ),
-        options: categories.map(c =>
-          Map({ label: c.get('name'), value: c.get('name') }),
-        ),
+        options: categories
+          .sort((a, b) =>
+            a
+              .get('name')
+              .toLowerCase()
+              .localeCompare(b.get('name').toLowerCase()),
+          )
+          .map(c => Map({ label: c.get('name'), value: c.get('name') })),
         serialize: ({ values }) =>
           values
             .get('categories')
