@@ -19,6 +19,8 @@ export {
   unmountForm,
 } from './form/Form';
 
+export { KitchenSinkForm } from './form/KitchenSinkForm';
+
 // Table
 export {
   mountTable,

@@ -9,13 +9,10 @@ export const fieldTypeComponents = {
   attribute: 'AttributesField',
   checkbox: 'CheckboxField',
   code: 'CodeField',
-  form: 'FormField',
-  'form-multi': 'FormMultiField',
   password: 'PasswordField',
   radio: 'RadioField',
   select: 'SelectField',
   'select-multi': 'SelectMultiField',
-  table: 'TableField',
   team: 'TeamField',
   'team-multi': 'TeamMultiField',
   text: 'TextField',
@@ -92,7 +89,7 @@ const ComponentTypeLink = ({ showType, type }) => (
     href="#"
     onClick={event => {
       event.preventDefault();
-      showType(type)('')();
+      showType(type)()();
     }}
   >
     {type}

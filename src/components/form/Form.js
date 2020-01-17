@@ -1,6 +1,5 @@
 import React, { Component, createRef } from 'react';
 import { all, call, put, select, takeEvery } from 'redux-saga/effects';
-import t from 'prop-types';
 import {
   fromJS,
   is,
@@ -25,15 +24,17 @@ import { DATA_SOURCE_STATUS } from './Form.models';
 import {
   createField,
   createFormState,
+  getComponentName,
+  getFieldComponentProps,
   resolveFieldConfig,
 } from './Form.helpers';
-import { Field } from './Field';
 
 export const getTimestamp = () => Math.floor(new Date().getTime() / 1000);
 
 export const isEmpty = value =>
   value === null ||
   value === undefined ||
+  value === false ||
   value === '' ||
   (isImmutable(value) && value.isEmpty());
 
@@ -571,20 +572,24 @@ class FormImplComponent extends Component {
         <FormLayout
           formOptions={formOptions}
           fields={OrderedMap(
-            computedFieldSet.map(name => [name, fields.get(name).toObject()]),
-          ).mapEntries(([name, { eventHandlers, ...props }], index) => [
-            name,
-            <Field
-              key={name}
-              {...props}
-              {...eventHandlers.toObject()}
-              focusRef={
-                name === autoFocus || index === autoFocus ? this.focusRef : null
-              }
-              component={fieldComponents.get(name)}
-              components={components}
-            />,
-          ])}
+            computedFieldSet.map(name => [name, fields.get(name)]),
+          ).mapEntries(([name, field], index) => {
+            const FieldImpl =
+              fieldComponents.get(name) ||
+              components.get(getComponentName(field));
+            return [
+              name,
+              <FieldImpl
+                key={name}
+                focusRef={
+                  name === autoFocus || index === autoFocus
+                    ? this.focusRef
+                    : null
+                }
+                {...getFieldComponentProps(field)}
+              />,
+            ];
+          })}
           dirty={dirty}
           error={
             error && <FormError error={error} clear={clearError(formKey)} />
@@ -645,52 +650,3 @@ export const generateForm = ({
     {configurationProps.children}
   </Form>
 );
-
-Form.propTypes = {
-  /** An object describing how a form fetches data. */
-  dataSources: t.object,
-  /** An array of the fields that will be rendered on the form. */
-  fields: t.arrayOf(
-    t.shape({
-      /** The name of the field. */
-      name: t.string,
-      /** The label of the field that will be shown. */
-      label: t.string,
-      /** Flag that determines if the column can be used as a filter. */
-      type: t.string,
-      /** Flag that determines if the column is sortable.*/
-      sortable: t.bool,
-      /** Allows overriding the `HeaderCell`, `BodyCell`, and `FooterCell` for a given column. */
-      components: t.shape({
-        HeaderCell: t.func,
-        BodyCell: t.func,
-        FooterCell: t.func,
-      }),
-    }),
-  ).isRequired,
-  /** Add additional fields to a form. */
-  addFields: t.arrayOf(
-    t.shape({
-      /** The label that will be rendered for the field. */
-      label: t.string,
-      /** Allows overriding  */
-      components: t.shape({}),
-    }),
-  ),
-  /** Allow overriding the fields shown and in which order. */
-  fieldSet: t.oneOf([t.arrayOf(t.string), t.func]),
-  components: t.shape({}),
-
-  /** The Submit event called after the form is submitted. */
-  onSubmit: t.func,
-  /** The child of this component should be a function which renders the form layout. */
-  children: t.func,
-};
-
-const defaultProps = {
-  visible: true,
-};
-
-Form.defaultProps = defaultProps;
-
-FormImpl.displayName = 'FormImpl';

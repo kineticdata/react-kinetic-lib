@@ -6,7 +6,6 @@ route: /form
 
 import { Playground, Props } from 'docz';
 import { Form } from './Form';
-import { Field, typeToComponent } from './Field';
 
 # Form
 
@@ -55,12 +54,6 @@ The library chooses which component to render for a given field in the following
 1. Local Config: If the forms field configuration provides a component to be used for rendering
 2. Global Config: If the project provides a global component for a given field type
 3. Default Config: If no local or global component are matched, the [default field](#default-fields) component will be used.
-
-### Field Props
-
-The following properties are available to the component responsible for rendering a field.
-
-<Props of={Field} />
 
 ### Supported Field Types
 

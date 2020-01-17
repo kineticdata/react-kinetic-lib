@@ -11,7 +11,7 @@ const ComponentTypeLink = ({ showType, type }) => (
     href="#"
     onClick={event => {
       event.preventDefault();
-      showType(type)('')();
+      showType(type)()();
     }}
   >
     {type}
@@ -22,7 +22,7 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
   return (
     <PropsTable>
       <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+        description=""
         name="component?"
         odd
         type={
@@ -48,7 +48,7 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
         }
       />
       <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+        description=""
         name="constraint?"
         type={
           <Fragment>
@@ -57,14 +57,9 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
           </Fragment>
         }
       />
+      <PropRow description="" name="constraintMessage?" odd type="string" />
       <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
-        name="constraintMessage?"
-        odd
-        type="string"
-      />
-      <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+        description=""
         name="enabled?"
         type={
           <Fragment>
@@ -74,14 +69,9 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
           </Fragment>
         }
       />
+      <PropRow description="" name="helpText?" odd type="string" />
       <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
-        name="helpText?"
-        odd
-        type="string"
-      />
-      <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+        description=""
         name="label?"
         type={
           <Fragment>
@@ -92,32 +82,13 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
         }
       />
       {type === 'T' && (
-        <PropRow
-          description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
-          name="name"
-          type="string"
-          required
-        />
+        <PropRow description="" name="name" type="string" required />
       )}
+      <PropRow description="" name="pattern?" odd type="RegExp" />
+      <PropRow description="" name="patternMessage?" type="string" />
+      <PropRow description="" name="placeholder?" odd type="string" />
       <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
-        name="pattern?"
-        odd
-        type="RegExp"
-      />
-      <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
-        name="patternMessage?"
-        type="string"
-      />
-      <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
-        name="placeholder?"
-        odd
-        type="string"
-      />
-      <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+        description=""
         name="required?"
         type={
           <Fragment>
@@ -127,14 +98,9 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
           </Fragment>
         }
       />
+      <PropRow description="" name="requiredMessage?" odd type="string" />
       <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
-        name="requiredMessage?"
-        odd
-        type="string"
-      />
-      <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+        description=""
         name="serialize?"
         type={
           <Fragment>
@@ -145,7 +111,7 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
         }
       />
       <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+        description=""
         name="transient?"
         odd
         type={
@@ -158,7 +124,7 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
       />
       {type === 'T' && (
         <PropRow
-          description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+          description=""
           name="type"
           type={Object.keys(fieldTypeComponents)
             .sort()
@@ -168,7 +134,7 @@ export const FieldProps = ({ add, alter, bindings, showType, type }) => {
         />
       )}
       <PropRow
-        description="asd fasdfasd fasdf asdfasdf asdfasdf asdf  asdfasdf asdfasdfasdfasdf sdasdfa"
+        description=""
         name="visible?"
         type={
           <Fragment>

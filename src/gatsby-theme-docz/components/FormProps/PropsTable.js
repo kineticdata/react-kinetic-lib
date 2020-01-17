@@ -14,11 +14,13 @@ const rowStyle = even => ({
 export const PropsTable = props => (
   <table style={tableStyle}>
     <tbody>
-      {props.children.map((child, i) => (
-        <tr key={i} style={rowStyle(i % 2 === 0)}>
-          {child}
-        </tr>
-      ))}
+      {props.children
+        .filter(child => child)
+        .map((child, i) => (
+          <tr key={i} style={rowStyle(i % 2 === 0)}>
+            {child}
+          </tr>
+        ))}
     </tbody>
   </table>
 );

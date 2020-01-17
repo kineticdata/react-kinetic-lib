@@ -1,4 +1,4 @@
-import { fromJS, getIn, List, Map, OrderedMap } from 'immutable';
+import { fromJS, List, Map, OrderedMap } from 'immutable';
 import { isFunction } from 'lodash-es';
 import {
   DataSource,
@@ -222,4 +222,48 @@ export const buildPropertyFields = ({
         Map(),
       )
       .toObject(),
+});
+
+export const getComponentName = field => {
+  return (
+    field.type
+      .split('-')
+      .map(word => `${word.charAt(0).toUpperCase()}${word.substring(1)}`)
+      .join('') + 'Field'
+  );
+};
+
+export const getFieldComponentProps = field => ({
+  dirty: field.dirty,
+  enabled: field.enabled,
+  errors: field.errors,
+  focused: field.focused,
+  helpText: field.helpText,
+  id: field.id,
+  label: field.label,
+  language: field.type === 'code' ? field.language : undefined,
+  name: field.name,
+  onBlur: field.eventHandlers.get('onBlur'),
+  onChange: field.eventHandlers.get('onChange'),
+  onFocus: field.eventHandlers.get('onFocus'),
+  options: [
+    'attributes',
+    'code',
+    'form',
+    'form-multi',
+    'radio',
+    'select',
+    'select-multi',
+  ].includes(field.type)
+    ? field.options
+    : undefined,
+  placeholder: field.placeholder,
+  renderAttributes: field.renderAttributes,
+  required: field.required,
+  search: ['form', 'form-multi'].includes(field.type)
+    ? field.search
+    : undefined,
+  touched: field.touched,
+  value: field.value,
+  visible: field.visible,
 });
