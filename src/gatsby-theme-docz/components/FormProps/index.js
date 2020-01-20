@@ -4,6 +4,9 @@ import { FieldProps } from './FieldProps';
 import { FieldComponentProps } from './FieldComponentProps';
 import { ObjectType } from './ObjectType';
 import { PropsTable, PropRow } from './PropsTable';
+import { FormLayoutProps } from './FormLayoutProps';
+import { FormErrorProps } from './FormErrorProps';
+import { FormButtonProps } from './FormButtonProps';
 
 export const fieldTypeComponents = {
   attribute: 'AttributesField',
@@ -79,7 +82,15 @@ const ComponentsType = ({ showType }) => (
           ...reduction,
           [value]: <ComponentTypeLink type={value} showType={showType} />,
         }),
-        {},
+        {
+          FormButtons: (
+            <ComponentTypeLink type="FormButtons" showType={showType} />
+          ),
+          FormError: <ComponentTypeLink type="FormError" showType={showType} />,
+          FormLayout: (
+            <ComponentTypeLink type="FormLayout" showType={showType} />
+          ),
+        },
       )}
   />
 );
@@ -176,6 +187,15 @@ export const FormProps = ({ dataSources, fields, formOptions }) => {
         />
       ) : Object.values(fieldTypeComponents).includes(currentType) ? (
         <FieldComponentProps type={currentType} />
+      ) : currentType === 'FormButtons' ? (
+        <FormButtonProps formOptions={getFormOptionsType(formOptions)} />
+      ) : currentType === 'FormError' ? (
+        <FormErrorProps />
+      ) : currentType === 'FormLayout' ? (
+        <FormLayoutProps
+          bindings={getBindingsType(dataSources)}
+          formOptions={getFormOptionsType(formOptions)}
+        />
       ) : (
         <PropsTable>
           {formOptions.map(formOption => (
