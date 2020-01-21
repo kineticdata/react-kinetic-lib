@@ -1,12 +1,12 @@
 ---
-name: UserForm
+name: SpaceForm
 menu: Core
-route: /core/UserForm
+route: /core/SpaceForm
 ---
 
 import { FormProps } from '../../../gatsby-theme-docz/components/FormProps';
 
-export const name = 'UserForm';
+export const name = 'SpaceForm';
 
 <h2>{name}</h2>
 
@@ -40,10 +40,10 @@ export const name = 'UserForm';
     },
   ]}
   dataSources={[
-    { name: 'attributeDefinitions', type: 'AttributeDefinition[]' },
+    { name: 'space', type: 'Space' },
     { name: 'locales', type: 'Locale[]' },
-    { name: 'profileAttributeDefinitions', type: 'AttributeDefinition[]' },
     { name: 'timezones', type: 'Timezone[]' },
-    { name: 'user', type: 'User' },
+    { name: 'attributeDefinitions', type: 'AttributeDefinition[]' },
+    { name: 'securityPolicyDefinitions', type: 'SecurityPolicyDefinition[]' },
   ]}
 />
