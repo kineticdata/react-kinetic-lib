@@ -130,7 +130,11 @@ export class Node extends Component {
   render() {
     const { node, highlighted, primary, selected, tasks } = this.props;
     const { defers, definitionId, name } = node;
-    const invalid = !name;
+    const invalid =
+      !name ||
+      node.parameters.some(
+        parameter => parameter.required && parameter.value === '',
+      );
     const isRoutine =
       tasks.get(definitionId) && isArray(tasks.get(definitionId).inputs);
     const type = getNodeType(node);
