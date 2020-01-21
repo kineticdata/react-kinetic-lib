@@ -31,7 +31,6 @@ const fields = ({ node, task, tasks, tree }) => ({ bindings, parameters }) =>
       helpText: parameter.description,
       initialValue: parameter.value,
       options: parameter.menu ? getOptions(parameter.menu) : bindings,
-      required: parameter.required,
       transient: true,
       enabled: false,
     })),
@@ -49,7 +48,6 @@ const fields = ({ node, task, tasks, tree }) => ({ bindings, parameters }) =>
           ? matchingParameter.value
           : parameter.defaultValue,
         options: parameter.menu ? getOptions(parameter.menu) : bindings,
-        required: parameter.required,
         transient: true,
       };
     }),

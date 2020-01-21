@@ -8,6 +8,10 @@ const dataSources = ({ tasks, tree, node }) => ({
     fn: buildBindings,
     params: [tree, tasks, node],
   },
+  parameters: {
+    fn: node => node.parameters,
+    params: [node],
+  },
 });
 
 const getOptions = menu =>
@@ -79,7 +83,6 @@ const fields = ({ tasks, tree, node }) => ({ bindings }) =>
       helpText: parameter.description,
       initialValue: parameter.value,
       options: parameter.menu ? getOptions(parameter.menu) : bindings,
-      required: parameter.required,
       transient: true,
       visible: checkDependsOn(parameter),
     })),
