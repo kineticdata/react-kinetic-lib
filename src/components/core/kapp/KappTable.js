@@ -57,7 +57,10 @@ const columns = [
   { value: 'bundlePath', title: 'Bundle Path' },
   { value: 'defaultFormConfirmationPage', title: 'Form Confirmation Page' },
   { value: 'defaultFormDisplayPage', title: 'Form Display Page' },
-  { value: 'defaultSubmissionLabelExpression', title: 'Submission Label' },
+  {
+    value: 'defaultSubmissionLabelExpression',
+    title: 'Default Submission Label',
+  },
   { value: 'displayType', title: 'Display Type' },
   { value: 'displayValue', title: 'Display Value' },
   { value: 'loginPage', title: 'Login Page' },
