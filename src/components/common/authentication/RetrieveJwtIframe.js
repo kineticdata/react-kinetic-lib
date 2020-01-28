@@ -12,6 +12,9 @@ const jwtTokenListener = e => {
   if (e.origin === checkedOrigin && e.data.token) {
     setToken(e.data.token);
   }
+  if (e.origin === checkedOrigin && e.data.type === 'ping') {
+    e.source.postMessage({ type: 'pong' }, e.origin);
+  }
 };
 
 const RetrieveJwt = ({ frameRef, clientId }) => (
