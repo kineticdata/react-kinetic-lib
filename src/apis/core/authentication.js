@@ -17,7 +17,8 @@ export const login = ({ username, password }) =>
     )
     .catch(handleErrors);
 
-export const logout = () => axios.get(`${bundle.spaceLocation()}/app/logout`);
+export const logoutDirect = () =>
+  axios.get(`${bundle.spaceLocation()}/app/logout`);
 
 const checkedOrigin = process.env.REACT_APP_API_HOST
   ? process.env.REACT_APP_API_HOST

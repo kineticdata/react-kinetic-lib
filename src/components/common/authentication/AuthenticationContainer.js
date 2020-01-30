@@ -8,13 +8,7 @@ import {
   dispatch,
   regSaga,
 } from '../../../store';
-import {
-  login,
-  logout,
-  fetchProfile,
-  retrieveJwt,
-  singleSignOn,
-} from '../../../apis';
+import { login, logoutDirect, retrieveJwt, singleSignOn } from '../../../apis';
 import {
   getInitialAuthentication,
   getSecurityStrategies,
@@ -125,7 +119,7 @@ regSaga(
     try {
       const loggedIn = yield select(state => state.getIn(['session', 'token']));
       if (loggedIn) {
-        yield call(logout);
+        yield call(logoutDirect);
       }
       yield put(action('LOGOUT'));
       if (isFunction(payload)) {
@@ -158,7 +152,7 @@ const onLogin = (e, callback) => {
   dispatch('LOGIN', callback);
 };
 
-const onLogout = callback => {
+const logout = callback => {
   dispatch('LOGOUT_START', callback);
 };
 
@@ -198,4 +192,4 @@ const AuthenticationContainer = connect(mapStateToProps)(
   AuthenticationComponent,
 );
 
-export { AuthenticationContainer, onLogout };
+export { AuthenticationContainer, logout };

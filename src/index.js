@@ -43,9 +43,7 @@ export const KineticLib = props => (
           .merge(props.components && props.components.fields)}
       >
         {typeof props.children === 'function' ? (
-          <AuthenticationContainer clientId={props.clientId}>
-            {props.children}
-          </AuthenticationContainer>
+          <AuthenticationContainer>{props.children}</AuthenticationContainer>
         ) : (
           props.children
         )}

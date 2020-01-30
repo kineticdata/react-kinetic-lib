@@ -8,7 +8,7 @@ export { TableInput } from './common/TableInput';
 export { FormSelect } from './common/FormSelect';
 export { Scroller } from './common/Scroller';
 export { StaticSelect } from './common/StaticSelect';
-export { onLogout } from './common/authentication/AuthenticationContainer';
+export { logout } from './common/authentication/AuthenticationContainer';
 
 // Form
 export {
