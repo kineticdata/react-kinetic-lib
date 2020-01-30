@@ -2,22 +2,36 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { createHashHistory } from 'history';
 import { remove } from 'immutable';
-
-import { context, commitStore, configure, store } from './store';
+import axios from 'axios';
+import { action, context, commitStore, store } from './store';
 import { I18nProvider } from './components';
 import { DefaultFieldConfig } from './components/form/defaults';
 import { DefaultTableConfig } from './components/table/defaults';
 import { ComponentConfigContext } from './components/common/ComponentConfigContext';
 import { AuthenticationContainer } from './components/common/authentication/AuthenticationContainer';
+import AuthInterceptor from './components/common/authentication/AuthInterceptor';
 
 export * from './apis';
 export * from './components';
 export * from './helpers';
 export * from './models';
 
+const authInterceptor = new AuthInterceptor(
+  store,
+  // callback to invoke when we get a 401 response
+  () => action('TIMEOUT'),
+  // how to detect if the user has re-authenticated
+  state => !!state.getIn(['session', 'token']),
+  // how to detect if the user has cancelled the re-authentication process
+  state => !state.getIn(['session', 'timedOut']),
+);
+
+axios.defaults.withCredentials = true;
+axios.interceptors.response.use(null, authInterceptor.handleRejected);
+
 commitStore();
 
-const KineticLib = props => (
+export const KineticLib = props => (
   <Provider store={store} context={context}>
     <I18nProvider locale={props.locale}>
       <ComponentConfigContext.Provider
@@ -37,6 +51,5 @@ const KineticLib = props => (
   </Provider>
 );
 
-const history = typeof window !== 'undefined' ? createHashHistory() : null;
-
-export { configure, KineticLib, history };
+export const history =
+  typeof window !== 'undefined' && window.bundle ? createHashHistory() : null;

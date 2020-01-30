@@ -285,3 +285,6 @@ export const buildAgentPath = options =>
   `${bundle.spaceLocation()}/app/components/agents/${
     options.agentSlug ? options.agentSlug : 'system'
   }`;
+
+export const getSecurityStrategies = () =>
+  window.KD && window.KD.meta ? window.KD.meta.securityStrategies : [];
