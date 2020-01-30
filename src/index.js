@@ -23,7 +23,7 @@ const authInterceptor = new AuthInterceptor(
   // how to detect if the user has re-authenticated
   state => !!state.getIn(['session', 'token']),
   // how to detect if the user has cancelled the re-authentication process
-  state => !state.getIn(['session', 'timedOut']),
+  state => !state.getIn(['session', 'loggedIn']),
 );
 
 axios.defaults.withCredentials = true;
