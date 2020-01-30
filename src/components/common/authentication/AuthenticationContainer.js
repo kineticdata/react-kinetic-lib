@@ -15,7 +15,10 @@ import {
   retrieveJwt,
   singleSignOn,
 } from '../../../apis';
-import { getSecurityStrategies } from '../../../helpers';
+import {
+  getInitialAuthentication,
+  getSecurityStrategies,
+} from '../../../helpers';
 
 const defaultLoginProps = {
   error: null,
@@ -108,8 +111,8 @@ regSaga(
 regSaga(
   takeEvery('INITIALIZE', function*() {
     try {
-      const { profile } = yield call(fetchProfile, { public: true });
-      const token = profile ? yield call(retrieveJwt) : null;
+      const authenticated = yield call(getInitialAuthentication);
+      const token = authenticated ? yield call(retrieveJwt) : null;
       yield put(action('SET_INITIALIZED', { token }));
     } catch (e) {
       console.error(e);

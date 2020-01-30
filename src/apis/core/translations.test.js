@@ -44,7 +44,10 @@ describe('translations api', () => {
       });
       const result = await fetchAvailableLocales();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/meta/locales', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/meta/locales',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         locales: [{}, {}],
@@ -62,7 +65,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/meta/locales',
-          { params: { localized: 'en' }, headers: {} },
+          {
+            params: { localized: 'en' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -79,7 +85,10 @@ describe('translations api', () => {
       );
       const result = await fetchAvailableLocales();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/meta/locales', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/meta/locales',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         error: {
@@ -106,7 +115,10 @@ describe('translations api', () => {
       });
       const result = await clearTranslationsCache();
       expect(axios.delete.mock.calls).toEqual([
-        ['space/app/api/v1/translations/cache', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/translations/cache',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         message: 'success',
@@ -122,7 +134,10 @@ describe('translations api', () => {
       );
       const result = await clearTranslationsCache();
       expect(axios.delete.mock.calls).toEqual([
-        ['space/app/api/v1/translations/cache', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/translations/cache',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         error: {
@@ -147,7 +162,10 @@ describe('translations api', () => {
       });
       const result = await fetchStagedTranslations();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/translations/staged', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/translations/staged',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         changes: [{}, {}],
@@ -165,7 +183,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/staged',
-          { params: { context: 'custom.test' }, headers: {} },
+          {
+            params: { context: 'custom.test' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -182,7 +203,10 @@ describe('translations api', () => {
       );
       const result = await fetchStagedTranslations();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/translations/staged', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/translations/staged',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         error: {
@@ -211,7 +235,7 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/settings/defaultLocale',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -230,7 +254,7 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/settings/defaultLocale',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -261,7 +285,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/settings/defaultLocale',
           { code: 'en' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -289,7 +313,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/settings/defaultLocale',
           { code: 'en' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -319,7 +343,7 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/settings/locales',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -338,7 +362,7 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/settings/locales',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -369,7 +393,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/settings/locales',
           { code: 'en' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -397,7 +421,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/settings/locales',
           { code: 'en' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -427,7 +451,7 @@ describe('translations api', () => {
       expect(axios.delete.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/settings/locales/en',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -454,7 +478,7 @@ describe('translations api', () => {
       expect(axios.delete.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/settings/locales/en',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -482,7 +506,10 @@ describe('translations api', () => {
       });
       const result = await fetchContexts();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/translations/contexts', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/translations/contexts',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         contexts: [{}, {}],
@@ -500,7 +527,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/contexts',
-          { params: { custom: true }, headers: {} },
+          {
+            params: { custom: true },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -519,7 +549,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/contexts',
-          { params: { expected: true }, headers: {} },
+          {
+            params: { expected: true },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -538,7 +571,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/contexts',
-          { params: { unexpected: true }, headers: {} },
+          {
+            params: { unexpected: true },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -555,7 +591,10 @@ describe('translations api', () => {
       );
       const result = await fetchContexts();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/translations/contexts', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/translations/contexts',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         error: {
@@ -585,7 +624,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/contexts',
           { name: 'custom.test' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -613,7 +652,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/contexts',
           {},
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -647,7 +686,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/contexts/custom.test',
           { name: 'custom.other' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -686,7 +725,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/contexts/custom.test',
           {},
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -716,7 +755,7 @@ describe('translations api', () => {
       expect(axios.delete.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/contexts/custom.test',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -743,7 +782,7 @@ describe('translations api', () => {
       expect(axios.delete.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/contexts/custom.test',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -773,7 +812,7 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/contexts/custom.test/keys',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -800,7 +839,7 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/contexts/custom.test/keys',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -835,7 +874,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/contexts/custom.test/keys/asdf',
           { name: 'newKey' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -883,7 +922,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/contexts/custom.test/keys/asdf',
           { name: 'newKey' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -919,7 +958,7 @@ describe('translations api', () => {
           'space/app/api/v1/translations/entries',
           {
             params: { cache: true, context: 'custom.test', locale: 'en' },
-            headers: {},
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
           },
         ],
       ]);
@@ -958,7 +997,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/entries',
-          { params: { context: 'custom.test', locale: 'en' }, headers: {} },
+          {
+            params: { context: 'custom.test', locale: 'en' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -980,7 +1022,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/entries',
-          { params: { context: 'custom.test', keyHash: 'asdf' }, headers: {} },
+          {
+            params: { context: 'custom.test', keyHash: 'asdf' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -999,7 +1044,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/entries',
-          { params: { missing: true }, headers: {} },
+          {
+            params: { missing: true },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -1018,7 +1066,10 @@ describe('translations api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/entries',
-          { params: { export: 'csv', download: true }, headers: {} },
+          {
+            params: { export: 'csv', download: true },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -1035,7 +1086,10 @@ describe('translations api', () => {
       );
       const result = await fetchTranslations();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/translations/entries', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/translations/entries',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         error: {
@@ -1067,7 +1121,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/entries',
           { value: 'test' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -1097,7 +1151,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/entries',
           [{ value: 'test' }],
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -1125,7 +1179,10 @@ describe('translations api', () => {
           testFormData,
           {
             params: { import: 'csv' },
-            headers: { 'Content-Type': 'multipart/form-data' },
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'X-Kinetic-AuthAssumed': 'true',
+            },
           },
         ],
       ]);
@@ -1156,7 +1213,7 @@ describe('translations api', () => {
         [
           'space/app/api/v1/translations/entries',
           { value: 'test' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -1186,7 +1243,10 @@ describe('translations api', () => {
       expect(axios.delete.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/entries',
-          { params: { context: 'custom.test' }, headers: {} },
+          {
+            params: { context: 'custom.test' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -1205,7 +1265,10 @@ describe('translations api', () => {
       expect(axios.delete.mock.calls).toEqual([
         [
           'space/app/api/v1/translations/entries',
-          { params: { locale: 'en' }, headers: {} },
+          {
+            params: { locale: 'en' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -1230,7 +1293,7 @@ describe('translations api', () => {
           'space/app/api/v1/translations/entries',
           {
             params: { context: 'custom.test', locale: 'en', keyHash: 'asdf' },
-            headers: {},
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
           },
         ],
       ]);
@@ -1256,7 +1319,10 @@ describe('translations api', () => {
       );
       const result = await deleteTranslations();
       expect(axios.delete.mock.calls).toEqual([
-        ['space/app/api/v1/translations/entries', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/translations/entries',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         error: {

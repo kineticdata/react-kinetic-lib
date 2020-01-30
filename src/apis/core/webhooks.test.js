@@ -40,7 +40,10 @@ describe('webhooks api', () => {
       });
       const result = await fetchWebhooks();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/webhooks', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/webhooks',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         webhooks: [
@@ -78,7 +81,7 @@ describe('webhooks api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/kapps/services/webhooks',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -104,7 +107,10 @@ describe('webhooks api', () => {
       );
       const result = await fetchWebhooks();
       expect(axios.get.mock.calls).toEqual([
-        ['space/app/api/v1/webhooks', { params: {}, headers: {} }],
+        [
+          'space/app/api/v1/webhooks',
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
+        ],
       ]);
       expect(result).toEqual({
         error: {
@@ -142,7 +148,7 @@ describe('webhooks api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/webhooks/Test Webhook Name',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -210,7 +216,7 @@ describe('webhooks api', () => {
             type: 'Space',
             url: 'https://myapi.com/api/v1',
           },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -261,7 +267,7 @@ describe('webhooks api', () => {
             type: 'Space',
             url: 'https://myapi.com/api/v1',
           },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -318,7 +324,7 @@ describe('webhooks api', () => {
             type: 'Space',
             url: 'https://myapi.com/api/v1',
           },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({

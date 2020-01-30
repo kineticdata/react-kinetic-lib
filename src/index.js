@@ -10,12 +10,14 @@ import { DefaultTableConfig } from './components/table/defaults';
 import { ComponentConfigContext } from './components/common/ComponentConfigContext';
 import { AuthenticationContainer } from './components/common/authentication/AuthenticationContainer';
 import AuthInterceptor from './components/common/authentication/AuthInterceptor';
+import RequestInterceptor from './components/common/authentication/RequestInterceptor';
 
 export * from './apis';
 export * from './components';
 export * from './helpers';
 export * from './models';
 
+const requestInterceptor = new RequestInterceptor(store);
 const authInterceptor = new AuthInterceptor(
   store,
   // callback to invoke when we get a 401 response
@@ -27,6 +29,7 @@ const authInterceptor = new AuthInterceptor(
 );
 
 axios.defaults.withCredentials = true;
+axios.interceptors.request.use(requestInterceptor.handleFulfilled);
 axios.interceptors.response.use(null, authInterceptor.handleRejected);
 
 commitStore();

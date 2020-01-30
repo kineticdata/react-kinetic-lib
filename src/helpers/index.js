@@ -287,4 +287,11 @@ export const buildAgentPath = options =>
   }`;
 
 export const getSecurityStrategies = () =>
-  window.KD && window.KD.meta ? window.KD.meta.securityStrategies : [];
+  window && window.KD && window.KD.meta
+    ? window.KD.meta.securityStrategies
+    : [];
+
+export const getInitialAuthentication = () =>
+  window && window.KD && window.KD.meta
+    ? window.KD.meta.isAuthenticated
+    : false;

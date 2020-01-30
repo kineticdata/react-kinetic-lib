@@ -450,7 +450,10 @@ describe('#createSubmission', () => {
         expect(axios.post).toHaveBeenCalledWith(
           'mock-space/app/api/v1/kapps/mock-kapp/forms/ipad-request/submissions',
           { values },
-          { params: { completed: true }, headers: {} },
+          {
+            params: { completed: true },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         );
       });
     });
@@ -466,7 +469,10 @@ describe('#createSubmission', () => {
         expect(axios.post).toHaveBeenCalledWith(
           'mock-space/app/api/v1/kapps/catalog/forms/ipad-request/submissions',
           { values },
-          { params: { completed: false }, headers: {} },
+          {
+            params: { completed: false },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         );
       });
     });
