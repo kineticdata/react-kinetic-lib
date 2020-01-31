@@ -145,7 +145,7 @@ export const FormProps = ({ dataSources, fields, formOptions }) => {
   const currentType = showingTypes[showingTypes.length - 1]['type'];
   return (
     <>
-      <h5>
+      <h3>
         {showingTypes.map(({ name, type, typeParams = [] }, i) => {
           const Wrapper = props =>
             i < showingTypes.length - 1 ? (
@@ -178,7 +178,7 @@ export const FormProps = ({ dataSources, fields, formOptions }) => {
             </Wrapper>
           );
         })}
-      </h5>
+      </h3>
       {currentType === 'Field' ? (
         <FieldProps
           bindings={getBindingsType(dataSources)}

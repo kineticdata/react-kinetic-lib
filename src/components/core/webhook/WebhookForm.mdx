@@ -9,6 +9,7 @@ import { FormProps } from '../../../gatsby-theme-docz/components/FormProps';
 export const name = 'WebhookForm';
 
 <h2>{name}</h2>
+The webhook form is used for creating and editing webhooks within the system.
 
 <FormProps
   fields={[
@@ -39,3 +40,42 @@ export const name = 'WebhookForm';
     { name: 'events', type: 'Event[]' },
   ]}
 />
+
+### Examples
+
+#### Simple implementation of a space scoped `WebhookForm`.
+
+```javascript
+<WebhookForm />
+```
+
+Because no name or kappSlug was passed, submitting this form will create a new Space Webhook
+
+#### Simple implementation of a kapp scoped `WebhookForm`.
+
+```javascript
+<WebhookForm name="Submission Submitted" kappSlug="services" />
+```
+
+This example will display a form for editing the "Submission Submitted" webhook in the "services" kapp.
+
+#### Control the Layout of a `WebhookForm`.
+
+```javascript
+<WebhookForm kappSlug="services">
+  {({ form, initialized, bindings }) => {
+    const { space, webhook } = bindings;
+    return initialized ? (
+      <div>
+        <h5>
+          Webhook for {space.get('name')} / {webhook.get('type')} /{' '}
+          {webhook.get('event')}{' '}
+        </h5>
+        {form}
+      </div>
+    ) : (
+      <div>Loading</div>
+    );
+  }}
+</WebhookForm>
+```
