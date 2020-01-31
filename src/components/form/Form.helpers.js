@@ -1,4 +1,4 @@
-import { fromJS, getIn, List, Map, OrderedMap } from 'immutable';
+import { fromJS, List, Map, OrderedMap } from 'immutable';
 import { isFunction } from 'lodash-es';
 import {
   DataSource,
