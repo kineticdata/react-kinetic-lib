@@ -35,12 +35,7 @@ export * from './core/webhooksJobs';
 export * from './discussions';
 
 // Http
-export {
-  addRequestInterceptor,
-  addResponseInterceptor,
-  setDefaultAuthAssumed,
-  generateCESearchParams,
-} from './http';
+export { generateCESearchParams } from './http';
 
 // Sockets
 export { socket, socketIdentify } from './socket';

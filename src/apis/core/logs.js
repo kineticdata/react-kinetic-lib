@@ -1,4 +1,4 @@
-import { axios } from '../../store';
+import axios from 'axios';
 import { bundle } from '../../helpers';
 import { handleErrors, headerBuilder } from '../http';
 
@@ -24,7 +24,7 @@ export const fetchLogs = (options = {}) => {
         start: options.start,
         end: options.end,
       },
-      headers: headerBuilder({ ...options, authAssumed: false }),
+      headers: headerBuilder(options),
     })
     .then(response => {
       if (typeof response.data === 'object') {

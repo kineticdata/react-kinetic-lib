@@ -33,7 +33,10 @@ describe('bridgeModels api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/models',
-          { params: { include: 'attributes' }, headers: {} },
+          {
+            params: { include: 'attributes' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -52,7 +55,10 @@ describe('bridgeModels api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/models',
-          { params: { include: 'attributes' }, headers: {} },
+          {
+            params: { include: 'attributes' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -85,7 +91,10 @@ describe('bridgeModels api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/models/Person',
-          { params: { include: 'attributes' }, headers: {} },
+          {
+            params: { include: 'attributes' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -115,7 +124,10 @@ describe('bridgeModels api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/models/Person',
-          { params: { include: 'attributes' }, headers: {} },
+          {
+            params: { include: 'attributes' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -149,7 +161,10 @@ describe('bridgeModels api', () => {
         [
           'space/app/api/v1/models',
           { name: 'Person', status: 'Active' },
-          { params: { include: 'attributes' }, headers: {} },
+          {
+            params: { include: 'attributes' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({
@@ -230,7 +245,10 @@ describe('bridgeModels api', () => {
         [
           'space/app/api/v1/models/Person',
           { name: 'Person New', status: 'Active' },
-          { params: { include: 'attributes' }, headers: {} },
+          {
+            params: { include: 'attributes' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(result).toEqual({

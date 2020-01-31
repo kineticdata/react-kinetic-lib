@@ -53,7 +53,7 @@ describe('securityPolicyDefinitions api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/securityPolicyDefinitions',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -121,7 +121,7 @@ describe('securityPolicyDefinitions api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/kapps/services/securityPolicyDefinitions',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -167,7 +167,7 @@ describe('securityPolicyDefinitions api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/securityPolicyDefinitions',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -204,7 +204,7 @@ describe('securityPolicyDefinitions api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/securityPolicyDefinitions/Everyone',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -264,7 +264,7 @@ describe('securityPolicyDefinitions api', () => {
             rule: 'true',
             type: 'Space',
           },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -307,7 +307,7 @@ describe('securityPolicyDefinitions api', () => {
             rule: 'true',
             type: 'Kapp',
           },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -356,7 +356,7 @@ describe('securityPolicyDefinitions api', () => {
             rule: 'true',
             type: 'Space',
           },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({

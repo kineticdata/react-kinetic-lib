@@ -164,7 +164,10 @@ describe('kapps api', () => {
             name: 'Test',
             attributes: [{ name: 'Company Name', values: ['Foo Bar'] }],
           },
-          { params: { include: 'attributes' }, headers: {} },
+          {
+            params: { include: 'attributes' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(kapp).toEqual({
@@ -181,7 +184,7 @@ describe('kapps api', () => {
         [
           'kapp/app/api/v1/kapps/mock-kapp',
           { name: 'Test' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
     });
