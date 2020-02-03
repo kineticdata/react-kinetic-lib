@@ -9,5 +9,5 @@ npm-debug.log*
 .cache
 .docz
 
-
+/samples/*/node_modules
 .idea
