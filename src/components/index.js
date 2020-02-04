@@ -124,6 +124,8 @@ export { TeamTable } from './core/team/TeamTable';
 export { UserForm } from './core/user/UserForm';
 export { UserTable } from './core/user/UserTable';
 export { LogTable, generateLogQuery } from './core/log/LogTable';
+export { WebApiForm } from './core/webapi/WebApiForm';
+export { WebApiTable } from './core/webapi/WebApiTable';
 export { WebhookForm } from './core/webhook/WebhookForm';
 export { WebhookTable } from './core/webhook/WebhookTable';
 export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
