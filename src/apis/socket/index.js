@@ -34,4 +34,12 @@ export const socket = new Socket().on(
   dispatcher('SET_SOCKET_STATUS'),
 );
 
-export const socketIdentify = token => socket.connect(token, createWsUri());
+export const socketIdentify = token =>
+  new Promise(resolve => {
+    socket.on('status', status => {
+      if (status === SOCKET_STATUS.IDENTIFIED) {
+        resolve();
+      }
+    });
+    socket.connect(token, createWsUri());
+  });

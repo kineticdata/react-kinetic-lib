@@ -9,6 +9,7 @@ import {
   regSaga,
 } from '../../../store';
 import { login, logoutDirect, retrieveJwt, singleSignOn } from '../../../apis';
+import { socketIdentify } from '../../../apis/socket';
 import {
   getInitialAuthentication,
   getSecurityStrategies,
@@ -69,6 +70,7 @@ regSaga(
         yield put({ type: 'SET_ERROR', payload: error.message });
       } else {
         const token = yield call(retrieveJwt);
+        yield call(socketIdentify, token);
         yield put({
           type: 'SET_AUTHENTICATED',
           payload: { token, callback: payload },
@@ -91,6 +93,7 @@ regSaga(
         yield put({ type: 'SET_ERROR', payload: error });
       } else {
         const token = yield call(retrieveJwt);
+        yield call(socketIdentify, token);
         yield put({
           type: 'SET_AUTHENTICATED',
           payload: { token, callback: payload },
@@ -107,6 +110,9 @@ regSaga(
     try {
       const authenticated = yield call(getInitialAuthentication);
       const token = authenticated ? yield call(retrieveJwt) : null;
+      if (token) {
+        yield call(socketIdentify, token);
+      }
       yield put(action('SET_INITIALIZED', { token }));
     } catch (e) {
       console.error(e);

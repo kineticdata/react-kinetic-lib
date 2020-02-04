@@ -38,7 +38,7 @@ export * from './discussions';
 export { generateCESearchParams } from './http';
 
 // Sockets
-export { socket, socketIdentify } from './socket';
+export { socket } from './socket';
 
 // Task
 export * from './task';
