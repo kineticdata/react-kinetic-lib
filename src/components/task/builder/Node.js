@@ -130,7 +130,12 @@ export class Node extends Component {
   render() {
     const { node, highlighted, primary, selected, tasks } = this.props;
     const { defers, definitionId, name } = node;
+    const missing =
+      !tasks.has(node.definitionId) &&
+      !node.definitionId.startsWith('system_tree_return_v') &&
+      !node.definitionId.startsWith('system_start_v');
     const invalid =
+      missing ||
       !name ||
       node.parameters.some(
         parameter => parameter.required && parameter.value === '',
@@ -169,6 +174,7 @@ export class Node extends Component {
               invalid,
               primary,
               selected,
+              missing,
             })}
             height={height}
             width={constants.NODE_WIDTH}
