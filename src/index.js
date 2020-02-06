@@ -43,7 +43,9 @@ export const KineticLib = props => (
           .merge(props.components && props.components.fields)}
       >
         {typeof props.children === 'function' ? (
-          <AuthenticationContainer>{props.children}</AuthenticationContainer>
+          <AuthenticationContainer noSocket={props.noSocket}>
+            {props.children}
+          </AuthenticationContainer>
         ) : (
           props.children
         )}

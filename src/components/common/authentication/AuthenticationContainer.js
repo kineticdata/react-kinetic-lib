@@ -43,6 +43,7 @@ regHandlers({
     state.mergeIn(['session'], {
       initialized: true,
       loggedIn: !!action.payload.token,
+      socket: action.payload.socket,
       token: action.payload.token,
     }),
 
@@ -64,13 +65,16 @@ regHandlers({
 regSaga(
   takeEvery('LOGIN', function*({ payload }) {
     try {
+      const socket = yield select(state => state.getIn(['session', 'socket']));
       const { username, password } = yield select(state => state.get('login'));
       const { error } = yield call(login, { username, password });
       if (error) {
         yield put({ type: 'SET_ERROR', payload: error.message });
       } else {
         const token = yield call(retrieveJwt);
-        yield call(socketIdentify, token);
+        if (socket) {
+          yield call(socketIdentify, token);
+        }
         yield put({
           type: 'SET_AUTHENTICATED',
           payload: { token, callback: payload },
@@ -85,6 +89,7 @@ regSaga(
 regSaga(
   takeEvery('SINGLE_SIGN_ON', function*({ payload }) {
     try {
+      const socket = yield select(state => state.getIn(['session', 'socket']));
       const { error } = yield call(singleSignOn, {
         width: 770,
         height: 750,
@@ -93,7 +98,9 @@ regSaga(
         yield put({ type: 'SET_ERROR', payload: error });
       } else {
         const token = yield call(retrieveJwt);
-        yield call(socketIdentify, token);
+        if (socket) {
+          yield call(socketIdentify, token);
+        }
         yield put({
           type: 'SET_AUTHENTICATED',
           payload: { token, callback: payload },
@@ -106,14 +113,14 @@ regSaga(
 );
 
 regSaga(
-  takeEvery('INITIALIZE', function*() {
+  takeEvery('INITIALIZE', function*({ payload: { socket } }) {
     try {
       const authenticated = yield call(getInitialAuthentication);
       const token = authenticated ? yield call(retrieveJwt) : null;
-      if (token) {
+      if (socket && token) {
         yield call(socketIdentify, token);
       }
-      yield put(action('SET_INITIALIZED', { token }));
+      yield put(action('SET_INITIALIZED', { socket, token }));
     } catch (e) {
       console.error(e);
     }
@@ -164,7 +171,7 @@ const logout = callback => {
 
 export class AuthenticationComponent extends Component {
   componentDidMount() {
-    dispatch('INITIALIZE');
+    dispatch('INITIALIZE', { socket: !this.props.noSocket });
   }
 
   render() {
