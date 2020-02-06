@@ -3,7 +3,7 @@ import { isArray, isFunction } from 'lodash-es';
 import classNames from 'classnames';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
-import { addNewTask, getNodeType, isIE11 } from './helpers';
+import { addNewTask, getNewNodePosition, getNodeType, isIE11 } from './helpers';
 import { Point } from './models';
 import { SvgText } from './SvgText';
 import plusIcon from '../../../assets/task/icons/plus_small.svg';
@@ -25,7 +25,15 @@ export class Node extends Component {
   addNewNode = () => {
     if (isFunction(this.props.onNew)) {
       this.props.onNew(
-        addNewTask(this.props.treeKey, this.props.tree, this.props.node),
+        addNewTask(
+          this.props.treeKey,
+          this.props.tree,
+          this.props.node,
+          getNewNodePosition(
+            this.props.node,
+            this.treeBuilder.getChildNodes(this.props.node.id),
+          ),
+        ),
       );
     }
   };

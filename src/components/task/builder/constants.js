@@ -16,8 +16,9 @@ export const CONNECTOR_STROKE_WIDTH = 4;
 
 export const ICON_SIZE = 18;
 
-export const NEW_TASK_DX = 0;
+export const NEW_TASK_DX = 200;
 export const NEW_TASK_DY = 200;
+export const NEW_TASK_GAP_REQUIED = 300;
 
 export const NODE_BADGE_OFFSET = 6;
 export const NODE_BAR_THICKNESS = 5;

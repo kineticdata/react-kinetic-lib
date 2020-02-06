@@ -119,6 +119,11 @@ export class TreeBuilderComponent extends Component {
   getConnectorsByTail = nodeId =>
     Object.values(this.connectorMap.byTail[nodeId] || {});
 
+  getChildNodes = nodeId =>
+    Object.keys(this.connectorMap.byTail[nodeId] || {})
+      .map(connectorId => this.props.tree.connectors.get(parseInt(connectorId)))
+      .map(connector => this.props.tree.nodes.get(connector.headId));
+
   // helper provided so that the plus button on a node can start the process of
   // creating a new connector, since the drop position may not be valid we do
   // not want to persist anything to redux state until we can confirm the drop
