@@ -1,63 +1,89 @@
 import { generateForm } from '../../form/Form';
+import { get, getIn, List, Map } from 'immutable';
 import {
-  fetchSecurityPolicyDefinition,
-  // createSecurityPolicyDefinition,
-  // updateSecurityPolicyDefinition,
+  fetchWebApi,
+  createWebApi,
+  updateWebApi,
+  fetchSecurityPolicyDefinitions,
 } from '../../../apis';
-// import { buildBindings } from '../../../helpers';
 
-export const WEB_API_TYPES = ['Foo', 'Bar', 'Baz'];
+export const WEB_API_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 
-const dataSources = ({ webApiName }) => ({
-  securityPolicy: {
-    fn: fetchSecurityPolicyDefinition,
-    params: webApiName && [{ securityPolicyName: webApiName }],
-    transform: result => result.securityPolicyDefinition,
+const dataSources = ({ slug, kappSlug }) => ({
+  webApi: {
+    fn: fetchWebApi,
+    params: slug && kappSlug ? [{ slug, kappSlug }] : [{ slug }],
+    transform: result => result.webApi,
+  },
+  securityPolicyDefinitions: {
+    fn: fetchSecurityPolicyDefinitions,
+    params: [],
+    // params: kappName && [{ kappName }],
+    transform: result => result.securityPolicyDefinitions,
   },
 });
 
-// const handleSubmit = ({ webApiName }) => values =>
-//   (webApiName
-//     ? updateSecurityPolicyDefinition
-//     : createSecurityPolicyDefinition)({
-//     webApiName,
-//     securityPolicyDefinition: values.toJS(),
-//   }).then(({ securityPolicyDefinition, error }) => {
-//     if (error) {
-//       throw (error.statusCode === 400 && error.message) ||
-//         'There was an error saving the WebAPI';
-//     }
-//     return securityPolicyDefinition;
-//   });
+const handleSubmit = ({ slug, kappSlug }) => values =>
+  (slug ? updateWebApi : createWebApi)({
+    kappSlug,
+    slug,
+    webApi: values.toJS(),
+  }).then(({ webApi, error }) => {
+    if (error) {
+      throw (error.statusCode === 400 && error.message) ||
+        'There was an error saving the WebAPI';
+    }
+    return webApi;
+  });
 
-const fields = ({ webApiName }) => ({ securityPolicy }) =>
-  (!webApiName || securityPolicy) && [
+const fields = ({ slug }) => ({ webApi }) =>
+  (!slug || webApi) && [
     {
-      name: 'name',
-      label: 'Name',
+      name: 'slug',
+      label: 'Slug',
       type: 'text',
       required: true,
-      initialValue: securityPolicy ? securityPolicy.get('name') : '',
-      helpText: 'Will be displayed in security policy dropdowns.',
+      initialValue: get(webApi, 'slug') || '',
     },
     {
-      name: 'type',
-      label: 'Type',
+      name: 'method',
+      label: 'Method',
       type: 'select',
       required: true,
-      options: WEB_API_TYPES.map(el => ({
+      options: WEB_API_METHODS.map(el => ({
         value: el,
         label: el,
       })),
-      initialValue: 'Foo'
+      initialValue: get(webApi, 'method') || '',
+    },
+    {
+      name: 'securityPolicies',
+      label: 'Endpoint: Execution',
+      type: 'select',
+      required: true,
+      options: ({ securityPolicyDefinitions }) => {
+        // console.log(securityPolicyDefinitions);
+        return securityPolicyDefinitions
+          ? securityPolicyDefinitions.map(policy =>
+              Map({
+                value: policy.get('name'),
+                label: policy.get('name'),
+              }),
+            )
+          : List();
+      },
+      initialValue: getIn(webApi, ['securityPolicies', 0, 'name'], 'Admins'),
+      serialize: ({ values }) => [
+        { endpoint: 'Execution', name: values.get('securityPolicies') },
+      ],
     },
   ];
 
 export const WebApiForm = generateForm({
-  formOptions: ['webApiName'],
+  formOptions: ['slug'],
   dataSources,
   fields,
-  // handleSubmit,
+  handleSubmit,
 });
 
 WebApiForm.displayName = 'WebApiForm';

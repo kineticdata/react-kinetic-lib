@@ -28,6 +28,7 @@ export * from './core/teams';
 export * from './core/translations';
 export * from './core/users';
 export * from './core/version';
+export * from './core/webApis';
 export * from './core/webhooks';
 export * from './core/webhooksJobs';
 

@@ -1,39 +1,39 @@
 import { generateTable } from '../../table/Table';
-import { fetchSecurityPolicyDefinitions } from '../../../apis'; // need to replace
-import { WEB_API_TYPES } from './WebApiForm';
+import { fetchWebApis } from '../../../apis';
+import { WEB_API_METHODS } from './WebApiForm';
 
 const dataSource = ({ kappSlug }) => ({
-  fn: fetchSecurityPolicyDefinitions, // need to replace
+  fn: fetchWebApis,
   clientSideSearch: true,
   params: () => [
     {
-      include: 'details',
       kappSlug,
     },
   ],
   transform: result => ({
-    data: result.securityPolicyDefinitions,
+    data: result.webApis,
   }),
 });
 
 const columns = [
   {
-    value: 'name',
-    title: 'Name',
-    filter: 'includes',
+    value: 'slug',
+    title: 'Slug',
+    filter: 'startsWith',
     type: 'text',
     sortable: true,
   },
   {
-    value: 'type',
-    title: 'Type',
-    filter: 'exact',
-    type: 'select',
+    value: 'method',
+    title: 'Method',
+    filter: 'startsWith',
+    type: 'text',
     sortable: true,
-    // options: WEB_API_TYPES.map(el => ({
-    //   value: el,
-    //   label: el,
-    // })),
+    options: () =>
+      WEB_API_METHODS.map(el => ({
+        value: el,
+        label: el,
+      })),
   },
 ];
 
