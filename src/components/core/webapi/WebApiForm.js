@@ -12,13 +12,12 @@ export const WEB_API_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 const dataSources = ({ slug, kappSlug }) => ({
   webApi: {
     fn: fetchWebApi,
-    params: slug && kappSlug ? [{ slug, kappSlug }] : [{ slug }],
+    params: slug && kappSlug ? [{ slug, kappSlug }] : slug ? [{ slug }] : null,
     transform: result => result.webApi,
   },
   securityPolicyDefinitions: {
     fn: fetchSecurityPolicyDefinitions,
-    params: [],
-    // params: kappName && [{ kappName }],
+    params: kappSlug ? [{ kappSlug }] : [],
     transform: result => result.securityPolicyDefinitions,
   },
 });
@@ -61,17 +60,15 @@ const fields = ({ slug }) => ({ webApi }) =>
       label: 'Endpoint: Execution',
       type: 'select',
       required: true,
-      options: ({ securityPolicyDefinitions }) => {
-        // console.log(securityPolicyDefinitions);
-        return securityPolicyDefinitions
+      options: ({ securityPolicyDefinitions }) =>
+        securityPolicyDefinitions
           ? securityPolicyDefinitions.map(policy =>
               Map({
                 value: policy.get('name'),
                 label: policy.get('name'),
               }),
             )
-          : List();
-      },
+          : List(),
       initialValue: getIn(webApi, ['securityPolicies', 0, 'name'], 'Admins'),
       serialize: ({ values }) => [
         { endpoint: 'Execution', name: values.get('securityPolicies') },
@@ -80,7 +77,7 @@ const fields = ({ slug }) => ({ webApi }) =>
   ];
 
 export const WebApiForm = generateForm({
-  formOptions: ['slug'],
+  formOptions: ['slug', 'kappSlug'],
   dataSources,
   fields,
   handleSubmit,

@@ -5,11 +5,7 @@ import { WEB_API_METHODS } from './WebApiForm';
 const dataSource = ({ kappSlug }) => ({
   fn: fetchWebApis,
   clientSideSearch: true,
-  params: () => [
-    {
-      kappSlug,
-    },
-  ],
+  params: () => [{ kappSlug }],
   transform: result => ({
     data: result.webApis,
   }),
@@ -38,6 +34,7 @@ const columns = [
 ];
 
 export const WebApiTable = generateTable({
+  tableOptions: ['kappSlug'],
   columns,
   dataSource,
 });

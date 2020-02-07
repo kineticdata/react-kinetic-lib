@@ -18,7 +18,7 @@ export const {
     }),
   },
   singular: {
-    requiredOptions: [],
+    requiredOptions: ['slug'],
     url: ({ slug, kappSlug }) =>
       kappSlug ? `/kapps/${kappSlug}/webApis/${slug}` : `/webApis/${slug}`,
     transform: response => ({
