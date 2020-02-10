@@ -12,7 +12,12 @@ export const WEB_API_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 const dataSources = ({ slug, kappSlug }) => ({
   webApi: {
     fn: fetchWebApi,
-    params: slug && kappSlug ? [{ slug, kappSlug }] : slug ? [{ slug }] : null,
+    params:
+      slug && kappSlug
+        ? [{ slug, kappSlug, include: 'securityPolicies' }]
+        : slug
+        ? [{ slug, include: 'securityPolicies' }]
+        : null,
     transform: result => result.webApi,
   },
   securityPolicyDefinitions: {
@@ -27,6 +32,7 @@ const handleSubmit = ({ slug, kappSlug }) => values =>
     kappSlug,
     slug,
     webApi: values.toJS(),
+    include: 'securityPolicies',
   }).then(({ webApi, error }) => {
     if (error) {
       throw (error.statusCode === 400 && error.message) ||
