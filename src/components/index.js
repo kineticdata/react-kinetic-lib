@@ -18,6 +18,7 @@ export {
   submitForm,
   unmountForm,
 } from './form/Form';
+export { FormState } from './form/FormState';
 
 // Table
 export {
