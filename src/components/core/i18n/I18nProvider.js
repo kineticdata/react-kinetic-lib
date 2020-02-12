@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Map } from 'immutable';
 import { bundle } from '../../../helpers';
 import { I18nContext } from './I18nContext';
+import { fetchTranslations } from '../../../apis/core/translations';
 
 export class I18nProvider extends React.Component {
   constructor(props) {
@@ -47,25 +48,24 @@ export class I18nProvider extends React.Component {
           ),
         }));
       } else {
-        const url = `${bundle.apiLocation()}/translations/entries?cache&context=${context}&locale=${locale ||
-          ''}`;
-        axios
-          .get(url)
-          .then(response => {
+        fetchTranslations({
+          cache: true,
+          contextName: context,
+          localeCode: locale,
+        }).then(({ error, entries }) => {
+          if (entries) {
             this.setState(state => ({
               translations: state.translations.setIn(
                 [locale, context],
-                Map(
-                  response.data.entries.map(entry => [entry.key, entry.value]),
-                ),
+                Map(entries.map(entry => [entry.key, entry.value])),
               ),
             }));
-          })
-          .catch(error => {
+          } else {
             this.setState(state => ({
               translations: state.translations.setIn([locale, context], Map()),
             }));
-          });
+          }
+        });
       }
     }
   };
