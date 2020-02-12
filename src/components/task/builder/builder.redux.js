@@ -143,7 +143,7 @@ regHandlers({
       loading: false,
       tasks: List(categories)
         .map(category =>
-          tree.taskDefinition && category.name === 'System Controls'
+          category.name === 'System Controls'
             ? {
                 ...category,
                 handlers: [...category.handlers, treeReturnTask(tree)],

@@ -360,11 +360,23 @@ export const renameDependencies = (dependencies = List(), newName) => tree =>
 // routines have `inputs` and handlers have `parameters` with slightly different
 // properties so this is a helper function to take one or the other and return
 // a consistent object
-export const normalizeParameter = ({ name, id, ...rest }) => ({
+export const normalizeParameter = ({ name, id, defaultValue, ...rest }) => ({
   id: id || name,
   label: name,
+  value: defaultValue,
   ...rest,
 });
+
+const defaultOutputs = [
+  { id: 'content', name: 'Content' },
+  {
+    id: 'content_type',
+    name: 'Content Type',
+    defaultValue: 'application/json',
+  },
+  { id: 'headers_json', name: 'Headers (JSON)', defaultValue: '{}' },
+  { id: 'response_code', name: 'Response Code', defaultValue: '200' },
+];
 
 export const treeReturnTask = tree => ({
   deferrable: false,
@@ -376,14 +388,17 @@ export const treeReturnTask = tree => ({
   selectionCriterion: null,
   status: 'Active',
   visible: false,
-  parameters: tree.taskDefinition.outputs.map(output => ({
+  parameters: (tree.taskDefinition
+    ? tree.taskDefinition.outputs
+    : defaultOutputs
+  ).map(output => ({
     name: output.name,
-    defaultValue: '',
+    defaultValue: output.defaultValue || '',
     menu: null,
     dependsOnId: null,
     dependsOnValue: null,
     description: output.description,
-    id: output.name,
+    id: output.id || output.name,
     required: false,
   })),
   results: [],
