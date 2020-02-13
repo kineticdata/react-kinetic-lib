@@ -22,7 +22,9 @@ export const logoutDirect = () =>
 
 const checkedOrigin = process.env.REACT_APP_API_HOST
   ? process.env.REACT_APP_API_HOST
-  : window.location.origin;
+  : typeof window !== `undefined` && window.bundle
+  ? window.location.origin
+  : null;
 
 export const retrieveJwt = () =>
   new Promise(resolve => {
