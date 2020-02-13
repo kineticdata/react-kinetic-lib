@@ -16,12 +16,12 @@ export class I18nProvider extends React.Component {
   }
 
   componentDidMount() {
-    this.loadTranslations(this.props.locale, 'shared');
+    this.loadTranslations(this.props.locale, 'shared', true);
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.locale !== this.props.locale) {
-      this.loadTranslations(this.props.locale, 'shared');
+      this.loadTranslations(this.props.locale, 'shared', true);
     }
     if (
       !this.state.translations.equals(prevState.translations) &&
@@ -35,7 +35,7 @@ export class I18nProvider extends React.Component {
     }
   }
 
-  loadTranslations = (locale, context) => {
+  loadTranslations = (locale, context, isPublic) => {
     if (!this.loading.hasIn([locale, context])) {
       this.loading = this.loading.setIn([locale, context], true);
       // check to see if the translation context was already loaded by the CE
@@ -52,6 +52,7 @@ export class I18nProvider extends React.Component {
           cache: true,
           contextName: context,
           localeCode: locale,
+          public: isPublic,
         }).then(({ error, entries }) => {
           if (entries) {
             this.setState(state => ({
