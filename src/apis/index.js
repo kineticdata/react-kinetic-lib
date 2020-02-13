@@ -28,6 +28,7 @@ export * from './core/teams';
 export * from './core/translations';
 export * from './core/users';
 export * from './core/version';
+export * from './core/webApis';
 export * from './core/webhooks';
 export * from './core/webhooksJobs';
 
@@ -35,15 +36,10 @@ export * from './core/webhooksJobs';
 export * from './discussions';
 
 // Http
-export {
-  addRequestInterceptor,
-  addResponseInterceptor,
-  setDefaultAuthAssumed,
-  generateCESearchParams,
-} from './http';
+export { generateCESearchParams } from './http';
 
 // Sockets
-export { socket, socketIdentify } from './socket';
+export { socket } from './socket';
 
 // Task
 export * from './task';

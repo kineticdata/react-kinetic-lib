@@ -46,7 +46,7 @@ describe('attributeDefinitions api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/spaceAttributeDefinitions',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -90,7 +90,7 @@ describe('attributeDefinitions api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/kapps/services/categoryAttributeDefinitions',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -132,7 +132,7 @@ describe('attributeDefinitions api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/spaceAttributeDefinitions',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -168,7 +168,7 @@ describe('attributeDefinitions api', () => {
       expect(axios.get.mock.calls).toEqual([
         [
           'space/app/api/v1/spaceAttributeDefinitions/Foo',
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -223,7 +223,7 @@ describe('attributeDefinitions api', () => {
             description: 'Test Attr Desc',
             allowsMultiple: true,
           },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({
@@ -279,7 +279,7 @@ describe('attributeDefinitions api', () => {
             description: 'Test Attr Desc',
             allowsMultiple: true,
           },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
       expect(result).toEqual({

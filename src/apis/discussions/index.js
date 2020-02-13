@@ -1,4 +1,4 @@
-import { axios } from '../../store';
+import axios from 'axios';
 import { bundle } from '../../helpers';
 import { List } from 'immutable';
 

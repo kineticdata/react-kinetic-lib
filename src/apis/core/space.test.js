@@ -94,7 +94,10 @@ describe('space api', () => {
             name: 'Foo',
             attributes: [{ name: 'Company Name', values: ['Foo Bar'] }],
           },
-          { params: { include: 'attributes' }, headers: {} },
+          {
+            params: { include: 'attributes' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(space).toEqual({

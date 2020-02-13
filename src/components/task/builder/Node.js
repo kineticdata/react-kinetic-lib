@@ -3,7 +3,7 @@ import { isArray, isFunction } from 'lodash-es';
 import classNames from 'classnames';
 import { dispatch } from '../../../store';
 import * as constants from './constants';
-import { addNewTask, getNodeType, isIE11 } from './helpers';
+import { addNewTask, getNewNodePosition, getNodeType, isIE11 } from './helpers';
 import { Point } from './models';
 import { SvgText } from './SvgText';
 import plusIcon from '../../../assets/task/icons/plus_small.svg';
@@ -25,7 +25,15 @@ export class Node extends Component {
   addNewNode = () => {
     if (isFunction(this.props.onNew)) {
       this.props.onNew(
-        addNewTask(this.props.treeKey, this.props.tree, this.props.node),
+        addNewTask(
+          this.props.treeKey,
+          this.props.tree,
+          this.props.node,
+          getNewNodePosition(
+            this.props.node,
+            this.treeBuilder.getChildNodes(this.props.node.id),
+          ),
+        ),
       );
     }
   };
@@ -130,7 +138,16 @@ export class Node extends Component {
   render() {
     const { node, highlighted, primary, selected, tasks } = this.props;
     const { defers, definitionId, name } = node;
-    const invalid = !name;
+    const missing =
+      !tasks.has(node.definitionId) &&
+      !node.definitionId.startsWith('system_tree_return_v') &&
+      !node.definitionId.startsWith('system_start_v');
+    const invalid =
+      missing ||
+      !name ||
+      node.parameters.some(
+        parameter => parameter.required && parameter.value === '',
+      );
     const isRoutine =
       tasks.get(definitionId) && isArray(tasks.get(definitionId).inputs);
     const type = getNodeType(node);
@@ -165,6 +182,7 @@ export class Node extends Component {
               invalid,
               primary,
               selected,
+              missing,
             })}
             height={height}
             width={constants.NODE_WIDTH}

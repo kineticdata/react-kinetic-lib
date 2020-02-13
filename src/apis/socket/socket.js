@@ -167,7 +167,7 @@ export class Socket {
       return;
     } else {
       this.setStatus(SOCKET_STATUS.CLOSED, e);
-      this.topics.forEach(t => t.setStatus(TOPIC_STATUS.closed));
+      this.forAllTopics(t => t.setStatus(TOPIC_STATUS.closed));
     }
 
     // Call all of the event callbacks for 'connect'.

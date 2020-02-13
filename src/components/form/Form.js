@@ -448,7 +448,7 @@ const serializeImpl = ({ bindings, fields }, fieldSet) => {
 export class Form extends Component {
   constructor(props) {
     super(props);
-    this.auto = !this.props.formKey;
+    this.auto = !this.props.formKey || this.props.uncontrolled;
     this.formKey = this.props.formKey || 'f' + generateKey();
   }
 
@@ -646,6 +646,7 @@ export const generateForm = ({
     onSubmit={handleSubmit}
     onSave={configurationProps.onSave}
     onError={configurationProps.onError}
+    uncontrolled={configurationProps.uncontrolled}
   >
     {configurationProps.children}
   </Form>

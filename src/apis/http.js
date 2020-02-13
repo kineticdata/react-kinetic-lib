@@ -2,26 +2,6 @@ import axios from 'axios';
 import { Map } from 'immutable';
 import { bundle } from '../helpers';
 
-// The `X-Kinetic-AuthAssumed` header was added in version 2.2 of Kinetic Core.
-// You can add this if you are expecting to be authenticated for a request to
-// get a 401 instead of a partial list of the data if you are not authenticated.
-// Since many bundles (like request-ce-bundle-kinetic) will want it to always
-// behave this way we let you tell CoreAPI to always add this header to the api
-// calls instead of manually adding it to all usages of CoreAPI functions.
-export let defaultAuthAssumed = false;
-export const setDefaultAuthAssumed = boolean => {
-  defaultAuthAssumed = boolean;
-};
-
-export const addRequestInterceptor = (fulfilled, rejected) => {
-  axios.interceptors.request.use(fulfilled, rejected);
-};
-export const addResponseInterceptor = (fulfilled, rejected) => {
-  axios.interceptors.response.use(fulfilled, rejected);
-};
-
-axios.defaults.withCredentials = true;
-
 const types = {
   400: 'badRequest',
   401: 'unauthorized',
@@ -29,6 +9,7 @@ const types = {
   404: 'notFound',
   405: 'methodNotAllowed',
 };
+
 export const handleErrors = error => {
   // handle a javascript runtime exception by re-throwing it, this is in case we
   // make a mistake in a `then` block in one of our api functions.
@@ -70,16 +51,8 @@ export const paramBuilder = options => {
 
 export const headerBuilder = options => {
   const headers = {};
-  // CAREFUL to not override falsey values explicitly passed in options, hence
-  // the nested if statement.
-  if (options.hasOwnProperty('authAssumed')) {
-    if (options.authAssumed) {
-      headers['X-Kinetic-AuthAssumed'] = 'true';
-    }
-  } else {
-    if (defaultAuthAssumed) {
-      headers['X-Kinetic-AuthAssumed'] = 'true';
-    }
+  if (!options.public) {
+    headers['X-Kinetic-AuthAssumed'] = 'true';
   }
   return headers;
 };

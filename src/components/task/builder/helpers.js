@@ -13,8 +13,9 @@ import {
   NodeParameter,
   NodeResultDependency,
   NodeMessage,
+  Point,
 } from './models';
-import { NEW_TASK_DX, NEW_TASK_DY } from './constants';
+import { NEW_TASK_DX, NEW_TASK_DY, NEW_TASK_GAP_REQUIED } from './constants';
 
 export const isIE11 = document.documentMode === 11;
 
@@ -188,18 +189,23 @@ export const buildBindings = (tree, tasks, node) => {
 // should be called with a task definition, then it stubs out a node and
 // connector and passes a complete function which should be called with the
 // fully configured node and connector
-export const addNewTask = (treeKey, tree, parent) => ({
+export const addNewTask = (treeKey, tree, parent, position) => ({
   tree: tree,
   selectCloneNode: cloneNode =>
     addNewTaskNext({ cloneNode, parent, tree, treeKey }),
-  selectTaskDefinition: task => addNewTaskNext({ parent, task, tree, treeKey }),
+  selectTaskDefinition: task =>
+    addNewTaskNext({ parent, position, task, tree, treeKey }),
 });
 
-const addNewTaskNext = ({ cloneNode, parent, task, tree, treeKey }) => {
+const addNewTaskNext = ({
+  cloneNode,
+  parent,
+  position,
+  task,
+  tree,
+  treeKey,
+}) => {
   const { connectors, nextConnectorId, nextNodeId, nodes } = tree;
-  const position = parent.position
-    .update('x', x => x + NEW_TASK_DX)
-    .update('y', y => y + NEW_TASK_DY);
   const definitionId = task ? task.definitionId : cloneNode.definitionId;
   // stub out the new connector and node, these will be provided via return and
   // are meant to be passed to <ConnectorForm> and <NodeForm> respectively to be
@@ -354,11 +360,23 @@ export const renameDependencies = (dependencies = List(), newName) => tree =>
 // routines have `inputs` and handlers have `parameters` with slightly different
 // properties so this is a helper function to take one or the other and return
 // a consistent object
-export const normalizeParameter = ({ name, id, ...rest }) => ({
+export const normalizeParameter = ({ name, id, defaultValue, ...rest }) => ({
   id: id || name,
   label: name,
+  value: defaultValue,
   ...rest,
 });
+
+const defaultOutputs = [
+  { id: 'content', name: 'Content' },
+  {
+    id: 'content_type',
+    name: 'Content Type',
+    defaultValue: 'application/json',
+  },
+  { id: 'headers_json', name: 'Headers (JSON)', defaultValue: '{}' },
+  { id: 'response_code', name: 'Response Code', defaultValue: '200' },
+];
 
 export const treeReturnTask = tree => ({
   deferrable: false,
@@ -370,15 +388,52 @@ export const treeReturnTask = tree => ({
   selectionCriterion: null,
   status: 'Active',
   visible: false,
-  parameters: tree.taskDefinition.outputs.map(output => ({
+  parameters: (tree.taskDefinition
+    ? tree.taskDefinition.outputs
+    : defaultOutputs
+  ).map(output => ({
     name: output.name,
-    defaultValue: '',
+    defaultValue: output.defaultValue || '',
     menu: null,
     dependsOnId: null,
     dependsOnValue: null,
     description: output.description,
-    id: output.name,
+    id: output.id || output.name,
     required: false,
   })),
   results: [],
 });
+
+export const getNewNodePosition = (node, childNodes) => {
+  if (childNodes.length === 0) {
+    return node.position.update('y', y => y + NEW_TASK_DY);
+  } else if (childNodes.length === 1) {
+    return childNodes[0].position.update('x', x => x + NEW_TASK_DX);
+  } else {
+    const sortedChildren = List(childNodes).sortBy(node => node.position.x);
+    const betweenNodes = sortedChildren
+      .skip(2)
+      // build a list of adjacent pairs of nodes
+      .reduce(
+        (reduction, child) => reduction.push([reduction.last()[1], child]),
+        List.of([sortedChildren.first(), sortedChildren.get(1)]),
+      )
+      // filter out pairs of nodes that don't have enough space between them
+      // for a new node
+      .filter(
+        ([left, right]) =>
+          right.position.x - left.position.x >= NEW_TASK_GAP_REQUIED,
+      )
+      // use the first pair of nodes with a large enough space between them
+      .first();
+    if (betweenNodes) {
+      const [left, right] = betweenNodes;
+      return Point({
+        x: (left.position.x + right.position.x) / 2,
+        y: (left.position.y + right.position.y) / 2,
+      });
+    } else {
+      return sortedChildren.last().position.update('x', x => x + NEW_TASK_DX);
+    }
+  }
+};

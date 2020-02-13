@@ -175,7 +175,10 @@ describe('forms api', () => {
             name: 'Test Form',
             attributes: [{ name: 'Icon', values: ['fa-gear'] }],
           },
-          { params: { include: 'attributes,pages' }, headers: {} },
+          {
+            params: { include: 'attributes,pages' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(form).toEqual({
@@ -210,7 +213,10 @@ describe('forms api', () => {
             name: 'Test Datastore Form',
             attributes: [{ name: 'Icon', values: ['fa-gear'] }],
           },
-          { params: { include: 'attributes,pages' }, headers: {} },
+          {
+            params: { include: 'attributes,pages' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(form).toEqual({
@@ -229,7 +235,7 @@ describe('forms api', () => {
         [
           'form/app/api/v1/kapps/mock-kapp/forms',
           { name: 'Test' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
     });
@@ -331,7 +337,10 @@ describe('forms api', () => {
             name: 'Test Form',
             attributes: [{ name: 'Icon', values: ['fa-gear'] }],
           },
-          { params: { include: 'attributes,pages' }, headers: {} },
+          {
+            params: { include: 'attributes,pages' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(form).toEqual({
@@ -367,7 +376,10 @@ describe('forms api', () => {
             name: 'Test Datastore Form',
             attributes: [{ name: 'Icon', values: ['fa-gear'] }],
           },
-          { params: { include: 'attributes,pages' }, headers: {} },
+          {
+            params: { include: 'attributes,pages' },
+            headers: { 'X-Kinetic-AuthAssumed': 'true' },
+          },
         ],
       ]);
       expect(form).toEqual({
@@ -384,7 +396,7 @@ describe('forms api', () => {
         [
           'form/app/api/v1/kapps/mock-kapp/forms/test',
           { name: 'Test' },
-          { params: {}, headers: {} },
+          { params: {}, headers: { 'X-Kinetic-AuthAssumed': 'true' } },
         ],
       ]);
     });
