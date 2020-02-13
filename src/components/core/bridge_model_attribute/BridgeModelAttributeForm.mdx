@@ -15,11 +15,12 @@ export const name = 'BridgeModelAttributeForm';
   formOptions={[
     {
       name: 'modelName',
+      required: true,
       type: 'string',
       description: 'The bridge model that the attribute is associated with.',
     },
     {
-      name: 'attributeName?',
+      name: 'attributeName',
       type: 'string',
       description:
         'When provided the form will be populated by retrieving the corresponding attribute name and will update that attribute name when submitted. If not provided the form submission will create a new attribute.',

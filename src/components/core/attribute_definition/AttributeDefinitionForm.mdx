@@ -18,19 +18,20 @@ export const name = 'AttributeDefinitionForm';
   ]}
   formOptions={[
     {
-      name: 'kappSlug?',
+      name: 'kappSlug',
       type: 'string',
       description:
         'When provided the form will be populate the kapp. Required if the attribute definition is for a Kapp. (Kapp Attributes, Form Attributes, Category Attributes, ...etc)',
     },
     {
-      name: 'attributeName?',
+      name: 'attributeName',
       type: 'string',
       description:
         'The name of the attribute (assumes new if nothing is provided).',
     },
     {
       name: 'attributeType',
+      required: true,
       type: 'string',
       description:
         'Type of attribute. One of: spaceAttributeDefinitions, teamAttributeDefinitions, userAttributeDefinitions, userProfileAttributeDefinitions, categoryAttributeDefinitions, kappAttributeDefinitions, formAttributeDefinitions, datastoreFormAttributeDefinitions',
