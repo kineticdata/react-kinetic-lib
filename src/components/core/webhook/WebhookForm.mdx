@@ -21,13 +21,13 @@ The webhook form is used for creating and editing webhooks within the system.
   ]}
   formOptions={[
     {
-      name: 'kappSlug?',
+      name: 'kappSlug',
       type: 'string',
       description:
         'Should be provided when interacting with webhooks within a kapp.',
     },
     {
-      name: 'name?',
+      name: 'name',
       type: 'string',
       description:
         'When provided the form will be populated by retrieving the corresponding webhook and will update that webhook when submitted. If not provided the form submission will create a new webhook.',
@@ -40,42 +40,3 @@ The webhook form is used for creating and editing webhooks within the system.
     { name: 'events', type: 'Event[]' },
   ]}
 />
-
-### Examples
-
-#### Simple implementation of a space scoped `WebhookForm`.
-
-```javascript
-<WebhookForm />
-```
-
-Because no name or kappSlug was passed, submitting this form will create a new Space Webhook
-
-#### Simple implementation of a kapp scoped `WebhookForm`.
-
-```javascript
-<WebhookForm name="Submission Submitted" kappSlug="services" />
-```
-
-This example will display a form for editing the "Submission Submitted" webhook in the "services" kapp.
-
-#### Control the Layout of a `WebhookForm`.
-
-```javascript
-<WebhookForm kappSlug="services">
-  {({ form, initialized, bindings }) => {
-    const { space, webhook } = bindings;
-    return initialized ? (
-      <div>
-        <h5>
-          Webhook for {space.get('name')} / {webhook.get('type')} /{' '}
-          {webhook.get('event')}{' '}
-        </h5>
-        {form}
-      </div>
-    ) : (
-      <div>Loading</div>
-    );
-  }}
-</WebhookForm>
-```

@@ -1,0 +1,39 @@
+---
+name: FormForm
+menu: Core
+route: /core/FormForm
+---
+
+
+import { FormProps } from '../../../gatsby-theme-docz/components/FormProps';
+
+export const name = 'FormForm';
+
+<h2>{name}</h2>
+
+<FormProps
+  fields={[
+    { name: 'slug', type: 'text' },
+    { name: 'method', type: 'select' },
+    { name: 'securityPolicies', type: 'select' },
+  ]}
+  formOptions={[
+    {
+      name: 'slug',
+      type: 'string',
+      required: true,
+      description:
+        'The slug for the item to be updated/created.'
+    },
+    {
+      name: 'kappSlug',
+      type: 'string',
+      description:
+        'Should be provided when interacting with apis within a kapp.',
+    },
+  ]}
+  dataSources={[
+    { name: 'webApi', type: 'webApi' },
+    { name: 'securityPolicyDefinitions', type: 'securityPolicyDefinitions[]' },
+  ]}
+/>

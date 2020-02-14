@@ -4,62 +4,48 @@ menu: Core
 route: /core/OAuthClientForm
 ---
 
-import { Props } from 'docz';
-import { OAuthClientForm } from './OAuthClientForm';
-import { OAuthClientTable } from './OAuthClientTable';
+import { FormProps } from '../../../gatsby-theme-docz/components/FormProps';
 
-## oAuth Client Form
+export const name = 'OAuthClientForm';
 
-### Props
+<h2>{name}</h2>
 
-<Props of={OAuthClientForm} />
-
-### Examples
-
-#### Simple implementation of a `OAuthClientForm`.
-
-```javascript
-<OAuthClientForm formSlug="alerts" />
-```
-
-Because no name was passed, submitting this form will create a new oAuth Client
-
-#### Control the Layout of a `OAuthClientForm`.
-
-```javascript
-<OAuthClientForm formSlug="alerts">
-  {({ form }) => (
-    <div>
-      <h5>My Form Header</h5>
-      {form}
-    </div>
-  )}
-</OAuthClientForm>
-```
-
-Because no name was passed, submitting this form will create a new Space Attribute Definition
-
-## oAuth Client Table
-
-### Props
-
-<Props of={OAuthClientTable} />
-
-### Examples
-
-#### Simple implementation of a `OAuthClientTable`.
-
-Because no name was passed, submitting this form will create a new Index Definition
-
-#### Control the Layout of a `OAuthClientTable`.
-
-```javascript
-<OAuthClientTable columnSet={['name']}>
-  {({ table }) => (
-    <div>
-      <h5>My Table Header</h5>
-      {table}
-    </div>
-  )}
-</OAuthClientTable>
-```
+<FormProps
+  fields={[
+    { name: 'name', type: 'text' },
+    { name: 'description', type: 'text' },
+    { name: 'clientId', type: 'text' },
+    { name: 'clientSecret', type: 'password' },
+    { name: 'changeClientSecret', type: 'checkbox' },
+    { name: 'redirectUri', type: 'text' },
+    { name: 'submissionLabelExpression', type: 'code' },
+    { name: 'type', type: 'select' },
+    { name: 'securityPolicies', type: null },
+    { name: 'attributesMap', type: 'attributes' },
+    { name: 'categorizations', type: 'select-multi' },
+  ]}
+  formOptions={[
+    {
+      name: 'clientId',
+      type: 'string',
+      required: true,
+      description:
+        'The oauth client to be updated/created.'
+    },
+    {
+      name: 'kappSlug',
+      type: 'string',
+      description:
+        'The slug of the kapp that does/will contain the form. Required if datastore form is false.'
+    },
+    {
+      name: 'datastore',
+      type: 'bool',
+      description:
+        'true if the form is a datastore form.'
+    },
+  ]}
+  dataSources={[
+    { name: 'client', type: 'client' },
+  ]}
+/>
