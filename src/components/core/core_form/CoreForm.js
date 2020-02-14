@@ -266,6 +266,18 @@ export class CoreForm extends Component {
           (this.state.lock && !this.state.lock.isLockedByMe),
       });
     }
+    // If pending and error state has just been set, call error callback
+    else if (this.state.pending && this.state.error && !prevState.error) {
+      if (this.state.error.statusCode === 401) {
+        applyGuard(this.props.onUnauthorized || this.props.unauthorized);
+      } else if (this.state.error.statusCode === 403) {
+        applyGuard(this.props.onForbidden || this.props.forbidden);
+      } else if (this.state.error.statusCode === 404) {
+        applyGuard(this.props.onNotFound || this.props.onNotFound);
+      } else {
+        applyGuard(this.props.onError || this.props.error);
+      }
+    }
 
     // If locking is turned on and has been initalized
     if (this.state.lock && this.state.lock.init) {
