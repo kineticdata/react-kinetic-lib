@@ -4,60 +4,36 @@ menu: Core
 route: /core/IndexDefinitionForm
 ---
 
-import { Props } from 'docz';
-import { IndexDefinitionForm } from './IndexDefinitionForm';
-import { IndexDefinitionTable } from './IndexDefinitionTable';
+import { FormProps } from '../../../gatsby-theme-docz/components/FormProps';
 
-## IndexDefinitions
+export const name = 'IndexDefinitionForm';
 
-### Props
+<h2>{name}</h2>
 
-<Props of={IndexDefinitionForm} />
-
-### Examples
-
-#### Simple implementation of a `IndexDefinitionForm`.
-
-```javascript
-<IndexDefinitionForm formSlug="alerts" />
-```
-
-#### Control the Layout of a `IndexDefinitionForm`.
-
-```javascript
-<IndexDefinitionForm formSlug="alerts">
-  {({ form }) => (
-    <div>
-      <h5>My Form Header</h5>
-      {form}
-    </div>
-  )}
-</IndexDefinitionForm>
-```
-
-## Index Definition Table
-
-### Props
-
-<Props of={IndexDefinitionTable} />
-
-### Examples
-
-#### Simple implementation of a `IndexDefinitionTable`.
-
-```javascript
-<IndexDefinitionTable columnSet={['name', 'slug']} formSlug="alerts" />
-```
-
-#### Control the Layout of a `IndexDefinitionTable`.
-
-```javascript
-<IndexDefinitionTable columnSet={['name', 'slug']} formSlug="alerts">
-  {({ table }) => (
-    <div>
-      <h5>My Table Header</h5>
-      {table}
-    </div>
-  )}
-</IndexDefinitionTable>
-```
+<FormProps
+  fields={[
+    { name: 'parts', type: 'select-multi' },
+    { name: 'unique', type: 'checkbox' },
+  ]}
+  formOptions={[
+    {
+      name: 'indexName',
+      type: 'string',
+      required: true,
+      description:
+        'The name for the index to be updated/created.'
+    },
+    {
+      name: 'formSlug',
+      type: 'string',
+      required: true,
+      description:
+        'The slug of the form that does/will contain the index.'
+    },
+  ]}
+  dataSources={[
+    { name: 'form', type: 'form' },
+    { name: 'fields', type: 'fields[]' },
+    { name: 'indexDefinition', type: 'indexDefinition' },
+  ]}
+/>

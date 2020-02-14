@@ -4,66 +4,32 @@ menu: Core
 route: /core/FormTypeFrom
 ---
 
-import { Props } from 'docz';
-import { FormTypeForm } from './FormTypeForm';
-import { FormTypeTable } from './FormTypeTable';
+import { FormProps } from '../../../gatsby-theme-docz/components/FormProps';
 
-## Form Type
+export const name = 'FormTypeFrom';
 
-### Props
+<h2>{name}</h2>
 
-<Props of={FormTypeForm} />
-
-### Examples
-
-#### Simple implementation of a `FormTypeForm`.
-
-```javascript
-<FormTypeForm kappSlug="services" />
-```
-
-Because no name was passed, submitting this form will create a new Form
-
-#### Control the Layout of a `FormTypeForm`.
-
-```javascript
-<FormTypeForm kappSlug="services">
-  {({ form }) => (
-    <div>
-      <h5>My Form Header</h5>
-      {form}
-    </div>
-  )}
-</FormTypeForm>
-```
-
-Because no name was passed, submitting this form will create a new Space Attribute Definition
-
-## Form Type Table
-
-### Props
-
-<Props of={FormTypeTable} />
-
-### Examples
-
-#### Simple implementation of a `FormTypeTable`.
-
-Because no name was passed, submitting this form will create a new Form Type
-
-#### Control the Layout of a `FormTypeTable`.
-
-```javascript
-<FormTypeTable columnSet={['name', 'slug']} kappSlug="services">
-  {({ table }) => (
-    <div>
-      <h5>My Table Header</h5>
-      {table}
-    </div>
-  )}
-</FormTypeTable>
-```
-
-```
-
-```
+<FormProps
+  fields={[
+    { name: 'name', type: 'text' },
+  ]}
+  formOptions={[
+    {
+      name: 'name',
+      type: 'string',
+      required: true,
+      description:
+        'The name for the form type to be updated/created.'
+    },
+    {
+      name: 'kappSlug',
+      type: 'string',
+      description:
+        'The slug of the kapp that does/will contain the form. Required if datastore form is false.'
+    },
+  ]}
+  dataSources={[
+    { name: 'formType', type: 'formType' },
+  ]}
+/>

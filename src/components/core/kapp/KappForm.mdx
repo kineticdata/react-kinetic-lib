@@ -4,62 +4,44 @@ menu: Core
 route: /core/KappForm
 ---
 
-import { Props } from 'docz';
-import { KappForm } from './KappForm';
-import { KappTable } from './KappTable';
 
-## Kapp Form
+import { FormProps } from '../../../gatsby-theme-docz/components/FormProps';
 
-### Props
+export const name = 'KappForm';
 
-<Props of={KappForm} />
+<h2>{name}</h2>
 
-### Examples
-
-#### Simple implementation of a `KappForm`.
-
-```javascript
-<KappForm kappSlug="services" />
-```
-
-#### Control the Layout of a `KappForm`.
-
-```javascript
-<KappForm>
-  {({ form }) => (
-    <div>
-      <h5>My Form Header</h5>
-      {form}
-    </div>
-  )}
-</KappForm>
-```
-
-Because no name was passed, submitting this form will create a new Kapp
-
-## Kapp Table
-
-### Props
-
-<Props of={KappTable} />
-
-### Examples
-
-#### Simple implementation of a `KappTable`.
-
-```javascript
-<KappTable columnSet={['name', 'slug']} />
-```
-
-#### Control the Layout of a `KappTable`.
-
-```javascript
-<KappTable columnSet={['name', 'slug']}>
-  {({ table }) => (
-    <div>
-      <h5>My Table Header</h5>
-      {table}
-    </div>
-  )}
-</KappTable>
-```
+<FormProps
+  fields={[
+    { name: 'afterLogoutPath', type: 'text' },
+    { name: 'bundlePath', type: 'text' },
+    { name: 'defaultFormConfirmationPage', type: 'text' },
+    { name: 'defaultFormDisplayPage', type: 'text' },
+    { name: 'defaultSubmissionLabelExpression', type: 'code' },
+    { name: 'displayType', type: 'select' },
+    { name: 'displayValue', type: 'text' },
+    { name: 'loginPage', type: 'text' },
+    { name: 'name', type: 'text' },
+    { name: 'resetPasswordPage', type: 'text' },
+    { name: 'slug', type: 'text' },
+    { name: 'linked', type: 'checkbox' },
+    { name: 'securityPolicies', type: null },
+    { name: 'attributesMap', type: 'attributes' },
+  ]}
+  formOptions={[
+    {
+      name: 'kappSlug',
+      type: 'string',
+      required: true,
+      description:
+        'The slug for the kapp to be updated/created.'
+    },
+  ]}
+  dataSources={[
+    { name: 'space', type: 'space' },
+    { name: 'kapp', type: 'kapp' },
+    { name: 'space', type: 'space' },
+    { name: 'attributeDefinitions', type: 'attributeDefinitions[]' },
+    { name: 'securityPolicyDefinitions', type: 'securityPolicyDefinitions[]' },
+  ]}
+/>
