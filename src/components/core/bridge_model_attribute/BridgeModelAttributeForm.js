@@ -81,9 +81,9 @@ const fields = ({ modelName, attributeName }) => ({ bridgeModelAttribute }) =>
       type: 'code',
       language: 'js-template',
       required: true,
-      initialValue: bridgeModelAttribute
-        ? bridgeModelAttribute.get('structureField')
-        : '',
+      initialValue:
+        (bridgeModelAttribute && bridgeModelAttribute.get('structureField')) ||
+        '',
       options: {
         'Add Field': {
           value: 'fields("NAME")',
