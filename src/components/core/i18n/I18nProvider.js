@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import { Map } from 'immutable';
 import { bundle } from '../../../helpers';
 import { I18nContext } from './I18nContext';
