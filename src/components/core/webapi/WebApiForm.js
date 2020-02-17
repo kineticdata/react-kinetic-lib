@@ -1,5 +1,5 @@
 import { generateForm } from '../../form/Form';
-import { get, getIn, List, Map } from 'immutable';
+import { get, Map } from 'immutable';
 import {
   fetchWebApi,
   createWebApi,
@@ -9,15 +9,18 @@ import {
 
 export const WEB_API_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 
+const securityEndpoints = {
+  webApiExecution: {
+    endpoint: 'Execution',
+    label: 'WebAPI Execution',
+    types: ['Space', 'Kapp'],
+  },
+};
+
 const dataSources = ({ slug, kappSlug }) => ({
   webApi: {
     fn: fetchWebApi,
-    params:
-      slug && kappSlug
-        ? [{ slug, kappSlug, include: 'securityPolicies' }]
-        : slug
-        ? [{ slug, include: 'securityPolicies' }]
-        : null,
+    params: slug && [{ slug, kappSlug, include: 'securityPolicies' }],
     transform: result => result.webApi,
   },
   securityPolicyDefinitions: {
@@ -61,24 +64,50 @@ const fields = ({ slug }) => ({ webApi }) =>
       })),
       initialValue: get(webApi, 'method') || '',
     },
+    ...Object.entries(securityEndpoints).map(
+      ([endpointFieldName, endpoint]) => ({
+        name: endpointFieldName,
+        label: endpoint.label,
+        type: 'select',
+        options: ({ securityPolicyDefinitions }) =>
+          securityPolicyDefinitions
+            ? securityPolicyDefinitions
+                .filter(definition =>
+                  endpoint.types.includes(definition.get('type')),
+                )
+                .map(definition =>
+                  Map({
+                    value: definition.get('name'),
+                    label: definition.get('name'),
+                  }),
+                )
+            : [],
+        initialValue: webApi
+          ? webApi
+              .get('securityPolicies')
+              .find(
+                pol => pol.get('endpoint') === endpoint.endpoint,
+                null,
+                Map({}),
+              )
+              .get('name', '')
+          : '',
+        transient: true,
+      }),
+    ),
     {
       name: 'securityPolicies',
-      label: 'Endpoint: Execution',
-      type: 'select',
-      required: true,
-      options: ({ securityPolicyDefinitions }) =>
-        securityPolicyDefinitions
-          ? securityPolicyDefinitions.map(policy =>
-              Map({
-                value: policy.get('name'),
-                label: policy.get('name'),
-              }),
-            )
-          : List(),
-      initialValue: getIn(webApi, ['securityPolicies', 0, 'name'], 'Admins'),
-      serialize: ({ values }) => [
-        { endpoint: 'Execution', name: values.get('securityPolicies') },
-      ],
+      label: 'Security Policies',
+      type: null,
+      visible: false,
+      serialize: ({ values }) =>
+        Object.entries(securityEndpoints)
+          .map(([endpointFieldName, policy]) => ({
+            endpoint: policy.endpoint,
+            name: values.get(endpointFieldName),
+          }))
+          .filter(endpoint => endpoint.name !== ''),
+      initialValue: get(webApi, 'securityPolicies'),
     },
   ];
 
