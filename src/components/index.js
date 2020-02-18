@@ -1,4 +1,5 @@
 // Common
+export { AttributeSelect } from './common/AttributeSelect';
 export { CodeInput } from './common/code_input/CodeInput';
 export { ContentEditable } from './common/ContentEditable';
 export { NodeSelect } from './common/NodeSelect';
