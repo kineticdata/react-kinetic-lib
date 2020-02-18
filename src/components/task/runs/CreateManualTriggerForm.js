@@ -27,17 +27,15 @@ const handleSubmit = formOptions => values => {
   return createTaskTrigger({
     ...formOptions,
     ...values.toJS(),
-  })
-    .then(result => {
-      const { messageType, message } = result;
-      if (messageType === 'success') {
-        return message;
-      }
-    })
-    .catch(({ response }) => {
-      throw response.data.message ||
+  }).then(({ error, message, messageType }) => {
+    if (error) {
+      throw error.message ||
         'An error occurred while manually creating the trigger.';
-    });
+    }
+    if (messageType === 'success') {
+      return message;
+    }
+  });
 };
 
 const fields = ({ name }) => ({ nodes }) =>
