@@ -201,9 +201,9 @@ const fields = ({ name, workflowType }) => ({ workflow, categories }) =>
       label: 'Categories',
       type: 'select-multi',
       initialValue: get(workflow, 'categories', List()).map(c => c.get('name')),
-      options: categories.map(c =>
-        Map({ label: c.get('name'), value: c.get('name') }),
-      ),
+      options: categories
+        .sortBy(c => c.get('name'))
+        .map(c => Map({ label: c.get('name'), value: c.get('name') })),
     },
     workflowType !== 'trees' && {
       name: 'inputs',
