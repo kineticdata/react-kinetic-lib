@@ -5,6 +5,8 @@ import {
   createWebApi,
   updateWebApi,
   fetchSecurityPolicyDefinitions,
+  fetchSpace,
+  fetchTree,
 } from '../../../apis';
 
 export const WEB_API_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
@@ -28,6 +30,26 @@ const dataSources = ({ slug, kappSlug }) => ({
     params: kappSlug ? [{ kappSlug }] : [],
     transform: result => result.securityPolicyDefinitions,
   },
+  platformSourceName: {
+    fn: fetchSpace,
+    params: [{ include: 'platformComponents' }],
+    transform: result =>
+      result.space.platformComponents.task.config.platformSourceName,
+  },
+  tree: {
+    fn: fetchTree,
+    params: ({ platformSourceName: sourceName, webApi }) =>
+      webApi &&
+      sourceName && [
+        {
+          sourceName,
+          sourceGroup: kappSlug ? `WebApis > ${kappSlug}` : 'WebApis',
+          name: webApi.get('slug'),
+        },
+      ],
+    transform: result =>
+      result.error && result.error.notFound ? {} : result.tree,
+  },
 });
 
 const handleSubmit = ({ slug, kappSlug }) => values =>
@@ -44,8 +66,8 @@ const handleSubmit = ({ slug, kappSlug }) => values =>
     return webApi;
   });
 
-const fields = ({ slug }) => ({ webApi }) =>
-  (!slug || webApi) && [
+const fields = ({ slug }) => ({ tree, webApi }) =>
+  (!slug || (webApi && tree)) && [
     {
       name: 'slug',
       label: 'Slug',
