@@ -33,8 +33,8 @@ const columns = [
     components: {
       BodyCell: props => (
         <td>
-          {props.value && props.value.count
-            ? `${props.value.count} submissions`
+          {props.value && props.value.get('count')
+            ? `${props.value.get('count')} submissions`
             : 'None'}
         </td>
       ),
