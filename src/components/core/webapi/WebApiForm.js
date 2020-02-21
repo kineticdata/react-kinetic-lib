@@ -30,23 +30,21 @@ const dataSources = ({ slug, kappSlug }) => ({
     params: kappSlug ? [{ kappSlug }] : [],
     transform: result => result.securityPolicyDefinitions,
   },
-  platformSourceName: {
+  sourceName: {
     fn: fetchSpace,
     params: [{ include: 'platformComponents' }],
     transform: result =>
       result.space.platformComponents.task.config.platformSourceName,
   },
+  sourceGroup: {
+    fn: () => (kappSlug ? `WebApis > ${kappSlug}` : 'WebApis'),
+    params: [],
+  },
   tree: {
     fn: fetchTree,
-    params: ({ platformSourceName: sourceName, webApi }) =>
+    params: ({ sourceName, sourceGroup, webApi }) =>
       webApi &&
-      sourceName && [
-        {
-          sourceName,
-          sourceGroup: kappSlug ? `WebApis > ${kappSlug}` : 'WebApis',
-          name: webApi.get('slug'),
-        },
-      ],
+      sourceName && [{ sourceName, sourceGroup, name: webApi.get('slug') }],
     transform: result =>
       result.error && result.error.notFound ? {} : result.tree,
   },
