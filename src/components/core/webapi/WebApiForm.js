@@ -7,6 +7,8 @@ import {
   fetchSecurityPolicyDefinitions,
   fetchSpace,
   fetchTree,
+  createTree,
+  updateTree,
 } from '../../../apis';
 
 export const WEB_API_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
@@ -50,19 +52,44 @@ const dataSources = ({ slug, kappSlug }) => ({
   },
 });
 
-const handleSubmit = ({ slug, kappSlug }) => values =>
-  (slug ? updateWebApi : createWebApi)({
+const handleSubmit = ({ slug, kappSlug }) => async (values, bindings) => {
+  const { sourceGroup, sourceName, tree } = bindings;
+  const { webApi, error } = await (slug ? updateWebApi : createWebApi)({
     kappSlug,
     slug,
     webApi: values.toJS(),
     include: 'securityPolicies',
-  }).then(({ webApi, error }) => {
-    if (error) {
-      throw (error.statusCode === 400 && error.message) ||
-        'There was an error saving the WebAPI';
-    }
-    return webApi;
   });
+  if (error) {
+    throw (error.statusCode === 400 && error.message) ||
+      'There was an error saving the WebAPI';
+  }
+  // if we created a new web api we create a corresponding tree
+  if (!slug) {
+    const { error: createTreeError } = await createTree({
+      tree: { sourceGroup, sourceName, name: values.get('slug') },
+    });
+    if (createTreeError) {
+      throw (createTreeError.statusCode === 400 && createTreeError.message) ||
+        'There was an error creating the WebAPI tree';
+    }
+  }
+  // if we updated a web api by changing its name and there is an existing tree
+  // we need to update that corresponding tree
+  else if (!tree.isEmpty() && slug !== values.get('slug')) {
+    const { error: updateTreeError } = await updateTree({
+      sourceName,
+      sourceGroup,
+      name: slug,
+      tree: { sourceGroup, sourceName, name: values.get('slug') },
+    });
+    if (updateTreeError) {
+      throw (updateTreeError.statusCode === 400 && updateTreeError.message) ||
+        'There was an error updating the WebAPI tree';
+    }
+  }
+  return webApi;
+};
 
 const fields = ({ slug }) => ({ tree, webApi }) =>
   (!slug || (webApi && tree)) && [
