@@ -15,6 +15,7 @@ export { logout } from './common/authentication/AuthenticationContainer';
 export {
   mountForm,
   resetForm,
+  reloadDataSource,
   serializeForm,
   submitForm,
   unmountForm,
