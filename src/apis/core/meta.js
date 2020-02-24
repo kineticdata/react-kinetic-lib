@@ -23,3 +23,14 @@ export const fetchKappWebhookEvents = (options = {}) =>
     })
     .then(response => response.data)
     .catch(handleErrors);
+
+export const fetchSpaMeta = () =>
+  axios
+    .get(`${bundle.apiLocation()}/meta/spa`, {
+      __bypassInitInterceptor: true,
+      headers: {
+        'X-Kinetic-ForcePreflight': 'ice-cream-cone',
+      },
+    })
+    .then(response => response.data)
+    .catch(handleErrors);

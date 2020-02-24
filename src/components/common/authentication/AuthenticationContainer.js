@@ -8,12 +8,14 @@ import {
   dispatch,
   regSaga,
 } from '../../../store';
-import { login, logoutDirect, retrieveJwt, singleSignOn } from '../../../apis';
-import { socketIdentify } from '../../../apis/socket';
 import {
-  getInitialAuthentication,
-  getSecurityStrategies,
-} from '../../../helpers';
+  login,
+  logoutDirect,
+  retrieveJwt,
+  singleSignOn,
+  fetchSpaMeta,
+} from '../../../apis';
+import { socketIdentify } from '../../../apis/socket';
 
 const defaultLoginProps = {
   error: null,
@@ -41,9 +43,12 @@ regHandlers({
       .set('login', defaultLoginProps),
   SET_INITIALIZED: (state, action) =>
     state.mergeIn(['session'], {
+      csrfToken: action.payload.csrfToken,
       initialized: true,
       loggedIn: !!action.payload.token,
+      securityStrategies: action.payload.securityStrategies,
       socket: action.payload.socket,
+      spaceSlug: action.payload.spaceSlug,
       token: action.payload.token,
     }),
 
@@ -87,10 +92,10 @@ regSaga(
 );
 
 regSaga(
-  takeEvery('SINGLE_SIGN_ON', function*({ payload }) {
+  takeEvery('SINGLE_SIGN_ON', function*({ payload: { callback, spaceSlug } }) {
     try {
       const socket = yield select(state => state.getIn(['session', 'socket']));
-      const { error } = yield call(singleSignOn, {
+      const { error } = yield call(singleSignOn, spaceSlug, {
         width: 770,
         height: 750,
       });
@@ -103,7 +108,7 @@ regSaga(
         }
         yield put({
           type: 'SET_AUTHENTICATED',
-          payload: { token, callback: payload },
+          payload: { token, callback },
         });
       }
     } catch (e) {
@@ -115,12 +120,24 @@ regSaga(
 regSaga(
   takeEvery('INITIALIZE', function*({ payload: { socket } }) {
     try {
-      const authenticated = yield call(getInitialAuthentication);
-      const token = authenticated ? yield call(retrieveJwt) : null;
+      const {
+        securityStrategies,
+        session: { csrfToken, isAuthenticated },
+        spaceSlug,
+      } = yield call(fetchSpaMeta);
+      const token = isAuthenticated ? yield call(retrieveJwt) : null;
       if (socket && token) {
         yield call(socketIdentify, token);
       }
-      yield put(action('SET_INITIALIZED', { socket, token }));
+      yield put(
+        action('SET_INITIALIZED', {
+          csrfToken,
+          securityStrategies,
+          socket,
+          spaceSlug,
+          token,
+        }),
+      );
     } catch (e) {
       console.error(e);
     }
@@ -175,7 +192,14 @@ export class AuthenticationComponent extends Component {
   }
 
   render() {
-    const { initialized, loggedIn, login, token } = this.props;
+    const {
+      initialized,
+      loggedIn,
+      login,
+      securityStrategies,
+      spaceSlug,
+      token,
+    } = this.props;
     return this.props.children({
       initialized: initialized,
       timedOut: loggedIn && !token,
@@ -185,8 +209,8 @@ export class AuthenticationComponent extends Component {
         onChangePassword,
         onLogin,
         onSso:
-          getSecurityStrategies().length > 0
-            ? callback => dispatch('SINGLE_SIGN_ON', callback)
+          securityStrategies.length > 0
+            ? callback => dispatch('SINGLE_SIGN_ON', { callback, spaceSlug })
             : null,
         ...login,
       },
@@ -199,6 +223,8 @@ const mapStateToProps = state => ({
   loggedIn: state.getIn(['session', 'loggedIn'], false),
   token: state.getIn(['session', 'token'], null),
   login: state.get('login', defaultLoginProps),
+  spaceSlug: state.getIn(['session', 'spaceSlug'], ''),
+  securityStrategies: state.getIn(['session', 'securityStrategies'], []),
 });
 
 const AuthenticationContainer = connect(mapStateToProps)(

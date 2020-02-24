@@ -48,11 +48,11 @@ export const retrieveJwt = () =>
     document.body.append(iframe);
   });
 
-export const singleSignOn = (dimensions, target = '_blank') =>
+export const singleSignOn = (spaceSlug, dimensions, target = '_blank') =>
   new Promise(resolve => {
     const options = { ...dimensions, ...getPopupPosition(window, dimensions) };
     const endpoint =
-      bundle.spaceLocation() + '/app/saml/login/alias/saml-testing';
+      bundle.spaceLocation() + '/app/saml/login/alias/' + spaceSlug;
     const popup = window.open(endpoint, target, stringifyOptions(options));
 
     // Create an event handler that closes the popup window if we focus the
