@@ -4,6 +4,7 @@ import isPlainObject from 'lodash.isplainobject';
 import isString from 'lodash.isstring';
 import deepEqual from 'deepequal';
 import moment from 'moment';
+import { connect } from '../../../store';
 import { K, bundle } from '../../../helpers';
 import { corePath } from '../../../apis/http';
 import { fetchSubmission, updateSubmission, fetchForm } from '../../../apis';
@@ -212,7 +213,7 @@ const defaultState = {
   lock: null,
 };
 
-export class CoreForm extends Component {
+export class CoreFormComponent extends Component {
   constructor(props) {
     super(props);
     this.state = { ...defaultState };
@@ -571,6 +572,7 @@ export class CoreForm extends Component {
           completed: props.onCompleted || props.completed,
           originId: props.originId,
           parentId: props.parentId,
+          csrfToken: props.csrfToken,
         });
       });
     });
@@ -642,6 +644,10 @@ export class CoreForm extends Component {
     );
   }
 }
+
+export const CoreForm = connect(state => ({
+  csrfToken: state.getIn(['session', 'csrfToken']),
+}))(CoreFormComponent);
 
 const DefaultLoadingComponent = () => (
   <div className="text-center p-3">
