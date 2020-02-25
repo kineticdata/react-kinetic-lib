@@ -3,9 +3,23 @@ name: UserTable
 menu: Core
 route: /core/userTable
 ---
+import { TableProps } from '../../../gatsby-theme-docz/components/TableProps';
 
 export const name = 'UserTable';
 
 <h2>{name}</h2>
 
-Documentation coming soon!
+<TableProps
+  columns={[
+    { name: 'username', type: 'text' },
+    { name: 'email', type: 'text' },
+    { name: 'displayName', type: 'text' },
+    { name: 'createdAt', type: 'text' },
+    { name: 'updatedAt', type: 'text' },
+    { name: 'enabled', type: 'boolean' },
+    { name: 'spaceAdmin', type: 'boolean' },
+  ]}
+  tableOptions={[
+    { name: 'spaceSlug', type: 'string' },
+  ]}
+/>
