@@ -1,9 +1,9 @@
 import React, { Fragment, useState } from 'react';
-import { TypePopover } from './TypePopover';
+import { TypePopover } from '../TypePopover';
 import { FieldProps } from './FieldProps';
 import { FieldComponentProps } from './FieldComponentProps';
-import { ObjectType } from './ObjectType';
-import { PropsTable, PropRow } from './PropsTable';
+import { ObjectType } from '../ObjectType';
+import { PropsTable, PropRow } from '../PropsTable';
 import { FormLayoutProps } from './FormLayoutProps';
 import { FormErrorProps } from './FormErrorProps';
 import { FormButtonProps } from './FormButtonProps';

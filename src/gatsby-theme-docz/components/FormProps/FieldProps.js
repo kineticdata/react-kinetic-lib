@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { fieldTypeComponents } from './index';
-import { PropRow, PropsTable } from './PropsTable';
-import { TypePopover } from './TypePopover';
+import { PropRow, PropsTable } from '../PropsTable';
+import { TypePopover } from '../TypePopover';
 
 const join = (array, element) =>
   array.flatMap(current => [current, element]).slice(0, -1);

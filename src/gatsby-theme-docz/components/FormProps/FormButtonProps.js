@@ -1,6 +1,6 @@
 import React from 'react';
-import { PropRow, PropsTable } from './PropsTable';
-import { TypePopover } from './TypePopover';
+import { PropRow, PropsTable } from '../PropsTable';
+import { TypePopover } from '../TypePopover';
 
 export const FormButtonProps = ({ formOptions }) => {
   return (

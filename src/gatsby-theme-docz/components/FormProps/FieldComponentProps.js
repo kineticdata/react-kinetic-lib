@@ -1,5 +1,5 @@
 import React from 'react';
-import { PropRow, PropsTable } from './PropsTable';
+import { PropRow, PropsTable } from '../PropsTable';
 
 const meta = {
   AttributesField: {
