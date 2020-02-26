@@ -1,0 +1,19 @@
+---
+name: FormTypeTable
+menu: Core
+route: /core/FormTypeTable
+---
+import { TableProps } from '../../../gatsby-theme-docz/components/TableProps';
+
+export const name = 'FormTypeTable';
+
+<h2>{name}</h2>
+
+<TableProps
+  columns={[
+    { name: 'name', type: 'text' },
+  ]}
+  tableOptions={[
+    { name: 'kappSlug', type: 'string' },
+  ]}
+/>

@@ -1,12 +1,12 @@
 ---
-name: SubmissionTable
+name: DatastoreSubmissionTable
 menu: Core
-route: /core/SubmissionTable
+route: /core/DatastoreSubmissionTable
 ---
 
 import { TableProps } from '../../../gatsby-theme-docz/components/TableProps';
 
-export const name = 'SubmissionTable';
+export const name = 'DatastoreSubmissionTable';
 
 <h2>{name}</h2>
 
@@ -33,8 +33,6 @@ export const name = 'SubmissionTable';
     { name: 'form', type: 'text' },
   ]}
   tableOptions={[
-    { name: 'kappSlug', type: 'string' },
     { name: 'formSlug', type: 'string' },
-    { name: 'datastore', type: 'boolean' },
   ]}
 />

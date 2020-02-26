@@ -1,0 +1,20 @@
+---
+name: WebApiTable
+menu: Core
+route: /core/WebApiTable
+---
+import { TableProps } from '../../../gatsby-theme-docz/components/TableProps';
+
+export const name = 'WebApiTable';
+
+<h2>{name}</h2>
+
+<TableProps
+  columns={[
+    { name: 'slug', type: 'text' },
+    { name: 'method', type: 'text' },
+  ]}
+  tableOptions={[
+    { name: 'kappSlug', type: 'string' },
+  ]}
+/>
