@@ -64,11 +64,8 @@ const fields = () => ({ task }) =>
     {
       name: 'config',
       label: 'Config',
-      type: 'text',
-      required: true,
+      type: null,
       visible: false,
-      initialValue: get(task, 'config') || {},
-      helpText: 'Configuration surrounding the Task Platform Conponent',
       serialize: ({ values }) => ({
         platformSourceName: values.get('platformSourceName'),
       }),
