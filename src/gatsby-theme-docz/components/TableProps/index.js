@@ -151,7 +151,6 @@ export const TableProps = ({ columns, tableOptions }) => {
     setShowingTypes([...showingTypes, { name, type, typeParams }]);
   };
   const currentType = showingTypes[showingTypes.length - 1]['type'];
-  console.log(showingTypes);
   return (
     <>
       <h3>
