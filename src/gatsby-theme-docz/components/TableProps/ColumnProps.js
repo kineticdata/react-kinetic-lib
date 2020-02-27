@@ -4,7 +4,6 @@ import { TypePopover } from '../TypePopover';
 import { ComponentsType, getTableOptionsType } from './index';
 
 export const ColumnProps = ({ type, showType, tableOptions }) => {
-  console.log(type);
   return (
     <PropsTable>
       <PropRow

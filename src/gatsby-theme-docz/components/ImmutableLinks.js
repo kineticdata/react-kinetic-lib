@@ -25,3 +25,16 @@ export const ListLink = ({ type = 'T' }) => (
     &lt;{type}&gt;
   </>
 );
+
+export const MapLink = ({ type = 'T' }) => (
+  <>
+    <a
+      href="https://immutable-js.github.io/immutable-js/docs/#/Map"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Map
+    </a>
+    &lt;{type}&gt;
+  </>
+);

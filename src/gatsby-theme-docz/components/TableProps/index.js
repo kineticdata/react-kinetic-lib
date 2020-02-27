@@ -1,15 +1,9 @@
 import React, { Fragment, useState } from 'react';
-import { TypePopover } from '../TypePopover';
-// import { FieldProps } from './FieldProps';
-// import { FieldComponentProps } from './FieldComponentProps';
 import { ObjectType } from '../ObjectType';
 import { PropsTable, PropRow } from '../PropsTable';
-import { TableLayoutProps } from './TableLayoutProps';
 import { ColumnProps } from './ColumnProps';
-import { ListLink, OrderedSetLink } from '../ImmutableLinks';
-// import { FormLayoutProps } from './FormLayoutProps';
-// import { FormErrorProps } from './FormErrorProps';
-// import { FormButtonProps } from './FormButtonProps';
+import { ListLink } from '../ImmutableLinks';
+import { ColumnComponentProps } from './ColumnComponentProps';
 
 export const columnTypeComponents = {
   Header: 'Header',
@@ -23,15 +17,6 @@ export const columnTypeComponents = {
   FooterCell: 'FooterCell',
 };
 
-const getBindingsType = dataSources =>
-  dataSources.reduce(
-    (reduction, dataSource) => ({
-      ...reduction,
-      [dataSource.name]: dataSource.type,
-    }),
-    {},
-  );
-
 export const getTableOptionsType = tableOptions =>
   tableOptions.reduce(
     (reduction, tableOptions) => ({
@@ -41,20 +26,20 @@ export const getTableOptionsType = tableOptions =>
     {},
   );
 
-const getAlterFieldsDescription = fields => (
+const getAlterColumnsDescription = columns => (
   <>
     <div>
       Define customizations to the default field configurations to support a new
-      use case. Use this prop to change the component used for a specific field
-      or add additional constraints.
+      use case. Use this prop to change the component used for a specific column
+      or add additional configuration.
     </div>
-    {fields
-      .filter(field => field.description)
-      .map(field => (
-        <Fragment key={field.name}>
+    {columns
+      .filter(column => column.description)
+      .map(column => (
+        <Fragment key={column.name}>
           <br />
-          <strong style={{ fontFamily: 'monospace' }}>{field.name} </strong>
-          {field.description}
+          <strong style={{ fontFamily: 'monospace' }}>{column.name} </strong>
+          {column.description}
         </Fragment>
       ))}
   </>
@@ -73,7 +58,6 @@ const AlterColumnsType = ({ columns, showType }) => (
 );
 
 export const ComponentsType = ({ showType, isColumn }) => {
-  console.log(isColumn);
   return (
     <ObjectType
       typeSpec={Object.values(columnTypeComponents)
@@ -81,25 +65,47 @@ export const ComponentsType = ({ showType, isColumn }) => {
         .reduce(
           (reduction, value) => ({
             ...reduction,
-            [value]: <ComponentTypeLink type={value} showType={showType} />,
+            [value]: (
+              <ComponentTypeLink
+                type={value}
+                onClick={() => {
+                  return showType(value)()();
+                }}
+              />
+            ),
           }),
           !isColumn
             ? {
                 TableLayout: (
-                  <ComponentTypeLink type="TableLayout" showType={showType} />
+                  <ComponentTypeLink
+                    type="TableLayout"
+                    onClick={() => showType('TableLayout')()()}
+                  />
                 ),
                 FilterLayout: (
-                  <ComponentTypeLink type="FilterLayout" showType={showType} />
+                  <ComponentTypeLink
+                    type="FilterLayout"
+                    onClick={() => showType('FilterLayout')()()}
+                  />
                 ),
 
                 TextFilter: (
-                  <ComponentTypeLink type="TextFilter" showType={showType} />
+                  <ComponentTypeLink
+                    type="TextFilter"
+                    onClick={() => showType('TextFilter')()()}
+                  />
                 ),
                 BooleanFilter: (
-                  <ComponentTypeLink type="BooleanFilter" showType={showType} />
+                  <ComponentTypeLink
+                    type="BooleanFilter"
+                    onClick={() => showType('BooleanFilter')()()}
+                  />
                 ),
                 EmptyBodyRow: (
-                  <ComponentTypeLink type="EmptyBodyRow" showType={showType} />
+                  <ComponentTypeLink
+                    type="EmptyBodyRow"
+                    onClick={() => showType('EmptyBodyRow')()()}
+                  />
                 ),
               }
             : {},
@@ -108,23 +114,25 @@ export const ComponentsType = ({ showType, isColumn }) => {
   );
 };
 
-export const ComponentTypeLink = ({ showType, type }) => (
-  <a
-    href="#"
-    onClick={event => {
-      event.preventDefault();
-      showType(type)()();
-    }}
-  >
-    {type}
-  </a>
-);
+export const ComponentTypeLink = ({ onClick, type }) => {
+  return (
+    <a
+      href="#"
+      onClick={event => {
+        event.preventDefault();
+        onClick();
+      }}
+    >
+      {type}
+    </a>
+  );
+};
 
 const DataSourcesObjectType = () => (
   <ObjectType typeSpec={{ '[prop: string]': <a href="#">DataSource</a> }} />
 );
 
-const ColumnTypeLink = ({ onClick, type = 'T' }) => (
+export const ColumnTypeLink = ({ onClick, type = 'T' }) => (
   <a
     href="#"
     role="button"
@@ -143,6 +151,7 @@ export const TableProps = ({ columns, tableOptions }) => {
     setShowingTypes([...showingTypes, { name, type, typeParams }]);
   };
   const currentType = showingTypes[showingTypes.length - 1]['type'];
+  console.log(showingTypes);
   return (
     <>
       <h3>
@@ -182,23 +191,25 @@ export const TableProps = ({ columns, tableOptions }) => {
       {currentType === 'Column' ? (
         <ColumnProps
           type={showingTypes[showingTypes.length - 1]['typeParams'][0]}
-          showType={showType()}
+          showType={showType}
           tableOptions={tableOptions}
         />
-      ) : // <FieldProps
-      //   bindings={getBindingsType(dataSources)}
-      //   type={showingTypes[showingTypes.length - 1]['typeParams'][0]}
-      //   showType={showType}
-      // />
-      // ) : Object.values(fieldTypeComponents).includes(currentType) ? (
-      //   <FieldComponentProps type={currentType} />
-      // ) : currentType === 'FormButtons' ? (
-      //   <FormButtonProps formOptions={getFormOptionsType(formOptions)} />
-      // ) : currentType === 'FormError' ? (
-      //   <FormErrorProps />
-      currentType === 'TableLayout' ? (
-        <TableLayoutProps />
+      ) : Object.values(columnTypeComponents).includes(currentType) ||
+        [
+          'TableLayout',
+          'FilterLayout',
+          'TextFilter',
+          'BooleanFilter',
+          'EmptyBodyRow',
+        ].includes(currentType) ? (
+        <ColumnComponentProps
+          type={currentType}
+          tableOptions={tableOptions}
+          showType={showType}
+        />
       ) : (
+        // ) : ? (
+        //   <TableLayoutProps />
         <PropsTable>
           {tableOptions.map(tableOption => (
             <PropRow
@@ -228,7 +239,7 @@ export const TableProps = ({ columns, tableOptions }) => {
                 showType={showType('alterColumns')('Column')}
               />
             }
-            description={getAlterFieldsDescription(columns)}
+            description={getAlterColumnsDescription(columns)}
           />
 
           <PropRow
@@ -278,33 +289,6 @@ export const TableProps = ({ columns, tableOptions }) => {
             odd
             type="boolean"
             description="Enable rendering of the table footer (not rendered by default.)"
-          />
-          <PropRow
-            name="onSave?"
-            type={
-              <>
-                (
-                <TypePopover
-                  name="tableOptions: O"
-                  typeSpec={getTableOptionsType(tableOptions)}
-                />
-                ) => (result: R) => void
-              </>
-            }
-          />
-          <PropRow
-            name="onError?"
-            type={
-              <>
-                (
-                <TypePopover
-                  name="tableOptions: O"
-                  name="tableOptions: O"
-                  typeSpec={getTableOptionsType(tableOptions)}
-                />
-                ) => (error: unknown) => void
-              </>
-            }
           />
           <PropRow
             name="components?"
