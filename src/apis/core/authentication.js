@@ -31,7 +31,7 @@ export const retrieveJwt = () =>
       bundle.spaceLocation() +
       '/app/oauth/authorize?grant_type=implicit&response_type=token&client_id=system';
     iframe.title = 'oauth jwt iframe';
-    iframe.style = 'display: none';
+    iframe.style.cssText = 'display: none';
 
     const listener = e => {
       if (e.origin === checkedOrigin && e.data.token) {
@@ -45,7 +45,7 @@ export const retrieveJwt = () =>
     };
 
     window.addEventListener('message', listener);
-    document.body.append(iframe);
+    document.body.appendChild(iframe);
   });
 
 export const singleSignOn = (spaceSlug, dimensions, target = '_blank') =>
@@ -76,7 +76,7 @@ export const singleSignOn = (spaceSlug, dimensions, target = '_blank') =>
       } else if (await sameHost(window, popup)) {
         if (
           process.env.NODE_ENV !== 'development' &&
-          popup.location.includes === 'authentication_error'
+          popup.location.includes('authentication_error')
         ) {
           resolve({ error: 'Single Sign-on failed' });
         } else {
