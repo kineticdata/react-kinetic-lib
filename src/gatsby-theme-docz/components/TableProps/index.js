@@ -17,7 +17,7 @@ export const columnTypeComponents = {
   FooterCell: 'FooterCell',
 };
 
-export const getTableOptionsType = tableOptions =>
+export const getTableOptionsType = (tableOptions = []) =>
   tableOptions.reduce(
     (reduction, tableOptions) => ({
       ...reduction,
@@ -207,17 +207,16 @@ export const TableProps = ({ columns, tableOptions }) => {
           showType={showType}
         />
       ) : (
-        // ) : ? (
-        //   <TableLayoutProps />
         <PropsTable>
-          {tableOptions.map(tableOption => (
-            <PropRow
-              key={tableOption.name}
-              name={tableOption.name}
-              type={tableOption.type}
-              description={tableOption.description}
-            />
-          ))}
+          {tableOptions &&
+            tableOptions.map(tableOption => (
+              <PropRow
+                key={tableOption.name}
+                name={tableOption.name}
+                type={tableOption.type}
+                description={tableOption.description}
+              />
+            ))}
           <PropRow
             name="addColumns?"
             type={

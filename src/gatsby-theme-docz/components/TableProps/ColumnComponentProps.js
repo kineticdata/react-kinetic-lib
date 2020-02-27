@@ -10,12 +10,12 @@ export const ColumnComponentProps = ({ type, tableOptions, showType }) => {
     Body: (
       <PropsTable>
         <PropRow
-          description="Resulting element from Header component."
+          description="Flag denoting that the table is currently loading data."
           name="loading"
           type="boolean"
         />
         <PropRow
-          description="Resulting element from Header component."
+          description="Flag denoting that the table is waiting full initialization."
           name="initializing"
           type="boolean"
         />
@@ -271,22 +271,22 @@ export const ColumnComponentProps = ({ type, tableOptions, showType }) => {
           type="React.Element"
         />
         <PropRow
-          description="Resulting element from Header component."
+          description="Flag denoting that the table is waiting full initialization."
           name="initializing"
           type="boolean"
         />
         <PropRow
-          description="Resulting element from Header component."
+          description="Flag denoting that the table is currently loading data."
           name="loading"
           type="boolean"
         />
         <PropRow
-          description="Resulting element from Header component."
+          description="A string provided when there is an error encounted fetching data for the table."
           name="error"
           type="string"
         />
         <PropRow
-          description="Resulting element from Header component."
+          description="Flag denoting that the dataset is empty."
           name="empty"
           type="boolean"
         />
