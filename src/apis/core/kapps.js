@@ -11,6 +11,7 @@ export const fetchKapps = (options = {}) => {
     })
     .then(response => ({
       kapps: response.data.kapps,
+      count: response.data.count,
       nextPageToken: response.data.nextPageToken,
     }))
     .catch(handleErrors);

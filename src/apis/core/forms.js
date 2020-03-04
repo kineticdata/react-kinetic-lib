@@ -17,6 +17,7 @@ export const fetchForms = (options = {}) => {
     })
     .then(response => ({
       forms: response.data.forms,
+      count: response.data.count,
       nextPageToken: response.data.nextPageToken,
     }))
     .catch(handleErrors);

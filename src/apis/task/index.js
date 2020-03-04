@@ -10,7 +10,11 @@ export const buildTreeId = options =>
     : options.name;
 
 const generateNextPageToken = data =>
-  data.offset + data.limit > data.count ? null : data.limit + data.offset;
+  data.offset && data.limit && data.count
+    ? data.offset + data.limit > data.count
+      ? null
+      : data.limit + data.offset
+    : null;
 
 export const fetchTrees = (options = {}) =>
   axios
@@ -802,10 +806,14 @@ export const fetchTaskRuns = (options = {}) =>
         status: options.status || undefined,
         orderBy: options.orderBy,
         direction: options.direction,
+        count: options.count || undefined,
+        start: options.start || undefined,
+        end: options.end || undefined,
       },
     })
     .then(response => ({
       runs: response.data.runs,
+      count: response.data.count,
       nextPageToken: generateNextPageToken(response.data),
     }))
     .catch(handleErrors);
@@ -950,10 +958,12 @@ export const fetchTaskRunErrors = (options = {}) =>
         relatedItem1Type: options.relatedItem1Type || undefined,
         relatedItem2Id: options.relatedItem1Id || undefined,
         relatedItem2Type: options.relatedItem1Type || undefined,
+        count: options.count || undefined,
       },
     })
     .then(response => ({
       runErrors: response.data.errors,
+      count: response.data.count,
       nextPageToken: generateNextPageToken(response.data),
     }))
     .catch(handleErrors);

@@ -12,6 +12,7 @@ export const fetchUsers = (options = {}) => {
   return promise
     .then(response => ({
       users: response.data.users,
+      count: response.data.count,
       nextPageToken: response.data.nextPageToken,
     }))
     .catch(handleErrors);
