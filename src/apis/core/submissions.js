@@ -238,7 +238,7 @@ export class SubmissionSearch {
 
   index(index) {
     this.validateDatastore();
-    this.searchMeta.index = index;
+    this.searchMeta.index = index ? index.replace(/:UNIQUE$/, '') : index;
     return this;
   }
 
