@@ -15,7 +15,9 @@ export class I18nProvider extends React.Component {
   }
 
   componentDidMount() {
-    this.loadTranslations(this.props.locale, 'shared', true);
+    if (this.props.locale) {
+      this.loadTranslations(this.props.locale, 'shared', true);
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
