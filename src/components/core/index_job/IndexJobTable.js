@@ -31,7 +31,13 @@ const columns = [
     value: 'progress',
     title: 'Progress',
     components: {
-      BodyCell: props => <td>{props.value ? props.value : 'None'}</td>,
+      BodyCell: props => (
+        <td>
+          {props.value && props.value.get('count')
+            ? `${props.value.get('count')} submissions`
+            : 'None'}
+        </td>
+      ),
     },
   },
   { value: 'startedAt', title: 'Started At' },

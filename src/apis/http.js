@@ -45,6 +45,7 @@ export const paramBuilder = options => {
   if (options.manage) params.manage = options.manage;
   if (options.export) params.export = options.export;
   if (options.days) params.days = options.days;
+  if (options.count) params.count = options.count;
 
   return params;
 };

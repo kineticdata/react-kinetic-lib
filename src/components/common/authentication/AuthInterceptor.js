@@ -47,6 +47,7 @@ export default class AuthInterceptor {
 
   handleRejected(error) {
     if (
+      error.response &&
       error.response.status === 401 &&
       !error.response.config.__bypassAuthInterceptor
     ) {

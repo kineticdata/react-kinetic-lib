@@ -5,7 +5,7 @@ import { get, getIn } from 'immutable';
 const dataSource = ({
   sourceName,
   sourceGroup,
-  tree,
+  treeName,
   treeType,
   sourceId,
   id,
@@ -23,7 +23,7 @@ const dataSource = ({
       group: sourceGroup
         ? sourceGroup
         : paramData.filters.getIn(['sourceGroup', 'value']),
-      tree: tree ? tree : paramData.filters.getIn(['tree', 'value']),
+      tree: treeName ? treeName : paramData.filters.getIn(['tree', 'value']),
       treeType: treeType
         ? treeType
         : paramData.filters.getIn(['type', 'value']),
@@ -123,7 +123,7 @@ const columns = [
 ];
 
 export const RunTable = generateTable({
-  tableOptions: [],
+  tableOptions: ['sourceName', 'sourceGroup', 'treeName'],
   columns,
   dataSource,
 });

@@ -27,7 +27,11 @@ const searchOptions = ({ allowNew, options, search }) => (field, value) => {
                         .includes(value.toLowerCase())),
               ),
             );
-    return Promise.resolve({ suggestions: filter(options.toJS(), value) });
+    const suggestions = filter(options.toJS(), value);
+    return Promise.resolve({
+      suggestions: suggestions.slice(0, 50),
+      nextPageToken: suggestions.length > 50,
+    });
   }
   // Server Side Fetching
   else {
@@ -46,9 +50,11 @@ const valueToCustomOption = value => ({ value, label: value });
 
 const getStatusProps = props => ({
   warning:
-    props.error || props.empty
+    props.error || props.empty || props.more
       ? props.error
         ? props.error
+        : props.more
+        ? 'Too many results, first 50 shown. Please refine your search.'
         : props.empty
         ? 'No matches found.'
         : null

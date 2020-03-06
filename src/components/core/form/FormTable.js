@@ -12,7 +12,7 @@ const dataSource = ({ kappSlug = null, datastore }) => ({
   params: paramData => [
     {
       ...generateCESearchParams(paramData),
-      include: `details${datastore ? ',indexDefinitions' : ''}`,
+      include: `details${datastore ? ',indexDefinitions,backgroundJobs' : ''}`,
       datastore,
       kappSlug,
     },

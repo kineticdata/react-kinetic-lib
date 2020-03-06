@@ -4,6 +4,7 @@ import isPlainObject from 'lodash.isplainobject';
 import isString from 'lodash.isstring';
 import deepEqual from 'deepequal';
 import moment from 'moment';
+import { connect } from '../../../store';
 import { K, bundle } from '../../../helpers';
 import { corePath } from '../../../apis/http';
 import { fetchSubmission, updateSubmission, fetchForm } from '../../../apis';
@@ -212,7 +213,7 @@ const defaultState = {
   lock: null,
 };
 
-export class CoreForm extends Component {
+export class CoreFormComponent extends Component {
   constructor(props) {
     super(props);
     this.state = { ...defaultState };
@@ -265,6 +266,18 @@ export class CoreForm extends Component {
           this.props.review ||
           (this.state.lock && !this.state.lock.isLockedByMe),
       });
+    }
+    // If pending and error state has just been set, call error callback
+    else if (this.state.pending && this.state.error && !prevState.error) {
+      if (this.state.error.statusCode === 401) {
+        applyGuard(this.props.onUnauthorized || this.props.unauthorized);
+      } else if (this.state.error.statusCode === 403) {
+        applyGuard(this.props.onForbidden || this.props.forbidden);
+      } else if (this.state.error.statusCode === 404) {
+        applyGuard(this.props.onNotFound || this.props.onNotFound);
+      } else {
+        applyGuard(this.props.onError || this.props.error);
+      }
     }
 
     // If locking is turned on and has been initalized
@@ -559,6 +572,7 @@ export class CoreForm extends Component {
           completed: props.onCompleted || props.completed,
           originId: props.originId,
           parentId: props.parentId,
+          csrfToken: props.csrfToken,
         });
       });
     });
@@ -630,6 +644,10 @@ export class CoreForm extends Component {
     );
   }
 }
+
+export const CoreForm = connect(state => ({
+  csrfToken: state.getIn(['session', 'csrfToken']),
+}))(CoreFormComponent);
 
 const DefaultLoadingComponent = () => (
   <div className="text-center p-3">

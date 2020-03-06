@@ -52,6 +52,24 @@ const fields = () => ({ task }) =>
       initialValue: get(task, 'url') || '',
       helpText: 'URL to the Task Component',
     },
+    {
+      name: 'platformSourceName',
+      label: 'Platform Source Name',
+      type: 'text',
+      required: true,
+      transient: true,
+      initialValue: task.getIn(['config', 'platformSourceName']) || '',
+      helpText: 'Source Name for the Kinetic Platform.',
+    },
+    {
+      name: 'config',
+      label: 'Config',
+      type: null,
+      visible: false,
+      serialize: ({ values }) => ({
+        platformSourceName: values.get('platformSourceName'),
+      }),
+    },
   ];
 
 export const TaskComponentForm = generateForm({

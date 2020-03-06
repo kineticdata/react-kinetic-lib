@@ -419,6 +419,9 @@ export const unmountForm = formKey => dispatch('UNMOUNT_FORM', { formKey });
 
 export const resetForm = formKey => dispatch('RESET', { formKey });
 
+export const reloadDataSource = (formKey, name) =>
+  dispatch('CALL_DATA_SOURCE', { formKey, name });
+
 export const configureForm = config => dispatch('CONFIGURE_FORM', config);
 
 export const submitForm = (formKey, { fieldSet, onInvalid }) =>

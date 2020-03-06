@@ -11,6 +11,7 @@ export const fetchTeams = (options = {}) => {
     })
     .then(response => ({
       teams: response.data.teams,
+      count: response.data.count,
       nextPageToken: response.data.nextPageToken,
     }))
     .catch(handleErrors);

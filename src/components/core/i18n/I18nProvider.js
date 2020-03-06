@@ -1,8 +1,8 @@
 import React from 'react';
-import axios from 'axios';
 import { Map } from 'immutable';
 import { bundle } from '../../../helpers';
 import { I18nContext } from './I18nContext';
+import { fetchTranslations } from '../../../apis/core/translations';
 
 export class I18nProvider extends React.Component {
   constructor(props) {
@@ -15,12 +15,12 @@ export class I18nProvider extends React.Component {
   }
 
   componentDidMount() {
-    this.loadTranslations(this.props.locale, 'shared');
+    this.loadTranslations(this.props.locale, 'shared', true);
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.locale !== this.props.locale) {
-      this.loadTranslations(this.props.locale, 'shared');
+      this.loadTranslations(this.props.locale, 'shared', true);
     }
     if (
       !this.state.translations.equals(prevState.translations) &&
@@ -34,7 +34,7 @@ export class I18nProvider extends React.Component {
     }
   }
 
-  loadTranslations = (locale, context) => {
+  loadTranslations = (locale, context, isPublic) => {
     if (!this.loading.hasIn([locale, context])) {
       this.loading = this.loading.setIn([locale, context], true);
       // check to see if the translation context was already loaded by the CE
@@ -47,25 +47,25 @@ export class I18nProvider extends React.Component {
           ),
         }));
       } else {
-        const url = `${bundle.apiLocation()}/translations/entries?cache&context=${context}&locale=${locale ||
-          ''}`;
-        axios
-          .get(url)
-          .then(response => {
+        fetchTranslations({
+          cache: true,
+          contextName: context,
+          localeCode: locale,
+          public: isPublic,
+        }).then(({ error, entries }) => {
+          if (entries) {
             this.setState(state => ({
               translations: state.translations.setIn(
                 [locale, context],
-                Map(
-                  response.data.entries.map(entry => [entry.key, entry.value]),
-                ),
+                Map(entries.map(entry => [entry.key, entry.value])),
               ),
             }));
-          })
-          .catch(error => {
+          } else {
             this.setState(state => ({
               translations: state.translations.setIn([locale, context], Map()),
             }));
-          });
+          }
+        });
       }
     }
   };

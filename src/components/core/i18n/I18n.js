@@ -74,6 +74,7 @@ export class I18n extends React.Component {
                 locale={locale}
                 translations={translations}
                 loadTranslations={loadTranslations}
+                public={this.props.public}
                 render={this.props.render}
               >
                 {this.props.children}
@@ -96,6 +97,7 @@ export class I18n extends React.Component {
                   locale={locale}
                   translations={translations}
                   loadTranslations={loadTranslations}
+                  public={this.props.public}
                 >
                   {this.props.children}
                 </I18nTranslate>
@@ -114,12 +116,20 @@ export class I18n extends React.Component {
 
 export class I18nTranslate extends React.Component {
   componentDidMount() {
-    this.props.loadTranslations(this.props.locale, this.props.context);
+    this.props.loadTranslations(
+      this.props.locale,
+      this.props.context,
+      this.props.public,
+    );
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.context !== prevProps.context) {
-      this.props.loadTranslations(this.props.locale, this.props.context);
+      this.props.loadTranslations(
+        this.props.locale,
+        this.props.context,
+        this.props.public,
+      );
     }
   }
 

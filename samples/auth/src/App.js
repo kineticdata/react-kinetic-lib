@@ -10,7 +10,7 @@ import { Login } from "./pages/Login";
 export const appLogout = () => logout(() => history.push("/"));
 
 export const App = () => (
-  <KineticLib>
+  <KineticLib locale="en">
     {({ initialized, loggedIn, loginProps, timedOut }) => (
       <>
         {!initialized ? (

@@ -242,11 +242,15 @@ const fields = () => ({
         const displayValueSPA = values.get('displayValueSPA');
         const displayValueJSP = values.get('displayValueJSP');
         const displayValueRedirect = values.get('displayValueRedirect');
-        return displayType === 'Single Page App'
-          ? `spa.jsp${displayValueSPA && '?location=' + displayValueSPA}`
-          : displayType === 'Redirect'
-          ? displayValueRedirect
-          : displayValueJSP;
+        if (displayType === 'Single Page App') {
+          return displayValueSPA && displayValueSPA.endsWith('index.html')
+            ? displayValueSPA
+            : `spa.jsp${displayValueSPA && '?location=' + displayValueSPA}`;
+        } else {
+          return displayType === 'Redirect'
+            ? displayValueRedirect
+            : displayValueJSP;
+        }
       },
     },
     {
