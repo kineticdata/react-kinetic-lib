@@ -224,14 +224,13 @@ export const buildPropertyFields = ({
       .toObject(),
 });
 
-export const getComponentName = field => {
-  return (
-    field.type
-      .split('-')
-      .map(word => `${word.charAt(0).toUpperCase()}${word.substring(1)}`)
-      .join('') + 'Field'
-  );
-};
+export const getComponentName = field =>
+  field.type
+    ? field.type
+        .split('-')
+        .map(word => `${word.charAt(0).toUpperCase()}${word.substring(1)}`)
+        .join('') + 'Field'
+    : null;
 
 export const getFieldComponentProps = field => ({
   dirty: field.dirty,

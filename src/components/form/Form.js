@@ -579,18 +579,20 @@ class FormImplComponent extends Component {
           ).mapEntries(([name, field], index) => {
             const FieldImpl =
               fieldComponents.get(name) ||
-              components.get(getComponentName(field));
+              components.get(getComponentName(field), null);
             return [
               name,
-              <FieldImpl
-                key={name}
-                focusRef={
-                  name === autoFocus || index === autoFocus
-                    ? this.focusRef
-                    : null
-                }
-                {...getFieldComponentProps(field)}
-              />,
+              FieldImpl ? (
+                <FieldImpl
+                  key={name}
+                  focusRef={
+                    name === autoFocus || index === autoFocus
+                      ? this.focusRef
+                      : null
+                  }
+                  {...getFieldComponentProps(field)}
+                />
+              ) : null,
             ];
           })}
           dirty={dirty}
