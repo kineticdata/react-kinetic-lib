@@ -253,6 +253,8 @@ export const getFieldComponentProps = field => ({
     'radio',
     'select',
     'select-multi',
+    'text',
+    'text-multi',
   ].includes(field.type)
     ? field.options
     : undefined,
