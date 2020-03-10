@@ -22,7 +22,7 @@ export const logoutDirect = () =>
 
 const checkedOrigin = process.env.REACT_APP_API_HOST
   ? process.env.REACT_APP_API_HOST
-  : typeof window !== `undefined` && window.bundle
+  : typeof window !== `undefined`
   ? window.location.origin
   : null;
 
