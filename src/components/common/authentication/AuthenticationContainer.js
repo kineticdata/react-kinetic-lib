@@ -125,7 +125,9 @@ regSaga(
         session: { csrfToken, isAuthenticated },
         spaceSlug,
       } = yield call(fetchSpaMeta);
+      console.log('starting JWT retrieval', socket, isAuthenticated, csrfToken);
       const token = isAuthenticated ? yield call(retrieveJwt) : null;
+      console.log('finished JWT retrieval', token);
       if (socket && token) {
         yield call(socketIdentify, token);
       }
