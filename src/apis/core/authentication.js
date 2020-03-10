@@ -22,7 +22,7 @@ export const logoutDirect = () =>
 
 const checkedOrigin = process.env.REACT_APP_API_HOST
   ? process.env.REACT_APP_API_HOST
-  : typeof window !== `undefined`
+  : typeof window !== 'undefined'
   ? window.location.origin
   : null;
 
@@ -35,27 +35,18 @@ export const retrieveJwt = () =>
     iframe.title = 'oauth jwt iframe';
     iframe.style.cssText = 'display: none';
 
-    console.log('Just FYI, checked origin: ', checkedOrigin);
     const listener = e => {
-      console.log('event listener', e);
       if (e.origin === checkedOrigin && e.data.token) {
-        console.log('got token', e.data);
         window.removeEventListener('message', listener);
         document.body.removeChild(iframe);
         resolve(e.data.token);
       }
       if (e.origin === checkedOrigin && e.data.type === 'ping') {
-        console.log('event ping');
         e.source.postMessage({ type: 'pong' }, e.origin);
-      }
-      if (e.origin !== checkedOrigin) {
-        console.log('event did not match', e);
       }
     };
 
-    console.log('adding listener');
     window.addEventListener('message', listener);
-    console.log('adding frame');
     document.body.appendChild(iframe);
   });
 
