@@ -25,12 +25,12 @@ const CheckboxInput = props => (
   />
 );
 
-export const TableLayout = ({ rows, onAdd, rowConfig }) => (
+export const TableLayout = ({ rows, onAdd, options }) => (
   <Fragment>
     <table>
       <thead>
         <tr>
-          {rowConfig
+          {options
             .toIndexedSeq()
             .toList()
             .map(config => (
@@ -77,7 +77,7 @@ const fieldFromConfig = (config, components = {}) => {
 };
 
 export const TableInput = props => {
-  const { components = {}, rowConfig, rows, onChange, onBlur, onFocus } = props;
+  const { components = {}, options, rows, onChange, onBlur, onFocus } = props;
   const appliedComponents = {
     ...defaultComponents,
     ...components,
@@ -87,7 +87,7 @@ export const TableInput = props => {
   const handleAddRow = e => {
     e.preventDefault();
 
-    const newRow = rowConfig.reduce(
+    const newRow = options.reduce(
       (row, config) =>
         row.set(
           config.get('name'),
@@ -106,7 +106,7 @@ export const TableInput = props => {
       onChange(rows.delete(index));
     };
 
-    const fields = rowConfig.reduce((fields, config) => {
+    const fields = options.reduce((fields, config) => {
       const Field = fieldFromConfig(config, appliedComponents);
       const value = row.get(config.get('name'));
       const handleChangeField = e => {
@@ -130,13 +130,13 @@ export const TableInput = props => {
       <RowLayout
         key={index}
         fields={fields}
-        rowConfig={rowConfig}
+        options={options}
         onDelete={handleDeleteRow}
       />
     );
   });
 
   return (
-    <TableLayout rows={fieldRows} onAdd={handleAddRow} rowConfig={rowConfig} />
+    <TableLayout rows={fieldRows} onAdd={handleAddRow} options={options} />
   );
 };
