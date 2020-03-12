@@ -106,8 +106,9 @@ export class SvgCanvas extends Component {
     this.setTransform();
   };
 
-  zoom = throttle(event => {
-    const { offsetX, offsetY } = event;
+  zoom = throttle((clientX, clientY) => {
+    const offsetX = clientX - this.canvas.current.parentNode.offsetLeft;
+    const offsetY = clientY - this.canvas.current.parentNode.offsetTop;
     // Compute the new scale value, the deltaY from the mouse event is usually
     // somewhere between 0 and 100 so we divide that by a large number to get
     // much smaller increments.
@@ -183,7 +184,7 @@ export class SvgCanvas extends Component {
     event.preventDefault();
     event.stopPropagation();
     this.scrollDelta += event.deltaY;
-    this.zoom(event);
+    this.zoom(event.clientX, event.clientY);
   };
 
   setTransform(duration, ease = '') {
