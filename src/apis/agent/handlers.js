@@ -68,3 +68,28 @@ export const deleteAgentHandler = (options = {}) => {
     .then(response => ({ handler: response.data.handler }))
     .catch(handleErrors);
 };
+
+export const testAgentHandler = (options = {}) => {
+  validateOptions(
+    'testAgentHandler',
+    ['agentSlug', 'handlerSlug', 'parameters'],
+    options,
+  );
+
+  const parameters = options.parameters.reduce((params, parameter) => {
+    params[parameter.name] = parameter.value;
+    return params;
+  }, {});
+
+  return axios
+    .post(
+      `${buildAgentPath(options)}/app/api/v1/handlers/${
+        options.handlerSlug
+      }/execute`,
+      {
+        ...parameters,
+      },
+    )
+    // .then(response => ({ response: response.data }))
+    .catch(handleErrors);
+};
