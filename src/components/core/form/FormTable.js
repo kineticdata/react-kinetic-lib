@@ -7,7 +7,7 @@ const VALID_FORM_STATUES = ['New', 'Active', 'Inactive', 'Delete'].map(s => ({
   label: s,
 }));
 
-const dataSource = ({ kappSlug = null, datastore }) => ({
+const dataSource = ({ kappSlug = null, datastore, manage = false }) => ({
   fn: fetchForms,
   params: paramData => [
     {
@@ -15,6 +15,7 @@ const dataSource = ({ kappSlug = null, datastore }) => ({
       include: `details${datastore ? ',indexDefinitions,backgroundJobs' : ''}`,
       datastore,
       kappSlug,
+      manage,
     },
   ],
   transform: result => ({
@@ -84,7 +85,7 @@ const columns = [
 ];
 
 export const FormTable = generateTable({
-  tableOptions: ['kappSlug', 'datastore'],
+  tableOptions: ['kappSlug', 'datastore', 'manage'],
   columns,
   dataSource,
 });
