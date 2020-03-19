@@ -10,7 +10,7 @@ export const buildTreeId = options =>
     : options.name;
 
 const generateNextPageToken = data =>
-  data.offset && data.limit && data.count
+  data.offset >= 0 && data.limit && data.count
     ? data.offset + data.limit > data.count
       ? null
       : data.limit + data.offset
