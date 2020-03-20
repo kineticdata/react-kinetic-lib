@@ -20,10 +20,12 @@ const dataSource = ({
         'includeSystemRuns',
         'value',
       ]),
-      group: sourceGroup
+      groupFragment: sourceGroup
         ? sourceGroup
         : paramData.filters.getIn(['sourceGroup', 'value']),
-      tree: treeName ? treeName : paramData.filters.getIn(['tree', 'value']),
+      treeFragment: treeName
+        ? treeName
+        : paramData.filters.getIn(['tree', 'value']),
       treeType: treeType
         ? treeType
         : paramData.filters.getIn(['type', 'value']),

@@ -7,7 +7,7 @@ const STATUS_OPTIONS = ['Active', 'Inactive', 'Paused'].map(v => ({
 }));
 
 const filtersToParams = filters => ({
-  name: filters.getIn(['name', 'value']),
+  nameFragment: filters.getIn(['name', 'value']),
   ownerEmail: filters.getIn(['ownerEmail', 'value']),
   status: filters.getIn(['status', 'value']),
 });
@@ -20,7 +20,7 @@ const dataSource = ({ workflowType, sourceName, sourceGroup }) => ({
       source: sourceName
         ? sourceName
         : paramData.filters.getIn(['sourceName', 'value']),
-      group: sourceGroup
+      groupFragment: sourceGroup
         ? sourceGroup
         : paramData.filters.getIn(['sourceGroup', 'value']),
       type: workflowType || 'Tree',
