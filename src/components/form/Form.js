@@ -159,8 +159,12 @@ regHandlers({
     state.setIn(['forms', formKey], null),
   UNMOUNT_FORM: (state, { payload: { formKey } }) =>
     state.deleteIn(['forms', formKey]),
-  CONFIGURE_FORM: (state, { payload }) =>
+  CONFIGURE_FORM_INIT: (state, { payload }) =>
     state.getIn(['forms', payload.formKey]) !== null
+      ? state
+      : state.setIn(['forms', payload.formKey], 'initializing'),
+  CONFIGURE_FORM: (state, { payload }) =>
+    state.getIn(['forms', payload.formKey]) !== 'initializing'
       ? state
       : state.setIn(
           ['forms', payload.formKey],
@@ -360,6 +364,22 @@ regSaga(
   }),
 );
 
+regSaga(
+  takeEvery('CONFIGURE_FORM_INIT', function*({ payload }) {
+    try {
+      const { dataSources: dataSourcesFn, ...config } = payload;
+      const dataSources = yield call(dataSourcesFn, config.formOptions);
+      const resolvedConfig = {
+        ...config,
+        dataSources,
+      };
+      yield put(action('CONFIGURE_FORM', resolvedConfig));
+    } catch (e) {
+      console.error(e);
+    }
+  }),
+);
+
 const actions = {
   setValue: formKey => (name, value, triggerChange = true) =>
     dispatch('SET_VALUE', { formKey, name, value, triggerChange }),
@@ -422,7 +442,7 @@ export const resetForm = formKey => dispatch('RESET', { formKey });
 export const reloadDataSource = (formKey, name) =>
   dispatch('CALL_DATA_SOURCE', { formKey, name });
 
-export const configureForm = config => dispatch('CONFIGURE_FORM', config);
+export const configureForm = config => dispatch('CONFIGURE_FORM_INIT', config);
 
 export const submitForm = (formKey, { fieldSet, onInvalid }) =>
   dispatch('SUBMIT', { formKey, fieldSet, onInvalid });

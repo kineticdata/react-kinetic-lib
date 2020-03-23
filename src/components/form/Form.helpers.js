@@ -144,7 +144,7 @@ export const createFormState = ({
     addFields,
     alterFields,
     dataSources: Map(addDataSources)
-      .merge(Map(dataSources(formOptions)))
+      .merge(Map(dataSources))
       .map(createDataSource),
     fieldsFn: fields,
     formKey,
