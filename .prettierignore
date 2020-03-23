@@ -1,6 +1,14 @@
 # ignore everything that isn't in the `src` directory
 /*
 !/src
+
+# also include the samples src files
+!/samples
+/samples/*/.env.development
+/samples/*/package.json
+/samples/*/README.md
+/samples/*/yarn.lock
+
 !styleguide.config.js
 !gatsby-*
 !doczrc.js
