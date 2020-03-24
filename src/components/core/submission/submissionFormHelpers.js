@@ -1,22 +1,55 @@
 import { get, getIn, has, List } from 'immutable';
-import { fetchForm, fetchSubmission } from '../../../apis';
+import {
+  createSubmission,
+  fetchForm,
+  fetchSubmission,
+  updateSubmission,
+} from '../../../apis';
 
 export const fetchFormOrSubmission = ({ datastore, formSlug, id, kappSlug }) =>
   (id
     ? fetchSubmission({
         id,
-        include: 'form.bridgedResources,form.pages,values',
+        include: 'form,form.bridgedResources,form.pages,values',
       })
     : fetchForm({
         datastore,
         formSlug,
         kappSlug,
-        include: 'bridgedResources,pages',
+        include: 'bridgedResources,kapp,pages',
       })
   ).then(data => ({
     form: id ? data.submission.form : data.form,
     submission: id ? data.submission : null,
   }));
+
+export const saveSubmission = ({ form, submission, values }) => {
+  const saveFn = submission ? updateSubmission : createSubmission;
+  const params = submission
+    ? { id: get(submission, 'id') }
+    : {
+        formSlug: get(form, 'slug'),
+        kappSlug: getIn(form, ['kapp', 'slug']),
+      };
+  const nextPageIndex = submission
+    ? form
+        .get('pages')
+        .findIndex(page => page.get('name') === submission.get('currentPage')) +
+      1
+    : 1;
+  return saveFn({
+    ...params,
+    completed: nextPageIndex === form.get('pages').size,
+    currentPage: {
+      name:
+        nextPageIndex === form.get('pages').size
+          ? null
+          : form.getIn(['pages', nextPageIndex, 'name']),
+    },
+    values,
+    include: 'values',
+  }).then(data => data.submission);
+};
 
 // given a form definition and an optional submission, this helper function
 // returns the page that should be shown

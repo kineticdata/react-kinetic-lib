@@ -205,6 +205,10 @@ regHandlers({
           }),
       )
       .updateIn(['forms', formKey], digest),
+  SET_DATA_SOURCE: (state, { payload: { formKey, name, data } }) =>
+    state
+      .setIn(['forms', formKey, 'dataSources', name, 'data'], fromJS(data))
+      .updateIn(['forms', formKey], digest),
   RESET: (state, { payload: { formKey } }) =>
     state.hasIn(['forms', formKey])
       ? state
@@ -248,6 +252,7 @@ regSaga('CHECK_DATA_SOURCES', function*() {
     'REJECT_DATA_SOURCE',
     'RESET',
     'RESOLVE_DATA_SOURCE',
+    'SET_DATA_SOURCE',
     'SET_VALUE',
     'SUBMIT_SUCCESS',
   ];
@@ -335,7 +340,12 @@ regSaga(
 
       if (errors.isEmpty()) {
         try {
-          const result = yield call(onSubmit, values, bindings);
+          const result = yield call(
+            onSubmit,
+            values,
+            bindings,
+            bindActions(formKey),
+          );
           dispatch('SUBMIT_SUCCESS', { formKey });
           if (onSave) yield call(onSave, result);
         } catch (error) {
@@ -381,6 +391,8 @@ regSaga(
 );
 
 const actions = {
+  setDataSource: formKey => (name, data) =>
+    dispatch('SET_DATA_SOURCE', { formKey, name, data }),
   setValue: formKey => (name, value, triggerChange = true) =>
     dispatch('SET_VALUE', { formKey, name, value, triggerChange }),
 };

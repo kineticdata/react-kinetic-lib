@@ -412,6 +412,7 @@ export const createSubmission = options => {
     values,
     datastore = false,
     completed = true,
+    currentPage,
   } = options;
 
   if (!formSlug) {
@@ -432,7 +433,11 @@ export const createSubmission = options => {
 
   return (
     axios
-      .post(path, { values }, { params, headers: headerBuilder(options) })
+      .post(
+        path,
+        { values, currentPage },
+        { params, headers: headerBuilder(options) },
+      )
       // Remove the response envelop and leave us with the submission one.
       .then(response => ({ submission: response.data.submission }))
       // Clean up any errors we receive. Make sure this the last thing so that it
@@ -442,7 +447,7 @@ export const createSubmission = options => {
 };
 
 export const updateSubmission = options => {
-  const { id, values, datastore = false } = options;
+  const { currentPage, id, values, datastore = false } = options;
 
   const path = datastore
     ? `${bundle.apiLocation()}/datastore/submissions/${id}`
@@ -451,7 +456,11 @@ export const updateSubmission = options => {
 
   return (
     axios
-      .put(path, { values }, { params, headers: headerBuilder(options) })
+      .put(
+        path,
+        { currentPage, values },
+        { params, headers: headerBuilder(options) },
+      )
       // Remove the response envelop and leave us with the submission one.
       .then(response => ({ submission: response.data.submission }))
       // Clean up any errors we receive. Make sure this the last thing so that it
