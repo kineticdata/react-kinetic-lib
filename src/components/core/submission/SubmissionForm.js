@@ -1,41 +1,40 @@
 import { generateForm } from '../../form/Form';
-import { fetchForm, fetchSubmission } from '../../../apis';
-import { getFieldElements } from './submissionFormHelpers';
+import * as helpers from './submissionFormHelpers';
 
-const formIncludes = 'bridgedResources,pages';
-const submissionIncludes = 'form.bridgedResources,form.pages,values';
+const dataSources = formOptions =>
+  helpers.fetchFormOrSubmission(formOptions).then(({ form, submission }) => ({
+    form: {
+      fn: () => form,
+      params: [],
+    },
+    submission: {
+      fn: () => submission,
+      params: [],
+    },
+    page: {
+      fn: helpers.determinePage,
+      params: ({ form, submission }) => form && [form, submission],
+    },
+  }));
 
-const dataSources = ({ datastore, formSlug, id, kappSlug }) =>
-  (id
-    ? fetchSubmission({ id, include: submissionIncludes })
-    : fetchForm({ datastore, formSlug, kappSlug, include: formIncludes })
-  ).then(data => {
-    const form = id ? data.submission.form : data.form;
-    return {
-      _fields: {
-        fn: () => getFieldElements(form.pages[0].elements),
-        params: [],
-      },
-      _values: {
-        fn: () => (id ? data.submission.values : {}),
-        params: [],
-      },
-    };
-  });
-
-const fields = formOptions => ({ _fields }) =>
-  _fields &&
-  _fields.map(fieldElement => ({
+const fields = formOptions => ({ page }) =>
+  page &&
+  helpers.getFieldElements(page.get('elements')).map(fieldElement => ({
     label: fieldElement.get('name'),
     name: fieldElement.get('name'),
     type: 'text',
   }));
 
-const handleSubmit = formOptions => (values, ...args) => {
+const handleSubmit = ({ datastore, formSlug, id, kappSlug }) => (
+  values,
+  bindings,
+  actions,
+) => {
   console.log('handleSubmit', {
-    formOptions,
+    id,
     values,
-    args,
+    bindings,
+    actions,
   });
 };
 
