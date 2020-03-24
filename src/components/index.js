@@ -120,6 +120,7 @@ export {
   SecurityDefinitionTable,
 } from './core/security_definition/SecurityDefinitionTable';
 export { SpaceForm } from './core/space/SpaceForm';
+export { SubmissionForm } from './core/submission/SubmissionForm';
 export { SubmissionTable } from './core/submission/SubmissionTable';
 export {
   DatastoreSubmissionTable,

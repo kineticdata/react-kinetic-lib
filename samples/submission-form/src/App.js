@@ -1,26 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { KineticLib, SubmissionForm } from '@kineticdata/react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+export const App = () => (
+  <KineticLib noSocket>
+    {({ initialized }) =>
+      initialized ? (
+        <SubmissionForm
+          kappSlug="services"
+          formSlug="rendering"
+          id="e8c2c25e-6d3a-11ea-aa96-c1c26fdda6c5"
+        />
+      ) : (
+        <div>Initializing...</div>
+      )
+    }
+  </KineticLib>
+);
