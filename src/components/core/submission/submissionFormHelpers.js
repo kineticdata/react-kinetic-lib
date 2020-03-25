@@ -1,16 +1,50 @@
-import { get, getIn, has, List } from 'immutable';
+import { get, getIn, has, List, Map } from 'immutable';
+import axios from 'axios';
 import {
+  bridgedResourceUrl,
   createSubmission,
   fetchForm,
   fetchSubmission,
   updateSubmission,
 } from '../../../apis';
 
+const transformRecords = ({ fields, records }) =>
+  records.reduce(
+    (list, record) =>
+      list.push(
+        fields.reduce((map, field, i) => map.set(field, record[i]), Map()),
+      ),
+    List(),
+  );
+
+// because this method is called to pass to the dataSources config, the form
+// parameter will ALWAYS be a native collection
+export const generateDataSources = form =>
+  List(form.bridgedResources)
+    .reduce(
+      (map, bridgedResource) =>
+        map.set(bridgedResource.name, {
+          fn: (form, values) =>
+            axios.post(
+              bridgedResourceUrl({
+                formSlug: form.get('slug'),
+                kappSlug: form.get('kapp').get('slug'),
+                bridgedResourceName: bridgedResource.name,
+                values: values.toJS(),
+              }),
+            ),
+          params: ({ form, values }) => form && values && [form, values],
+          transform: response => transformRecords(response.data.records),
+        }),
+      Map(),
+    )
+    .toObject();
+
 export const fetchFormOrSubmission = ({ datastore, formSlug, id, kappSlug }) =>
   (id
     ? fetchSubmission({
         id,
-        include: 'form,form.bridgedResources,form.pages,values',
+        include: 'form,form.bridgedResources,form.pages,form.kapp,values',
       })
     : fetchForm({
         datastore,
@@ -75,6 +109,10 @@ export const getFieldElements = elements =>
     .toArray();
 
 const valueFn = valuesMap => name => valuesMap.get(name);
+const resourcesFn = bindings => name => {
+  const [_, resourceName, propName] = name.match(/^(.*):(.*)$/);
+  return bindings[resourceName].get(propName);
+};
 
 export const evaluateExpression = (expression, values) => {
   // eslint-disable-next-line no-new-func
@@ -82,10 +120,18 @@ export const evaluateExpression = (expression, values) => {
   return fn(valueFn(values));
 };
 
+export const evaluateTemplate = (template, bindings) => {
+  // eslint-disable-next-line no-new-func
+  const fn = new Function('values', 'resources', `return \`${template}\``);
+  return fn(valueFn(bindings.values), resourcesFn(bindings));
+};
+
 export const typeProp = fieldElement => {
   switch (fieldElement.get('renderType')) {
     case 'radio':
       return 'radio';
+    case 'dropdown':
+      return 'select';
     default:
       return 'text';
   }
@@ -93,9 +139,24 @@ export const typeProp = fieldElement => {
 
 export const optionsProp = fieldElement => bindings => {
   if (
-    ['checkbox', 'radio', 'select'].includes(fieldElement.get('renderType'))
+    ['checkbox', 'radio', 'dropdown'].includes(fieldElement.get('renderType'))
   ) {
-    return fieldElement.get('choices');
+    const resourceName = fieldElement.get('choicesResourceName');
+    if (resourceName) {
+      if (bindings[resourceName]) {
+        const { label, value } = fieldElement.get('choices').toJS();
+        return bindings[resourceName].map(record =>
+          Map({
+            label: evaluateTemplate(label, { [resourceName]: record }),
+            value: evaluateTemplate(value, { [resourceName]: record }),
+          }),
+        );
+      } else {
+        return List();
+      }
+    } else {
+      return fieldElement.get('choices');
+    }
   } else {
     return null;
   }

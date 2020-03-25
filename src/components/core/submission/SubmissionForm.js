@@ -29,6 +29,7 @@ const dataSources = formOptions =>
       },
       params: ({ fieldsAll, page }) => fieldsAll && page && [fieldsAll, page],
     },
+    ...helpers.generateDataSources(form),
   }));
 
 const fields = formOptions => ({ fieldsAll, fieldsCurrent, submission }) =>
