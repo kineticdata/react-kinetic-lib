@@ -34,14 +34,13 @@ const dataSources = formOptions =>
 const fields = formOptions => ({ fieldsAll, fieldsCurrent, submission }) =>
   fieldsAll &&
   fieldsCurrent &&
-  fieldsAll.map(fieldElement => ({
-    label: fieldElement.get('name'),
-    name: fieldElement.get('name'),
-    type: 'text',
-    visible: ({ fieldsCurrent }) => fieldsCurrent.includes(fieldElement),
-    initialValue: submission
-      ? submission.getIn(['values', fieldElement.get('name')])
-      : '',
+  fieldsAll.map(field => ({
+    label: field.get('name'),
+    name: field.get('name'),
+    type: helpers.typeProp(field),
+    options: helpers.optionsProp(field),
+    initialValue: helpers.initialValueProp(submission, field),
+    visible: helpers.visibleProp(field),
   }));
 
 const handleSubmit = formOptions => (values, { form, submission }, actions) => {

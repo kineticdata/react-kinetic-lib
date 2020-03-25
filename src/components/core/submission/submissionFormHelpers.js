@@ -73,3 +73,48 @@ export const getFieldElements = elements =>
     )
     .filter(element => get(element, 'type') === 'field')
     .toArray();
+
+const valueFn = valuesMap => name => valuesMap.get(name);
+
+export const evaluateExpression = (expression, values) => {
+  // eslint-disable-next-line no-new-func
+  const fn = new Function('values', `return !!(${expression})`);
+  return fn(valueFn(values));
+};
+
+export const typeProp = fieldElement => {
+  switch (fieldElement.get('renderType')) {
+    case 'radio':
+      return 'radio';
+    default:
+      return 'text';
+  }
+};
+
+export const optionsProp = fieldElement => bindings => {
+  if (
+    ['checkbox', 'radio', 'select'].includes(fieldElement.get('renderType'))
+  ) {
+    return fieldElement.get('choices');
+  } else {
+    return null;
+  }
+};
+
+export const visibleProp = fieldElement => bindings => {
+  if (!bindings.fieldsCurrent.includes(fieldElement)) {
+    return false;
+  }
+  if (typeof fieldElement.get('visible') === 'boolean') {
+    return fieldElement.get('visible');
+  }
+  return evaluateExpression(fieldElement.get('visible'), bindings.values);
+};
+
+export const initialValueProp = (submission, fieldElement) => {
+  if (submission) {
+    return submission.getIn(['values', fieldElement.get('name')], '');
+  } else {
+    return '';
+  }
+};
