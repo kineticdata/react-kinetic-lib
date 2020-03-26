@@ -253,6 +253,7 @@ export const getFieldComponentProps = field => ({
     'radio',
     'select',
     'select-multi',
+    'subform',
     'table',
     'text',
     'text-multi',

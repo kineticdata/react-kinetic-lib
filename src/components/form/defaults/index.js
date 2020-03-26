@@ -13,6 +13,7 @@ import { TeamField } from './TeamField';
 import { TeamMultiField } from './TeamMultiField';
 import { SelectField } from './SelectField';
 import { SelectMultiField } from './SelectMultiField';
+import { SubformField } from './SubformField';
 import { TextField } from './TextField';
 import { TextMultiField } from './TextMultiField';
 import { UserField } from './UserField';
@@ -34,6 +35,7 @@ export const DefaultFieldConfig = Map({
   TeamMultiField,
   SelectField,
   SelectMultiField,
+  SubformField,
   TextField,
   TextMultiField,
   UserField,

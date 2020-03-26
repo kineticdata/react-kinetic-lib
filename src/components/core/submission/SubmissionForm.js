@@ -35,23 +35,36 @@ const dataSources = formOptions =>
 const fields = formOptions => ({ fieldsAll, fieldsCurrent, submission }) =>
   fieldsAll &&
   fieldsCurrent &&
-  fieldsAll.map(field => ({
-    label: field.get('name'),
-    name: field.get('name'),
-    type: helpers.typeProp(field),
-    options: helpers.optionsProp(field),
-    initialValue: helpers.initialValueProp(submission, field),
-    visible: helpers.visibleProp(field),
-  }));
+  fieldsAll
+    .map(field => ({
+      label: field.get('name'),
+      name: field.get('name'),
+      type: helpers.typeProp(field),
+      options: helpers.optionsProp(field),
+      initialValue: helpers.initialValueProp(submission, field),
+      visible: helpers.visibleProp(field),
+    }))
+    .push(
+      formOptions.includeSubform && {
+        label: 'Subform',
+        name: 'Subform',
+        type: 'subform',
+        options: {
+          kappSlug: 'services',
+          formSlug: 'entry',
+        },
+        visible: true,
+      },
+    );
 
-const handleSubmit = formOptions => (values, { form, submission }, actions) => {
-  helpers
-    .saveSubmission({ form, submission, values })
-    .then(updated => actions.setDataSource('submission', updated));
-};
+const handleSubmit = formOptions => (values, { form, submission }, actions) =>
+  helpers.saveSubmission({ form, submission, values }).then(updated => {
+    actions.setDataSource('submission', updated);
+    return updated;
+  });
 
 export const SubmissionForm = generateForm({
-  formOptions: ['datastore', 'formSlug', 'id', 'kappSlug'],
+  formOptions: ['datastore', 'formSlug', 'id', 'kappSlug', 'includeSubform'],
   dataSources,
   fields,
   handleSubmit,

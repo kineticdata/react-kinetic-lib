@@ -8,7 +8,11 @@ export const App = () => (
         <div style={{ display: 'flex' }}>
           <div style={{ flex: '1 0 0', padding: '1rem' }}>
             <h2>New Submission</h2>
-            <SubmissionForm kappSlug="services" formSlug="rendering" />
+            <SubmissionForm
+              kappSlug="services"
+              formSlug="rendering"
+              includeSubform
+            />
           </div>
           <div style={{ flex: '1 0 0', padding: '1rem' }}>
             <h2>Edit Submission</h2>

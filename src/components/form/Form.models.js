@@ -40,6 +40,7 @@ export const FIELD_DEFAULT_VALUES = Map({
   checkbox: false,
   'checkbox-multi': List(),
   'select-multi': List(),
+  subform: List(),
   team: null,
   'team-multi': List(),
   'text-multi': List(),
