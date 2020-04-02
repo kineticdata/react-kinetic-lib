@@ -171,7 +171,7 @@ export class Typeahead extends React.Component {
             <Autosuggest
               alwaysRenderSuggestions
               getSuggestionValue={this.props.getSuggestionValue}
-              highlightFirstSuggestion
+              highlightFirstSuggestion={!this.props.noAutoHighlight}
               inputProps={{
                 value: this.state.searchValue,
                 onBlur: this.props.onBlur,
