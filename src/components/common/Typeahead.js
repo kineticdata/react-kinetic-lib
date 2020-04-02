@@ -62,12 +62,12 @@ export class Typeahead extends React.Component {
         );
       this.setState({
         result: {
-          empty: !customSuggestion && filtered.length === 0,
           error,
           more: !!nextPageToken,
           suggestions: customSuggestion
             ? [...filtered, customSuggestion]
             : filtered,
+          customSuggestion,
         },
       });
     }
@@ -216,7 +216,7 @@ function renderSuggestionsContainer({ containerProps, children }) {
           setSearchField,
           error: state.result && state.result.error,
           value: state.searchValue,
-          empty: state.result && state.result.empty,
+          empty: state.result && state.result.suggestions.length === 0,
           more: state.result && !!state.result.nextPageToken,
           short: minSearchLength && state.searchValue.length < minSearchLength,
           pending: !state.result,
@@ -236,9 +236,12 @@ function renderSuggestion(suggestion, { isHighlighted }) {
       getSuggestionValue,
     },
   } = this;
+  const custom =
+    this.state.result && this.state.result.customSuggestion === suggestion;
   return (
     <Suggestion
       active={isHighlighted}
+      custom={custom}
       suggestion={suggestion}
       suggestionValue={getSuggestionValue(suggestion)}
     />
