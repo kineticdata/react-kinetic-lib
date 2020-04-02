@@ -15,7 +15,9 @@ export class Typeahead extends React.Component {
     super(props);
     this.state = initialState;
     this.autosuggest = createRef();
-    this.search = debounce(props.search, 150);
+    this.search = debounce((...args) => {
+      this.props.search(...args);
+    }, 150);
     this.renderInputComponent = renderInputComponent.bind(this);
     this.renderSuggestion = renderSuggestion.bind(this);
     this.renderSuggestionsContainer = renderSuggestionsContainer.bind(this);
@@ -52,14 +54,22 @@ export class Typeahead extends React.Component {
     nextPageToken,
   }) => {
     if (searchedValue === this.state.searchValue) {
-      const customSuggestion =
-        this.props.custom && fromJS(this.props.custom(this.state.searchValue));
       const filtered = suggestions
         .map(suggestion => fromJS(suggestion))
         .filter(
           suggestion =>
             !this.props.multiple || !this.props.value.includes(suggestion),
         );
+      const customSuggestion =
+        this.props.custom &&
+        // if the current searchValue matches an existing suggestion we do not
+        // include it as a custom option
+        filtered.filter(
+          suggestion =>
+            this.props.getSuggestionValue(suggestion) ===
+            this.state.searchValue,
+        ).length === 0 &&
+        fromJS(this.props.custom(this.state.searchValue));
       this.setState({
         result: {
           error,
