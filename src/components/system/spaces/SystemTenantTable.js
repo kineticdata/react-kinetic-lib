@@ -10,7 +10,7 @@ const fetchSystemTenants = () =>
         statusMessage: 'Still provisioning things.',
       },
       {
-        slug: 'kineic',
+        slug: 'kinetic',
         name: 'Kinetic Data',
         status: 'active',
         statusMessage: 'Ready.',
@@ -50,8 +50,8 @@ const columns = [
     sortable: true,
   },
   {
-    value: 'Status Message',
-    title: 'Slug',
+    value: 'statusMessage',
+    title: 'Status Message',
     filter: 'startWith',
     type: 'text',
     sortable: false,
