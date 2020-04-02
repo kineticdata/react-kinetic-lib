@@ -81,15 +81,17 @@ export const testAgentHandler = (options = {}) => {
     return params;
   }, {});
 
-  return axios
-    .post(
-      `${buildAgentPath(options)}/app/api/v1/handlers/${
-        options.handlerSlug
-      }/execute`,
-      {
-        ...parameters,
-      },
-    )
-    // .then(response => ({ response: response.data }))
-    .catch(handleErrors);
+  return (
+    axios
+      .post(
+        `${buildAgentPath(options)}/app/api/v1/handlers/${
+          options.handlerSlug
+        }/execute`,
+        {
+          ...parameters,
+        },
+      )
+      // .then(response => ({ response: response.data }))
+      .catch(handleErrors)
+  );
 };

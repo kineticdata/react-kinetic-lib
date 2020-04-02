@@ -135,6 +135,9 @@ export { WebhookForm } from './core/webhook/WebhookForm';
 export { WebhookTable } from './core/webhook/WebhookTable';
 export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 
+// System Platform
+export { SystemTenantTable } from './system/spaces/SystemTenantTable';
+
 // Task
 export { TreeBuilder } from './task/builder/TreeBuilder';
 export { ConnectorForm } from './task/builder/ConnectorForm';
