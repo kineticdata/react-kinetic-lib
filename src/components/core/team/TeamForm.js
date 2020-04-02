@@ -49,11 +49,12 @@ const fields = ({ teamSlug }) => ({ team }) =>
       helpText:
         'Teams are hierarchical and can be nested within each other. To nest a team within another team, simply add a parent team.',
       options: [],
-      initialValue: team
-        ? {
-            name: splitTeamName(team)[0],
-          }
-        : null,
+      initialValue:
+        team && splitTeamName(team)[0]
+          ? {
+              name: splitTeamName(team)[0],
+            }
+          : null,
     },
     {
       name: 'localName',
