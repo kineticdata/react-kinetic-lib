@@ -73,7 +73,7 @@ export class Typeahead extends React.Component {
       this.setState({
         result: {
           error,
-          more: !!nextPageToken,
+          nextPageToken,
           suggestions: customSuggestion
             ? [...filtered, customSuggestion]
             : filtered,
