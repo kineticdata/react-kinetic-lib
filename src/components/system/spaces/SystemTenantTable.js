@@ -1,22 +1,5 @@
 import { generateTable } from '../../table/Table';
-
-const fetchSystemTenants = () =>
-  Promise.resolve({
-    spaces: [
-      {
-        slug: 'acme',
-        name: 'ACME',
-        status: 'pending',
-        statusMessage: 'Still provisioning things.',
-      },
-      {
-        slug: 'kinetic',
-        name: 'Kinetic Data',
-        status: 'active',
-        statusMessage: 'Ready.',
-      },
-    ],
-  });
+import { fetchSystemTenants } from './helper';
 
 const dataSource = () => ({
   fn: fetchSystemTenants,

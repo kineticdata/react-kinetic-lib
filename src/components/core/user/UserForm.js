@@ -11,30 +11,48 @@ import {
 
 const USER_INCLUDES = 'attributesMap,memberships,profileAttributesMap';
 
-const dataSources = ({ username }) => ({
+const fetchSystemUser = () =>
+  Promise.resolve({
+    user: {
+      allowedIps: '',
+      displayName: 'Fake User',
+      email: 'fake.user@kineticdata.com',
+      enabled: true,
+      preferredLocale: null,
+      spaceAdmin: false,
+      timezone: null,
+      username: 'fake.user@kineticdata.com',
+      createdAt: '2019-08-19T20:30:47.818Z',
+      createdBy: 'admin',
+      updatedAt: '2019-11-19T20:30:47.818Z',
+      updatedBy: 'matt',
+    },
+  });
+
+const dataSources = ({ username, system, spaceSlug }) => ({
   locales: {
     fn: fetchLocales,
-    params: [],
+    params: !system && [],
     transform: result => result.data.locales,
   },
   timezones: {
     fn: fetchTimezones,
-    params: [],
+    params: !system && [],
     transform: result => result.data.timezones,
   },
   user: {
-    fn: fetchUser,
-    params: username && [{ username, include: USER_INCLUDES }],
+    fn: system ? fetchSystemUser : fetchUser,
+    params: username && [{ username, include: USER_INCLUDES, spaceSlug }],
     transform: result => result.user,
   },
   attributeDefinitions: {
     fn: fetchAttributeDefinitions,
-    params: [{ attributeType: 'userAttributeDefinitions' }],
+    params: !system && [{ attributeType: 'userAttributeDefinitions' }],
     transform: result => result.attributeDefinitions,
   },
   profileAttributeDefinitions: {
     fn: fetchAttributeDefinitions,
-    params: [{ attributeType: 'userProfileAttributeDefinitions' }],
+    params: !system && [{ attributeType: 'userProfileAttributeDefinitions' }],
     transform: result => result.attributeDefinitions,
   },
 });
@@ -188,7 +206,7 @@ const fields = ({ username }) => ({ user }) =>
   ];
 
 export const UserForm = generateForm({
-  formOptions: ['username'],
+  formOptions: ['username', 'system', 'spaceSlug'],
   dataSources,
   fields,
   handleSubmit,

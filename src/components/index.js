@@ -137,6 +137,7 @@ export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 
 // System Platform
 export { SystemTenantTable } from './system/spaces/SystemTenantTable';
+export { SystemTenantForm } from './system/spaces/SystemTenantForm';
 
 // Task
 export { TreeBuilder } from './task/builder/TreeBuilder';
