@@ -28,7 +28,7 @@ const authInterceptor = new AuthInterceptor(
   state => !state.getIn(['session', 'loggedIn']),
 );
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 axios.interceptors.request.use(requestInterceptor.handleFulfilled);
 axios.interceptors.response.use(null, authInterceptor.handleRejected);
 

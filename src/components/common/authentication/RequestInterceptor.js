@@ -1,5 +1,9 @@
 const tokenEndpointPattern = /\/app\/(discussions|loghub)\/api\/v\d/;
 
+const isThirdPartyUrl = config =>
+  !config.url.startsWith('/') &&
+  !config.url.startsWith(process.env.REACT_APP_API_HOST);
+
 export default class RequestInterceptor {
   constructor(store) {
     this.store = store;
@@ -15,13 +19,16 @@ export default class RequestInterceptor {
   }
 
   handleFulfilled(config) {
-    return config.__bypassInitInterceptor
-      ? config
+    return isThirdPartyUrl(config)
+      ? { __bypassAuthInterceptor: true, ...config }
+      : config.__bypassInitInterceptor
+      ? { withCredentials: true, ...config }
       : this.initPromise.then(() => {
           const { csrfToken, loggedIn, token } = this.store
             .getState()
             .get('session')
             .toObject();
+          config.withCredentials = true;
           if (!loggedIn) {
             config.__bypassAuthInterceptor = true;
           }
