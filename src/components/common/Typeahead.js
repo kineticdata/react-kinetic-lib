@@ -1,8 +1,304 @@
-import React from 'react';
+import React, { createRef, Fragment } from 'react';
 import Autosuggest from 'react-autosuggest';
 import { fromJS, is, List } from 'immutable';
+import { debounce } from 'lodash-es';
 
-const DEBOUNCE_DURATION = 150;
+const initialState = {
+  editing: false,
+  searchField: null,
+  searchValue: '',
+  result: null,
+};
+
+export class Typeahead extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = initialState;
+    this.autosuggest = createRef();
+    this.search = debounce((...args) => {
+      this.props.search(...args);
+    }, 150);
+    this.renderInputComponent = renderInputComponent.bind(this);
+    this.renderSuggestion = renderSuggestion.bind(this);
+    this.renderSuggestionsContainer = renderSuggestionsContainer.bind(this);
+    this.renderSelections = renderSelections.bind(this);
+  }
+
+  edit = event => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.setState({ editing: true });
+  };
+
+  remove = i => event => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.props.onChange(
+      this.props.multiple ? this.props.value.delete(i) : null,
+    );
+  };
+
+  onHighlight = ({ suggestion }) => {
+    if (typeof this.props.onHighlight === 'function') {
+      this.props.onHighlight(suggestion);
+    }
+  };
+
+  onSuggestionsResponse = searchedValue => ({
+    suggestions,
+    error,
+    nextPageToken,
+  }) => {
+    if (searchedValue === this.state.searchValue) {
+      const filtered = suggestions
+        .map(suggestion => fromJS(suggestion))
+        .filter(
+          suggestion =>
+            !this.props.multiple || !this.props.value.includes(suggestion),
+        );
+      const customSuggestion =
+        this.props.custom &&
+        // if the current searchValue matches an existing suggestion we do not
+        // include it as a custom option
+        filtered.filter(
+          suggestion =>
+            this.props.getSuggestionValue(suggestion) ===
+            this.state.searchValue,
+        ).length === 0 &&
+        fromJS(this.props.custom(this.state.searchValue));
+      this.setState({
+        result: {
+          error,
+          nextPageToken,
+          suggestions: customSuggestion
+            ? [...filtered, customSuggestion]
+            : filtered,
+          customSuggestion,
+        },
+      });
+    }
+  };
+
+  // Called by Autosuggest when a fetch is requested. With the prop
+  // alwaysRenderSuggestions this will be called onFocus, onChange, and even
+  // when a suggestion is selected. Because of the latter, we check to see if we
+  // should ignore the operation. Otherwise we update the searchValue in the
+  // state and componentDidUpdate is responsible for calling search. We also
+  // check to see if escape was pressed while the searchValue is empty, if so we
+  // close the Autosuggest by setting state to initialState.
+  onSuggestionsFetchRequested = ({ value: searchValue, reason }) => {
+    if (reason === 'escape-pressed' && this.state.searchValue === '') {
+      this.setState(initialState);
+    } else if (reason !== 'suggestion-selected') {
+      this.setState({ editing: true, searchValue });
+    }
+  };
+
+  // This implementation assumes that this is only called on blur of the input
+  // because we are using the `alwaysRenderSuggestions` prop.
+  onSuggestionsClearRequested = () => {
+    this.setState(initialState);
+  };
+
+  setSearchField = searchField => () => {
+    this.setState({ searchField });
+  };
+
+  // Called when a suggestion is clicked or enter is pressed. For multiple mode
+  // we also reset the searchValue to an empty string and the Autosuggest will
+  // remain open. For single mode we close the Autosuggest entirely by setting
+  // state to initialState. Finally we call the onChange event to update the
+  // parent field.
+  onSuggestionSelected = (event, { method, suggestion }) => {
+    // Prevent form submission if enter key is used to select suggestion.
+    if (method === 'enter') {
+      event.preventDefault();
+    }
+    this.setState(this.props.multiple ? { searchValue: '' } : initialState);
+    this.props.onChange(
+      this.props.multiple ? this.props.value.push(suggestion) : suggestion,
+    );
+  };
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const searchLongEnough =
+      !this.props.minSearchLength ||
+      this.state.searchValue.length >= this.props.minSearchLength;
+    const searchChanged =
+      this.state.searchField !== prevState.searchField ||
+      this.state.searchValue !== prevState.searchValue;
+    const valueChanged = !is(this.props.value, prevProps.value);
+    if (this.state.editing) {
+      if (searchChanged || valueChanged || !prevState.editing) {
+        // Always clear the result even if the search value is not long enough,
+        // in that case a message should be displayed in place of results.
+        this.setState({ result: null });
+        if (searchLongEnough) {
+          this.search(
+            this.state.searchField,
+            this.state.searchValue,
+            this.onSuggestionsResponse(this.state.searchValue),
+          );
+        }
+      }
+      // If the previous state was not editing then we make sure the Autosuggest
+      // input element is focused because it may not be visible before this.
+      if (!prevState.editing) {
+        this.autosuggest.current.input.focus();
+      }
+    }
+  }
+
+  render() {
+    const {
+      SelectionsContainer = SelectionsContainerDefault,
+    } = this.props.components;
+    return (
+      <SelectionsContainer
+        multiple={this.props.multiple}
+        value={this.props.value}
+        selections={
+          this.props.multiple || !this.state.editing
+            ? this.renderSelections()
+            : null
+        }
+        input={
+          (this.props.multiple || this.state.editing) && (
+            <Autosuggest
+              alwaysRenderSuggestions
+              getSuggestionValue={this.props.getSuggestionValue}
+              highlightFirstSuggestion={!this.props.noAutoHighlight}
+              inputProps={{
+                value: this.state.searchValue,
+                onBlur: this.props.onBlur,
+                onChange: onChangeNOOP,
+                onFocus: this.props.onFocus,
+              }}
+              onSuggestionHighlighted={this.onHighlight}
+              onSuggestionSelected={this.onSuggestionSelected}
+              onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+              onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+              ref={this.autosuggest}
+              renderInputComponent={this.renderInputComponent}
+              renderSuggestion={this.renderSuggestion}
+              renderSuggestionsContainer={this.renderSuggestionsContainer}
+              suggestions={
+                this.state.result ? this.state.result.suggestions : []
+              }
+            />
+          )
+        }
+      />
+    );
+  }
+}
+
+// RENDER HELPERS below need to bind to the Typeahead instance because they use
+// methods / props / state. They could be defined in the class instead but since
+// they do not alter state at all they were moved here to make that class
+// hopefully easier to comprehend. They are intended to be passed to the
+// corresponding (by name) props of the Autosuggest component.
+
+// https://github.com/moroshko/react-autosuggest#render-suggestions-container-prop
+function renderSuggestionsContainer({ containerProps, children }) {
+  const {
+    props: {
+      components: {
+        Status = StatusDefault,
+        SuggestionsContainer = SuggestionsContainerDefault,
+      },
+      custom,
+      getStatusProps,
+      minSearchLength,
+    },
+    setSearchField,
+    state,
+  } = this;
+  return (
+    <SuggestionsContainer containerProps={containerProps} open={state.editing}>
+      <Status
+        {...getStatusProps({
+          searchField: state.searchField,
+          setSearchField,
+          error: state.result && state.result.error,
+          value: state.searchValue,
+          empty: state.result && state.result.suggestions.length === 0,
+          more: state.result && !!state.result.nextPageToken,
+          short: minSearchLength && state.searchValue.length < minSearchLength,
+          pending: !state.result,
+          custom: !!custom,
+        })}
+      />
+      {children}
+    </SuggestionsContainer>
+  );
+}
+
+// https://github.com/moroshko/react-autosuggest#render-suggestion-prop
+function renderSuggestion(suggestion, { isHighlighted }) {
+  const {
+    props: {
+      components: { Suggestion = SuggestionDefault },
+      getSuggestionValue,
+    },
+  } = this;
+  const custom =
+    this.state.result && this.state.result.customSuggestion === suggestion;
+  return (
+    <Suggestion
+      active={isHighlighted}
+      custom={custom}
+      suggestion={suggestion}
+      suggestionValue={getSuggestionValue(suggestion)}
+    />
+  );
+}
+
+// https://github.com/moroshko/react-autosuggest#renderinputcomponent-optional
+function renderInputComponent(inputProps) {
+  const {
+    props: {
+      components: { Input = TypeaheadInputDefault },
+    },
+  } = this;
+  return <Input inputProps={inputProps} />;
+}
+
+// Another render helper like the ones above but not actually for Autosuggest,
+// just meant to cleanup the render function of Typeahead.
+function renderSelections() {
+  const {
+    edit,
+    props: {
+      components: { Selection = SelectionDefault },
+      getSuggestionValue,
+      multiple,
+      value,
+    },
+    remove,
+  } = this;
+  return (multiple ? value : List.of(value)).map((selection, i) => {
+    const suggestionValue = getSuggestionValue(selection);
+    return (
+      <Selection
+        key={suggestionValue}
+        edit={!multiple ? edit : null}
+        remove={multiple ? remove(i) : remove()}
+        selection={selection}
+        suggestionValue={suggestionValue}
+      />
+    );
+  });
+}
+
+// DEFAULT COMPONENTS below render minimally useful content. They can and should
+// be overridden by the components prop passed to Typeahead. If they need props
+// or state from the Typeahead instance there will be a render* helper above
+// that will bind to it.
 
 const StatusDefault = props => (
   <div>
@@ -22,326 +318,29 @@ const StatusDefault = props => (
   </div>
 );
 
-const SelectionsContainerDefault = ({ selections, input }) => (
-  <table>
-    <tbody>
-      {selections}
-      <tr>
-        <td>{input}</td>
-      </tr>
-    </tbody>
-  </table>
+const SuggestionsContainerDefault = ({ children, containerProps }) => (
+  <div {...containerProps}>{children}</div>
 );
 
-const SuggestionsContainerDefault = ({ open, children, containerProps }) => (
-  <div {...containerProps}>{children}</div>
+const SelectionsContainerDefault = ({ selections, input }) => (
+  <Fragment>
+    {selections}
+    {input}
+  </Fragment>
+);
+
+const SelectionDefault = ({ selection, remove, edit, suggestionValue }) => (
+  <div>{suggestionValue}</div>
+);
+
+const SuggestionDefault = ({ active, suggestionValue }) => (
+  <div>{active ? <strong>{suggestionValue}</strong> : suggestionValue}</div>
 );
 
 const TypeaheadInputDefault = ({ inputProps }) => <input {...inputProps} />;
 
-export class Typeahead extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...this.createStateFromProps(props),
-      minSearchLength:
-        typeof props.minSearchLength === 'number'
-          ? Math.max(parseInt(props.minSearchLength, 10), 0)
-          : this.props.alwaysRenderSuggestions
-          ? 0
-          : 1,
-    };
-  }
-
-  createStateFromProps = props => ({
-    editing: props.textMode || props.multiple,
-    newValue:
-      props.textMode && props.value
-        ? props.getSuggestionLabel(props.value)
-        : '',
-    error: null,
-    empty: false,
-    nextPageToken: null,
-    searchField: null,
-    searchValue: '',
-    suggestions: [],
-    touched: false,
-  });
-
-  edit = event => {
-    this.setState({ editing: true });
-  };
-
-  remove = index => event => {
-    this.props.onChange(this.props.value.delete(index));
-  };
-
-  onChange = (event, { newValue, method }) => {
-    if (method !== 'escape') {
-      this.setState({ newValue, touched: true });
-    } else {
-      this.setState(this.createStateFromProps(this.props));
-    }
-  };
-
-  // when clicking enter to select then blur this clears the selected value or
-  // sets to custom, I think because suggestions in empty when the menu is closed.
-  onBlur = () => {
-    const {
-      custom,
-      getSuggestionLabel,
-      getSuggestionValue,
-      multiple,
-      textMode,
-    } = this.props;
-    const { newValue, suggestions, touched } = this.state;
-    const match = suggestions.find(
-      suggestion =>
-        getSuggestionLabel(suggestion) === newValue ||
-        getSuggestionValue(suggestion) === newValue,
-    );
-    const customValue = custom && fromJS(custom(newValue));
-    this.setState({
-      newValue:
-        !touched || (textMode && (match || customValue))
-          ? getSuggestionLabel(match || customValue) || newValue
-          : '',
-      editing: multiple || textMode,
-      touched: false,
-    });
-    if (typeof this.props.onBlur === 'function') {
-      this.props.onBlur();
-    }
-    if (textMode && touched) {
-      this.props.onChange(match || customValue || null);
-    }
-  };
-
-  onKeyDown = ({ keyCode }) => {
-    if ((keyCode === 40 || keyCode === 38) && !this.state.touched) {
-      this.setState({ touched: true, searchValue: this.state.newValue });
-    }
-  };
-
-  onHighlight = ({ suggestion }) => {
-    if (typeof this.props.onHighlight === 'function') {
-      this.props.onHighlight(suggestion);
-    }
-  };
-
-  onSelect = (event, { method, suggestion }) => {
-    if (method === 'enter') {
-      event.preventDefault();
-    }
-    const { getSuggestionLabel, multiple, textMode, value } = this.props;
-    this.setState({
-      editing: multiple || textMode,
-      newValue: multiple || !textMode ? '' : getSuggestionLabel(suggestion),
-      touched: false,
-    });
-    this.props.onChange(multiple ? value.push(suggestion) : suggestion);
-  };
-
-  onSearch = ({ value, reason }) => {
-    if (reason !== 'escape-pressed') {
-      if (reason === 'input-focused' && this.props.alwaysRenderSuggestions) {
-        this.setState({ searchValue: value, touched: true });
-      } else {
-        this.setState({ searchValue: value });
-      }
-    } else {
-      this.setState(this.createStateFromProps(this.props));
-    }
-    return false;
-  };
-
-  onClearSuggestions = () => {
-    this.setState({
-      suggestions: [],
-      error: null,
-      empty: false,
-      nextPageToken: null,
-      searchField: null,
-      searchValue: '',
-    });
-  };
-
-  renderSuggestionContainer = ({ containerProps, children, query }) => {
-    const {
-      Status = StatusDefault,
-      SuggestionsContainer = SuggestionsContainerDefault,
-    } = this.props.components;
-    const { className, ...props } = containerProps;
-    return (
-      <SuggestionsContainer
-        containerProps={props}
-        open={className === 'OPEN' || this.state.error || this.state.empty}
-      >
-        <Status
-          {...this.props.getStatusProps({
-            searchField: this.state.searchField,
-            setSearchField: this.setSearchField,
-            error: this.state.error,
-            value: this.state.searchValue,
-            empty: this.state.empty,
-            more: !!this.state.nextPageToken,
-            custom: !!this.props.custom,
-          })}
-        />
-        {children}
-      </SuggestionsContainer>
-    );
-  };
-
-  SelectionDefault = ({ selection, remove, edit }) => (
-    <tr>
-      <td>{this.props.getSuggestionLabel(selection)}</td>
-      <td>
-        <button type="button" onClick={edit || remove}>
-          &times;
-        </button>
-      </td>
-    </tr>
-  );
-
-  SuggestionDefault = ({ active, suggestion }) => {
-    const suggestionLabel = this.props.getSuggestionLabel(suggestion);
-    return (
-      <div>{active ? <strong>{suggestionLabel}</strong> : suggestionLabel}</div>
-    );
-  };
-
-  renderSuggestion = (suggestion, { isHighlighted }) => {
-    const { Suggestion = this.SuggestionDefault } = this.props.components;
-    return <Suggestion suggestion={suggestion} active={isHighlighted} />;
-  };
-
-  renderInput = inputProps => {
-    const { Input = TypeaheadInputDefault } = this.props.components;
-    return <Input inputProps={inputProps} />;
-  };
-
-  setSearchField = searchField => () => {
-    this.setState({ searchField });
-  };
-
-  handleSearch = searchValue => ({ suggestions, error, nextPageToken }) => {
-    if (this.state.searchValue === searchValue) {
-      const custom =
-        this.props.custom && fromJS(this.props.custom(searchValue));
-      const existing = (this.props.multiple ? this.props.value : []).map(
-        this.props.getSuggestionValue,
-      );
-      const filtered = suggestions
-        .map(suggestion => fromJS(suggestion))
-        .filter(
-          suggestion =>
-            !existing.includes(this.props.getSuggestionValue(suggestion)),
-        );
-      const newSuggestions =
-        custom && !this.props.textMode ? [...filtered, custom] : filtered;
-      return this.setState({
-        suggestions: newSuggestions,
-        error,
-        nextPageToken,
-        empty: newSuggestions.length === 0 && !custom,
-      });
-    }
-  };
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const { searchField, searchValue, touched } = this.state;
-    if (
-      touched &&
-      (searchField !== prevState.searchField ||
-        searchValue !== prevState.searchValue ||
-        !prevState.touched)
-    ) {
-      if (searchValue.length >= this.state.minSearchLength) {
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          this.props
-            .search(searchField, searchValue)
-            .then(this.handleSearch(searchValue));
-        }, DEBOUNCE_DURATION);
-      } else {
-        this.onClearSuggestions();
-      }
-    }
-    if (this.state.editing && !prevState.editing) {
-      this.autosuggest.input.focus();
-    }
-    if (!is(this.props.value, prevProps.value)) {
-      this.setState(this.createStateFromProps(this.props));
-    }
-  }
-
-  shouldRenderSuggestions = value => {
-    return value.length >= this.state.minSearchLength;
-  };
-
-  render() {
-    const {
-      highlightFirstSuggestion = true,
-      multiple,
-      placeholder,
-      getSuggestionLabel,
-      textMode,
-      value,
-      components: {
-        Selection = this.SelectionDefault,
-        SelectionsContainer = SelectionsContainerDefault,
-      } = {},
-    } = this.props;
-    const { editing, newValue, suggestions } = this.state;
-    return (
-      <SelectionsContainer
-        multiple={multiple}
-        value={value}
-        selections={
-          multiple
-            ? value.map((selection, i) => (
-                <Selection
-                  key={i}
-                  selection={selection}
-                  remove={this.remove(i)}
-                />
-              ))
-            : !textMode && !editing && value
-            ? List.of(<Selection key={0} selection={value} edit={this.edit} />)
-            : List()
-        }
-        input={
-          !value || editing ? (
-            <Autosuggest
-              ref={el => (this.autosuggest = el)}
-              inputProps={{
-                value: newValue,
-                onBlur: this.onBlur,
-                onFocus: this.props.onFocus,
-                onChange: this.onChange,
-                onKeyDown: this.onKeyDown,
-                placeholder,
-              }}
-              theme={{
-                suggestionsContainerOpen: 'OPEN',
-              }}
-              highlightFirstSuggestion={highlightFirstSuggestion}
-              alwaysRenderSuggestions={true}
-              shouldRenderSuggestions={this.shouldRenderSuggestions}
-              suggestions={this.state.touched ? suggestions : []}
-              onSuggestionsFetchRequested={this.onSearch}
-              onSuggestionsClearRequested={this.onClearSuggestions}
-              onSuggestionHighlighted={this.onHighlight}
-              onSuggestionSelected={this.onSelect}
-              renderSuggestion={this.renderSuggestion}
-              renderSuggestionsContainer={this.renderSuggestionContainer}
-              renderInputComponent={this.renderInput}
-              getSuggestionValue={getSuggestionLabel}
-            />
-          ) : null
-        }
-      />
-    );
-  }
-}
+// This is passed to the Autosuggest input but we do not want to update that
+// value when pressing up/down and we do not want to set that input when a
+// suggestion is clicked so we are making this a noop. Instead we update the
+// searchValue state when `onSuggestionsFetchRequested` is called.
+const onChangeNOOP = (event, { newValue, method }) => {};

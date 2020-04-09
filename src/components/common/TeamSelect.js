@@ -7,23 +7,30 @@ const fields = {
   localName: 'Local Name',
 };
 
-const searchTeams = (field, value) =>
+const searchTeams = (field, value, callback) =>
   fetchTeams({
     q: Object.keys(fields)
       .filter(searchField => !field || searchField === field)
       .map(field => `${field} =* "${value}"`)
       .join(' OR '),
     limit: 25,
-  }).then(({ teams, error, nextPageToken }) => ({
-    suggestions: teams || [],
-    error,
-    nextPageToken,
-  }));
+  })
+    .then(({ teams, error, nextPageToken }) => ({
+      suggestions: teams || [],
+      error,
+      nextPageToken,
+    }))
+    .then(callback);
 
 const teamToValue = team => (team && team.get('name')) || '';
 
 const getStatusProps = props => ({
-  info: props.searchField ? `Find Teams by ${fields[props.searchField]}` : null,
+  meta: props.searchField ? `Find Teams by ${fields[props.searchField]}` : null,
+  info: props.short
+    ? 'Type to find a team.'
+    : props.pending
+    ? 'Searching…'
+    : null,
   warning:
     props.error || props.more || props.empty
       ? props.error && props.error.key === 'too_many_matches'
@@ -51,12 +58,9 @@ const getStatusProps = props => ({
 export const TeamSelect = props => (
   <Typeahead
     components={props.components || {}}
-    textMode={props.textMode}
     multiple={props.multiple}
     search={searchTeams}
     minSearchLength={props.minSearchLength}
-    alwaysRenderSuggestions={props.alwaysRenderSuggestions}
-    getSuggestionLabel={teamToValue}
     getSuggestionValue={teamToValue}
     getStatusProps={getStatusProps}
     value={props.value}

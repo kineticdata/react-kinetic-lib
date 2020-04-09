@@ -4,7 +4,11 @@ import { List, Map } from 'immutable';
 
 const fields = [{ name: 'label' }, { name: 'value' }];
 
-const searchOptions = ({ allowNew, options, search }) => (field, value) => {
+const searchOptions = ({ allowNew, options, search }) => (
+  field,
+  value,
+  callback,
+) => {
   const searchFields =
     Map.isMap(search) && search.has('fields') && !search.get('fields').isEmpty()
       ? search.get('fields').toJS()
@@ -28,49 +32,52 @@ const searchOptions = ({ allowNew, options, search }) => (field, value) => {
               ),
             );
     const suggestions = filter(options.toJS(), value);
-    return Promise.resolve({
+    return callback({
       suggestions: suggestions.slice(0, 50),
       nextPageToken: suggestions.length > 50,
     });
   }
   // Server Side Fetching
   else {
-    return Promise.resolve({
+    return callback({
       error: 'No options provided.',
       suggestions: [],
     });
   }
 };
 
-const optionToLabel = option => (option && option.get('label')) || '';
-
 const optionToValue = option => (option && option.get('value')) || '';
 
-const valueToCustomOption = value => ({ value, label: value });
+const valueToCustomOption = value =>
+  value.length > 0 ? { value, label: value } : null;
 
 const getStatusProps = props => ({
+  info: props.short
+    ? 'Type to find an option.'
+    : props.empty && props.custom
+    ? 'No options found. Type to enter a custom option.'
+    : props.pending
+    ? 'Searching…'
+    : null,
   warning:
     props.error || props.empty || props.more
       ? props.error
         ? props.error
         : props.more
         ? 'Too many results, first 50 shown. Please refine your search.'
-        : props.empty
+        : props.empty && !props.custom
         ? 'No matches found.'
         : null
       : null,
 });
 
-export const StaticSelect = ({ alwaysRenderSuggestions = true, ...props }) => (
+export const StaticSelect = props => (
   <Typeahead
     components={props.components || {}}
-    textMode={props.textMode}
     multiple={props.multiple}
     custom={props.allowNew && valueToCustomOption}
     search={searchOptions(props)}
     minSearchLength={props.minSearchLength}
-    alwaysRenderSuggestions={alwaysRenderSuggestions}
-    getSuggestionLabel={optionToLabel}
     getSuggestionValue={optionToValue}
     getStatusProps={getStatusProps}
     value={props.value}

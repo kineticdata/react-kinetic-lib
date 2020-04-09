@@ -10,18 +10,20 @@ const fields = {
   email: 'Email',
 };
 
-const searchUsers = (searchField, value) =>
+const searchUsers = (searchField, value, callback) =>
   fetchUsers({
     q: Object.keys(fields)
       .filter(field => !searchField || field === searchField)
       .map(field => `${field} =* "${value}"`)
       .join(' OR '),
     limit: 25,
-  }).then(({ users, error, nextPageToken }) => ({
-    suggestions: users || [],
-    error,
-    nextPageToken,
-  }));
+  })
+    .then(({ users, error, nextPageToken }) => ({
+      suggestions: users || [],
+      error,
+      nextPageToken,
+    }))
+    .then(callback);
 
 const userToValue = user =>
   (user && (user.get('username') || user.get('email') || '')) || '';
@@ -30,7 +32,12 @@ const valueToCustomUser = value =>
   value.match(emailPattern) && { email: value };
 
 const getStatusProps = props => ({
-  info: props.searchField ? `Find Users by ${fields[props.searchField]}` : null,
+  meta: props.searchField ? `Find Users by ${fields[props.searchField]}` : null,
+  info: props.short
+    ? 'Type to find a user.'
+    : props.pending
+    ? 'Searching…'
+    : null,
   warning:
     props.error || props.more || props.empty
       ? props.error && props.error.key === 'too_many_matches'
@@ -59,13 +66,10 @@ const getStatusProps = props => ({
 export const UserSelect = props => (
   <Typeahead
     components={props.components || {}}
-    textMode={props.textMode}
     multiple={props.multiple}
     custom={props.allowNew && valueToCustomUser}
     search={searchUsers}
     minSearchLength={props.minSearchLength}
-    alwaysRenderSuggestions={props.alwaysRenderSuggestions}
-    getSuggestionLabel={userToValue}
     getSuggestionValue={userToValue}
     getStatusProps={getStatusProps}
     value={props.value}

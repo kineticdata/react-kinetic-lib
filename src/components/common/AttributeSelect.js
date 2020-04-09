@@ -1,8 +1,8 @@
 import React from 'react';
 import { Typeahead } from './Typeahead';
 
-const searchOptions = ({ options }) => (field, value) =>
-  Promise.resolve({
+const searchOptions = ({ options }) => (field, value, callback) =>
+  callback({
     suggestions: options
       .filter(attribute =>
         attribute
@@ -13,11 +13,14 @@ const searchOptions = ({ options }) => (field, value) =>
       .toArray(),
   });
 
-const optionToLabel = option => (option && option.get('name')) || '';
-
 const optionToValue = option => (option && option.get('name')) || '';
 
 const getStatusProps = props => ({
+  info: props.short
+    ? 'Type to find an attribute.'
+    : props.pending
+    ? 'Searching…'
+    : null,
   warning:
     props.error || props.empty || props.more
       ? props.error
@@ -33,10 +36,7 @@ const getStatusProps = props => ({
 export const AttributeSelect = props => (
   <Typeahead
     components={props.components || {}}
-    textMode
     search={searchOptions(props)}
-    alwaysRenderSuggestions
-    getSuggestionLabel={optionToLabel}
     getSuggestionValue={optionToValue}
     getStatusProps={getStatusProps}
     value={props.value}
