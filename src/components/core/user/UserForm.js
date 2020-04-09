@@ -11,7 +11,7 @@ import {
 
 const USER_INCLUDES = 'attributesMap,memberships,profileAttributesMap';
 
-const fetchSystemUser = () =>
+const fetchSystemSpaceUser = () =>
   Promise.resolve({
     user: {
       allowedIps: '',
@@ -41,7 +41,7 @@ const dataSources = ({ username, system, spaceSlug }) => ({
     transform: result => result.data.timezones,
   },
   user: {
-    fn: system ? fetchSystemUser : fetchUser,
+    fn: system ? fetchSystemSpaceUser : fetchUser,
     params: username && [{ username, include: USER_INCLUDES, spaceSlug }],
     transform: result => result.user,
   },
