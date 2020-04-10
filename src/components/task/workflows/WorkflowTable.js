@@ -14,7 +14,8 @@ const filtersToParams = filters => ({
   status: filters.getIn(['status', 'value']),
 });
 
-const dataSource = ({ workflowType, sourceName, sourceGroup }) => ({
+const dataSource = ({ alterData, workflowType, sourceName, sourceGroup }) => ({
+  clientSideSearch: !!alterData,
   fn: fetchTrees,
   params: paramData => [
     {
@@ -39,7 +40,7 @@ const dataSource = ({ workflowType, sourceName, sourceGroup }) => ({
     },
   ],
   transform: result => ({
-    data: result.trees,
+    data: alterData ? alterData(result.trees) : result.trees,
     nextPageToken: result.nextPageToken,
   }),
 });
@@ -104,7 +105,7 @@ const columns = [
 ];
 
 export const WorkflowTable = generateTable({
-  tableOptions: ['workflowType', 'sourceName', 'sourceGroup'],
+  tableOptions: ['alterData', 'workflowType', 'sourceName', 'sourceGroup'],
   columns,
   dataSource,
 });
