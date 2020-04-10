@@ -510,6 +510,7 @@ export const generateTable = ({ tableOptions, ...setObjects }) => props => {
     pageSize: props.pageSize,
     defaultSortColumn: props.defaultSortColumn,
     defaultSortDirection: props.defaultSortDirection,
+    uncontrolled: props.uncontrolled,
   };
 
   return (
@@ -525,7 +526,7 @@ export class Table extends Component {
     const { components, tableKey, ...config } = props;
     this.components = components;
     this.config = config;
-    this.auto = !tableKey;
+    this.auto = !tableKey || props.uncontrolled;
     this.tableKey = tableKey || generateKey();
   }
 
