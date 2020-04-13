@@ -7,6 +7,7 @@ const initialState = {
   editing: false,
   searchField: null,
   searchValue: '',
+  refocus: false,
   result: null,
 };
 
@@ -15,6 +16,7 @@ export class Typeahead extends React.Component {
     super(props);
     this.state = initialState;
     this.autosuggest = createRef();
+    this.focusRef = createRef();
     this.search = debounce((...args) => {
       this.props.search(...args);
     }, 150);
@@ -25,11 +27,15 @@ export class Typeahead extends React.Component {
   }
 
   edit = event => {
-    if (event) {
+    if (
+      event.type === 'click' ||
+      (event.type === 'keydown' &&
+        (event.keyCode === 13 || event.keyCode === 32))
+    ) {
       event.preventDefault();
       event.stopPropagation();
+      this.setState({ editing: true });
     }
-    this.setState({ editing: true });
   };
 
   remove = i => event => {
@@ -95,6 +101,8 @@ export class Typeahead extends React.Component {
       this.setState(initialState);
     } else if (reason !== 'suggestion-selected') {
       this.setState({ editing: true, searchValue });
+    } else if (!this.props.multiple) {
+      this.setState({ refocus: true });
     }
   };
 
@@ -150,6 +158,12 @@ export class Typeahead extends React.Component {
       if (!prevState.editing) {
         this.autosuggest.current.input.focus();
       }
+    }
+    if (this.state.refocus && !prevState.refocus) {
+      if (this.focusRef.current) {
+        this.focusRef.current.focus();
+      }
+      this.setState({ refocus: false });
     }
   }
 
@@ -273,6 +287,7 @@ function renderInputComponent(inputProps) {
 function renderSelections() {
   const {
     edit,
+    focusRef,
     props: {
       components: { Selection = SelectionDefault },
       getSuggestionValue,
@@ -287,6 +302,7 @@ function renderSelections() {
       <Selection
         key={suggestionValue}
         edit={!multiple ? edit : null}
+        focusRef={!multiple ? focusRef : null}
         remove={multiple ? remove(i) : remove()}
         selection={selection}
         suggestionValue={suggestionValue}
