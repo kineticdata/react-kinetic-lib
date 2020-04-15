@@ -7,6 +7,7 @@ import {
   connect,
   dispatch,
   regSaga,
+  store,
 } from '../../../store';
 import {
   login,
@@ -186,6 +187,12 @@ const logout = callback => {
   dispatch('LOGOUT_START', callback);
 };
 
+const timedOut = () => {
+  dispatch('TIMEOUT');
+};
+
+const getToken = () => store.getState().getIn(['session', 'token']);
+
 export class AuthenticationComponent extends Component {
   componentDidMount() {
     dispatch('INITIALIZE', { socket: !this.props.noSocket });
@@ -231,4 +238,4 @@ const AuthenticationContainer = connect(mapStateToProps)(
   AuthenticationComponent,
 );
 
-export { AuthenticationContainer, logout };
+export { AuthenticationContainer, getToken, logout, timedOut };

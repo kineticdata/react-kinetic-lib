@@ -9,7 +9,11 @@ export { TableInput } from './common/TableInput';
 export { FormSelect } from './common/FormSelect';
 export { Scroller } from './common/Scroller';
 export { StaticSelect } from './common/StaticSelect';
-export { logout } from './common/authentication/AuthenticationContainer';
+export {
+  getToken,
+  logout,
+  timedOut,
+} from './common/authentication/AuthenticationContainer';
 
 // Form
 export {
