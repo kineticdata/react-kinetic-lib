@@ -222,7 +222,7 @@ export const createInvite = ({ discussionId, type, value, message }) =>
       data:
         type === 'email'
           ? { email: value, message }
-          : { user: { username: value } },
+          : { user: { username: value }, message },
     })
     .then(response => response.data)
     .catch(response => ({ error: response }));
