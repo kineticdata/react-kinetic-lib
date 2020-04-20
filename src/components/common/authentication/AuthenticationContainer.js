@@ -71,16 +71,12 @@ regHandlers({
 regSaga(
   takeEvery('LOGIN', function*({ payload }) {
     try {
-      const socket = yield select(state => state.getIn(['session', 'socket']));
       const { username, password } = yield select(state => state.get('login'));
       const { error } = yield call(login, { username, password });
       if (error) {
         yield put({ type: 'SET_ERROR', payload: error.message });
       } else {
         const token = yield call(retrieveJwt);
-        if (socket) {
-          yield call(socketIdentify, token);
-        }
         yield put({
           type: 'SET_AUTHENTICATED',
           payload: { token, callback: payload },
@@ -104,9 +100,6 @@ regSaga(
         yield put({ type: 'SET_ERROR', payload: error });
       } else {
         const token = yield call(retrieveJwt);
-        if (socket) {
-          yield call(socketIdentify, token);
-        }
         yield put({
           type: 'SET_AUTHENTICATED',
           payload: { token, callback },
@@ -164,6 +157,10 @@ regSaga(
 
 regSaga(
   takeEvery('SET_AUTHENTICATED', function*({ payload }) {
+    const socket = yield select(state => state.getIn(['session', 'socket']));
+    if (socket) {
+      yield call(socketIdentify, payload.token);
+    }
     if (isFunction(payload.callback)) {
       yield call(payload.callback);
     }

@@ -18,7 +18,7 @@ export * from './helpers';
 export * from './models';
 
 const requestInterceptor = new RequestInterceptor(store);
-const authInterceptor = new AuthInterceptor(
+export const authInterceptor = new AuthInterceptor(
   store,
   // callback to invoke when we get a 401 response
   () => action('TIMEOUT'),

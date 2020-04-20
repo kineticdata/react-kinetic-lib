@@ -154,7 +154,6 @@ export function* handleTopicChannel(channel, id, socket, topic) {
     }
   } finally {
     if (yield cancelled()) {
-      // what... what does this mean?
       yield channel.close();
     }
   }
@@ -214,24 +213,25 @@ regSaga('WATCH_DISCUSSIONS_SOCKET', function*() {
 
     // The UI requested to join a topic.
     if (joinTopic) {
-      const topicId = `discussions/discussion/${joinTopic.payload.id}`;
-
-      const topic = socket.topic(topicId);
-      const channel = registerTopicChannel(topic);
-      const handler = yield fork(
-        handleTopicChannel,
-        channel,
-        joinTopic.payload.id,
-        socket,
-        topic,
-      );
-      discussionTasks.push({
-        id: joinTopic.payload.id,
-        topic,
-        channel,
-        handler,
-      });
       try {
+        const topicId = `discussions/discussion/${joinTopic.payload.id}`;
+
+        const topic = socket.topic(topicId);
+        const channel = registerTopicChannel(topic);
+        const handler = yield fork(
+          handleTopicChannel,
+          channel,
+          joinTopic.payload.id,
+          socket,
+          topic,
+        );
+        discussionTasks.push({
+          id: joinTopic.payload.id,
+          topic,
+          channel,
+          handler,
+        });
+
         yield call(
           topic.subscribe.bind(topic),
           joinTopic.payload.invitationToken,
@@ -254,16 +254,20 @@ regSaga('WATCH_DISCUSSIONS_SOCKET', function*() {
 
     // The UI requested to leave a topic.
     if (leaveTopic) {
-      // Fetch the task.
-      const discussionTask = discussionTasks.find(
-        dt => dt.id === leaveTopic.payload,
-      );
-      // Ask the channel to close the socket.
-      yield cancel(discussionTask.handler);
-      // Remove the task from the queue.
-      discussionTasks = discussionTasks.filter(
-        dt => dt.id !== discussionTask.id,
-      );
+      try {
+        // Fetch the task.
+        const discussionTask = discussionTasks.find(
+          dt => dt.id === leaveTopic.payload,
+        );
+        // Ask the channel to close the socket.
+        yield cancel(discussionTask.handler);
+        // Remove the task from the queue.
+        discussionTasks = discussionTasks.filter(
+          dt => dt.id !== discussionTask.id,
+        );
+      } catch (e) {
+        console.warn('There was a problem leaving a discussion topic:', e);
+      }
     }
   }
 });

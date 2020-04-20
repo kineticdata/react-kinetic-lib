@@ -90,6 +90,5 @@ export const testAgentHandler = (options = {}) => {
         ...parameters,
       },
     )
-    // .then(response => ({ response: response.data }))
     .catch(handleErrors);
 };
