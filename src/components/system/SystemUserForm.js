@@ -1,8 +1,6 @@
 import { get } from 'immutable';
-import { generateForm } from '../../form/Form';
-
-const updateSystemUser = () => Promise.resolve();
-const fetchSystemUser = () => Promise.resolve({ user: { username: 'admin' } });
+import { generateForm } from '../form/Form';
+import { fetchSystemUser, updateSystemUser } from '../../apis/system';
 
 const dataSources = () => ({
   user: {

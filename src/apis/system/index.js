@@ -80,6 +80,34 @@ export const fetchSystem = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const fetchSystemUser = (options = {}) => {
+  // Build URL and fetch the space.
+  return axios
+    .get('/app/system-coordinator/api/v1/platform/system-user', {
+      __bypassInitInterceptor: true,
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ user: response.data }))
+    .catch(handleErrors);
+};
+
+export const updateSystemUser = (options = {}) => {
+  const { user } = options;
+  if (!user) {
+    throw new Error('updateSystemUser failed! The option "user" is required.');
+  }
+
+  return axios
+    .put('/app/system-coordinator/api/v1/platform/system-user', user, {
+      __bypassInitInterceptor: true,
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ user: response.data }))
+    .catch(handleErrors);
+};
+
 export const fetchTaskDbAdapters = (options = {}) => {
   // Build URL and fetch the space.
   return (
