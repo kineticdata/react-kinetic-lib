@@ -140,7 +140,10 @@ export { SystemTenantTable } from './system/spaces/SystemTenantTable';
 export { SystemTenantForm } from './system/spaces/SystemTenantForm';
 export { SystemUserForm } from './system/user/SystemUserForm';
 export { SystemMailForm } from './system/SystemMailForm';
+export { SystemTaskAdapterForm } from './system/SystemTaskAdapterForm';
+export { SystemIngressForm } from './system/SystemIngressForm';
 export { SystemForm } from './system/SystemForm';
+export { formPropertyName } from './system/helpers';
 
 // Task
 export { TreeBuilder } from './task/builder/TreeBuilder';

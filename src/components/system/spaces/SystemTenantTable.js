@@ -1,8 +1,8 @@
 import { generateTable } from '../../table/Table';
-import { fetchSystemTenants } from './helper';
+import { fetchTenants } from '../../../apis/system';
 
 const dataSource = () => ({
-  fn: fetchSystemTenants,
+  fn: fetchTenants,
   params: () => [],
   transform: result => ({
     data: result.spaces,
