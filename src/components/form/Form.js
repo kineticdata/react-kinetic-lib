@@ -69,10 +69,19 @@ export const checkPattern = field =>
     ? List([field.patternMessage])
     : List();
 
-export const checkConstraint = bindings => field =>
-  field.constraint && !field.constraint(bindings)
-    ? List([field.constraintMessage])
-    : List();
+export const checkConstraint = bindings => field => {
+  if (field.constraint) {
+    const result = field.constraint(bindings);
+    if (!result) {
+      return List([field.constraintMessage]);
+    } else if (typeof result === 'string') {
+      return List([result]);
+    }
+  }
+  // Return no errors if there was no constraint or if the constraint did not
+  // evaluate to false or an error string.
+  return List();
+};
 
 export const validateField = bindings => field =>
   field.set(

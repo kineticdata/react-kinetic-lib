@@ -35,10 +35,13 @@ const fields = ({ tasks, tree, node }) => ({ bindings }) =>
       initialValue: node.name,
       required: true,
       constraint: ({ values }) =>
-        !tree.nodes.some(
+        tree.nodes.some(
           other => other.name === values.get('name') && other.id !== node.id,
-        ),
-      constraintMessage: 'This name is already used by another node',
+        )
+          ? 'This name is already used by another node'
+          : values.get('name').length > 128
+          ? 'Name cannot exceed 128 characters'
+          : true,
       pattern: /^[^'"]*$/,
       patternMessage: 'Node names may not contain apostrophes or quotes',
     },
