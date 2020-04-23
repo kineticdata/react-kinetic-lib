@@ -104,10 +104,10 @@ const fields = () => ({ user }) =>
     },
   ];
 
-export const SystemMailForm = generateForm({
+export const SystemSmtpForm = generateForm({
   dataSources,
   fields,
   handleSubmit,
 });
 
-SystemMailForm.displayName = 'SystemMailForm';
+SystemSmtpForm.displayName = 'SystemMailForm';

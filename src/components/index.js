@@ -139,7 +139,7 @@ export { WebhookJobTable } from './core/webhook_job/WebhookJobTable';
 export { SystemTenantTable } from './system/spaces/SystemTenantTable';
 export { SystemTenantForm } from './system/spaces/SystemTenantForm';
 export { SystemUserForm } from './system/SystemUserForm';
-export { SystemMailForm } from './system/SystemMailForm';
+export { SystemSmtpForm } from './system/SystemSmtpForm';
 export { SystemTaskAdapterForm } from './system/SystemTaskAdapterForm';
 export { SystemIngressForm } from './system/SystemIngressForm';
 export { SystemForm } from './system/SystemForm';
