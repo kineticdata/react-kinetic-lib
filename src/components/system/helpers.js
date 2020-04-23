@@ -30,7 +30,7 @@ export const taskAdapterPropertiesFields = (adapterProperties, prefix = '') =>
       properties.get('type'),
       properties.get('name'),
     ),
-    label: properties.get('name'),
+    label: properties.get('label') || properties.get('name'),
     visible: ({ values }) =>
       values.get(formPropertyName(prefix, 'type')) === properties.get('type'),
     type: properties.get('sensitive')
