@@ -171,3 +171,37 @@ export const updateSystemDefaultTaskDbAdapter = (options = {}) => {
     .then(response => ({ adapter: response.data.adapter }))
     .catch(handleErrors);
 };
+
+export const fetchSystemDefaultSmtpAdapter = (options = {}) => {
+  // Build URL and fetch the space.
+  return axios
+    .get('/app/system-coordinator/api/v1/platform/default-smtp-adapter', {
+      __bypassInitInterceptor: true,
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ adapter: response.data.adapter }))
+    .catch(handleErrors);
+};
+
+export const updateSystemDefaultSmtpAdapter = (options = {}) => {
+  const { adapter } = options;
+  if (!adapter) {
+    throw new Error(
+      'updateSystemDefaultSmtpAdapter failed! The option "adapter" is required.',
+    );
+  }
+
+  return axios
+    .put(
+      '/app/system-coordinator/api/v1/platform/default-smtp-adapter',
+      adapter,
+      {
+        __bypassInitInterceptor: true,
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => ({ adapter: response.data.adapter }))
+    .catch(handleErrors);
+};

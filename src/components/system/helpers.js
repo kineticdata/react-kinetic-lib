@@ -22,7 +22,7 @@ export const propertiesFromValues = (values, prefix = '') => {
 export const formPropertyName = (...names) =>
   names.filter(n => n !== '').join('_');
 
-export const taskAdapterPropertiesFields = (adapterProperties, prefix = '') =>
+export const adapterPropertiesFields = (adapterProperties, prefix = '') =>
   adapterProperties.map(properties => ({
     name: formPropertyName(
       prefix,
@@ -44,4 +44,5 @@ export const taskAdapterPropertiesFields = (adapterProperties, prefix = '') =>
       properties.get('required', false),
     transient: true,
     options: properties.get('options', undefined),
+    initialValue: properties.get('value', '') || '',
   }));

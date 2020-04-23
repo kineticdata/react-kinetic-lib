@@ -7,7 +7,7 @@ import { generateForm } from '../form/Form';
 import {
   propertiesFromAdapters,
   propertiesFromValues,
-  taskAdapterPropertiesFields,
+  adapterPropertiesFields,
 } from './helpers';
 import { get, Map } from 'immutable';
 
@@ -38,7 +38,7 @@ const fields = () => ({
   adapterProperties,
 }) => {
   if (taskDbAdapters && adapterProperties) {
-    const taskAdapters = taskAdapterPropertiesFields(adapterProperties);
+    const taskAdapters = adapterPropertiesFields(adapterProperties);
     return [
       {
         name: 'type',

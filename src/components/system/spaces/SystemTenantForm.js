@@ -10,7 +10,7 @@ import { slugify } from '../../../helpers';
 import {
   propertiesFromAdapters,
   propertiesFromValues,
-  taskAdapterPropertiesFields,
+  adapterPropertiesFields,
 } from '../helpers';
 
 const TENANT_INCLUDES = 'details';
@@ -43,7 +43,7 @@ const fields = ({ slug, adapter }) => ({
   adapterProperties,
 }) => {
   if (taskDbAdapters && adapterProperties) {
-    const taskAdapters = taskAdapterPropertiesFields(
+    const taskAdapters = adapterPropertiesFields(
       adapterProperties,
       'taskAdapter',
     );

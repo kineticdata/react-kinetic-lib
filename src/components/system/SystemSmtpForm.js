@@ -1,108 +1,39 @@
-import { get } from 'immutable';
 import { generateForm } from '../form/Form';
-
-const updateSystemUser = () => Promise.resolve();
-const fetchSystemMail = () =>
-  Promise.resolve({
-    smtp: {
-      host: 'mail.acme.com',
-      port: '25',
-      useTls: true,
-      username: 'admin',
-      fromAddress: 'noreply@acme.com',
-    },
-  });
+import {
+  fetchSystemDefaultSmtpAdapter,
+  updateSystemDefaultSmtpAdapter,
+} from '../../apis/system';
+import { adapterPropertiesFields, propertiesFromValues } from './helpers';
 
 const dataSources = () => ({
-  user: {
-    fn: fetchSystemMail,
+  adapter: {
+    fn: fetchSystemDefaultSmtpAdapter,
     params: [],
-    transform: result => result.smtp,
+    transform: result => result.adapter,
   },
 });
 
-const handleSubmit = () => values => {
-  const smtp = values.toJS();
-  return updateSystemUser({ smtp });
-};
+const handleSubmit = () => values =>
+  updateSystemDefaultSmtpAdapter({ adapter: values.get('properties') });
 
-const fields = () => ({ user }) =>
-  user && [
-    {
-      name: 'host',
-      label: 'Host Name',
-      type: 'text',
-      required: true,
-      initialValue: get(user, 'host') || '',
-    },
-    {
-      name: 'port',
-      label: 'Port',
-      type: 'text',
-      required: true,
-      initialValue: get(user, 'port') || '25',
-    },
-    {
-      name: 'useTls',
-      label: 'Use SMTP TLS',
-      type: 'select',
-      required: true,
-      options: () => [
-        { label: 'Yes', value: true },
-        { label: 'No', value: false },
-      ],
-      initialValue: get(user, 'useTls') || false,
-    },
-    {
-      name: 'username',
-      label: 'Username',
-      type: 'text',
-      required: true,
-      initialValue: get(user, 'username') || '',
-    },
-    {
-      name: 'password',
-      label: 'Password',
-      type: 'password',
-      required: ({ values }) => values.get('changePassword'),
-      visible: ({ values }) => values.get('changePassword'),
-      transient: ({ values }) => !values.get('changePassword'),
-    },
-    {
-      name: 'passwordConfirmation',
-      label: 'Password Confirmation',
-      type: 'password',
-      required: ({ values }) => values.get('changePassword'),
-      visible: ({ values }) => values.get('changePassword'),
-      transient: ({ values }) => !values.get('changePassword'),
-      constraint: ({ values }) =>
-        values.get('passwordConfirmation') === values.get('password'),
-      constraintMessage: 'Password Confirmation does not match',
-    },
-    {
-      name: 'changePassword',
-      label: 'Change Password',
-      type: 'checkbox',
-      initialValue: false,
-      transient: true,
-      onChange: ({ values }, { setValue }) => {
-        if (values.get('password') !== '') {
-          setValue('password', '');
-        }
-        if (values.get('passwordConfirmation') !== '') {
-          setValue('passwordConfirmation', '');
-        }
-      },
-    },
-    {
-      name: 'fromAddress',
-      label: 'From Address',
-      type: 'text',
-      required: true,
-      placeholder: 'noreply@company.com',
-      initialValue: get(user, 'fromAddress') || '',
-    },
-  ];
+const fields = () => ({ adapter }) => {
+  if (adapter) {
+    const properties = adapterPropertiesFields(adapter);
+    return (
+      adapter && [
+        ...properties,
+        {
+          name: 'properties',
+          label: 'SMTP Adapter Properties',
+          type: 'text',
+          required: false,
+          visible: false,
+          serialize: ({ values }) => propertiesFromValues(values),
+        },
+      ]
+    );
+  }
+};
 
 export const SystemSmtpForm = generateForm({
   dataSources,
