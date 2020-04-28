@@ -30,7 +30,7 @@ const processValues = (q, op, field, value, datastore) => {
 
 const submissionsFilter = (paramData, props) => {
   const { filters, pageSize } = paramData;
-  const { include = ['details'], datastore = false } = props;
+  const { include = ['details', 'form'], datastore = false } = props;
   const query = new SubmissionSearch(datastore);
   const sortBy = paramData.sortColumn ? paramData.sortColumn : 'createdAt';
 
