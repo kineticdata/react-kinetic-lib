@@ -267,6 +267,8 @@ export const buildTable = props => {
       loading={props.loading}
       error={props.error}
       empty={props.rows.isEmpty()}
+      renderOptions={props.renderOptions}
+      tableOptions={props.tableOptions}
     />
   );
 };
@@ -275,7 +277,13 @@ export const buildTableHeader = props => {
   const Header = props.components.Header;
   const headerRow = buildTableHeaderRow(props);
   return props.omitHeader ? null : (
-    <Header sortable={props.sortable} headerRow={headerRow} rows={props.rows} />
+    <Header
+      sortable={props.sortable}
+      headerRow={headerRow}
+      renderOptions={props.renderOptions}
+      rows={props.rows}
+      tableOptions={props.tableOptions}
+    />
   );
 };
 
@@ -286,11 +294,24 @@ export const buildTableHeaderRow = props => {
     buildTableHeaderCell(props),
   );
 
-  return <HeaderRow columnHeaders={columnHeaders} rows={rows} />;
+  return (
+    <HeaderRow
+      columnHeaders={columnHeaders}
+      renderOptions={props.renderOptions}
+      rows={rows}
+      tableOptions={props.tableOptions}
+    />
+  );
 };
 
 export const buildTableHeaderCell = props => (column, index) => {
-  const { tableKey, components, columnComponents } = props;
+  const {
+    tableKey,
+    components,
+    columnComponents,
+    renderOptions,
+    tableOptions,
+  } = props;
   const HeaderCell = columnComponents.getIn(
     [column.get('value'), 'HeaderCell'],
     components.HeaderCell,
@@ -304,8 +325,10 @@ export const buildTableHeaderCell = props => (column, index) => {
       <HeaderCell
         onSortColumn={onSortColumn(tableKey, column)}
         title={column.get('title')}
+        renderOptions={renderOptions}
         sorting={sorting}
         sortable={sortable}
+        tableOptions={tableOptions}
       />
     </KeyWrapper>
   );
@@ -319,6 +342,7 @@ export const buildTableBody = props => {
     <Body
       loading={props.loading}
       initializing={props.initializing}
+      renderOptions={props.renderOptions}
       tableOptions={props.tableOptions}
       tableRows={tableRows}
       error={props.error}
@@ -334,6 +358,7 @@ export const buildTableBodyRows = props => {
     columns,
     columnSet,
     appliedFilters,
+    renderOptions,
     tableOptions,
   } = props;
   const BodyRow = components.BodyRow;
@@ -350,6 +375,7 @@ export const buildTableBodyRows = props => {
               columns={columns}
               row={row}
               index={index}
+              renderOptions={renderOptions}
               tableOptions={tableOptions}
             />
           </KeyWrapper>
@@ -361,6 +387,7 @@ export const buildTableBodyRows = props => {
         initializing={props.initializing}
         loading={props.loading}
         appliedFilters={appliedFilters}
+        renderOptions={renderOptions}
         tableOptions={tableOptions}
         error={props.error}
       />
@@ -377,6 +404,7 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
     columns,
     columnSet,
     columnComponents,
+    renderOptions,
     tableOptions,
   } = props;
 
@@ -398,6 +426,7 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
           value={value}
           rows={rows}
           column={column}
+          renderOptions={renderOptions}
           tableOptions={tableOptions}
         />
       </KeyWrapper>
@@ -406,7 +435,14 @@ export const buildTableBodyCells = (props, row, rowIndex) => {
 };
 
 export const buildTableFooter = props => {
-  const { components, columnSet, rows, tableOptions, includeFooter } = props;
+  const {
+    components,
+    columnSet,
+    renderOptions,
+    rows,
+    tableOptions,
+    includeFooter,
+  } = props;
   const footerRow = buildTableFooterRow(props);
   const Footer = components.Footer;
 
@@ -415,17 +451,24 @@ export const buildTableFooter = props => {
       rows={rows}
       footerRow={footerRow}
       colSpan={columnSet.size}
+      renderOptions={renderOptions}
       tableOptions={tableOptions}
     />
   ) : null;
 };
 
 export const buildTableFooterRow = props => {
-  const { components, tableOptions } = props;
+  const { components, renderOptions, tableOptions } = props;
   const cells = buildTableFooterCells(props);
   const FooterRow = components.FooterRow;
 
-  return <FooterRow cells={cells} tableOptions={tableOptions} />;
+  return (
+    <FooterRow
+      cells={cells}
+      renderOptions={renderOptions}
+      tableOptions={tableOptions}
+    />
+  );
 };
 
 export const buildTableFooterCells = props => {
@@ -434,6 +477,7 @@ export const buildTableFooterCells = props => {
     columns,
     columnSet,
     columnComponents,
+    renderOptions,
     tableOptions,
   } = props;
   return fromColumnSet(columns, columnSet).map((column, index) => {
@@ -444,7 +488,11 @@ export const buildTableFooterCells = props => {
 
     return (
       <KeyWrapper key={`column-${index}`}>
-        <FooterCell column={column} tableOptions={tableOptions} />
+        <FooterCell
+          column={column}
+          renderOptions={renderOptions}
+          tableOptions={tableOptions}
+        />
       </KeyWrapper>
     );
   });
@@ -510,6 +558,7 @@ export const generateTable = ({ tableOptions, ...setObjects }) => props => {
     pageSize: props.pageSize,
     defaultSortColumn: props.defaultSortColumn,
     defaultSortDirection: props.defaultSortDirection,
+    renderOptions: props.renderOptions,
     uncontrolled: props.uncontrolled,
   };
 
