@@ -558,6 +558,7 @@ class FormImplComponent extends Component {
       fieldSet,
       formKey,
       formState,
+      readOnly,
     } = this.props;
     const bindings = formState ? formState.bindings : {};
     const initialized = formState ? !!formState.fields : false;
@@ -599,7 +600,7 @@ class FormImplComponent extends Component {
                       ? this.focusRef
                       : null
                   }
-                  {...getFieldComponentProps(field)}
+                  {...getFieldComponentProps(field, readOnly)}
                 />
               ) : null,
             ];
@@ -609,15 +610,17 @@ class FormImplComponent extends Component {
             error && <FormError error={error} clear={clearError(formKey)} />
           }
           buttons={
-            <FormButtons
-              formOptions={formOptions}
-              reset={onReset(formKey)}
-              submit={onSubmit(formKey, fieldSet)}
-              submitting={submitting}
-              dirty={dirty}
-              error={error}
-              clearError={clearError(formKey)}
-            />
+            !readOnly && (
+              <FormButtons
+                formOptions={formOptions}
+                reset={onReset(formKey)}
+                submit={onSubmit(formKey, fieldSet)}
+                submitting={submitting}
+                dirty={dirty}
+                error={error}
+                clearError={clearError(formKey)}
+              />
+            )
           }
           bindings={bindings}
           meta={fields.map(field =>
@@ -661,6 +664,7 @@ export const generateForm = ({
     onSave={configurationProps.onSave}
     onError={configurationProps.onError}
     uncontrolled={configurationProps.uncontrolled}
+    readOnly={configurationProps.readOnly}
   >
     {configurationProps.children}
   </Form>

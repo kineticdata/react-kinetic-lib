@@ -34,7 +34,9 @@ export class Typeahead extends React.Component {
     ) {
       event.preventDefault();
       event.stopPropagation();
-      this.setState({ editing: true });
+      if (!this.props.disabled) {
+        this.setState({ editing: true });
+      }
     }
   };
 
@@ -43,9 +45,11 @@ export class Typeahead extends React.Component {
       event.preventDefault();
       event.stopPropagation();
     }
-    this.props.onChange(
-      this.props.multiple ? this.props.value.delete(i) : null,
-    );
+    if (!this.props.disabled) {
+      this.props.onChange(
+        this.props.multiple ? this.props.value.delete(i) : null,
+      );
+    }
   };
 
   onHighlight = ({ suggestion }) => {
@@ -173,6 +177,7 @@ export class Typeahead extends React.Component {
     } = this.props.components;
     return (
       <SelectionsContainer
+        disabled={this.props.disabled}
         multiple={this.props.multiple}
         value={this.props.value}
         selections={
@@ -290,6 +295,7 @@ function renderSelections() {
     focusRef,
     props: {
       components: { Selection = SelectionDefault },
+      disabled,
       getSuggestionValue,
       multiple,
       value,
@@ -301,6 +307,7 @@ function renderSelections() {
     return (
       <Selection
         key={suggestionValue}
+        disabled={disabled}
         edit={!multiple ? edit : null}
         focusRef={!multiple ? focusRef : null}
         remove={multiple ? remove(i) : remove()}

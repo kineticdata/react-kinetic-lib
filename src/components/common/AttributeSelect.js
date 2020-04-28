@@ -36,6 +36,7 @@ const getStatusProps = props => ({
 export const AttributeSelect = props => (
   <Typeahead
     components={props.components || {}}
+    disabled={props.disabled}
     search={searchOptions(props)}
     getSuggestionValue={optionToValue}
     getStatusProps={getStatusProps}
