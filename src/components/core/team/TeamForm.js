@@ -8,7 +8,7 @@ import {
 import { splitTeamName } from '../../../helpers';
 import { get, List, Map } from 'immutable';
 
-const TEAM_INCLUDES = 'attributesMap,memberships.user';
+const TEAM_INCLUDES = 'attributesMap,authorization,memberships.user';
 
 const dataSources = ({ teamSlug }) => ({
   team: {

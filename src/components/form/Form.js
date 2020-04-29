@@ -503,6 +503,13 @@ const computeFieldSet = (fields, fieldSetProp) => {
   );
 };
 
+const evaluateReadOnly = (readOnlyProp, bindings) =>
+  typeof readOnlyProp === 'boolean'
+    ? readOnlyProp
+    : typeof readOnlyProp === 'function'
+    ? readOnlyProp(bindings)
+    : false;
+
 class FormImplComponent extends Component {
   focusRef = createRef();
 
@@ -579,7 +586,7 @@ class FormImplComponent extends Component {
       )
         .filter(fieldConfig => fieldConfig.component)
         .map(fieldConfig => fieldConfig.component);
-
+      const readOnlyResult = evaluateReadOnly(readOnly, bindings);
       const computedFieldSet = computeFieldSet(fields, fieldSet);
       form = (
         <FormLayout
@@ -600,7 +607,7 @@ class FormImplComponent extends Component {
                       ? this.focusRef
                       : null
                   }
-                  {...getFieldComponentProps(field, readOnly)}
+                  {...getFieldComponentProps(field, readOnlyResult)}
                 />
               ) : null,
             ];
@@ -610,7 +617,7 @@ class FormImplComponent extends Component {
             error && <FormError error={error} clear={clearError(formKey)} />
           }
           buttons={
-            !readOnly && (
+            !readOnlyResult && (
               <FormButtons
                 formOptions={formOptions}
                 reset={onReset(formKey)}

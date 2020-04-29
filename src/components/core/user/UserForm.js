@@ -9,7 +9,8 @@ import {
   fetchTimezones,
 } from '../../../apis';
 
-const USER_INCLUDES = 'attributesMap,memberships,profileAttributesMap';
+const USER_INCLUDES =
+  'attributesMap,authorization,memberships,profileAttributesMap';
 
 const dataSources = ({ username }) => ({
   locales: {
