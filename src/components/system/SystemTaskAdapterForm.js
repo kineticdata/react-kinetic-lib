@@ -5,11 +5,12 @@ import {
 } from '../../apis/system';
 import { generateForm } from '../form/Form';
 import {
+  adapterPropertiesFields,
   propertiesFromAdapters,
   propertiesFromValues,
-  adapterPropertiesFields,
 } from './helpers';
-import { get, Map } from 'immutable';
+import { getIn, Map } from 'immutable';
+import { handleFormErrors } from '../../helpers';
 
 const dataSources = () => ({
   defaultTaskDbAdapter: {
@@ -29,7 +30,9 @@ const dataSources = () => ({
 
 const handleSubmit = () => values => {
   const adapter = values.toJS();
-  return updateSystemDefaultTaskDbAdapter({ adapter });
+  return updateSystemDefaultTaskDbAdapter({ adapter }).then(
+    handleFormErrors('adapter'),
+  );
 };
 
 const fields = () => ({
@@ -37,8 +40,11 @@ const fields = () => ({
   taskDbAdapters,
   adapterProperties,
 }) => {
-  if (taskDbAdapters && adapterProperties) {
-    const taskAdapters = adapterPropertiesFields(adapterProperties);
+  if (taskDbAdapters && defaultTaskDbAdapter && adapterProperties) {
+    const taskAdapters = adapterPropertiesFields({
+      adapterProperties,
+      defaultAdapter: defaultTaskDbAdapter,
+    });
     return [
       {
         name: 'type',
@@ -51,12 +57,12 @@ const fields = () => ({
               value: adapter.get('type'),
             }),
           ),
-        initialValue: get(defaultTaskDbAdapter, 'type', ''),
+        initialValue: getIn(defaultTaskDbAdapter, ['adapter', 'type'], ''),
       },
       {
         name: 'properties',
         label: 'Task Adapter Properties',
-        type: 'text',
+        type: null,
         required: false,
         visible: false,
         serialize: ({ values }) => propertiesFromValues(values),

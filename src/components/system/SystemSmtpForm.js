@@ -4,6 +4,7 @@ import {
   updateSystemDefaultSmtpAdapter,
 } from '../../apis/system';
 import { adapterPropertiesFields, propertiesFromValues } from './helpers';
+import { handleFormErrors } from '../../helpers';
 
 const dataSources = () => ({
   adapter: {
@@ -14,24 +15,24 @@ const dataSources = () => ({
 });
 
 const handleSubmit = () => values =>
-  updateSystemDefaultSmtpAdapter({ adapter: values.get('properties') });
+  updateSystemDefaultSmtpAdapter({ adapter: values.get('properties') }).then(
+    handleFormErrors('adapter'),
+  );
 
 const fields = () => ({ adapter }) => {
   if (adapter) {
-    const properties = adapterPropertiesFields(adapter);
-    return (
-      adapter && [
-        ...properties,
-        {
-          name: 'properties',
-          label: 'SMTP Adapter Properties',
-          type: 'text',
-          required: false,
-          visible: false,
-          serialize: ({ values }) => propertiesFromValues(values),
-        },
-      ]
-    );
+    const properties = adapterPropertiesFields({ adapterProperties: adapter });
+    return [
+      ...properties,
+      {
+        name: 'properties',
+        label: 'SMTP Adapter Properties',
+        type: 'text',
+        required: false,
+        visible: false,
+        serialize: ({ values }) => propertiesFromValues(values),
+      },
+    ];
   }
 };
 

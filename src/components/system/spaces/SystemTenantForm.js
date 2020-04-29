@@ -3,7 +3,9 @@ import { List, Map, get, getIn } from 'immutable';
 import { generateForm } from '../../form/Form';
 import {
   createTenant,
+  fetchSystemDefaultTaskDbAdapter,
   fetchTaskDbAdapters,
+  fetchTenant,
   updateTenant,
 } from '../../../apis/system';
 import { slugify } from '../../../helpers';
@@ -17,9 +19,13 @@ const TENANT_INCLUDES = 'details';
 
 const dataSources = ({ slug }) => ({
   tenant: {
-    fn: fetchSystemTenant,
+    fn: fetchTenant,
     params: slug && [{ slug, include: TENANT_INCLUDES }],
-    transform: result => result.space,
+    transform: result => result.tenant,
+  },
+  defaultTaskDbAdapter: {
+    fn: fetchSystemDefaultTaskDbAdapter,
+    params: [],
   },
   taskDbAdapters: {
     fn: fetchTaskDbAdapters,
@@ -37,16 +43,21 @@ const handleSubmit = ({ slug }) => values => {
   return slug ? updateTenant({ slug, tenant }) : createTenant({ tenant });
 };
 
+const getSpaceValue = (tenant, key) =>
+  tenant ? getIn(tenant, ['space', key], '') : '';
+
 const fields = ({ slug, adapter }) => ({
   tenant,
   taskDbAdapters,
+  defaultTaskDbAdapter,
   adapterProperties,
 }) => {
-  if (taskDbAdapters && adapterProperties) {
-    const taskAdapters = adapterPropertiesFields(
+  if (taskDbAdapters && defaultTaskDbAdapter && adapterProperties) {
+    const taskAdapters = adapterPropertiesFields({
       adapterProperties,
-      'taskAdapter',
-    );
+      defaultAdapter: defaultTaskDbAdapter,
+      prefix: 'taskAdapter',
+    });
 
     return (
       (!slug || tenant) && [
@@ -55,12 +66,13 @@ const fields = ({ slug, adapter }) => ({
           label: 'Name',
           type: 'text',
           required: true,
+          transient: !!slug,
           onChange: ({ values }, { setValue }) => {
             if (values.get('linked')) {
               setValue('slug', slugify(values.get('name')), false);
             }
           },
-          initialValue: get(tenant, 'name') || '',
+          initialValue: getSpaceValue(tenant, 'name'),
         },
         {
           name: 'slug',
@@ -71,7 +83,7 @@ const fields = ({ slug, adapter }) => ({
           onChange: (_bindings, { setValue }) => {
             setValue('linked', false);
           },
-          initialValue: get(tenant, 'slug') || '',
+          initialValue: getSpaceValue(tenant, 'slug'),
         },
         {
           name: 'linked',
@@ -84,30 +96,17 @@ const fields = ({ slug, adapter }) => ({
 
         ...(slug
           ? [
-              // These are fields that only apply to updating a tenant/space.
               {
-                name: 'sharedBundle',
-                label: 'Use Shared Bundle base directory?',
-                type: 'checkbox',
-                initialValue: tenant ? get(tenant, 'sharedBundle') : true,
-              },
-              {
-                name: 'sharedBundleBaseDirectory',
-                label: 'Shared Bundle Base Directory',
-                type: 'text',
-                visible: ({ values }) => values.get('sharedBundle'),
-                required: ({ values }) => slug && values.get('sharedBundle'),
-                initialValue: tenant
-                  ? get(tenant, 'sharedBundleBaseDirectory')
-                  : '',
-              },
-              {
-                name: 'sharedBundlePath',
-                label: 'Bundle Path',
-                type: 'text',
-                visible: ({ values }) => values.get('sharedBundle'),
-                required: ({ values }) => slug && values.get('sharedBundle'),
-                initialValue: tenant ? get(tenant, 'sharedBundlePath') : '',
+                name: 'space',
+                label: 'Space',
+                type: null,
+                visible: false,
+                serialize: ({ values }) => ({
+                  name: values.get('name'),
+                  sharedBundle: values.get('sharedBundle') ? 'true' : 'false',
+                  sharedBundleBase: values.get('sharedBundleBase'),
+                  bundlePath: values.get('bundlePath'),
+                }),
               },
             ]
           : [
@@ -191,6 +190,8 @@ const fields = ({ slug, adapter }) => ({
               createDatabase:
                 values.get('taskAdapter_type') === 'postgres'
                   ? values.get('taskAdapter_createDatabase')
+                    ? 'true'
+                    : 'false'
                   : undefined,
               properties: propertiesFromValues(values, 'taskAdapter'),
             };
@@ -231,7 +232,7 @@ const fields = ({ slug, adapter }) => ({
 };
 
 export const SystemTenantForm = generateForm({
-  formOptions: ['slug', 'adapter'],
+  formOptions: ['slug'],
   dataSources,
   fields,
   handleSubmit,

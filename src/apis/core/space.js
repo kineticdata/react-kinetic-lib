@@ -5,10 +5,15 @@ import { handleErrors, paramBuilder, headerBuilder } from '../http';
 export const fetchSpace = (options = {}) => {
   // Build URL and fetch the space.
   return axios
-    .get(`${bundle.apiLocation()}/space`, {
-      params: paramBuilder(options),
-      headers: headerBuilder(options),
-    })
+    .get(
+      options.slug
+        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${options.slug}`
+        : `${bundle.apiLocation()}/space`,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
     .then(response => ({ space: response.data.space }))
     .catch(handleErrors);
 };
@@ -20,10 +25,16 @@ export const updateSpace = (options = {}) => {
   }
 
   return axios
-    .put(`${bundle.apiLocation()}/space`, space, {
-      params: paramBuilder(options),
-      headers: headerBuilder(options),
-    })
+    .put(
+      options.slug
+        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${options.slug}`
+        : `${bundle.apiLocation()}/space`,
+      space,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
     .then(response => ({ space: response.data.space }))
     .catch(handleErrors);
 };

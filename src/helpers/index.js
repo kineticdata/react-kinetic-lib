@@ -289,3 +289,13 @@ export const buildAgentPath = options =>
   `${bundle.spaceLocation()}/app/components/agents/${
     options.agentSlug ? options.agentSlug : 'system'
   }`;
+
+export const handleFormErrors = key => result => {
+  const { error } = result;
+  if (error) {
+    throw (error.statusCode === 400 && error.message) ||
+      'There was an error while saving.';
+  }
+
+  return result[key];
+};

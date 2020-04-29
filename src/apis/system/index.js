@@ -10,23 +10,26 @@ export const fetchTenants = (options = {}) => {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
-    .then(response => ({ space: response.data.space }))
+    .then(response => ({
+      tenants: response.data.tenants,
+      nextPageToken: response.data.nextPageToken,
+    }))
     .catch(handleErrors);
 };
 
 export const fetchTenant = (options = {}) => {
-  const { spaceSlug } = options;
-  if (!spaceSlug) {
-    throw new Error('fetchTenant failed! The option "spaceSlug" is required.');
+  const { slug } = options;
+  if (!slug) {
+    throw new Error('fetchTenant failed! The option "slug" is required.');
   }
   // Build URL and fetch the space.
   return axios
-    .get(`/app/system-coordinator/api/v1/tenants/${spaceSlug}`, {
+    .get(`/app/system-coordinator/api/v1/tenants/${slug}`, {
       __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
-    .then(response => ({ space: response.data.space }))
+    .then(response => ({ tenant: response.data.tenant }))
     .catch(handleErrors);
 };
 
@@ -57,6 +60,22 @@ export const createTenant = (options = {}) => {
 
   return axios
     .post('/app/system-coordinator/api/v1/tenants', tenant, {
+      __bypassInitInterceptor: true,
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ tenant: response.data.tenant }))
+    .catch(handleErrors);
+};
+
+export const deleteTenant = (options = {}) => {
+  const { slug } = options;
+  if (!slug) {
+    throw new Error('createTenant failed! The option "slug" is required.');
+  }
+
+  return axios
+    .delete(`/app/system-coordinator/api/v1/tenants/${slug}`, {
       __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),

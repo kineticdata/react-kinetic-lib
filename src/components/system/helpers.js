@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+import { getIn, List } from 'immutable';
 
 export const propertiesFromAdapters = (taskDbAdapters = List()) =>
   taskDbAdapters.flatMap(adapter =>
@@ -22,27 +22,58 @@ export const propertiesFromValues = (values, prefix = '') => {
 export const formPropertyName = (...names) =>
   names.filter(n => n !== '').join('_');
 
-export const adapterPropertiesFields = (adapterProperties, prefix = '') =>
-  adapterProperties.map(properties => ({
-    name: formPropertyName(
-      prefix,
-      'properties',
-      properties.get('type'),
-      properties.get('name'),
-    ),
-    label: properties.get('label') || properties.get('name'),
-    visible: ({ values }) =>
-      values.get(formPropertyName(prefix, 'type')) === properties.get('type'),
-    type: properties.get('sensitive')
-      ? 'password'
-      : properties.has('options')
-      ? 'select'
-      : 'text',
-    helpText: properties.get('description'),
-    required: ({ values }) =>
-      values.get(formPropertyName(prefix, 'type')) === properties.get('type') &&
-      properties.get('required', false),
-    transient: true,
-    options: properties.get('options', undefined),
-    initialValue: properties.get('value', '') || '',
-  }));
+const getAdapterProperty = (adapter, propertyName) => {
+  const property = adapter
+    .getIn(['adapter', 'properties'], List())
+    .find(p => p.get('name') === propertyName);
+
+  return property ? property.get('value', null) : null;
+};
+
+const getPropertyValue = (property, defaultAdapter) => {
+  const defaultType = getIn(defaultAdapter, ['adapter', 'type'], null);
+  const type = property.get('type');
+  const propertyValue = property.get('value', '') || '';
+
+  if (defaultType && defaultType === type) {
+    const defaultProperty = getAdapterProperty(
+      defaultAdapter,
+      property.get('name'),
+    );
+
+    return defaultProperty || propertyValue || '';
+  } else {
+    return propertyValue;
+  }
+};
+
+export const adapterPropertiesFields = ({
+  adapterProperties,
+  defaultAdapter,
+  prefix = '',
+}) =>
+  adapterProperties.map(property => {
+    return {
+      name: formPropertyName(
+        prefix,
+        'properties',
+        property.get('type'),
+        property.get('name'),
+      ),
+      label: property.get('label') || property.get('name'),
+      visible: ({ values }) =>
+        values.get(formPropertyName(prefix, 'type')) === property.get('type'),
+      type: property.get('sensitive')
+        ? 'password'
+        : property.has('options')
+        ? 'select'
+        : 'text',
+      helpText: property.get('description'),
+      required: ({ values }) =>
+        values.get(formPropertyName(prefix, 'type')) === property.get('type') &&
+        property.get('required', false),
+      transient: true,
+      options: property.get('options', undefined),
+      initialValue: getPropertyValue(property, defaultAdapter),
+    };
+  });
