@@ -11,55 +11,41 @@ import {
 
 const USER_INCLUDES = 'attributesMap,memberships,profileAttributesMap';
 
-const fetchSystemSpaceUser = () =>
-  Promise.resolve({
-    user: {
-      allowedIps: '',
-      displayName: 'Fake User',
-      email: 'fake.user@kineticdata.com',
-      enabled: true,
-      preferredLocale: null,
-      spaceAdmin: false,
-      timezone: null,
-      username: 'fake.user@kineticdata.com',
-      createdAt: '2019-08-19T20:30:47.818Z',
-      createdBy: 'admin',
-      updatedAt: '2019-11-19T20:30:47.818Z',
-      updatedBy: 'matt',
-    },
-  });
-
-const dataSources = ({ username, system, spaceSlug }) => ({
+const dataSources = ({ username, spaceSlug }) => ({
   locales: {
     fn: fetchLocales,
-    params: !system && [],
+    params: !spaceSlug && [],
     transform: result => result.data.locales,
   },
   timezones: {
     fn: fetchTimezones,
-    params: !system && [],
+    params: !spaceSlug && [],
     transform: result => result.data.timezones,
   },
   user: {
-    fn: system ? fetchSystemSpaceUser : fetchUser,
+    fn: fetchUser,
     params: username && [{ username, include: USER_INCLUDES, spaceSlug }],
     transform: result => result.user,
   },
   attributeDefinitions: {
     fn: fetchAttributeDefinitions,
-    params: !system && [{ attributeType: 'userAttributeDefinitions' }],
+    params: !spaceSlug && [{ attributeType: 'userAttributeDefinitions' }],
     transform: result => result.attributeDefinitions,
   },
   profileAttributeDefinitions: {
     fn: fetchAttributeDefinitions,
-    params: !system && [{ attributeType: 'userProfileAttributeDefinitions' }],
+    params: !spaceSlug && [
+      { attributeType: 'userProfileAttributeDefinitions' },
+    ],
     transform: result => result.attributeDefinitions,
   },
 });
 
-const handleSubmit = ({ username }) => values => {
+const handleSubmit = ({ username, spaceSlug }) => values => {
   const user = values.toJS();
-  return username ? updateUser({ username, user }) : createUser({ user });
+  return username
+    ? updateUser({ spaceSlug, username, user })
+    : createUser({ spaceSlug, user });
 };
 
 const fields = ({ username }) => ({ user }) =>

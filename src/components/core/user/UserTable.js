@@ -2,35 +2,15 @@ import React from 'react';
 import { generateTable } from '../../table/Table';
 import { fetchUsers, generateCESearchParams } from '../../../apis';
 
-const users = [
-  {
-    allowedIps: '',
-    displayName: 'Fake User',
-    email: 'fake.user@kineticdata.com',
-    enabled: true,
-    preferredLocale: null,
-    spaceAdmin: false,
-    timezone: null,
-    username: 'fake.user@kineticdata.com',
-    createdAt: '2019-08-19T20:30:47.818Z',
-    createdBy: 'admin',
-    updatedAt: '2019-11-19T20:30:47.818Z',
-    updatedBy: 'matt',
-  },
-];
-const fetchSystemUsers = () => Promise.resolve({ users });
-
-const dataSource = ({ system }) => ({
-  fn: system ? fetchSystemUsers : fetchUsers,
-  params: paramData =>
-    system
-      ? [{ include: 'details' }]
-      : [
-          {
-            ...generateCESearchParams(paramData),
-            include: 'details',
-          },
-        ],
+const dataSource = ({ spaceSlug }) => ({
+  fn: fetchUsers,
+  params: paramData => [
+    {
+      spaceSlug,
+      ...generateCESearchParams(paramData),
+      include: 'details',
+    },
+  ],
   transform: result => ({
     data: result.users,
     nextPageToken: result.nextPageToken,
