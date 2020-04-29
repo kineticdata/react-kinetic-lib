@@ -5,7 +5,7 @@ import { WEB_API_METHODS } from './WebApiForm';
 const dataSource = ({ kappSlug }) => ({
   fn: fetchWebApis,
   clientSideSearch: true,
-  params: () => [{ kappSlug }],
+  params: () => [{ kappSlug, include: 'details' }],
   transform: result => ({
     data: result.webApis,
   }),
@@ -30,6 +30,24 @@ const columns = [
         value: el,
         label: el,
       })),
+  },
+  {
+    value: 'createdAt',
+    title: 'Created',
+    sortable: true,
+  },
+  {
+    value: 'createdBy',
+    title: 'Created By',
+  },
+  {
+    value: 'updatedAt',
+    title: 'Updated',
+    sortable: true,
+  },
+  {
+    value: 'updatedBy',
+    title: 'Updated By',
   },
 ];
 
