@@ -192,7 +192,7 @@ const fields = ({ username }) => ({ user }) =>
   ];
 
 export const UserForm = generateForm({
-  formOptions: ['username', 'system', 'spaceSlug'],
+  formOptions: ['username', 'spaceSlug'],
   dataSources,
   fields,
   handleSubmit,
