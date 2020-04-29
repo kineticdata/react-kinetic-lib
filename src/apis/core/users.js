@@ -106,7 +106,7 @@ export const deleteUser = (options = {}) => {
   return axios
     .delete(
       spaceSlug
-        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${spaceSlug}/users`
+        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${spaceSlug}/users/${username}`
         : `${bundle.apiLocation()}/users/${username}`,
       {
         params: paramBuilder(options),
