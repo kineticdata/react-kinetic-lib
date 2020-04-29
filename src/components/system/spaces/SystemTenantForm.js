@@ -61,56 +61,91 @@ const fields = ({ slug, adapter }) => ({
 
     return (
       (!slug || tenant) && [
-        {
-          name: 'name',
-          label: 'Name',
-          type: 'text',
-          required: true,
-          transient: !!slug,
-          onChange: ({ values }, { setValue }) => {
-            if (values.get('linked')) {
-              setValue('slug', slugify(values.get('name')), false);
-            }
-          },
-          initialValue: getSpaceValue(tenant, 'name'),
-        },
-        {
-          name: 'slug',
-          label: 'Slug',
-          type: 'text',
-          required: true,
-          enabled: !slug,
-          onChange: (_bindings, { setValue }) => {
-            setValue('linked', false);
-          },
-          initialValue: getSpaceValue(tenant, 'slug'),
-        },
-        {
-          name: 'linked',
-          label: 'Linked',
-          type: 'checkbox',
-          transient: true,
-          initialValue: !tenant,
-          visible: false,
-        },
-
         ...(slug
           ? [
               {
-                name: 'space',
-                label: 'Space',
-                type: null,
-                visible: false,
-                serialize: ({ values }) => ({
-                  name: values.get('name'),
-                  sharedBundle: values.get('sharedBundle') ? 'true' : 'false',
-                  sharedBundleBase: values.get('sharedBundleBase'),
-                  bundlePath: values.get('bundlePath'),
-                }),
+                name: 'authenticationSecret',
+                label: 'Authentication Secret',
+                type: 'text',
+                required: false,
+              },
+              {
+                name: 'authenticationSecret',
+                label: 'Authentication Secret',
+                type: 'password',
+                visible: ({ values }) =>
+                  values.get('changeAuthenticationSecret'),
+                transient: ({ values }) =>
+                  !values.get('changeAuthenticationSecret'),
+              },
+              {
+                name: 'changeAuthenticationSecret',
+                label: 'Change Authentication Secret',
+                type: 'checkbox',
+                transient: true,
+                initialValue: false,
+                onChange: ({ values }, { setValue }) => {
+                  if (values.get('authenticationSecret') !== '') {
+                    setValue('authenticationSecret', '');
+                  }
+                },
+              },
+              {
+                name: 'replicas',
+                label: 'Task Replica Count',
+                type: 'text',
+                required: true,
+                initialValue: getIn(tenant, ['deployment', 'replicas'], 1),
+                // pattern: /^\d+$/,
+                // patternMessage:
+                //   'You must provide a number of replicas desired.',
+                serialize: ({ values }) => {
+                  const replicas = parseInt(values.get('replicas'));
+                  return replicas;
+                },
+              },
+              {
+                name: 'image',
+                label: 'Task Image',
+                type: 'text',
+                required: true,
+                initialValue: get(tenant, 'taskImage'),
               },
             ]
           : [
               // These are fields that only apply to creating a new tenant/space.
+              {
+                name: 'name',
+                label: 'Name',
+                type: 'text',
+                required: true,
+                transient: !!slug,
+                onChange: ({ values }, { setValue }) => {
+                  if (values.get('linked')) {
+                    setValue('slug', slugify(values.get('name')), false);
+                  }
+                },
+                initialValue: getSpaceValue(tenant, 'name'),
+              },
+              {
+                name: 'slug',
+                label: 'Slug',
+                type: 'text',
+                required: true,
+                enabled: !slug,
+                onChange: (_bindings, { setValue }) => {
+                  setValue('linked', false);
+                },
+                initialValue: getSpaceValue(tenant, 'slug'),
+              },
+              {
+                name: 'linked',
+                label: 'Linked',
+                type: 'checkbox',
+                transient: true,
+                initialValue: !tenant,
+                visible: false,
+              },
               {
                 name: 'username',
                 label: 'Username',
@@ -176,56 +211,55 @@ const fields = ({ slug, adapter }) => ({
                   };
                 },
               },
+              {
+                name: 'taskAdapter',
+                label: 'Task Adapter',
+                type: 'text',
+                required: false,
+                visible: false,
+                serialize: ({ values }) => {
+                  return {
+                    type: values.get('taskAdapter_type'),
+                    createDatabase:
+                      values.get('taskAdapter_type') === 'postgres'
+                        ? values.get('taskAdapter_createDatabase')
+                          ? 'true'
+                          : 'false'
+                        : undefined,
+                    properties: propertiesFromValues(values, 'taskAdapter'),
+                  };
+                },
+              },
+              {
+                name: 'taskAdapter_type',
+                label: 'Task Adapter',
+                type: 'select',
+                required: true,
+                transient: true,
+                options: ({ taskDbAdapters }) =>
+                  taskDbAdapters.map(adapter =>
+                    Map({
+                      label: adapter.get('name'),
+                      value: adapter.get('type'),
+                    }),
+                  ),
+                initialValue: slug
+                  ? get(tenant, ['taskAdapter', 'type'], 'postgres')
+                  : adapter,
+              },
+              {
+                name: 'taskAdapter_createDatabase',
+                label: 'Auto-Create Database',
+                type: 'checkbox',
+                visible: ({ values }) =>
+                  values.get('taskAdapter_type') === 'postgres',
+                transient: true,
+                initialValue: slug
+                  ? get(tenant, ['taskAdapter', 'type'], true)
+                  : true,
+              },
+              ...taskAdapters.toJS(),
             ]),
-
-        {
-          name: 'taskAdapter',
-          label: 'Task Adapter',
-          type: 'text',
-          required: false,
-          visible: false,
-          serialize: ({ values }) => {
-            return {
-              type: values.get('taskAdapter_type'),
-              createDatabase:
-                values.get('taskAdapter_type') === 'postgres'
-                  ? values.get('taskAdapter_createDatabase')
-                    ? 'true'
-                    : 'false'
-                  : undefined,
-              properties: propertiesFromValues(values, 'taskAdapter'),
-            };
-          },
-        },
-        {
-          name: 'taskAdapter_type',
-          label: 'Task Adapter',
-          type: 'select',
-          required: true,
-          transient: true,
-          options: ({ taskDbAdapters }) =>
-            taskDbAdapters.map(adapter =>
-              Map({
-                label: adapter.get('name'),
-                value: adapter.get('type'),
-              }),
-            ),
-          initialValue: slug
-            ? get(tenant, ['taskAdapter', 'type'], 'postgres')
-            : adapter,
-        },
-        {
-          name: 'taskAdapter_createDatabase',
-          label: 'Auto-Create Database',
-          type: 'checkbox',
-          visible: ({ values }) =>
-            values.get('taskAdapter_type') === 'postgres',
-          transient: true,
-          initialValue: slug
-            ? get(tenant, ['taskAdapter', 'type'], true)
-            : true,
-        },
-        ...taskAdapters.toJS(),
       ]
     );
   }
