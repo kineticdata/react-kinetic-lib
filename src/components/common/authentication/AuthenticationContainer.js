@@ -1,5 +1,13 @@
 import { Component } from 'react';
-import { takeEvery, select, call, put } from 'redux-saga/effects';
+import {
+  takeEvery,
+  select,
+  call,
+  put,
+  take,
+  delay,
+  race,
+} from 'redux-saga/effects';
 import { isFunction } from 'lodash-es';
 import {
   action,
@@ -15,8 +23,10 @@ import {
   retrieveJwt,
   singleSignOn,
   fetchSpaMeta,
+  systemLogin,
 } from '../../../apis';
 import { socketIdentify } from '../../../apis/socket';
+import { refreshSystemToken } from '../../../apis/system';
 
 const defaultLoginProps = {
   error: null,
@@ -43,15 +53,18 @@ regHandlers({
       })
       .set('login', defaultLoginProps),
   SET_INITIALIZED: (state, action) =>
-    state.mergeIn(['session'], {
-      csrfToken: action.payload.csrfToken,
-      initialized: true,
-      loggedIn: !!action.payload.token,
-      securityStrategies: action.payload.securityStrategies,
-      socket: action.payload.socket,
-      spaceSlug: action.payload.spaceSlug,
-      token: action.payload.token,
-    }),
+    state
+      .mergeIn(['session'], {
+        csrfToken: action.payload.csrfToken,
+        initialized: true,
+        loggedIn: !!action.payload.token,
+        securityStrategies: action.payload.securityStrategies,
+        socket: action.payload.socket,
+        spaceSlug: action.payload.spaceSlug,
+        token: action.payload.token,
+        system: action.payload.system,
+      })
+      .set('login', defaultLoginProps),
 
   SET_ERROR: (state, action) =>
     state.mergeIn(['login'], {
@@ -68,15 +81,54 @@ regHandlers({
   TIMEOUT: state => state.setIn(['session', 'token'], null),
 });
 
+regSaga('WATCH_SYSTEM_AUTHENTICATION', function*() {
+  yield take('LOGIN_SYSTEM');
+  let pollingActive = false;
+  while (true) {
+    const { authenticated, refresh } = yield race({
+      authenticated: take('SET_AUTHENTICATED'),
+      refresh: delay(3000),
+      isLoggingOut: take('LOGOUT'),
+      isTimingOut: take('TIMEOUT'),
+    });
+
+    if (authenticated) {
+      // The authentication event occurred, so now we want to periodically
+      // refresh the token.
+      pollingActive = true;
+    } else if (refresh && pollingActive) {
+      // The refresh event occurred, refresh the token.
+      const { error, token } = yield call(refreshSystemToken);
+      if (error) {
+        yield put(action('TIMEOUT'));
+      } else {
+        yield put(action('SET_AUTHENTICATED', { token }));
+      }
+    } else {
+      // Logging out or timing out happened to stop refreshing.
+      pollingActive = false;
+    }
+  }
+});
+
 regSaga(
   takeEvery('LOGIN', function*({ payload }) {
     try {
+      const system = yield select(state => state.getIn(['session', 'system']));
       const { username, password } = yield select(state => state.get('login'));
-      const { error } = yield call(login, { username, password });
+
+      console.log(username, password);
+      const { error, token: systemToken } = yield call(
+        system ? systemLogin : login,
+        {
+          username,
+          password,
+        },
+      );
       if (error) {
         yield put({ type: 'SET_ERROR', payload: error.message });
       } else {
-        const token = yield call(retrieveJwt);
+        const token = system ? systemToken : yield call(retrieveJwt);
         yield put({
           type: 'SET_AUTHENTICATED',
           payload: { token, callback: payload },
@@ -91,7 +143,6 @@ regSaga(
 regSaga(
   takeEvery('SINGLE_SIGN_ON', function*({ payload: { callback, spaceSlug } }) {
     try {
-      const socket = yield select(state => state.getIn(['session', 'socket']));
       const { error } = yield call(singleSignOn, spaceSlug, {
         width: 770,
         height: 750,
@@ -141,8 +192,10 @@ regSaga(
 regSaga(
   takeEvery('LOGOUT_START', function*({ payload }) {
     try {
+      const system = yield select(state => state.getIn(['session', 'system']));
       const loggedIn = yield select(state => state.getIn(['session', 'token']));
-      if (loggedIn) {
+
+      if (!system && loggedIn) {
         yield call(logoutDirect);
       }
       yield put(action('LOGOUT'));
@@ -192,7 +245,13 @@ const getToken = () => store.getState().getIn(['session', 'token']);
 
 export class AuthenticationComponent extends Component {
   componentDidMount() {
-    dispatch('INITIALIZE', { socket: !this.props.noSocket });
+    if (this.props.system) {
+      dispatch('SET_INITIALIZED', { system: true, socket: false });
+    } else {
+      dispatch('INITIALIZE', {
+        socket: !this.props.noSocket,
+      });
+    }
   }
 
   render() {
@@ -213,7 +272,7 @@ export class AuthenticationComponent extends Component {
         onChangePassword,
         onLogin,
         onSso:
-          securityStrategies.length > 0
+          securityStrategies && securityStrategies.length > 0
             ? callback => dispatch('SINGLE_SIGN_ON', { callback, spaceSlug })
             : null,
         ...login,

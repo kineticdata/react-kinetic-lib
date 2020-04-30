@@ -222,11 +222,33 @@ export const updateSystemDefaultSmtpAdapter = (options = {}) => {
       '/app/system-coordinator/api/v1/platform/default-smtp-adapter',
       adapter,
       {
-        __bypassInitInterceptor: true,
         params: paramBuilder(options),
         headers: headerBuilder(options),
       },
     )
     .then(response => ({ adapter: response.data.adapter }))
+    .catch(handleErrors);
+};
+
+export const systemLogin = (options = {}) => {
+  const { username, password } = options;
+
+  return axios
+    .post('/app/system-coordinator/login', { username, password }, {})
+    .then(response => response.data)
+    .catch(handleErrors);
+};
+
+export const refreshSystemToken = (options = {}) => {
+  return axios
+    .post(
+      '/app/system-coordinator/refresh',
+      {},
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => response.data)
     .catch(handleErrors);
 };
