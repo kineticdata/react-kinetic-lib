@@ -2,20 +2,17 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-export const CoreModalHeader = props =>
-  <div className="kd-modal-header">
-    {props.children}
-  </div>;
+export const CoreModalHeader = props => (
+  <div className="kd-modal-header">{props.children}</div>
+);
 
-export const CoreModalBody = props =>
-  <div className="kd-modal-body">
-    {props.children}
-  </div>;
+export const CoreModalBody = props => (
+  <div className="kd-modal-body">{props.children}</div>
+);
 
-export const CoreModalFooter = props =>
-  <div className="kd-modal-footer">
-    {props.children}
-  </div>;
+export const CoreModalFooter = props => (
+  <div className="kd-modal-footer">{props.children}</div>
+);
 
 const sizes = {
   sm: '30%',
