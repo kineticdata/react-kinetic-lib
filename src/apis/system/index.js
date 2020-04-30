@@ -1,12 +1,10 @@
 import axios from 'axios';
 import { handleErrors, headerBuilder, paramBuilder } from '../http';
-import { bundle } from '../../helpers';
 
 export const fetchTenants = (options = {}) => {
   // Build URL and fetch the space.
   return axios
     .get('/app/system-coordinator/api/v1/tenants', {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -25,7 +23,6 @@ export const fetchTenant = (options = {}) => {
   // Build URL and fetch the space.
   return axios
     .get(`/app/system-coordinator/api/v1/tenants/${slug}`, {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -44,7 +41,6 @@ export const updateTenant = (options = {}) => {
 
   return axios
     .put(`/app/system-coordinator/api/v1/tenants/${slug}`, tenant, {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -60,7 +56,6 @@ export const createTenant = (options = {}) => {
 
   return axios
     .post('/app/system-coordinator/api/v1/tenants', tenant, {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -85,17 +80,28 @@ export const deleteTenant = (options = {}) => {
 };
 
 export const fetchSystem = (options = {}) => {
-  const { spaceSlug } = options;
-  if (!spaceSlug) {
-    throw new Error('fetchTenant failed! The option "spaceSlug" is required.');
-  }
-  // Build URL and fetch the space.
+  // Build URL and fetch the system config.
   return axios
-    .get(`/app/system-coordinator/api/v1/tenants/${spaceSlug}`, {
+    .get('/app/system-coordinator/components/core/app/api/v1/config', {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
-    .then(response => ({ space: response.data.space }))
+    .then(response => ({ system: response.data }))
+    .catch(handleErrors);
+};
+
+export const updateSystem = (options = {}) => {
+  const { system } = options;
+  if (!system) {
+    throw new Error('updateSystem failed! The option "system" is required.');
+  }
+  // Build URL and fetch the system config.
+  return axios
+    .put('/app/system-coordinator/components/core/app/api/v1/config', system, {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ system: response.data }))
     .catch(handleErrors);
 };
 
