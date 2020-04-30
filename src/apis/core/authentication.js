@@ -26,12 +26,15 @@ const checkedOrigin = process.env.REACT_APP_API_HOST
   ? window.location.origin
   : null;
 
+const clientId = process.env.REACT_APP_OAUTH_CLIENT_ID || 'system';
+
 export const retrieveJwt = () =>
   new Promise(resolve => {
     const iframe = document.createElement('iframe');
     iframe.src =
       bundle.spaceLocation() +
-      '/app/oauth/authorize?grant_type=implicit&response_type=token&client_id=system';
+      '/app/oauth/authorize?grant_type=implicit&response_type=token&client_id=' +
+      clientId;
     iframe.title = 'oauth jwt iframe';
     iframe.style.cssText = 'display: none';
 

@@ -125,7 +125,7 @@ const columns = [
 ];
 
 export const RunTable = generateTable({
-  tableOptions: ['sourceName', 'sourceGroup', 'treeName'],
+  tableOptions: ['sourceName', 'sourceGroup', 'treeName', 'sourceId'],
   columns,
   dataSource,
 });

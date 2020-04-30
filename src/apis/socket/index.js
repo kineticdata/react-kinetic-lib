@@ -1,6 +1,9 @@
+import { call, takeEvery } from 'redux-saga/effects';
 import { Socket, SOCKET_STATUS } from './socket';
 import { dispatch, dispatcher, regHandlers } from '../../store';
 import { bundle } from '../../helpers';
+import { regSaga } from '../../saga';
+import { authInterceptor } from '../../index';
 
 regHandlers({
   SET_SOCKET_STATUS: (state, action) =>
@@ -28,6 +31,23 @@ const createWsUri = () => {
     return `${protocol}://${host}${path}`;
   }
 };
+
+// This handles situations where the socket goes to 'unidenfitied' which means
+// the token we're using to reconnect is no longer valid.
+regSaga(
+  takeEvery('SET_SOCKET_STATUS', function*({ payload }) {
+    if (payload === SOCKET_STATUS.UNIDENTIFIED) {
+      try {
+        yield call(authInterceptor.authenticate);
+      } catch (e) {
+        console.warn(
+          'There was a problem attempting to authenticate and reconnect.',
+          e,
+        );
+      }
+    }
+  }),
+);
 
 export const socket = new Socket().on(
   'status',

@@ -84,10 +84,22 @@ export class Socket {
     this.socket.onmessage = e => this.receive(e.data);
   }
 
+  reconnect(token, uri) {
+    this.close();
+    this.token = token;
+    if (uri) {
+      this.uri = uri;
+    }
+
+    this.setStatus(SOCKET_STATUS.CONNECTING);
+    this.doConnect();
+    return this;
+  }
+
   close() {
     this.setStatus(SOCKET_STATUS.CLOSED);
     this.socket.close();
-
+    clearInterval(this.heartbeatInterval);
     return this;
   }
 

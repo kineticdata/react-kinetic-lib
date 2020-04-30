@@ -1,8 +1,8 @@
 import React from 'react';
 import { Typeahead } from './Typeahead';
 
-const searchNodes = ({ nodes, tasks }) => (field, value) =>
-  Promise.resolve({
+const searchNodes = ({ nodes, tasks }) => (field, value, callback) =>
+  callback({
     suggestions: nodes
       .toList()
       .map(node => [node, tasks.get(node.definitionId)])
@@ -17,6 +17,11 @@ const searchNodes = ({ nodes, tasks }) => (field, value) =>
 const pairToValue = ([node, task] = []) => (node && node.name) || '';
 
 const getStatusProps = props => ({
+  info: props.short
+    ? 'Type to find a node.'
+    : props.pending
+    ? 'Searching…'
+    : null,
   warning: props.error
     ? 'There was an error searching nodes.'
     : props.empty
@@ -27,16 +32,13 @@ const getStatusProps = props => ({
 export const NodeSelect = props => (
   <Typeahead
     components={props.components || {}}
-    textMode={props.textMode}
     multiple={props.multiple}
     search={searchNodes(props)}
     minSearchLength={props.minSearchLength}
-    alwaysRenderSuggestions={props.alwaysRenderSuggestions}
-    getSuggestionLabel={pairToValue}
     getSuggestionValue={pairToValue}
     getStatusProps={getStatusProps}
-    highlightFirstSuggestion={false}
     value={props.value}
+    noAutoHighlight
     onChange={pair => props.onChange(pair && pair.first())}
     onFocus={props.onFocus}
     onHighlight={pair => props.onHighlight(pair && pair.first())}

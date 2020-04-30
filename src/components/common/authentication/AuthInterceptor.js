@@ -13,6 +13,7 @@ export default class AuthInterceptor {
     this.cancelledSelector = cancelledSelector;
     this.authPromise = null;
     this.handleRejected = this.handleRejected.bind(this);
+    this.authenticate = this.authenticate.bind(this);
   }
 
   authenticate() {

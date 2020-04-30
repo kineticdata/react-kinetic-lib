@@ -83,26 +83,23 @@ be upgraded together.
 ##### eslint
 
 All of the following are installed together (see the eslint-config-react-app link)
-to enable linting and should be upgraded together as well.
+to enable linting and should be upgraded together as well. The first two are dependencies
+of react-scripts and would be installed anyways but we specify them explicitly to ensure
+gatsby's dependencies don't get lifted into the root and break the react-scripts preflight
+check.
 
 ```javascript static
-"babel-eslint": "9.x",
-"eslint": "5.x",
+"babel-eslint": "9.0.0",
+"eslint": "5.1.2",
 "eslint-config-react-app": "^3.0.8",
-"eslint-plugin-flowtype": "2.x",
-"eslint-plugin-import": "2.x",
-"eslint-plugin-jsx-a11y": "6.x",
-"eslint-plugin-react": "7.x",
 ```
 
 ##### testing
 
 ```javascript static
-"babel-jest": "^24.5.0",
 "enzyme": "^3.9.0",
 "enzyme-adapter-react-16": "^1.9.1",
 "enzyme-to-json": "^3.3.5",
-"jest": "^23.0.0",
 "react-addons-test-utils": "^15.6.2",
 ```
 
