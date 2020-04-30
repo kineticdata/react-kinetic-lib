@@ -165,6 +165,8 @@ const fields = ({ username }) => ({ user }) =>
       options: ({ attributeDefinitions }) => attributeDefinitions,
       initialValue: get(user, 'attributesMap'),
       placeholder: 'There are no attributes configured',
+      helpText:
+        'Attributes are only modifiable by space admins and are typically used to store variables that a user can not change (e.g. Manager).',
     },
     {
       name: 'profileAttributesMap',
@@ -174,6 +176,8 @@ const fields = ({ username }) => ({ user }) =>
       options: ({ profileAttributeDefinitions }) => profileAttributeDefinitions,
       initialValue: get(user, 'profileAttributesMap'),
       placeholder: 'There are no profile attributes configured',
+      helpText:
+        'Profile Attributes are typically used to store variables that the user has access to change (e.g. Phone Number).',
     },
     {
       name: 'memberships',
