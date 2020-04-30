@@ -116,8 +116,6 @@ regSaga(
     try {
       const system = yield select(state => state.getIn(['session', 'system']));
       const { username, password } = yield select(state => state.get('login'));
-
-      console.log(username, password);
       const { error, token: systemToken } = yield call(
         system ? systemLogin : login,
         {
