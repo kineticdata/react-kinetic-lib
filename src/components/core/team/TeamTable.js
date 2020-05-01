@@ -6,7 +6,7 @@ const dataSource = () => ({
   params: paramData => [
     {
       ...generateCESearchParams(paramData),
-      include: 'details',
+      include: 'authorization,details',
     },
   ],
   transform: result => ({

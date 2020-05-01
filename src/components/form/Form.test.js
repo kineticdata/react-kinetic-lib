@@ -120,5 +120,30 @@ describe('validateFields', () => {
         List(['Invalid constraint']),
       );
     });
+
+    test('constraint returns string', () => {
+      const field = Field({
+        name: 'First Name',
+        required: true,
+        value: 'Hello',
+        constraint: () => 'variable error message',
+      });
+      expect(validateField({})(field).errors).toEqual(
+        List(['variable error message']),
+      );
+    });
+
+    test('constraint returns empty string uses constraint message', () => {
+      const field = Field({
+        name: 'First Name',
+        required: true,
+        value: 'Hello',
+        constraint: () => '',
+        constraintMessage: 'Testing Invalid',
+      });
+      expect(validateField({})(field).errors).toEqual(
+        List(['Testing Invalid']),
+      );
+    });
   });
 });

@@ -32,6 +32,7 @@ const getStatusProps = props => ({
 export const NodeSelect = props => (
   <Typeahead
     components={props.components || {}}
+    disabled={props.disabled}
     multiple={props.multiple}
     search={searchNodes(props)}
     minSearchLength={props.minSearchLength}

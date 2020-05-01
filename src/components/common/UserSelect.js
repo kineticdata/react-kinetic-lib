@@ -66,6 +66,7 @@ const getStatusProps = props => ({
 export const UserSelect = props => (
   <Typeahead
     components={props.components || {}}
+    disabled={props.disabled}
     multiple={props.multiple}
     custom={props.allowNew && valueToCustomUser}
     search={searchUsers}

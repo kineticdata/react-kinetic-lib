@@ -24,7 +24,7 @@ const securityEndpoints = {
 const dataSources = ({ slug, kappSlug }) => ({
   webApi: {
     fn: fetchWebApi,
-    params: slug && [{ slug, kappSlug, include: 'securityPolicies' }],
+    params: slug && [{ slug, kappSlug, include: 'details,securityPolicies' }],
     transform: result => result.webApi,
   },
   securityPolicyDefinitions: {

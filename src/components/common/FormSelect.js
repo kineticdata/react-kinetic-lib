@@ -82,6 +82,7 @@ const getStatusProps = props => ({
 export const FormSelect = props => (
   <Typeahead
     components={props.components || {}}
+    disabled={props.disabled}
     textMode={props.textMode}
     multiple={props.multiple}
     search={searchForms(props)}

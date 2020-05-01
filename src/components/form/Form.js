@@ -69,10 +69,19 @@ export const checkPattern = field =>
     ? List([field.patternMessage])
     : List();
 
-export const checkConstraint = bindings => field =>
-  field.constraint && !field.constraint(bindings)
-    ? List([field.constraintMessage])
-    : List();
+export const checkConstraint = bindings => field => {
+  if (field.constraint) {
+    const result = field.constraint(bindings);
+    if (!result) {
+      return List([field.constraintMessage]);
+    } else if (typeof result === 'string') {
+      return List([result]);
+    }
+  }
+  // Return no errors if there was no constraint or if the constraint did not
+  // evaluate to false or an error string.
+  return List();
+};
 
 export const validateField = bindings => field =>
   field.set(
@@ -494,6 +503,13 @@ const computeFieldSet = (fields, fieldSetProp) => {
   );
 };
 
+const evaluateReadOnly = (readOnlyProp, bindings) =>
+  typeof readOnlyProp === 'boolean'
+    ? readOnlyProp
+    : typeof readOnlyProp === 'function'
+    ? readOnlyProp(bindings)
+    : false;
+
 class FormImplComponent extends Component {
   focusRef = createRef();
 
@@ -549,6 +565,7 @@ class FormImplComponent extends Component {
       fieldSet,
       formKey,
       formState,
+      readOnly,
     } = this.props;
     const bindings = formState ? formState.bindings : {};
     const initialized = formState ? !!formState.fields : false;
@@ -569,7 +586,7 @@ class FormImplComponent extends Component {
       )
         .filter(fieldConfig => fieldConfig.component)
         .map(fieldConfig => fieldConfig.component);
-
+      const readOnlyResult = evaluateReadOnly(readOnly, bindings);
       const computedFieldSet = computeFieldSet(fields, fieldSet);
       form = (
         <FormLayout
@@ -590,7 +607,7 @@ class FormImplComponent extends Component {
                       ? this.focusRef
                       : null
                   }
-                  {...getFieldComponentProps(field)}
+                  {...getFieldComponentProps(field, readOnlyResult)}
                 />
               ) : null,
             ];
@@ -600,15 +617,17 @@ class FormImplComponent extends Component {
             error && <FormError error={error} clear={clearError(formKey)} />
           }
           buttons={
-            <FormButtons
-              formOptions={formOptions}
-              reset={onReset(formKey)}
-              submit={onSubmit(formKey, fieldSet)}
-              submitting={submitting}
-              dirty={dirty}
-              error={error}
-              clearError={clearError(formKey)}
-            />
+            !readOnlyResult && (
+              <FormButtons
+                formOptions={formOptions}
+                reset={onReset(formKey)}
+                submit={onSubmit(formKey, fieldSet)}
+                submitting={submitting}
+                dirty={dirty}
+                error={error}
+                clearError={clearError(formKey)}
+              />
+            )
           }
           bindings={bindings}
           meta={fields.map(field =>
@@ -652,6 +671,7 @@ export const generateForm = ({
     onSave={configurationProps.onSave}
     onError={configurationProps.onError}
     uncontrolled={configurationProps.uncontrolled}
+    readOnly={configurationProps.readOnly}
   >
     {configurationProps.children}
   </Form>

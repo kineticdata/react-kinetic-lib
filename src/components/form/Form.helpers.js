@@ -232,9 +232,9 @@ export const getComponentName = field =>
         .join('') + 'Field'
     : null;
 
-export const getFieldComponentProps = field => ({
+export const getFieldComponentProps = (field, readOnly) => ({
   dirty: field.dirty,
-  enabled: field.enabled,
+  enabled: readOnly ? false : field.enabled,
   errors: field.errors,
   focused: field.focused,
   helpText: field.helpText,
