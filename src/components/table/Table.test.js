@@ -1,6 +1,6 @@
 import React from 'react';
 import { KineticLib } from '@kineticdata/react';
-import { render } from 'enzyme';
+import { render, mount } from 'enzyme';
 import { List, Map } from 'immutable';
 import { users } from '../../docz/fixtures';
 import { DefaultTableConfig } from './defaults';
@@ -17,6 +17,7 @@ import {
   buildTableFooterCells,
   extractColumnComponents,
   generateColumns,
+  generateTable,
 } from './Table';
 
 const buildProps = props => {
@@ -24,7 +25,80 @@ const buildProps = props => {
   return props;
 };
 
+const dataSource = ({ results = {} }) => ({
+  fn: () => Promise.resolve({ mock: results }),
+  params: () => [],
+  transform: result => ({
+    data: result.mock,
+    nextPageToken: result.nextPageToken,
+  }),
+});
+
+const columns = [
+  {
+    value: 'createdAt',
+    label: 'Created At',
+    filter: 'startsWith',
+    type: 'text',
+    sortable: true,
+  },
+  {
+    value: 'createdBy',
+    label: 'Created By',
+    filter: 'startsWith',
+    type: 'text',
+    sortable: false,
+  },
+  {
+    value: 'createdBy',
+    label: 'Created By',
+    filter: 'equals',
+    type: 'text',
+    sortable: false,
+  },
+];
+
+const MockTable = generateTable({
+  columns,
+  dataSource,
+  tableOptions: ['results'],
+});
+
+const getComponent = state => (
+  <KineticLib system>
+    <MockTable results={state.results}>
+      {({ initialized, table }) => {
+        return <div>{table}</div>;
+      }}
+    </MockTable>
+  </KineticLib>
+);
+
+const flushPromises = () => new Promise(setImmediate);
+
 describe('<Table />', () => {
+  describe('Table render', () => {
+    let state;
+    beforeEach(() => {
+      state = {
+        results: [
+          {
+            createdAt: 'Today',
+            createdBy: 'Tester',
+            name: 'Developer',
+          },
+        ],
+      };
+    });
+
+    test('renders normally', async () => {
+      await flushPromises();
+      const wrapper = mount(getComponent(state));
+      await flushPromises();
+      wrapper.update();
+      expect(wrapper).toMatchSnapshot();
+    });
+  });
   describe('build methods', () => {
     let props;
     let data = [];
