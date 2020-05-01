@@ -1,0 +1,1540 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Table /> Table render renders normally 1`] = `
+<KineticLib
+  system={true}
+>
+  <Provider
+    context={
+      Object {
+        "$$typeof": Symbol(react.context),
+        "Consumer": Object {
+          "$$typeof": Symbol(react.context),
+          "_calculateChangedBits": null,
+          "_context": [Circular],
+        },
+        "Provider": Object {
+          "$$typeof": Symbol(react.provider),
+          "_context": [Circular],
+        },
+        "_calculateChangedBits": null,
+        "_currentRenderer": Object {},
+        "_currentRenderer2": null,
+        "_currentValue": undefined,
+        "_currentValue2": undefined,
+        "_threadCount": 0,
+      }
+    }
+    store={
+      Object {
+        "dispatch": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+        Symbol(Symbol.observable): [Function],
+      }
+    }
+  >
+    <I18nProvider>
+      <Component
+        results={
+          Array [
+            Object {
+              "createdAt": "Today",
+              "createdBy": "Tester",
+              "name": "Developer",
+            },
+          ]
+        }
+      >
+        <Table
+          addColumns={Array []}
+          alterColumns={Object {}}
+          columns={
+            Array [
+              Object {
+                "filter": "startsWith",
+                "label": "Created At",
+                "sortable": true,
+                "type": "text",
+                "value": "createdAt",
+              },
+              Object {
+                "filter": "startsWith",
+                "label": "Created By",
+                "sortable": false,
+                "type": "text",
+                "value": "createdBy",
+              },
+              Object {
+                "filter": "equals",
+                "label": "Created By",
+                "sortable": false,
+                "type": "text",
+                "value": "createdBy",
+              },
+            ]
+          }
+          components={Object {}}
+          dataSource={[Function]}
+          includeFooter={false}
+          omitHeader={false}
+          pageSize={25}
+          results={
+            Array [
+              Object {
+                "createdAt": "Today",
+                "createdBy": "Tester",
+                "name": "Developer",
+              },
+            ]
+          }
+          rows={Immutable.List []}
+          sortable={true}
+          tableOptions={
+            Object {
+              "results": Array [
+                Object {
+                  "createdAt": "Today",
+                  "createdBy": "Tester",
+                  "name": "Developer",
+                },
+              ],
+            }
+          }
+        >
+          <Connect(lifecycle(TableComponent))
+            addColumns={Array []}
+            alterColumns={Object {}}
+            auto={true}
+            columnComponents={Immutable.Map {}}
+            columnSet={
+              Immutable.List [
+                "createdAt",
+                "createdBy",
+                "createdBy",
+              ]
+            }
+            columns={
+              Immutable.List [
+                Immutable.Map {
+                  "value": "createdAt",
+                  "label": "Created At",
+                  "filter": "startsWith",
+                  "type": "text",
+                  "sortable": true,
+                },
+                Immutable.Map {
+                  "value": "createdBy",
+                  "label": "Created By",
+                  "filter": "startsWith",
+                  "type": "text",
+                  "sortable": false,
+                },
+                Immutable.Map {
+                  "value": "createdBy",
+                  "label": "Created By",
+                  "filter": "equals",
+                  "type": "text",
+                  "sortable": false,
+                },
+              ]
+            }
+            components={
+              Object {
+                "AttributesField": [Function],
+                "Body": [Function],
+                "BodyCell": [Function],
+                "BodyRow": [Function],
+                "BooleanFilter": [Function],
+                "CheckboxField": [Function],
+                "CodeField": [Function],
+                "EmptyBodyRow": [Function],
+                "FilterLayout": [Function],
+                "Footer": [Function],
+                "FooterCell": [Function],
+                "FooterRow": [Function],
+                "FormButtons": [Function],
+                "FormError": [Function],
+                "FormField": [Function],
+                "FormLayout": [Function],
+                "FormMultiField": [Function],
+                "Header": [Function],
+                "HeaderCell": [Function],
+                "HeaderRow": [Function],
+                "PaginationControl": [Function],
+                "PasswordField": [Function],
+                "RadioField": [Function],
+                "SelectField": [Function],
+                "SelectMultiField": [Function],
+                "TableField": [Function],
+                "TableLayout": [Function],
+                "TeamField": [Function],
+                "TeamMultiField": [Function],
+                "TextField": [Function],
+                "TextFilter": [Function],
+                "TextMultiField": [Function],
+                "UserField": [Function],
+                "UserMultiField": [Function],
+              }
+            }
+            dataSource={[Function]}
+            includeFooter={false}
+            omitHeader={false}
+            pageSize={25}
+            results={
+              Array [
+                Object {
+                  "createdAt": "Today",
+                  "createdBy": "Tester",
+                  "name": "Developer",
+                },
+              ]
+            }
+            rows={Immutable.List []}
+            sortable={true}
+            tableKey="B33D6F"
+            tableOptions={
+              Object {
+                "results": Array [
+                  Object {
+                    "createdAt": "Today",
+                    "createdBy": "Tester",
+                    "name": "Developer",
+                  },
+                ],
+              }
+            }
+          >
+            <lifecycle(TableComponent)
+              addColumns={Array []}
+              alterColumns={Object {}}
+              appliedFilters={
+                Immutable.Map {
+                  "createdAt": Immutable.Map {
+                    "value": "",
+                    "column": Immutable.Map {
+                      "value": "createdAt",
+                      "label": "Created At",
+                      "filter": "startsWith",
+                      "type": "text",
+                      "sortable": true,
+                    },
+                  },
+                  "createdBy": Immutable.Map {
+                    "value": "",
+                    "column": Immutable.Map {
+                      "value": "createdBy",
+                      "label": "Created By",
+                      "filter": "equals",
+                      "type": "text",
+                      "sortable": false,
+                    },
+                  },
+                }
+              }
+              auto={true}
+              columnComponents={Immutable.Map {}}
+              columnSet={
+                Immutable.List [
+                  "createdAt",
+                  "createdBy",
+                  "createdBy",
+                ]
+              }
+              columns={
+                Immutable.List [
+                  Immutable.Map {
+                    "value": "createdAt",
+                    "label": "Created At",
+                    "filter": "startsWith",
+                    "type": "text",
+                    "sortable": true,
+                  },
+                  Immutable.Map {
+                    "value": "createdBy",
+                    "label": "Created By",
+                    "filter": "startsWith",
+                    "type": "text",
+                    "sortable": false,
+                  },
+                  Immutable.Map {
+                    "value": "createdBy",
+                    "label": "Created By",
+                    "filter": "equals",
+                    "type": "text",
+                    "sortable": false,
+                  },
+                ]
+              }
+              components={
+                Object {
+                  "AttributesField": [Function],
+                  "Body": [Function],
+                  "BodyCell": [Function],
+                  "BodyRow": [Function],
+                  "BooleanFilter": [Function],
+                  "CheckboxField": [Function],
+                  "CodeField": [Function],
+                  "EmptyBodyRow": [Function],
+                  "FilterLayout": [Function],
+                  "Footer": [Function],
+                  "FooterCell": [Function],
+                  "FooterRow": [Function],
+                  "FormButtons": [Function],
+                  "FormError": [Function],
+                  "FormField": [Function],
+                  "FormLayout": [Function],
+                  "FormMultiField": [Function],
+                  "Header": [Function],
+                  "HeaderCell": [Function],
+                  "HeaderRow": [Function],
+                  "PaginationControl": [Function],
+                  "PasswordField": [Function],
+                  "RadioField": [Function],
+                  "SelectField": [Function],
+                  "SelectMultiField": [Function],
+                  "TableField": [Function],
+                  "TableLayout": [Function],
+                  "TeamField": [Function],
+                  "TeamMultiField": [Function],
+                  "TextField": [Function],
+                  "TextFilter": [Function],
+                  "TextMultiField": [Function],
+                  "UserField": [Function],
+                  "UserMultiField": [Function],
+                }
+              }
+              configured={true}
+              data={
+                Immutable.List [
+                  Immutable.Map {
+                    "createdAt": "Today",
+                    "createdBy": "Tester",
+                    "name": "Developer",
+                  },
+                ]
+              }
+              dataSource={[Function]}
+              dispatch={[Function]}
+              error={null}
+              filters={
+                Immutable.Map {
+                  "createdAt": Immutable.Map {
+                    "value": "",
+                    "column": Immutable.Map {
+                      "value": "createdAt",
+                      "label": "Created At",
+                      "filter": "startsWith",
+                      "type": "text",
+                      "sortable": true,
+                    },
+                  },
+                  "createdBy": Immutable.Map {
+                    "value": "",
+                    "column": Immutable.Map {
+                      "value": "createdBy",
+                      "label": "Created By",
+                      "filter": "equals",
+                      "type": "text",
+                      "sortable": false,
+                    },
+                  },
+                }
+              }
+              includeFooter={false}
+              initialize={true}
+              initializing={false}
+              loading={false}
+              mounted={true}
+              nextPageToken={null}
+              omitHeader={false}
+              pageOffset={0}
+              pageSize={25}
+              pageTokens={Immutable.List []}
+              results={
+                Array [
+                  Object {
+                    "createdAt": "Today",
+                    "createdBy": "Tester",
+                    "name": "Developer",
+                  },
+                ]
+              }
+              rows={
+                Immutable.List [
+                  Immutable.Map {
+                    "createdAt": "Today",
+                    "createdBy": "Tester",
+                    "name": "Developer",
+                  },
+                ]
+              }
+              sortColumn={null}
+              sortDirection="desc"
+              sortable={true}
+              tableKey="B33D6F"
+              tableOptions={
+                Object {
+                  "results": Array [
+                    Object {
+                      "createdAt": "Today",
+                      "createdBy": "Tester",
+                      "name": "Developer",
+                    },
+                  ],
+                }
+              }
+              validFilters={true}
+            >
+              <TableComponent
+                addColumns={Array []}
+                alterColumns={Object {}}
+                appliedFilters={
+                  Immutable.Map {
+                    "createdAt": Immutable.Map {
+                      "value": "",
+                      "column": Immutable.Map {
+                        "value": "createdAt",
+                        "label": "Created At",
+                        "filter": "startsWith",
+                        "type": "text",
+                        "sortable": true,
+                      },
+                    },
+                    "createdBy": Immutable.Map {
+                      "value": "",
+                      "column": Immutable.Map {
+                        "value": "createdBy",
+                        "label": "Created By",
+                        "filter": "equals",
+                        "type": "text",
+                        "sortable": false,
+                      },
+                    },
+                  }
+                }
+                auto={true}
+                columnComponents={Immutable.Map {}}
+                columnSet={
+                  Immutable.List [
+                    "createdAt",
+                    "createdBy",
+                    "createdBy",
+                  ]
+                }
+                columns={
+                  Immutable.List [
+                    Immutable.Map {
+                      "value": "createdAt",
+                      "label": "Created At",
+                      "filter": "startsWith",
+                      "type": "text",
+                      "sortable": true,
+                    },
+                    Immutable.Map {
+                      "value": "createdBy",
+                      "label": "Created By",
+                      "filter": "startsWith",
+                      "type": "text",
+                      "sortable": false,
+                    },
+                    Immutable.Map {
+                      "value": "createdBy",
+                      "label": "Created By",
+                      "filter": "equals",
+                      "type": "text",
+                      "sortable": false,
+                    },
+                  ]
+                }
+                components={
+                  Object {
+                    "AttributesField": [Function],
+                    "Body": [Function],
+                    "BodyCell": [Function],
+                    "BodyRow": [Function],
+                    "BooleanFilter": [Function],
+                    "CheckboxField": [Function],
+                    "CodeField": [Function],
+                    "EmptyBodyRow": [Function],
+                    "FilterLayout": [Function],
+                    "Footer": [Function],
+                    "FooterCell": [Function],
+                    "FooterRow": [Function],
+                    "FormButtons": [Function],
+                    "FormError": [Function],
+                    "FormField": [Function],
+                    "FormLayout": [Function],
+                    "FormMultiField": [Function],
+                    "Header": [Function],
+                    "HeaderCell": [Function],
+                    "HeaderRow": [Function],
+                    "PaginationControl": [Function],
+                    "PasswordField": [Function],
+                    "RadioField": [Function],
+                    "SelectField": [Function],
+                    "SelectMultiField": [Function],
+                    "TableField": [Function],
+                    "TableLayout": [Function],
+                    "TeamField": [Function],
+                    "TeamMultiField": [Function],
+                    "TextField": [Function],
+                    "TextFilter": [Function],
+                    "TextMultiField": [Function],
+                    "UserField": [Function],
+                    "UserMultiField": [Function],
+                  }
+                }
+                configured={true}
+                data={
+                  Immutable.List [
+                    Immutable.Map {
+                      "createdAt": "Today",
+                      "createdBy": "Tester",
+                      "name": "Developer",
+                    },
+                  ]
+                }
+                dataSource={[Function]}
+                dispatch={[Function]}
+                error={null}
+                filters={
+                  Immutable.Map {
+                    "createdAt": Immutable.Map {
+                      "value": "",
+                      "column": Immutable.Map {
+                        "value": "createdAt",
+                        "label": "Created At",
+                        "filter": "startsWith",
+                        "type": "text",
+                        "sortable": true,
+                      },
+                    },
+                    "createdBy": Immutable.Map {
+                      "value": "",
+                      "column": Immutable.Map {
+                        "value": "createdBy",
+                        "label": "Created By",
+                        "filter": "equals",
+                        "type": "text",
+                        "sortable": false,
+                      },
+                    },
+                  }
+                }
+                includeFooter={false}
+                initialize={true}
+                initializing={false}
+                loading={false}
+                mounted={true}
+                nextPageToken={null}
+                omitHeader={false}
+                pageOffset={0}
+                pageSize={25}
+                pageTokens={Immutable.List []}
+                results={
+                  Array [
+                    Object {
+                      "createdAt": "Today",
+                      "createdBy": "Tester",
+                      "name": "Developer",
+                    },
+                  ]
+                }
+                rows={
+                  Immutable.List [
+                    Immutable.Map {
+                      "createdAt": "Today",
+                      "createdBy": "Tester",
+                      "name": "Developer",
+                    },
+                  ]
+                }
+                sortColumn={null}
+                sortDirection="desc"
+                sortable={true}
+                tableKey="B33D6F"
+                tableOptions={
+                  Object {
+                    "results": Array [
+                      Object {
+                        "createdAt": "Today",
+                        "createdBy": "Tester",
+                        "name": "Developer",
+                      },
+                    ],
+                  }
+                }
+                validFilters={true}
+              >
+                <div>
+                  <TableLayout
+                    body={
+                      <TableBody
+                        empty={false}
+                        error={null}
+                        initializing={false}
+                        loading={false}
+                        tableOptions={
+                          Object {
+                            "results": Array [
+                              Object {
+                                "createdAt": "Today",
+                                "createdBy": "Tester",
+                                "name": "Developer",
+                              },
+                            ],
+                          }
+                        }
+                        tableRows={
+                          Immutable.List [
+                            <KeyWrapper>
+                              <BodyRow
+                                cells={
+                                  Immutable.List [
+                                    <KeyWrapper>
+                                      <BodyCell
+                                        column={
+                                          Immutable.Map {
+                                            "value": "createdAt",
+                                            "label": "Created At",
+                                            "filter": "startsWith",
+                                            "type": "text",
+                                            "sortable": true,
+                                          }
+                                        }
+                                        index={0}
+                                        row={
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          }
+                                        }
+                                        rowIndex={0}
+                                        rows={
+                                          Immutable.List [
+                                            Immutable.Map {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ]
+                                        }
+                                        tableKey="B33D6F"
+                                        tableOptions={
+                                          Object {
+                                            "results": Array [
+                                              Object {
+                                                "createdAt": "Today",
+                                                "createdBy": "Tester",
+                                                "name": "Developer",
+                                              },
+                                            ],
+                                          }
+                                        }
+                                        value="Today"
+                                      />
+                                    </KeyWrapper>,
+                                    <KeyWrapper>
+                                      <BodyCell
+                                        column={
+                                          Immutable.Map {
+                                            "value": "createdBy",
+                                            "label": "Created By",
+                                            "filter": "startsWith",
+                                            "type": "text",
+                                            "sortable": false,
+                                          }
+                                        }
+                                        index={1}
+                                        row={
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          }
+                                        }
+                                        rowIndex={0}
+                                        rows={
+                                          Immutable.List [
+                                            Immutable.Map {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ]
+                                        }
+                                        tableKey="B33D6F"
+                                        tableOptions={
+                                          Object {
+                                            "results": Array [
+                                              Object {
+                                                "createdAt": "Today",
+                                                "createdBy": "Tester",
+                                                "name": "Developer",
+                                              },
+                                            ],
+                                          }
+                                        }
+                                        value="Tester"
+                                      />
+                                    </KeyWrapper>,
+                                    <KeyWrapper>
+                                      <BodyCell
+                                        column={
+                                          Immutable.Map {
+                                            "value": "createdBy",
+                                            "label": "Created By",
+                                            "filter": "startsWith",
+                                            "type": "text",
+                                            "sortable": false,
+                                          }
+                                        }
+                                        index={2}
+                                        row={
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          }
+                                        }
+                                        rowIndex={0}
+                                        rows={
+                                          Immutable.List [
+                                            Immutable.Map {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ]
+                                        }
+                                        tableKey="B33D6F"
+                                        tableOptions={
+                                          Object {
+                                            "results": Array [
+                                              Object {
+                                                "createdAt": "Today",
+                                                "createdBy": "Tester",
+                                                "name": "Developer",
+                                              },
+                                            ],
+                                          }
+                                        }
+                                        value="Tester"
+                                      />
+                                    </KeyWrapper>,
+                                  ]
+                                }
+                                columns={
+                                  Immutable.List [
+                                    Immutable.Map {
+                                      "value": "createdAt",
+                                      "label": "Created At",
+                                      "filter": "startsWith",
+                                      "type": "text",
+                                      "sortable": true,
+                                    },
+                                    Immutable.Map {
+                                      "value": "createdBy",
+                                      "label": "Created By",
+                                      "filter": "startsWith",
+                                      "type": "text",
+                                      "sortable": false,
+                                    },
+                                    Immutable.Map {
+                                      "value": "createdBy",
+                                      "label": "Created By",
+                                      "filter": "equals",
+                                      "type": "text",
+                                      "sortable": false,
+                                    },
+                                  ]
+                                }
+                                index={0}
+                                row={
+                                  Immutable.Map {
+                                    "createdAt": "Today",
+                                    "createdBy": "Tester",
+                                    "name": "Developer",
+                                  }
+                                }
+                                tableOptions={
+                                  Object {
+                                    "results": Array [
+                                      Object {
+                                        "createdAt": "Today",
+                                        "createdBy": "Tester",
+                                        "name": "Developer",
+                                      },
+                                    ],
+                                  }
+                                }
+                              />
+                            </KeyWrapper>,
+                          ]
+                        }
+                      />
+                    }
+                    empty={false}
+                    error={null}
+                    footer={null}
+                    header={
+                      <Header
+                        headerRow={
+                          <HeaderRow
+                            columnHeaders={
+                              Immutable.List [
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={true}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={false}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={false}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                              ]
+                            }
+                            rows={
+                              Immutable.List [
+                                Immutable.Map {
+                                  "createdAt": "Today",
+                                  "createdBy": "Tester",
+                                  "name": "Developer",
+                                },
+                              ]
+                            }
+                          />
+                        }
+                        rows={
+                          Immutable.List [
+                            Immutable.Map {
+                              "createdAt": "Today",
+                              "createdBy": "Tester",
+                              "name": "Developer",
+                            },
+                          ]
+                        }
+                        sortable={true}
+                      />
+                    }
+                    initializing={false}
+                    loading={false}
+                  >
+                    <table>
+                      <Header
+                        headerRow={
+                          <HeaderRow
+                            columnHeaders={
+                              Immutable.List [
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={true}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={false}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={false}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                              ]
+                            }
+                            rows={
+                              Immutable.List [
+                                Immutable.Map {
+                                  "createdAt": "Today",
+                                  "createdBy": "Tester",
+                                  "name": "Developer",
+                                },
+                              ]
+                            }
+                          />
+                        }
+                        rows={
+                          Immutable.List [
+                            Immutable.Map {
+                              "createdAt": "Today",
+                              "createdBy": "Tester",
+                              "name": "Developer",
+                            },
+                          ]
+                        }
+                        sortable={true}
+                      >
+                        <thead>
+                          <HeaderRow
+                            columnHeaders={
+                              Immutable.List [
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={true}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={false}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                                <KeyWrapper>
+                                  <HeaderCell
+                                    onSortColumn={[Function]}
+                                    sortable={false}
+                                    sorting={false}
+                                  />
+                                </KeyWrapper>,
+                              ]
+                            }
+                            rows={
+                              Immutable.List [
+                                Immutable.Map {
+                                  "createdAt": "Today",
+                                  "createdBy": "Tester",
+                                  "name": "Developer",
+                                },
+                              ]
+                            }
+                          >
+                            <tr>
+                              <KeyWrapper
+                                key="column-0"
+                              >
+                                <HeaderCell
+                                  onSortColumn={[Function]}
+                                  sortable={true}
+                                  sorting={false}
+                                >
+                                  <th>
+                                    <span>
+                                      <I18n />
+                                      <button
+                                        onClick={[Function]}
+                                        type="button"
+                                      >
+                                        <span>
+                                          –
+                                        </span>
+                                      </button>
+                                    </span>
+                                  </th>
+                                </HeaderCell>
+                              </KeyWrapper>
+                              <KeyWrapper
+                                key="column-1"
+                              >
+                                <HeaderCell
+                                  onSortColumn={[Function]}
+                                  sortable={false}
+                                  sorting={false}
+                                >
+                                  <th>
+                                    <I18n />
+                                  </th>
+                                </HeaderCell>
+                              </KeyWrapper>
+                              <KeyWrapper
+                                key="column-2"
+                              >
+                                <HeaderCell
+                                  onSortColumn={[Function]}
+                                  sortable={false}
+                                  sorting={false}
+                                >
+                                  <th>
+                                    <I18n />
+                                  </th>
+                                </HeaderCell>
+                              </KeyWrapper>
+                            </tr>
+                          </HeaderRow>
+                        </thead>
+                      </Header>
+                      <TableBody
+                        empty={false}
+                        error={null}
+                        initializing={false}
+                        loading={false}
+                        tableOptions={
+                          Object {
+                            "results": Array [
+                              Object {
+                                "createdAt": "Today",
+                                "createdBy": "Tester",
+                                "name": "Developer",
+                              },
+                            ],
+                          }
+                        }
+                        tableRows={
+                          Immutable.List [
+                            <KeyWrapper>
+                              <BodyRow
+                                cells={
+                                  Immutable.List [
+                                    <KeyWrapper>
+                                      <BodyCell
+                                        column={
+                                          Immutable.Map {
+                                            "value": "createdAt",
+                                            "label": "Created At",
+                                            "filter": "startsWith",
+                                            "type": "text",
+                                            "sortable": true,
+                                          }
+                                        }
+                                        index={0}
+                                        row={
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          }
+                                        }
+                                        rowIndex={0}
+                                        rows={
+                                          Immutable.List [
+                                            Immutable.Map {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ]
+                                        }
+                                        tableKey="B33D6F"
+                                        tableOptions={
+                                          Object {
+                                            "results": Array [
+                                              Object {
+                                                "createdAt": "Today",
+                                                "createdBy": "Tester",
+                                                "name": "Developer",
+                                              },
+                                            ],
+                                          }
+                                        }
+                                        value="Today"
+                                      />
+                                    </KeyWrapper>,
+                                    <KeyWrapper>
+                                      <BodyCell
+                                        column={
+                                          Immutable.Map {
+                                            "value": "createdBy",
+                                            "label": "Created By",
+                                            "filter": "startsWith",
+                                            "type": "text",
+                                            "sortable": false,
+                                          }
+                                        }
+                                        index={1}
+                                        row={
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          }
+                                        }
+                                        rowIndex={0}
+                                        rows={
+                                          Immutable.List [
+                                            Immutable.Map {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ]
+                                        }
+                                        tableKey="B33D6F"
+                                        tableOptions={
+                                          Object {
+                                            "results": Array [
+                                              Object {
+                                                "createdAt": "Today",
+                                                "createdBy": "Tester",
+                                                "name": "Developer",
+                                              },
+                                            ],
+                                          }
+                                        }
+                                        value="Tester"
+                                      />
+                                    </KeyWrapper>,
+                                    <KeyWrapper>
+                                      <BodyCell
+                                        column={
+                                          Immutable.Map {
+                                            "value": "createdBy",
+                                            "label": "Created By",
+                                            "filter": "startsWith",
+                                            "type": "text",
+                                            "sortable": false,
+                                          }
+                                        }
+                                        index={2}
+                                        row={
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          }
+                                        }
+                                        rowIndex={0}
+                                        rows={
+                                          Immutable.List [
+                                            Immutable.Map {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ]
+                                        }
+                                        tableKey="B33D6F"
+                                        tableOptions={
+                                          Object {
+                                            "results": Array [
+                                              Object {
+                                                "createdAt": "Today",
+                                                "createdBy": "Tester",
+                                                "name": "Developer",
+                                              },
+                                            ],
+                                          }
+                                        }
+                                        value="Tester"
+                                      />
+                                    </KeyWrapper>,
+                                  ]
+                                }
+                                columns={
+                                  Immutable.List [
+                                    Immutable.Map {
+                                      "value": "createdAt",
+                                      "label": "Created At",
+                                      "filter": "startsWith",
+                                      "type": "text",
+                                      "sortable": true,
+                                    },
+                                    Immutable.Map {
+                                      "value": "createdBy",
+                                      "label": "Created By",
+                                      "filter": "startsWith",
+                                      "type": "text",
+                                      "sortable": false,
+                                    },
+                                    Immutable.Map {
+                                      "value": "createdBy",
+                                      "label": "Created By",
+                                      "filter": "equals",
+                                      "type": "text",
+                                      "sortable": false,
+                                    },
+                                  ]
+                                }
+                                index={0}
+                                row={
+                                  Immutable.Map {
+                                    "createdAt": "Today",
+                                    "createdBy": "Tester",
+                                    "name": "Developer",
+                                  }
+                                }
+                                tableOptions={
+                                  Object {
+                                    "results": Array [
+                                      Object {
+                                        "createdAt": "Today",
+                                        "createdBy": "Tester",
+                                        "name": "Developer",
+                                      },
+                                    ],
+                                  }
+                                }
+                              />
+                            </KeyWrapper>,
+                          ]
+                        }
+                      >
+                        <tbody>
+                          <KeyWrapper
+                            key="row-0"
+                          >
+                            <BodyRow
+                              cells={
+                                Immutable.List [
+                                  <KeyWrapper>
+                                    <BodyCell
+                                      column={
+                                        Immutable.Map {
+                                          "value": "createdAt",
+                                          "label": "Created At",
+                                          "filter": "startsWith",
+                                          "type": "text",
+                                          "sortable": true,
+                                        }
+                                      }
+                                      index={0}
+                                      row={
+                                        Immutable.Map {
+                                          "createdAt": "Today",
+                                          "createdBy": "Tester",
+                                          "name": "Developer",
+                                        }
+                                      }
+                                      rowIndex={0}
+                                      rows={
+                                        Immutable.List [
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          },
+                                        ]
+                                      }
+                                      tableKey="B33D6F"
+                                      tableOptions={
+                                        Object {
+                                          "results": Array [
+                                            Object {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ],
+                                        }
+                                      }
+                                      value="Today"
+                                    />
+                                  </KeyWrapper>,
+                                  <KeyWrapper>
+                                    <BodyCell
+                                      column={
+                                        Immutable.Map {
+                                          "value": "createdBy",
+                                          "label": "Created By",
+                                          "filter": "startsWith",
+                                          "type": "text",
+                                          "sortable": false,
+                                        }
+                                      }
+                                      index={1}
+                                      row={
+                                        Immutable.Map {
+                                          "createdAt": "Today",
+                                          "createdBy": "Tester",
+                                          "name": "Developer",
+                                        }
+                                      }
+                                      rowIndex={0}
+                                      rows={
+                                        Immutable.List [
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          },
+                                        ]
+                                      }
+                                      tableKey="B33D6F"
+                                      tableOptions={
+                                        Object {
+                                          "results": Array [
+                                            Object {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ],
+                                        }
+                                      }
+                                      value="Tester"
+                                    />
+                                  </KeyWrapper>,
+                                  <KeyWrapper>
+                                    <BodyCell
+                                      column={
+                                        Immutable.Map {
+                                          "value": "createdBy",
+                                          "label": "Created By",
+                                          "filter": "startsWith",
+                                          "type": "text",
+                                          "sortable": false,
+                                        }
+                                      }
+                                      index={2}
+                                      row={
+                                        Immutable.Map {
+                                          "createdAt": "Today",
+                                          "createdBy": "Tester",
+                                          "name": "Developer",
+                                        }
+                                      }
+                                      rowIndex={0}
+                                      rows={
+                                        Immutable.List [
+                                          Immutable.Map {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          },
+                                        ]
+                                      }
+                                      tableKey="B33D6F"
+                                      tableOptions={
+                                        Object {
+                                          "results": Array [
+                                            Object {
+                                              "createdAt": "Today",
+                                              "createdBy": "Tester",
+                                              "name": "Developer",
+                                            },
+                                          ],
+                                        }
+                                      }
+                                      value="Tester"
+                                    />
+                                  </KeyWrapper>,
+                                ]
+                              }
+                              columns={
+                                Immutable.List [
+                                  Immutable.Map {
+                                    "value": "createdAt",
+                                    "label": "Created At",
+                                    "filter": "startsWith",
+                                    "type": "text",
+                                    "sortable": true,
+                                  },
+                                  Immutable.Map {
+                                    "value": "createdBy",
+                                    "label": "Created By",
+                                    "filter": "startsWith",
+                                    "type": "text",
+                                    "sortable": false,
+                                  },
+                                  Immutable.Map {
+                                    "value": "createdBy",
+                                    "label": "Created By",
+                                    "filter": "equals",
+                                    "type": "text",
+                                    "sortable": false,
+                                  },
+                                ]
+                              }
+                              index={0}
+                              row={
+                                Immutable.Map {
+                                  "createdAt": "Today",
+                                  "createdBy": "Tester",
+                                  "name": "Developer",
+                                }
+                              }
+                              tableOptions={
+                                Object {
+                                  "results": Array [
+                                    Object {
+                                      "createdAt": "Today",
+                                      "createdBy": "Tester",
+                                      "name": "Developer",
+                                    },
+                                  ],
+                                }
+                              }
+                            >
+                              <tr>
+                                <KeyWrapper
+                                  key="column-0"
+                                >
+                                  <BodyCell
+                                    column={
+                                      Immutable.Map {
+                                        "value": "createdAt",
+                                        "label": "Created At",
+                                        "filter": "startsWith",
+                                        "type": "text",
+                                        "sortable": true,
+                                      }
+                                    }
+                                    index={0}
+                                    row={
+                                      Immutable.Map {
+                                        "createdAt": "Today",
+                                        "createdBy": "Tester",
+                                        "name": "Developer",
+                                      }
+                                    }
+                                    rowIndex={0}
+                                    rows={
+                                      Immutable.List [
+                                        Immutable.Map {
+                                          "createdAt": "Today",
+                                          "createdBy": "Tester",
+                                          "name": "Developer",
+                                        },
+                                      ]
+                                    }
+                                    tableKey="B33D6F"
+                                    tableOptions={
+                                      Object {
+                                        "results": Array [
+                                          Object {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          },
+                                        ],
+                                      }
+                                    }
+                                    value="Today"
+                                  >
+                                    <td
+                                      scope="row"
+                                    >
+                                      Today
+                                    </td>
+                                  </BodyCell>
+                                </KeyWrapper>
+                                <KeyWrapper
+                                  key="column-1"
+                                >
+                                  <BodyCell
+                                    column={
+                                      Immutable.Map {
+                                        "value": "createdBy",
+                                        "label": "Created By",
+                                        "filter": "startsWith",
+                                        "type": "text",
+                                        "sortable": false,
+                                      }
+                                    }
+                                    index={1}
+                                    row={
+                                      Immutable.Map {
+                                        "createdAt": "Today",
+                                        "createdBy": "Tester",
+                                        "name": "Developer",
+                                      }
+                                    }
+                                    rowIndex={0}
+                                    rows={
+                                      Immutable.List [
+                                        Immutable.Map {
+                                          "createdAt": "Today",
+                                          "createdBy": "Tester",
+                                          "name": "Developer",
+                                        },
+                                      ]
+                                    }
+                                    tableKey="B33D6F"
+                                    tableOptions={
+                                      Object {
+                                        "results": Array [
+                                          Object {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          },
+                                        ],
+                                      }
+                                    }
+                                    value="Tester"
+                                  >
+                                    <td>
+                                      Tester
+                                    </td>
+                                  </BodyCell>
+                                </KeyWrapper>
+                                <KeyWrapper
+                                  key="column-2"
+                                >
+                                  <BodyCell
+                                    column={
+                                      Immutable.Map {
+                                        "value": "createdBy",
+                                        "label": "Created By",
+                                        "filter": "startsWith",
+                                        "type": "text",
+                                        "sortable": false,
+                                      }
+                                    }
+                                    index={2}
+                                    row={
+                                      Immutable.Map {
+                                        "createdAt": "Today",
+                                        "createdBy": "Tester",
+                                        "name": "Developer",
+                                      }
+                                    }
+                                    rowIndex={0}
+                                    rows={
+                                      Immutable.List [
+                                        Immutable.Map {
+                                          "createdAt": "Today",
+                                          "createdBy": "Tester",
+                                          "name": "Developer",
+                                        },
+                                      ]
+                                    }
+                                    tableKey="B33D6F"
+                                    tableOptions={
+                                      Object {
+                                        "results": Array [
+                                          Object {
+                                            "createdAt": "Today",
+                                            "createdBy": "Tester",
+                                            "name": "Developer",
+                                          },
+                                        ],
+                                      }
+                                    }
+                                    value="Tester"
+                                  >
+                                    <td>
+                                      Tester
+                                    </td>
+                                  </BodyCell>
+                                </KeyWrapper>
+                              </tr>
+                            </BodyRow>
+                          </KeyWrapper>
+                        </tbody>
+                      </TableBody>
+                    </table>
+                  </TableLayout>
+                </div>
+              </TableComponent>
+            </lifecycle(TableComponent)>
+          </Connect(lifecycle(TableComponent))>
+        </Table>
+      </Component>
+    </I18nProvider>
+  </Provider>
+</KineticLib>
+`;
