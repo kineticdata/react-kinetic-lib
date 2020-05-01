@@ -82,31 +82,35 @@ regHandlers({
 });
 
 regSaga('WATCH_SYSTEM_AUTHENTICATION', function*() {
-  yield take('LOGIN_SYSTEM');
+  yield take('LOGIN');
   let pollingActive = false;
   while (true) {
-    const { authenticated, refresh } = yield race({
-      authenticated: take('SET_AUTHENTICATED'),
-      refresh: delay(3000),
-      isLoggingOut: take('LOGOUT'),
-      isTimingOut: take('TIMEOUT'),
-    });
+    try {
+      const { authenticated, refresh } = yield race({
+        authenticated: take('SET_AUTHENTICATED'),
+        refresh: delay(180000), // 3 minutes.
+        isLoggingOut: take('LOGOUT'),
+        isTimingOut: take('TIMEOUT'),
+      });
 
-    if (authenticated) {
-      // The authentication event occurred, so now we want to periodically
-      // refresh the token.
-      pollingActive = true;
-    } else if (refresh && pollingActive) {
-      // The refresh event occurred, refresh the token.
-      const { error, token } = yield call(refreshSystemToken);
-      if (error) {
-        yield put(action('TIMEOUT'));
+      if (authenticated) {
+        // The authentication event occurred, so now we want to periodically
+        // refresh the token.
+        pollingActive = true;
+      } else if (refresh && pollingActive) {
+        // The refresh event occurred, refresh the token.
+        const { error, token } = yield call(refreshSystemToken);
+        if (error) {
+          yield put(action('TIMEOUT'));
+        } else {
+          yield put(action('SET_AUTHENTICATED', { token }));
+        }
       } else {
-        yield put(action('SET_AUTHENTICATED', { token }));
+        // Logging out or timing out happened to stop refreshing.
+        pollingActive = false;
       }
-    } else {
-      // Logging out or timing out happened to stop refreshing.
-      pollingActive = false;
+    } catch (e) {
+      console.error(e);
     }
   }
 });
