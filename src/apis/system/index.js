@@ -252,3 +252,31 @@ export const refreshSystemToken = (options = {}) => {
     .then(response => response.data)
     .catch(handleErrors);
 };
+
+export const fetchCassandraConfig = (options = {}) => {
+  return axios
+    .get(
+      '/app/system-coordinator/api/v1/platform/cassandra',
+      {},
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => ({ adapter: response.data.adapter }))
+    .catch(handleErrors);
+};
+
+export const fetchElasticSearchConfig = (options = {}) => {
+  return axios
+    .get(
+      '/app/system-coordinator/api/v1/platform/elasticsearch',
+      {},
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => ({ adapter: response.data.adapter }))
+    .catch(handleErrors);
+};
