@@ -1,354 +1,353 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`loads some stuff 1`] = `
-<KineticLib>
-  <Provider
-    context={
-      Object {
-        "$$typeof": Symbol(react.context),
-        "Consumer": Object {
-          "$$typeof": Symbol(react.context),
-          "_calculateChangedBits": null,
-          "_context": [Circular],
-        },
-        "Provider": Object {
-          "$$typeof": Symbol(react.provider),
-          "_context": [Circular],
-        },
-        "_calculateChangedBits": null,
-        "_currentRenderer": Object {},
-        "_currentRenderer2": null,
-        "_currentValue": undefined,
-        "_currentValue2": undefined,
-        "_threadCount": 0,
-      }
+exports[`handleSubmit happy path 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test2": "",
+      },
     }
-    store={
-      Object {
-        "dispatch": [Function],
-        "getState": [Function],
-        "replaceReducer": [Function],
-        "subscribe": [Function],
-        Symbol(Symbol.observable): [Function],
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={
+        Object {
+          "testOption": "Foo",
+        }
       }
+      reset={[Function]}
+      submit={[Function]}
+      submitting={true}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test2": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0Mg"
+        label=""
+        name="test2"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value=""
+        visible={true}
+      />,
     }
-  >
-    <I18nProvider>
-      <Form
-        dataSources={[Function]}
-        fields={[Function]}
-        formKey="test"
-        uncontrolled={true}
-      >
-        <Connect(FormImplComponent)
-          components={
-            Immutable.Map {
-              "BooleanFilter": [Function],
-              "FilterLayout": [Function],
-              "Body": [Function],
-              "PaginationControl": [Function],
-              "AttributesField": [Function],
-              "BodyCell": [Function],
-              "FormError": [Function],
-              "TextFilter": [Function],
-              "FormMultiField": [Function],
-              "EmptyBodyRow": [Function],
-              "UserMultiField": [Function],
-              "TableField": [Function],
-              "Header": [Function],
-              "CodeField": [Function],
-              "TextField": [Function],
-              "HeaderRow": [Function],
-              "TextMultiField": [Function],
-              "FormLayout": [Function],
-              "HeaderCell": [Function],
-              "UserField": [Function],
-              "FormField": [Function],
-              "CheckboxField": [Function],
-              "TableLayout": [Function],
-              "BodyRow": [Function],
-              "Footer": [Function],
-              "TeamField": [Function],
-              "SelectMultiField": [Function],
-              "FooterCell": [Function],
-              "FormButtons": [Function],
-              "SelectField": [Function],
-              "TeamMultiField": [Function],
-              "RadioField": [Function],
-              "FooterRow": [Function],
-              "PasswordField": [Function],
-            }
-          }
-          dataSources={[Function]}
-          fields={[Function]}
-          formKey="test"
-          uncontrolled={true}
-        >
-          <FormImplComponent
-            components={
-              Immutable.Map {
-                "BooleanFilter": [Function],
-                "FilterLayout": [Function],
-                "Body": [Function],
-                "PaginationControl": [Function],
-                "AttributesField": [Function],
-                "BodyCell": [Function],
-                "FormError": [Function],
-                "TextFilter": [Function],
-                "FormMultiField": [Function],
-                "EmptyBodyRow": [Function],
-                "UserMultiField": [Function],
-                "TableField": [Function],
-                "Header": [Function],
-                "CodeField": [Function],
-                "TextField": [Function],
-                "HeaderRow": [Function],
-                "TextMultiField": [Function],
-                "FormLayout": [Function],
-                "HeaderCell": [Function],
-                "UserField": [Function],
-                "FormField": [Function],
-                "CheckboxField": [Function],
-                "TableLayout": [Function],
-                "BodyRow": [Function],
-                "Footer": [Function],
-                "TeamField": [Function],
-                "SelectMultiField": [Function],
-                "FooterCell": [Function],
-                "FormButtons": [Function],
-                "SelectField": [Function],
-                "TeamMultiField": [Function],
-                "RadioField": [Function],
-                "FooterRow": [Function],
-                "PasswordField": [Function],
-              }
-            }
-            dataSources={[Function]}
-            dispatch={[Function]}
-            fields={[Function]}
-            formKey="test"
-            formState={
-              Immutable.Record {
-                "addFields": Immutable.List [],
-                "alterFields": Immutable.Map {},
-                "bindings": Object {
-                  "message": 2,
-                  "values": Immutable.OrderedMap {
-                    "test": 2,
-                  },
-                },
-                "dataSources": Immutable.Map {
-                  "message": Immutable.Record {
-                    "data": 2,
-                    "fn": [MockFunction] {
-                      "calls": Array [
-                        Array [],
-                        Array [],
-                      ],
-                      "results": Array [
-                        Object {
-                          "isThrow": false,
-                          "value": Promise {},
-                        },
-                        Object {
-                          "isThrow": false,
-                          "value": Promise {},
-                        },
-                      ],
-                    },
-                    "params": null,
-                    "paramsFn": null,
-                    "prevParams": null,
-                    "rawParams": Array [],
-                    "status": "RESOLVED",
-                    "transform": null,
-                  },
-                },
-                "error": null,
-                "fields": Immutable.OrderedMap {
-                  "test": Immutable.Record {
-                    "constraint": null,
-                    "constraintMessage": "Invalid",
-                    "dirty": false,
-                    "enabled": true,
-                    "errors": Immutable.List [],
-                    "eventHandlers": Immutable.Map {
-                      "onBlur": [Function],
-                      "onChange": [Function],
-                      "onFocus": [Function],
-                    },
-                    "focused": false,
-                    "functions": Immutable.Map {
-                      "enabled": null,
-                      "label": null,
-                      "options": null,
-                      "placeholder": null,
-                      "required": null,
-                      "search": null,
-                      "transient": null,
-                      "visible": null,
-                    },
-                    "helpText": "",
-                    "id": "dGVzdCB0ZXN0",
-                    "initialValue": 2,
-                    "label": "",
-                    "language": "",
-                    "name": "test",
-                    "onChange": null,
-                    "options": Immutable.List [],
-                    "pattern": null,
-                    "patternMessage": "Invalid format",
-                    "placeholder": "",
-                    "renderAttributes": Immutable.Map {},
-                    "required": false,
-                    "requiredMessage": "This field is required",
-                    "search": Immutable.Map {},
-                    "serialize": null,
-                    "touched": false,
-                    "transient": false,
-                    "type": "text",
-                    "valid": true,
-                    "value": 2,
-                    "visible": true,
-                  },
-                },
-                "fieldsFn": [Function],
-                "formKey": "test",
-                "formOptions": Immutable.Map {},
-                "initialValuesFn": null,
-                "onError": null,
-                "onSave": null,
-                "onSubmit": null,
-                "submitting": false,
-              }
-            }
-            uncontrolled={true}
-          >
-            <div
-              data-testid="initialized-wrapper"
-            >
-              <FormLayout
-                bindings={
-                  Object {
-                    "message": 2,
-                    "values": Immutable.OrderedMap {
-                      "test": 2,
-                    },
-                  }
-                }
-                buttons={
-                  <FormButtons
-                    clearError={[Function]}
-                    dirty={false}
-                    error={null}
-                    formOptions={Immutable.Map {}}
-                    reset={[Function]}
-                    submit={[Function]}
-                    submitting={false}
-                  />
-                }
-                dirty={false}
-                error={null}
-                fields={
-                  Immutable.OrderedMap {
-                    "test": <TextField
-                      dirty={false}
-                      enabled={true}
-                      errors={Immutable.List []}
-                      focusRef={null}
-                      focused={false}
-                      helpText=""
-                      id="dGVzdCB0ZXN0"
-                      label=""
-                      name="test"
-                      onBlur={[Function]}
-                      onChange={[Function]}
-                      onFocus={[Function]}
-                      options={Immutable.List []}
-                      placeholder=""
-                      renderAttributes={Immutable.Map {}}
-                      required={false}
-                      touched={false}
-                      value={2}
-                      visible={true}
-                    />,
-                  }
-                }
-                formOptions={Immutable.Map {}}
-                meta={
-                  Immutable.OrderedMap {
-                    "test": Immutable.Map {
-                      "visible": true,
-                    },
-                  }
-                }
-              >
-                <form>
-                  <TextField
-                    dirty={false}
-                    enabled={true}
-                    errors={Immutable.List []}
-                    focusRef={null}
-                    focused={false}
-                    helpText=""
-                    id="dGVzdCB0ZXN0"
-                    key="test"
-                    label=""
-                    name="test"
-                    onBlur={[Function]}
-                    onChange={[Function]}
-                    onFocus={[Function]}
-                    options={Immutable.List []}
-                    placeholder=""
-                    renderAttributes={Immutable.Map {}}
-                    required={false}
-                    touched={false}
-                    value={2}
-                    visible={true}
-                  >
-                    <div
-                      className="field"
-                    >
-                      <label
-                        htmlFor="dGVzdCB0ZXN0"
-                      />
-                      <input
-                        id="dGVzdCB0ZXN0"
-                        name="test"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        type="text"
-                        value={2}
-                      />
-                    </div>
-                  </TextField>
-                  <FormButtons
-                    clearError={[Function]}
-                    dirty={false}
-                    error={null}
-                    formOptions={Immutable.Map {}}
-                    reset={[Function]}
-                    submit={[Function]}
-                    submitting={false}
-                  >
-                    <div>
-                      <button
-                        disabled={true}
-                        onClick={[Function]}
-                        type="submit"
-                      >
-                        Submit
-                      </button>
-                    </div>
-                  </FormButtons>
-                </form>
-              </FormLayout>
-            </div>
-          </FormImplComponent>
-        </Connect(FormImplComponent)>
-      </Form>
-    </I18nProvider>
-  </Provider>
-</KineticLib>
+  }
+  formOptions={
+    Object {
+      "testOption": "Foo",
+    }
+  }
+  meta={
+    Immutable.OrderedMap {
+      "test2": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`handleSubmit happy path 2`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test2": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={
+        Object {
+          "testOption": "Foo",
+        }
+      }
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test2": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0Mg"
+        label=""
+        name="test2"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={
+    Object {
+      "testOption": "Foo",
+    }
+  }
+  meta={
+    Immutable.OrderedMap {
+      "test2": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`handleSubmit happy path 3`] = `
+Array [
+  Array [
+    Object {
+      "testOption": "Foo",
+    },
+  ],
+]
+`;
+
+exports[`handleSubmit happy path 4`] = `
+Array [
+  Array [
+    Object {
+      "testOption": "Foo",
+    },
+  ],
+]
+`;
+
+exports[`handleSubmit happy path 5`] = `
+Array [
+  Array [
+    Immutable.OrderedMap {
+      "test2": "",
+    },
+    Object {
+      "values": Immutable.OrderedMap {
+        "test2": "",
+      },
+    },
+  ],
+  Array [],
+]
+`;
+
+exports[`handleSubmit happy path 6`] = `
+Array [
+  Array [
+    "Success!",
+  ],
+]
+`;
+
+exports[`handleSubmit submit error 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {},
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error="This is a test error"
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={
+    <FormError
+      clear={[Function]}
+      error="This is a test error"
+    />
+  }
+  fields={Immutable.OrderedMap {}}
+  formOptions={Object {}}
+  meta={Immutable.OrderedMap {}}
+/>
+`;
+
+exports[`handleSubmit submit error calls onError 1`] = `
+Array [
+  Array [
+    Object {
+      "testOption": "Foo",
+    },
+  ],
+]
+`;
+
+exports[`handleSubmit submit error calls onError 2`] = `
+Array [
+  Array [
+    "TEST ERROR",
+  ],
+]
+`;
+
+exports[`handleSubmit submit unexpected error, we expect the promise to reject with a string 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {},
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error="Unexpected error occurred"
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={
+    <FormError
+      clear={[Function]}
+      error="Unexpected error occurred"
+    />
+  }
+  fields={Immutable.OrderedMap {}}
+  formOptions={Object {}}
+  meta={Immutable.OrderedMap {}}
+/>
+`;
+
+exports[`simple data source dependencies 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "dependency": "Test Arg",
+      "message": "Hello World!",
+      "values": Immutable.OrderedMap {
+        "test": "Hello World!",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value="Hello World!"
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`simple data source dependencies 2`] = `
+Array [
+  Array [],
+]
+`;
+
+exports[`simple data source dependencies 3`] = `
+Array [
+  Array [
+    "Test Arg",
+  ],
+]
+`;
+
+exports[`simple data source dependencies 4`] = `
+Array [
+  Array [
+    Object {},
+  ],
+  Array [
+    Object {
+      "dependency": "Test Arg",
+    },
+  ],
+  Array [
+    Object {
+      "dependency": "Test Arg",
+      "message": "Hello World!",
+      "values": Immutable.OrderedMap {
+        "test": "Hello World!",
+      },
+    },
+  ],
+]
 `;
