@@ -13,6 +13,7 @@ describe('defineFilter', () => {
     expect(fn(person, { name: 'Alex' })).toBe(true);
     expect(fn(person, { name: 'ALEX' })).toBe(false);
     expect(fn(person, { name: 'Ale' })).toBe(false);
+    expect(fn({ firstName: '\u00C5af' }, { name: '\u00E5af' })).toBe(false);
   });
 
   test('equals caseInsensitive', () => {
@@ -22,6 +23,7 @@ describe('defineFilter', () => {
     expect(fn(person, { name: 'Alex' })).toBe(true);
     expect(fn(person, { name: 'ALEX' })).toBe(true);
     expect(fn(person, { name: 'Ale' })).toBe(false);
+    expect(fn({ firstName: '\u00C5af' }, { name: '\u00E5af' })).toBe(true);
   });
 
   test('multiple equals', () => {
@@ -144,8 +146,19 @@ describe('defineFilter', () => {
       .lessThanOrEquals('firstName', 'max')
       .end();
     expect(fn(person, { max: 'Az' })).toBe(true);
-    // "Aa" < "Alex"
-    expect(fn(person, { min: 'Aa' })).toBe(false);
+    // "aa" > "Alex"
+    expect(fn(person, { max: 'aa' })).toBe(true);
+    expect(fn(person, { max: 'Alex' })).toBe(true);
+    expect(fn(person, { max: 'Aa' })).toBe(false);
+  });
+
+  test('lessThanOrEquals caseInsensitive', () => {
+    const fn = defineFilter(true)
+      .lessThanOrEquals('firstName', 'max')
+      .end();
+    expect(fn(person, { max: 'Az' })).toBe(true);
+    // "aa" < "alex"
+    expect(fn(person, { max: 'aa' })).toBe(false);
     expect(fn(person, { max: 'Alex' })).toBe(true);
     expect(fn(person, { max: 'Aa' })).toBe(false);
   });
@@ -219,5 +232,112 @@ describe('defineFilter', () => {
     expect(fn(person, { name1: 'Other', name2: 'zzz', lname: 'zen' })).toBe(
       false,
     );
+  });
+
+  describe('empty filters', function() {
+    test('equals', () => {
+      const fn = defineFilter()
+        .equals('firstName', 'name')
+        .end();
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { name: '' })).toBe(true);
+      expect(fn(person, { name: null })).toBe(true);
+    });
+
+    test('equals strict', () => {
+      const fn = defineFilter()
+        .equals('firstName', 'name', true)
+        .end();
+      expect(fn(person, {})).toBe(false);
+      expect(fn(person, { name: '' })).toBe(false);
+      expect(fn(person, { name: null })).toBe(false);
+      expect(fn({}, {})).toBe(true);
+      expect(fn({ firstName: '' }, { name: '' })).toBe(true);
+      expect(fn({ firstName: null }, { name: null })).toBe(true);
+    });
+
+    test('in', () => {
+      const fn = defineFilter()
+        .in('firstName', 'names')
+        .end();
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { names: [] })).toBe(true);
+      expect(fn(person, { names: null })).toBe(true);
+    });
+
+    test('in strict', () => {
+      const fn = defineFilter()
+        .in('firstName', 'names', true)
+        .end();
+      expect(fn(person, {})).toBe(false);
+      expect(fn(person, { names: [] })).toBe(false);
+      expect(fn(person, { names: null })).toBe(false);
+      expect(fn({}, { names: null })).toBe(false);
+      expect(fn({ firstName: '' }, { names: null })).toBe(false);
+      expect(fn({ firstName: null }, { names: null })).toBe(false);
+      expect(fn({}, { names: [] })).toBe(false);
+      expect(fn({ firstName: '' }, { names: [] })).toBe(false);
+      expect(fn({ firstName: null }, { names: [] })).toBe(false);
+    });
+
+    test('startsWith', () => {
+      const fn = defineFilter()
+        .startsWith('firstName', 'name')
+        .end();
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { name: '' })).toBe(true);
+      expect(fn(person, { name: null })).toBe(true);
+    });
+
+    test('greaterThan', () => {
+      const fn = defineFilter()
+        .greaterThan('firstName', 'min')
+        .end();
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { min: '' })).toBe(true);
+      expect(fn(person, { min: null })).toBe(true);
+    });
+
+    test('greaterThanOrEquals', () => {
+      const fn = defineFilter()
+        .greaterThanOrEquals('firstName', 'min')
+        .end();
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { min: '' })).toBe(true);
+      expect(fn(person, { min: null })).toBe(true);
+    });
+
+    test('lessThan', () => {
+      const fn = defineFilter()
+        .lessThan('firstName', 'max')
+        .end();
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { max: '' })).toBe(true);
+      expect(fn(person, { max: null })).toBe(true);
+    });
+
+    test('lessThanOrEquals', () => {
+      const fn = defineFilter()
+        .lessThanOrEquals('firstName', 'max')
+        .end();
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { max: '' })).toBe(true);
+      expect(fn(person, { max: null })).toBe(true);
+    });
+
+    test('between', () => {
+      const fn = defineFilter()
+        .between('firstName', 'min', 'max')
+        .end();
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { min: '', max: 'z' })).toBe(true);
+      expect(fn(person, { min: null, max: 'z' })).toBe(true);
+      expect(fn(person, { min: 'a', max: '' })).toBe(true);
+      expect(fn(person, { min: 'a', max: null })).toBe(true);
+    });
+  });
+
+  describe('empty values', function() {
+    // TODO: Write test cases handling lvalue being undefined, null, ''
   });
 });

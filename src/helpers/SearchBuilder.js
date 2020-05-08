@@ -1,7 +1,15 @@
-import { isArray, isString, constant, every, last, map, some } from 'lodash-es';
+import {
+  isArray,
+  isEmpty,
+  isString,
+  constant,
+  every,
+  last,
+  map,
+  some,
+} from 'lodash-es';
 
-const defineCoreQuery = () => new SearchBuilder('query');
-const defineTaskQuery = () => new SearchBuilder('query');
+const defineKqlQuery = () => new SearchBuilder('kql');
 const defineFilter = (caseInsensitive, rootOperator) =>
   new SearchBuilder('filter', caseInsensitive, rootOperator);
 
@@ -14,50 +22,48 @@ class SearchBuilder {
   }
 
   and() {
-    return pushExpression(this, 'and');
+    return pushExpression(this, {}, 'and');
   }
 
   between(field, minValue, maxValue) {
-    return pushExpression(this, 'bt', field, minValue, maxValue);
+    return pushExpression(this, {}, 'bt', field, minValue, maxValue);
   }
 
-  equals(field, value) {
-    return pushExpression(this, 'eq', field, value);
+  equals(field, value, strict) {
+    return pushExpression(this, { strict }, 'eq', field, value);
   }
 
   greaterThan(field, value) {
-    return pushExpression(this, 'gt', field, value);
+    return pushExpression(this, {}, 'gt', field, value);
   }
 
   greaterThanOrEquals(field, value) {
-    return pushExpression(this, 'gte', field, value);
+    return pushExpression(this, {}, 'gte', field, value);
   }
 
-  in(field, values) {
-    return pushExpression(this, 'in', field, values);
+  in(field, values, strict) {
+    return pushExpression(this, { strict }, 'in', field, values);
   }
 
   lessThan(field, value) {
-    return pushExpression(this, 'lt', field, value);
+    return pushExpression(this, {}, 'lt', field, value);
   }
 
   lessThanOrEquals(field, value) {
-    return pushExpression(this, 'lte', field, value);
+    return pushExpression(this, {}, 'lte', field, value);
   }
 
   or() {
-    return pushExpression(this, 'or');
+    return pushExpression(this, {}, 'or');
   }
 
   startsWith(field, value) {
-    return pushExpression(this, 'sw', field, value);
+    return pushExpression(this, {}, 'sw', field, value);
   }
 
   end() {
     if (this.expressionStack.length === 1) {
-      return this.type === 'query'
-        ? ''
-        : compileExpression(this.rootExpression);
+      return this.type === 'kql' ? '' : compileExpression(this.rootExpression);
     } else {
       this.expressionStack.pop();
       return this;
@@ -71,12 +77,12 @@ class SearchBuilder {
 // so we push the given expression to the end of that one. Then if the given
 // expression is another 'and' / 'or' operation we push the new expression
 // to the expression stack and subsequent expressions will be added to that one.
-const pushExpression = (self, operator, ...operands) => {
+const pushExpression = (self, options, operator, ...operands) => {
   const currentExpression = last(self.expressionStack);
   currentExpression.operands.push({
     operator,
     operands,
-    options: { caseInsensitive: self.caseInsensitive },
+    options: { caseInsensitive: self.caseInsensitive, ...options },
   });
   if (['and', 'or'].includes(operator)) {
     self.expressionStack.push(last(currentExpression.operands));
@@ -124,64 +130,79 @@ const orOperation = expressions => {
 const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => {
   const normalize = normalization(options);
   return (object, filters) =>
-    normalize(object[lvalue]) >= normalize(filters[rvalueMin]) &&
-    normalize(object[lvalue]) < normalize(filters[rvalueMax]);
+    isNullOrEmpty(filters[rvalueMin]) ||
+    isNullOrEmpty(filters[rvalueMax]) ||
+    (normalize(object[lvalue]) >= normalize(filters[rvalueMin]) &&
+      normalize(object[lvalue]) < normalize(filters[rvalueMax]));
 };
 
 const equalsOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
   return (object, filters) =>
+    (!options.strict && isNullOrEmpty(filters[rvalue])) ||
     normalize(object[lvalue]) === normalize(filters[rvalue]);
 };
 
 const greaterThanOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
   return (object, filters) =>
+    isNullOrEmpty(filters[rvalue]) ||
     normalize(object[lvalue]) > normalize(filters[rvalue]);
 };
 
 const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
   return (object, filters) =>
+    isNullOrEmpty(filters[rvalue]) ||
     normalize(object[lvalue]) >= normalize(filters[rvalue]);
 };
 
 const inOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
   return (object, filters) =>
-    object[lvalue] &&
-    isArray(filters[rvalue]) &&
-    normalize(filters[rvalue]).includes(normalize(object[lvalue]));
+    (!options.strict && isNullOrEmpty(filters[rvalue])) ||
+    (object[lvalue] &&
+      isArray(filters[rvalue]) &&
+      normalize(filters[rvalue]).includes(normalize(object[lvalue])));
 };
 
 const lessThanOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
   return (object, filters) =>
+    isNullOrEmpty(filters[rvalue]) ||
     normalize(object[lvalue]) < normalize(filters[rvalue]);
 };
 
 const lessThanOrEqualsOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
   return (object, filters) =>
+    isNullOrEmpty(filters[rvalue]) ||
     normalize(object[lvalue]) <= normalize(filters[rvalue]);
 };
 
 const startsWithOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
   return (object, filters) =>
-    object[lvalue] &&
-    normalize(object[lvalue]).startsWith(normalize(filters[rvalue]));
+    isNullOrEmpty(filters[rvalue]) ||
+    (object[lvalue] &&
+      normalize(object[lvalue]).startsWith(normalize(filters[rvalue])));
 };
 
 const normalization = options => (options.caseInsensitive ? toLower : identity);
 
+const isNullOrEmpty = value =>
+  (isString(value) && isEmpty(value)) ||
+  (isArray(value) && isEmpty(value)) ||
+  value === null ||
+  value === undefined;
+
 const toLower = value =>
   isString(value)
-    ? value.toLowerCase()
+    ? value.toLocaleLowerCase()
     : isArray(value)
     ? value.map(toLower)
     : value;
 
 const identity = v => v;
 
-export { defineCoreQuery, defineTaskQuery, defineFilter };
+export { defineKqlQuery, defineFilter };
