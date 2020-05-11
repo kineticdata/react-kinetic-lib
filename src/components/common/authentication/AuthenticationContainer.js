@@ -9,6 +9,7 @@ import {
   race,
 } from 'redux-saga/effects';
 import { isFunction } from 'lodash-es';
+import moment from 'moment';
 import {
   action,
   regHandlers,
@@ -104,6 +105,7 @@ regSaga('WATCH_SYSTEM_AUTHENTICATION', function*() {
           yield put(action('TIMEOUT'));
         } else {
           yield put(action('SET_AUTHENTICATED', { token }));
+          localStorage.setItem(SYSTEM_TOKEN, token);
         }
       } else {
         // Logging out or timing out happened to stop refreshing.
@@ -131,6 +133,10 @@ regSaga(
         yield put({ type: 'SET_ERROR', payload: error.message });
       } else {
         const token = system ? systemToken : yield call(retrieveJwt);
+        if (system) {
+          localStorage.setItem(SYSTEM_TOKEN, token);
+        }
+
         yield put({
           type: 'SET_AUTHENTICATED',
           payload: { token, callback: payload },
@@ -164,27 +170,50 @@ regSaga(
   }),
 );
 
+const SYSTEM_TOKEN = 'kd-system';
+
 regSaga(
-  takeEvery('INITIALIZE', function*({ payload: { socket } }) {
+  takeEvery('INITIALIZE', function*({ payload: { system, socket } }) {
     try {
-      const {
-        securityStrategies,
-        session: { csrfToken, isAuthenticated },
-        spaceSlug,
-      } = yield call(fetchSpaMeta);
-      const token = isAuthenticated ? yield call(retrieveJwt) : null;
-      if (socket && token) {
-        yield call(socketIdentify, token);
-      }
-      yield put(
-        action('SET_INITIALIZED', {
-          csrfToken,
+      if (system) {
+        let token;
+        let localToken = localStorage
+          ? localStorage.getItem(SYSTEM_TOKEN)
+          : null;
+
+        if (localToken) {
+          const parsedToken = JSON.parse(atob(localToken.split('.')[1]));
+          const isValid = moment.unix(parsedToken.exp).isAfter(new Date());
+          token = isValid ? localToken : null;
+        }
+
+        yield put(
+          action('SET_INITIALIZED', {
+            socket,
+            system,
+            token,
+          }),
+        );
+      } else {
+        const {
           securityStrategies,
-          socket,
+          session: { csrfToken, isAuthenticated },
           spaceSlug,
-          token,
-        }),
-      );
+        } = yield call(fetchSpaMeta);
+        const token = isAuthenticated ? yield call(retrieveJwt) : null;
+        if (socket && token) {
+          yield call(socketIdentify, token);
+        }
+        yield put(
+          action('SET_INITIALIZED', {
+            csrfToken,
+            securityStrategies,
+            socket,
+            spaceSlug,
+            token,
+          }),
+        );
+      }
     } catch (e) {
       console.error(e);
     }
@@ -248,7 +277,7 @@ const getToken = () => store.getState().getIn(['session', 'token']);
 export class AuthenticationComponent extends Component {
   componentDidMount() {
     if (this.props.system) {
-      dispatch('SET_INITIALIZED', { system: true, socket: false });
+      dispatch('INITIALIZE', { system: true, socket: false });
     } else {
       dispatch('INITIALIZE', {
         socket: !this.props.noSocket,
