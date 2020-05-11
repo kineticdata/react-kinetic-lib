@@ -59,7 +59,7 @@ export const createTenant = (options = {}) => {
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
-    .then(response => ({ tenant: response.data.tenant }))
+    .then(response => ({ tenant: response.data }))
     .catch(handleErrors);
 };
 
