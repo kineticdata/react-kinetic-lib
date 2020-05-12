@@ -1,5 +1,307 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`fields label given a function value 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "foo",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label="Functional Label"
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value="foo"
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields label given a function value 2`] = `
+Array [
+  Array [
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "foo",
+      },
+    },
+  ],
+]
+`;
+
+exports[`fields label given a null value 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label={null}
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields label given a string value 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label="Testing Label"
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields type select no options 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <SelectField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields type text no options 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
 exports[`handleSubmit happy path 1`] = `
 <FormLayout
   bindings={

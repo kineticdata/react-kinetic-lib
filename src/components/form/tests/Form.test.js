@@ -4,6 +4,8 @@ import { store } from '../../../store';
 import { generateForm, submitForm } from '../Form';
 import { mount } from 'enzyme';
 
+const FORM_KEY = 'test';
+
 const mountForm = ({
   dataSources = () => ({}),
   fields = () => () => [],
@@ -28,7 +30,7 @@ const mountForm = ({
     const result = mount(
       <KineticLib components={{ FormLayout }}>
         <Form
-          formKey="test"
+          formKey={FORM_KEY}
           uncontrolled
           {...configurationProps}
           {...formOptions}
@@ -88,6 +90,87 @@ describe('simple', () => {
   });
 });
 
+describe('fields', () => {
+  describe('type', () => {
+    describe('text', () => {
+      test('no options', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'text',
+            },
+          ],
+        });
+        expect(result.find('FormLayout')).toMatchSnapshot();
+        result.unmount();
+      });
+    });
+
+    describe('select', () => {
+      test('no options', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'select',
+            },
+          ],
+        });
+        expect(result.find('FormLayout')).toMatchSnapshot();
+        result.unmount();
+      });
+    });
+  });
+
+  describe('label', () => {
+    test('given a string value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            label: 'Testing Label',
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      result.unmount();
+    });
+
+    test('given a null value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            label: null,
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      result.unmount();
+    });
+
+    test('given a function value', async () => {
+      const labelFn = jest.fn(bindings => 'Functional Label');
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: 'foo',
+            label: labelFn,
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      expect(labelFn.mock.calls).toMatchSnapshot();
+      result.unmount();
+    });
+  });
+});
+
 describe('handleSubmit', () => {
   test('happy path', async () => {
     const submitFn = jest.fn(() => Promise.resolve('Success!'));
@@ -102,7 +185,7 @@ describe('handleSubmit', () => {
       onSave,
     });
 
-    submitForm('test', {});
+    submitForm(FORM_KEY, {});
 
     // FormButtons submitting prop should be set to true
     result.update();
