@@ -71,7 +71,6 @@ export const deleteTenant = (options = {}) => {
 
   return axios
     .delete(`/app/system-coordinator/api/v1/tenants/${slug}`, {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -109,7 +108,6 @@ export const fetchSystemUser = (options = {}) => {
   // Build URL and fetch the space.
   return axios
     .get('/app/system-coordinator/api/v1/platform/system-user', {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -125,7 +123,6 @@ export const updateSystemUser = (options = {}) => {
 
   return axios
     .put('/app/system-coordinator/api/v1/platform/system-user', user, {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -138,7 +135,6 @@ export const fetchTaskDbAdapters = (options = {}) => {
   return (
     axios
       .get(`/app/system-coordinator/api/v1/meta/task-db-adapters`, {
-        __bypassInitInterceptor: true,
         params: paramBuilder(options),
         headers: headerBuilder(options),
       })
@@ -154,7 +150,6 @@ export const fetchTaskDbAdapter = (options = {}) => {
     .get(
       `/app/system-coordinator/api/v1/meta/task-db-adapters/${options.type}`,
       {
-        __bypassInitInterceptor: true,
         params: paramBuilder(options),
         headers: headerBuilder(options),
       },
@@ -167,7 +162,6 @@ export const fetchSystemDefaultTaskDbAdapter = (options = {}) => {
   // Build URL and fetch the space.
   return axios
     .get(`/app/system-coordinator/api/v1/platform/default-task-db-adapter`, {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
@@ -188,7 +182,6 @@ export const updateSystemDefaultTaskDbAdapter = (options = {}) => {
       `/app/system-coordinator/api/v1/platform/default-task-db-adapter`,
       adapter,
       {
-        __bypassInitInterceptor: true,
         params: paramBuilder(options),
         headers: headerBuilder(options),
       },
@@ -201,7 +194,6 @@ export const fetchSystemDefaultSmtpAdapter = (options = {}) => {
   // Build URL and fetch the space.
   return axios
     .get('/app/system-coordinator/api/v1/platform/default-smtp-adapter', {
-      __bypassInitInterceptor: true,
       params: paramBuilder(options),
       headers: headerBuilder(options),
     })
