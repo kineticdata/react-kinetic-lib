@@ -1,16 +1,12 @@
 import { generateForm } from '../../form/Form';
-import {
-  fetchLocale,
-  createLocale,
-  enableLocale,
-} from '../../../apis';
+import { fetchLocale, enableLocale } from '../../../apis';
 
 const dataSources = ({ localeCode }) => ({
-  locale: {
-    fn: fetchLocale,
-    params: localeCode && [{ localeCode, include: 'details' }],
-    transform: result => result.locale,
-  },
+  // locale: {
+  //   fn: fetchLocale,
+  //   params: localeCode && [{ localeCode, include: 'details' }],
+  //   transform: result => result.locale,
+  // },
 });
 
 const handleSubmit = ({ localeCode }) => values =>
@@ -18,14 +14,16 @@ const handleSubmit = ({ localeCode }) => values =>
     const locale = values.toJS();
     (localeCode
       ? enableLocale({ localeCode, locale })
-      : createLocale({ locale })
-    ).then(({ locale, error }) => {
-      if (locale) {
-        resolve(locale);
-      } else {
-        reject(error.message || 'There was an error saving the locale');
-      }
-    });
+      : null
+     /*: createLocale({ locale })*/)
+      // : createLocale({ locale })
+      .then(({ locale, error }) => {
+        if (locale) {
+          resolve(locale);
+        } else {
+          reject(error.message || 'There was an error saving the locale');
+        }
+      });
   });
 
 const fields = () => () => [

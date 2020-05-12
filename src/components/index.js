@@ -82,6 +82,7 @@ export {
 } from './core/bridge_model_qualification/BridgeModelQualificationTable';
 export { CategoryForm } from './core/category/CategoryForm';
 export { CategoryTable } from './core/category/CategoryTable';
+export { ContextForm } from './core/translation/ContextForm';
 export { ContextTable } from './core/translation/ContextTable';
 export {
   AgentComponentTable,
@@ -115,6 +116,7 @@ export {
 export { IndexJobTable } from './core/index_job/IndexJobTable';
 export { KappForm } from './core/kapp/KappForm';
 export { KappTable } from './core/kapp/KappTable';
+export { LocaleForm } from './core/translation/LocaleForm';
 export { LocaleTable } from './core/translation/LocaleTable';
 export { OAuthClientForm } from './core/oauth_client/OAuthClientForm';
 export { OAuthClientTable } from './core/oauth_client/OAuthClientTable';
