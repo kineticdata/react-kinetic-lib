@@ -2,6 +2,7 @@ import React from 'react';
 import { KineticLib } from '../../../index';
 import { store } from '../../../store';
 import { generateForm, submitForm } from '../Form';
+import { mockFieldConfig } from './components';
 import { mount } from 'enzyme';
 
 const FORM_KEY = 'test';
@@ -13,10 +14,6 @@ const mountForm = ({
   formOptions = {},
   ...configurationProps
 }) => {
-  // Use a no-op for the FormLayout component because we don't want to actually
-  // test specific content rendered by other render functions. We only care that
-  // the right render functions are called with the right props.
-  const FormLayout = () => null;
   // Generate a Form using the options defined by the particular test case.
   const Form = generateForm({
     dataSources,
@@ -28,7 +25,7 @@ const mountForm = ({
   // form is initialized (most of the test cases need to wait for this).
   return new Promise(resolve => {
     const result = mount(
-      <KineticLib components={{ FormLayout }}>
+      <KineticLib components={{ fields: mockFieldConfig }}>
         <Form
           formKey={FORM_KEY}
           uncontrolled
