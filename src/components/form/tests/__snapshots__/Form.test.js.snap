@@ -397,7 +397,7 @@ exports[`fields required has value 1`] = `
 />
 `;
 
-exports[`fields type select no options 1`] = `
+exports[`fields type select minimal 1`] = `
 <SelectFieldMock
   dirty={false}
   enabled={true}
@@ -422,7 +422,7 @@ exports[`fields type select no options 1`] = `
 />
 `;
 
-exports[`fields type text no options 1`] = `
+exports[`fields type text minimal 1`] = `
 <TextFieldMock
   dirty={false}
   enabled={true}

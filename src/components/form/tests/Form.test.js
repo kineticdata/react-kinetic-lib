@@ -330,7 +330,7 @@ describe('fields', () => {
     });
 
     describe('select', () => {
-      test('no options', async () => {
+      test('minimal', async () => {
         const result = await mountForm({
           fields: () => () => [
             {
@@ -349,7 +349,7 @@ describe('fields', () => {
     });
 
     describe('text', () => {
-      test('no options', async () => {
+      test('minimal', async () => {
         const result = await mountForm({
           fields: () => () => [
             {
