@@ -1,7 +1,7 @@
 import React from 'react';
 import { KineticLib } from '../../../index';
 import { store } from '../../../store';
-import { generateForm, submitForm } from '../Form';
+import { generateForm, setValue, submitForm } from '../Form';
 import { mockFieldConfig } from './components';
 import { mount } from 'enzyme';
 
@@ -250,6 +250,45 @@ describe('fields', () => {
       expect(labelFn.mock.calls).toMatchSnapshot();
       result.unmount();
     });
+  });
+});
+
+describe('setValue', function() {
+  test('triggerChange', async () => {
+    const onChangeMock = jest.fn();
+    const result = await mountForm({
+      dataSources: () => ({
+        test: {
+          fn: () => 2,
+          params: [],
+        },
+      }),
+      fields: () => () => [
+        { name: 'test', type: 'text', onChange: onChangeMock },
+      ],
+    });
+    setValue(FORM_KEY, 'test', 'Hello World!');
+    result.update();
+    // The Field should be dirty and the value should be updated.
+    expect(result.find('TextFieldMock')).toMatchSnapshot();
+    // onChange should be called with the current bindings
+    // (values and dataSources).
+    expect(onChangeMock.mock.calls).toMatchSnapshot();
+  });
+
+  test('triggerChange false', async () => {
+    const onChangeMock = jest.fn();
+    const result = await mountForm({
+      fields: () => () => [
+        { name: 'test', type: 'text', onChange: onChangeMock },
+      ],
+    });
+    setValue(FORM_KEY, 'test', 'Hello World!', false);
+    result.update();
+    // The Field should be dirty and the value should be updated.
+    expect(result.find('TextFieldMock')).toMatchSnapshot();
+    // onChange should not have been called
+    expect(onChangeMock.mock.calls.length).toBe(0);
   });
 });
 
