@@ -49,8 +49,8 @@ const mountForm = ({
   });
 };
 
-describe('simple', () => {
-  test('data source dependencies', async () => {
+describe('dataSources', () => {
+  test('simple', async () => {
     const dependencyFn = jest.fn(() => 'Test Arg');
     const messageFn = jest.fn(() => Promise.resolve('Hello World!'));
     const messageParams = jest.fn(
@@ -88,121 +88,24 @@ describe('simple', () => {
 });
 
 describe('fields', () => {
-  describe('required', () => {
-    test('given true', async () => {
-      const result = await mountForm({
-        fields: () => () => [
-          {
-            name: 'test',
-            type: 'text',
-            required: true,
-          },
-        ],
-      });
-      expect(result.find('FormLayout')).toMatchSnapshot();
-      result.unmount();
-    });
-    test('given false', async () => {
-      const result = await mountForm({
-        fields: () => () => [
-          {
-            name: 'test',
-            type: 'text',
-            required: false,
-          },
-        ],
-      });
-      expect(result.find('FormLayout')).toMatchSnapshot();
-      result.unmount();
-    });
-    test('has value', async () => {
-      const result = await mountForm({
-        fields: () => () => [
-          {
-            name: 'test',
-            type: 'text',
-            required: true,
-            initialValue: 'Test',
-          },
-        ],
-      });
-      expect(result.find('FormLayout')).toMatchSnapshot();
-      result.unmount();
-    });
-    test('given function that returns true', async () => {
-      const requiredFn = jest.fn(bindings => true);
-      const result = await mountForm({
-        fields: () => () => [
-          {
-            name: 'test',
-            type: 'text',
-            required: requiredFn,
-          },
-        ],
-      });
-      expect(result.find('FormLayout')).toMatchSnapshot();
-      expect(requiredFn.mock.calls).toMatchSnapshot();
-      expect(requiredFn.mock.calls).toMatchSnapshot();
-      result.unmount();
-    });
-    test('given function that returns false', async () => {
-      const result = await mountForm({
-        fields: () => () => [
-          {
-            name: 'test',
-            type: 'text',
-            required: () => false,
-          },
-        ],
-      });
-      expect(result.find('FormLayout')).toMatchSnapshot();
-      result.unmount();
-    });
-    test('given function that returns null', async () => {
-      const result = await mountForm({
-        fields: () => () => [
-          {
-            name: 'test',
-            type: 'text',
-            required: () => null,
-          },
-        ],
-      });
-      expect(result.find('FormLayout')).toMatchSnapshot();
-      result.unmount();
-    });
+  describe('constraint', function() {
+    test('>>=TODO>>=', async () => {});
   });
 
-  describe('type', () => {
-    describe('text', () => {
-      test('no options', async () => {
-        const result = await mountForm({
-          fields: () => () => [
-            {
-              name: 'test',
-              type: 'text',
-            },
-          ],
-        });
-        expect(result.find('TextFieldMock')).toMatchSnapshot();
-        result.unmount();
-      });
-    });
+  describe('constraintMessage', function() {
+    test('>>=TODO>>=', async () => {});
+  });
 
-    describe('select', () => {
-      test('no options', async () => {
-        const result = await mountForm({
-          fields: () => () => [
-            {
-              name: 'test',
-              type: 'select',
-            },
-          ],
-        });
-        expect(result.find('SelectFieldMock')).toMatchSnapshot();
-        result.unmount();
-      });
-    });
+  describe('enabled', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('helpText', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('initialValue', function() {
+    test('>>=TODO>>=', async () => {});
   });
 
   describe('label', () => {
@@ -250,6 +153,150 @@ describe('fields', () => {
       expect(labelFn.mock.calls).toMatchSnapshot();
       result.unmount();
     });
+  });
+
+  describe('language', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('name', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('onChange', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('options', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('pattern', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('patternMessage', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('placeholder', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('renderAttributes', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('required', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('requiredMessage', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('search', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('serialize', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('transient', function() {
+    test('>>=TODO>>=', async () => {});
+  });
+
+  describe('type', () => {
+    describe('attributes', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('checkbox', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('code', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('form', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('form-multi', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('password', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('radio', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('table', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('team', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('team-multi', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('select', () => {
+      test('no options', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'select',
+            },
+          ],
+        });
+        expect(result.find('SelectFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+    });
+
+    describe('select-multi', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('text', () => {
+      test('no options', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'text',
+            },
+          ],
+        });
+        expect(result.find('TextFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+    });
+
+    describe('text-multi', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('user', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+
+    describe('user-multi', function() {
+      test('>>=TODO>>=', async () => {});
+    });
+  });
+
+  describe('visible', function() {
+    test('>>=TODO>>=', async () => {});
   });
 });
 

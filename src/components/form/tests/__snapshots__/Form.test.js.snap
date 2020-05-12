@@ -1,5 +1,133 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`dataSources simple 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "dependency": "Test Arg",
+      "message": "Hello World!",
+      "values": Immutable.OrderedMap {
+        "test": "Hello World!",
+      },
+    }
+  }
+  buttons={
+    <FormButtonsMock
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextFieldMock
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value="Hello World!"
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+>
+  <TextFieldMock
+    dirty={false}
+    enabled={true}
+    errors={Immutable.List []}
+    focusRef={null}
+    focused={false}
+    helpText=""
+    id="dGVzdCB0ZXN0"
+    key="test"
+    label=""
+    name="test"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onFocus={[Function]}
+    options={Immutable.List []}
+    placeholder=""
+    renderAttributes={Immutable.Map {}}
+    required={false}
+    touched={false}
+    value="Hello World!"
+    visible={true}
+  />
+  <FormButtonsMock
+    clearError={[Function]}
+    dirty={false}
+    error={null}
+    formOptions={Object {}}
+    reset={[Function]}
+    submit={[Function]}
+    submitting={false}
+  />
+</FormLayout>
+`;
+
+exports[`dataSources simple 2`] = `
+Array [
+  Array [],
+]
+`;
+
+exports[`dataSources simple 3`] = `
+Array [
+  Array [
+    "Test Arg",
+  ],
+]
+`;
+
+exports[`dataSources simple 4`] = `
+Array [
+  Array [
+    Object {},
+  ],
+  Array [
+    Object {
+      "dependency": "Test Arg",
+    },
+  ],
+  Array [
+    Object {
+      "dependency": "Test Arg",
+      "message": "Hello World!",
+      "values": Immutable.OrderedMap {
+        "test": "Hello World!",
+      },
+    },
+  ],
+]
+`;
+
 exports[`fields label given a function value 1`] = `
 <TextFieldMock
   dirty={false}
@@ -1137,132 +1265,4 @@ exports[`setValue triggerChange false 1`] = `
   value="Hello World!"
   visible={true}
 />
-`;
-
-exports[`simple data source dependencies 1`] = `
-<FormLayout
-  bindings={
-    Object {
-      "dependency": "Test Arg",
-      "message": "Hello World!",
-      "values": Immutable.OrderedMap {
-        "test": "Hello World!",
-      },
-    }
-  }
-  buttons={
-    <FormButtonsMock
-      clearError={[Function]}
-      dirty={false}
-      error={null}
-      formOptions={Object {}}
-      reset={[Function]}
-      submit={[Function]}
-      submitting={false}
-    />
-  }
-  dirty={false}
-  error={null}
-  fields={
-    Immutable.OrderedMap {
-      "test": <TextFieldMock
-        dirty={false}
-        enabled={true}
-        errors={Immutable.List []}
-        focusRef={null}
-        focused={false}
-        helpText=""
-        id="dGVzdCB0ZXN0"
-        label=""
-        name="test"
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        options={Immutable.List []}
-        placeholder=""
-        renderAttributes={Immutable.Map {}}
-        required={false}
-        touched={false}
-        value="Hello World!"
-        visible={true}
-      />,
-    }
-  }
-  formOptions={Object {}}
-  meta={
-    Immutable.OrderedMap {
-      "test": Immutable.Map {
-        "visible": true,
-      },
-    }
-  }
->
-  <TextFieldMock
-    dirty={false}
-    enabled={true}
-    errors={Immutable.List []}
-    focusRef={null}
-    focused={false}
-    helpText=""
-    id="dGVzdCB0ZXN0"
-    key="test"
-    label=""
-    name="test"
-    onBlur={[Function]}
-    onChange={[Function]}
-    onFocus={[Function]}
-    options={Immutable.List []}
-    placeholder=""
-    renderAttributes={Immutable.Map {}}
-    required={false}
-    touched={false}
-    value="Hello World!"
-    visible={true}
-  />
-  <FormButtonsMock
-    clearError={[Function]}
-    dirty={false}
-    error={null}
-    formOptions={Object {}}
-    reset={[Function]}
-    submit={[Function]}
-    submitting={false}
-  />
-</FormLayout>
-`;
-
-exports[`simple data source dependencies 2`] = `
-Array [
-  Array [],
-]
-`;
-
-exports[`simple data source dependencies 3`] = `
-Array [
-  Array [
-    "Test Arg",
-  ],
-]
-`;
-
-exports[`simple data source dependencies 4`] = `
-Array [
-  Array [
-    Object {},
-  ],
-  Array [
-    Object {
-      "dependency": "Test Arg",
-    },
-  ],
-  Array [
-    Object {
-      "dependency": "Test Arg",
-      "message": "Hello World!",
-      "values": Immutable.OrderedMap {
-        "test": "Hello World!",
-      },
-    },
-  ],
-]
 `;
