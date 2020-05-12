@@ -397,6 +397,182 @@ exports[`fields required has value 1`] = `
 />
 `;
 
+exports[`fields type attributes minimal 1`] = `
+<AttributesFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={Immutable.Map {}}
+  visible={true}
+/>
+`;
+
+exports[`fields type checkbox minimal 1`] = `
+<CheckboxFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={false}
+  visible={true}
+/>
+`;
+
+exports[`fields type code minimal 1`] = `
+<CodeFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  language=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value=""
+  visible={true}
+/>
+`;
+
+exports[`fields type form minimal 1`] = `
+<FormFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  search={Immutable.Map {}}
+  touched={false}
+  value=""
+  visible={true}
+/>
+`;
+
+exports[`fields type form-multi minimal 1`] = `
+<FormMultiFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  search={Immutable.Map {}}
+  touched={false}
+  value=""
+  visible={true}
+/>
+`;
+
+exports[`fields type password minimal 1`] = `
+<PasswordFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value=""
+  visible={true}
+/>
+`;
+
+exports[`fields type radio minimal 1`] = `
+<RadioFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value=""
+  visible={true}
+/>
+`;
+
 exports[`fields type select minimal 1`] = `
 <SelectFieldMock
   dirty={false}
@@ -422,6 +598,79 @@ exports[`fields type select minimal 1`] = `
 />
 `;
 
+exports[`fields type select-multi minimal 1`] = `
+<SelectMultiFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`fields type team minimal 1`] = `
+<TeamFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`fields type team-multi minimal 1`] = `
+<TeamMultiFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
 exports[`fields type text minimal 1`] = `
 <TextFieldMock
   dirty={false}
@@ -443,6 +692,79 @@ exports[`fields type text minimal 1`] = `
   required={false}
   touched={false}
   value=""
+  visible={true}
+/>
+`;
+
+exports[`fields type text-multi minimal 1`] = `
+<TextMultiFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`fields type user minimal 1`] = `
+<UserFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`fields type user-multi minimal 1`] = `
+<UserMultiFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={Immutable.List []}
   visible={true}
 />
 `;
