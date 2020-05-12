@@ -1,6 +1,7 @@
 import { get } from 'immutable';
 import { generateForm } from '../form/Form';
 import { fetchSystemUser, updateSystemUser } from '../../apis/system';
+import { handleFormErrors } from '../../helpers';
 
 const dataSources = () => ({
   user: {
@@ -12,7 +13,7 @@ const dataSources = () => ({
 
 const handleSubmit = () => values => {
   const user = values.toJS();
-  return updateSystemUser({ user });
+  return updateSystemUser({ user }).then(handleFormErrors('user'));
 };
 
 const fields = () => ({ user }) =>

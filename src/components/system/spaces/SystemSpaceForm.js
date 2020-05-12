@@ -1,6 +1,7 @@
 import { fetchSpace, updateSpace } from '../../../apis';
 import { get } from 'immutable';
 import { generateForm } from '../../form/Form';
+import { handleFormErrors } from '../../../helpers';
 
 const dataSources = ({ slug }) => ({
   space: {
@@ -14,13 +15,7 @@ const handleSubmit = ({ slug }) => values =>
   updateSpace({
     slug,
     space: values,
-  }).then(({ space, error }) => {
-    if (error) {
-      throw (error.statusCode === 400 && error.message) ||
-        'There was an error saving the space';
-    }
-    return space;
-  });
+  }).then(handleFormErrors('space'));
 
 const fields = ({ slug }) => ({ space }) =>
   space && [

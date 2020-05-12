@@ -297,5 +297,5 @@ export const handleFormErrors = key => result => {
       'There was an error while saving.';
   }
 
-  return result[key];
+  return key ? result[key] : result;
 };

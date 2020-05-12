@@ -1,10 +1,12 @@
 import { get } from 'immutable';
 import { generateForm } from '../form/Form';
 import { fetchSystem, updateSystem } from '../../apis/system';
+import { handleFormErrors } from '../../helpers';
 
 const DISPLAY_TYPES = ['Display Page', 'Redirect', 'Default'];
 
-const handleSubmit = () => values => updateSystem({ system: values.toJS() });
+const handleSubmit = () => values =>
+  updateSystem({ system: values.toJS() }).then(handleFormErrors());
 
 const dataSources = () => ({
   system: {
