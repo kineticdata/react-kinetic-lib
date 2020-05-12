@@ -91,6 +91,91 @@ describe('simple', () => {
 });
 
 describe('fields', () => {
+  describe('required', () => {
+    test('given true', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            required: true,
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            required: false,
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('has value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            required: true,
+            initialValue: 'Test',
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns true', async () => {
+      const requiredFn = jest.fn(bindings => true);
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            required: requiredFn,
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      expect(requiredFn.mock.calls).toMatchSnapshot();
+      expect(requiredFn.mock.calls).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            required: () => false,
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            required: () => null,
+          },
+        ],
+      });
+      expect(result.find('FormLayout')).toMatchSnapshot();
+      result.unmount();
+    });
+  });
+
   describe('type', () => {
     describe('text', () => {
       test('no options', async () => {

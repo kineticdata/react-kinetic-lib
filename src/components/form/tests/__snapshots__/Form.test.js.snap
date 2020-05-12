@@ -186,6 +186,386 @@ exports[`fields label given a string value 1`] = `
 />
 `;
 
+exports[`fields required given false 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields required given function that returns false 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={false}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields required given function that returns null 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={null}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields required given function that returns true 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={
+          Immutable.List [
+            "This field is required",
+          ]
+        }
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={true}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields required given function that returns true 2`] = `
+Array [
+  Array [
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    },
+  ],
+]
+`;
+
+exports[`fields required given function that returns true 3`] = `
+Array [
+  Array [
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    },
+  ],
+]
+`;
+
+exports[`fields required given true 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={
+          Immutable.List [
+            "This field is required",
+          ]
+        }
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={true}
+        touched={false}
+        value=""
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
+exports[`fields required has value 1`] = `
+<FormLayout
+  bindings={
+    Object {
+      "values": Immutable.OrderedMap {
+        "test": "Test",
+      },
+    }
+  }
+  buttons={
+    <FormButtons
+      clearError={[Function]}
+      dirty={false}
+      error={null}
+      formOptions={Object {}}
+      reset={[Function]}
+      submit={[Function]}
+      submitting={false}
+    />
+  }
+  dirty={false}
+  error={null}
+  fields={
+    Immutable.OrderedMap {
+      "test": <TextField
+        dirty={false}
+        enabled={true}
+        errors={Immutable.List []}
+        focusRef={null}
+        focused={false}
+        helpText=""
+        id="dGVzdCB0ZXN0"
+        label=""
+        name="test"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        options={Immutable.List []}
+        placeholder=""
+        renderAttributes={Immutable.Map {}}
+        required={true}
+        touched={false}
+        value="Test"
+        visible={true}
+      />,
+    }
+  }
+  formOptions={Object {}}
+  meta={
+    Immutable.OrderedMap {
+      "test": Immutable.Map {
+        "visible": true,
+      },
+    }
+  }
+/>
+`;
+
 exports[`fields type select no options 1`] = `
 <FormLayout
   bindings={
