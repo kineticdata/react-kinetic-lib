@@ -184,7 +184,7 @@ describe('fields', () => {
             },
           ],
         });
-        expect(result.find('FormLayout')).toMatchSnapshot();
+        expect(result.find('TextFieldMock')).toMatchSnapshot();
         result.unmount();
       });
     });
@@ -199,7 +199,7 @@ describe('fields', () => {
             },
           ],
         });
-        expect(result.find('FormLayout')).toMatchSnapshot();
+        expect(result.find('SelectFieldMock')).toMatchSnapshot();
         result.unmount();
       });
     });
@@ -216,7 +216,7 @@ describe('fields', () => {
           },
         ],
       });
-      expect(result.find('FormLayout')).toMatchSnapshot();
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
       result.unmount();
     });
 
@@ -230,7 +230,7 @@ describe('fields', () => {
           },
         ],
       });
-      expect(result.find('FormLayout')).toMatchSnapshot();
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
       result.unmount();
     });
 
@@ -246,7 +246,7 @@ describe('fields', () => {
           },
         ],
       });
-      expect(result.find('FormLayout')).toMatchSnapshot();
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
       expect(labelFn.mock.calls).toMatchSnapshot();
       result.unmount();
     });
