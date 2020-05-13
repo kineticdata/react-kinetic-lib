@@ -127,30 +127,29 @@ const orOperation = expressions => {
   return (object, filters) => some(fns, fn => fn(object, filters));
 };
 
-const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => {
-  const normalize = normalization(options);
-  return (object, filters) => {
-    const left = object[lvalue];
-    const right1 = filters[rvalueMin];
-    const right2 = filters[rvalueMax];
-    // If the filter value is empty and strict is not enabled we skip the filter
-    // by returning true.
-    if ((isNullOrEmpty(right1) || isNullOrEmpty(right2)) && !options.strict) {
-      return true;
-    }
-    if (compare(right1, right2, normalize) <= 0) {
-      throw new Error(
-        `Invalid filter values for between operation of ${rvalueMin} and ` +
-          `${rvalueMax}. Min ${JSON.stringify(right1)} not less than max ` +
-          JSON.stringify(right2) +
-          (options.caseInsensitive ? ' (caseInsensitive)' : ''),
-      );
-    }
-    return (
-      compare(left, right1, normalize) <= 0 &&
-      compare(left, right2, normalize) > 0
+const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => (
+  object,
+  filters,
+) => {
+  const left = object[lvalue];
+  const right1 = filters[rvalueMin];
+  const right2 = filters[rvalueMax];
+  // If the filter value is empty and strict is not enabled we skip the filter
+  // by returning true.
+  if ((isNullOrEmpty(right1) || isNullOrEmpty(right2)) && !options.strict) {
+    return true;
+  }
+  if (compare(right1, right2, options) <= 0) {
+    throw new Error(
+      `Invalid filter values for between operation of ${rvalueMin} and ` +
+        `${rvalueMax}. Min ${JSON.stringify(right1)} not less than max ` +
+        JSON.stringify(right2) +
+        (options.caseInsensitive ? ' (caseInsensitive)' : ''),
     );
-  };
+  }
+  return (
+    compare(left, right1, options) <= 0 && compare(left, right2, options) > 0
+  );
 };
 
 const equalsOperation = (options, lvalue, rvalue) => {
@@ -164,33 +163,16 @@ const equalsOperation = (options, lvalue, rvalue) => {
   };
 };
 
-const greaterThanOperation = (options, lvalue, rvalue) => {
-  const normalize = normalization(options);
-  return (object, filters) => {
-    const left = object[lvalue];
-    const right = filters[rvalue];
-    // If the filter value is empty and strict is not enabled we skip the filter
-    // by returning true.
-    if (isNullOrEmpty(right) && !options.strict) {
-      return true;
-    }
-    return compare(left, right, normalize) < 0;
-  };
-};
+const greaterThanOperation = (options, lvalue, rvalue) => (object, filters) =>
+  skip(filters[rvalue], options) ||
+  compare(object[lvalue], filters[rvalue], options) < 0;
 
-const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => {
-  const normalize = normalization(options);
-  return (object, filters) => {
-    const left = object[lvalue];
-    const right = filters[rvalue];
-    // If the filter value is empty and strict is not enabled we skip the filter
-    // by returning true.
-    if (isNullOrEmpty(right) && !options.strict) {
-      return true;
-    }
-    return compare(left, right, normalize) <= 0;
-  };
-};
+const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => (
+  object,
+  filters,
+) =>
+  skip(filters[rvalue], options) ||
+  compare(object[lvalue], filters[rvalue], options) <= 0;
 
 const inOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
@@ -216,33 +198,16 @@ const inOperation = (options, lvalue, rvalue) => {
   };
 };
 
-const lessThanOperation = (options, lvalue, rvalue) => {
-  const normalize = normalization(options);
-  return (object, filters) => {
-    const left = object[lvalue];
-    const right = filters[rvalue];
-    // If the filter value is empty and strict is not enabled we skip the filter
-    // by returning true.
-    if (isNullOrEmpty(right) && !options.strict) {
-      return true;
-    }
-    return compare(left, right, normalize) > 0;
-  };
-};
+const lessThanOperation = (options, lvalue, rvalue) => (object, filters) =>
+  skip(filters[rvalue], options) ||
+  compare(object[lvalue], filters[rvalue], options) > 0;
 
-const lessThanOrEqualsOperation = (options, lvalue, rvalue) => {
-  const normalize = normalization(options);
-  return (object, filters) => {
-    const left = object[lvalue];
-    const right = filters[rvalue];
-    // If the filter value is empty and strict is not enabled we skip the filter
-    // by returning true.
-    if (isNullOrEmpty(right) && !options.strict) {
-      return true;
-    }
-    return compare(left, right, normalize) >= 0;
-  };
-};
+const lessThanOrEqualsOperation = (options, lvalue, rvalue) => (
+  object,
+  filters,
+) =>
+  skip(filters[rvalue], options) ||
+  compare(object[lvalue], filters[rvalue], options) >= 0;
 
 const startsWithOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
@@ -252,9 +217,13 @@ const startsWithOperation = (options, lvalue, rvalue) => {
       normalize(object[lvalue]).startsWith(normalize(filters[rvalue])));
 };
 
+const skip = (filterValue, options) =>
+  isNullOrEmpty(filterValue) && !options.strict;
+
 // Helper that normalizes comparing values when one or both of the values is
 // falsy. Our convention is (any truthy) > '' > null > undefined.
-const compare = (left, right, normalize) => {
+const compare = (left, right, options) => {
+  const normalize = options.caseInsensitive ? toLower : identity;
   if (left && right) {
     return normalize(right) > normalize(left)
       ? 1
