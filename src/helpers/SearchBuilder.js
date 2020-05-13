@@ -174,10 +174,7 @@ const greaterThanOperation = (options, lvalue, rvalue) => {
     if (isNullOrEmpty(right) && !options.strict) {
       return true;
     }
-    if (left && right) {
-      return normalize(object[lvalue]) > normalize(filters[rvalue]);
-    }
-    return compare(left, right) < 0;
+    return compare(left, right, normalize) < 0;
   };
 };
 
@@ -191,10 +188,7 @@ const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => {
     if (isNullOrEmpty(right) && !options.strict) {
       return true;
     }
-    if (left && right) {
-      return normalize(object[lvalue]) >= normalize(filters[rvalue]);
-    }
-    return compare(left, right) <= 0;
+    return compare(left, right, normalize) <= 0;
   };
 };
 
@@ -232,10 +226,7 @@ const lessThanOperation = (options, lvalue, rvalue) => {
     if (isNullOrEmpty(right) && !options.strict) {
       return true;
     }
-    if (left && right) {
-      return normalize(left) < normalize(right);
-    }
-    return compare(left, right) > 0;
+    return compare(left, right, normalize) > 0;
   };
 };
 
@@ -249,10 +240,7 @@ const lessThanOrEqualsOperation = (options, lvalue, rvalue) => {
     if (isNullOrEmpty(right) && !options.strict) {
       return true;
     }
-    if (left && right) {
-      return normalize(left) <= normalize(right);
-    }
-    return compare(left, right) >= 0;
+    return compare(left, right, normalize) >= 0;
   };
 };
 
