@@ -563,6 +563,29 @@ describe('defineFilter', () => {
       expect(fn(undefinedPerson, {})).toBe(true);
       expect(fn(undefinedPerson, { max: '' })).toBe(true);
       expect(fn(undefinedPerson, { max: null })).toBe(true);
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, { max: 'A' })).toBe(true);
+      expect(fn(nullPerson, { max: 'A' })).toBe(true);
+      expect(fn(emptyPerson, { max: 'A' })).toBe(true);
+    });
+
+    test('lessThan strict', () => {
+      const fn = defineFilter()
+        .lessThan('firstName', 'max', true)
+        .end();
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, {})).toBe(false);
+      expect(fn(undefinedPerson, { max: null })).toBe(true);
+      expect(fn(nullPerson, {})).toBe(false);
+      expect(fn(nullPerson, { max: null })).toBe(false);
+      expect(fn(nullPerson, { max: '' })).toBe(true);
+      expect(fn(emptyPerson, {})).toBe(false);
+      expect(fn(emptyPerson, { max: null })).toBe(false);
+      expect(fn(emptyPerson, { max: '' })).toBe(false);
+      expect(fn(emptyPerson, { max: 'A' })).toBe(true);
+      expect(fn(person, {})).toBe(false);
+      expect(fn(person, { max: null })).toBe(false);
+      expect(fn(person, { max: '' })).toBe(false);
     });
 
     test('lessThanOrEquals', () => {
@@ -583,6 +606,29 @@ describe('defineFilter', () => {
       expect(fn(undefinedPerson, {})).toBe(true);
       expect(fn(undefinedPerson, { max: '' })).toBe(true);
       expect(fn(undefinedPerson, { max: null })).toBe(true);
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, { max: 'A' })).toBe(true);
+      expect(fn(nullPerson, { max: 'A' })).toBe(true);
+      expect(fn(emptyPerson, { max: 'A' })).toBe(true);
+    });
+
+    test('lessThanOrEquals strict', () => {
+      const fn = defineFilter()
+        .lessThanOrEquals('firstName', 'max', true)
+        .end();
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, {})).toBe(true);
+      expect(fn(undefinedPerson, { max: null })).toBe(true);
+      expect(fn(nullPerson, {})).toBe(false);
+      expect(fn(nullPerson, { max: null })).toBe(true);
+      expect(fn(nullPerson, { max: '' })).toBe(true);
+      expect(fn(emptyPerson, {})).toBe(false);
+      expect(fn(emptyPerson, { max: null })).toBe(false);
+      expect(fn(emptyPerson, { max: '' })).toBe(true);
+      expect(fn(emptyPerson, { max: 'A' })).toBe(true);
+      expect(fn(person, {})).toBe(false);
+      expect(fn(person, { max: null })).toBe(false);
+      expect(fn(person, { max: '' })).toBe(false);
     });
 
     test('between', () => {

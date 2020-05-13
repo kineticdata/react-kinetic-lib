@@ -207,16 +207,36 @@ const inOperation = (options, lvalue, rvalue) => {
 
 const lessThanOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
-  return (object, filters) =>
-    isNullOrEmpty(filters[rvalue]) ||
-    normalize(object[lvalue]) < normalize(filters[rvalue]);
+  return (object, filters) => {
+    const left = object[lvalue];
+    const right = filters[rvalue];
+    // If the filter value is empty and strict is not enabled we skip the filter
+    // by returning true.
+    if (isNullOrEmpty(right) && !options.strict) {
+      return true;
+    }
+    if (left && right) {
+      return normalize(left) < normalize(right);
+    }
+    return compareFalsy(left, right) > 0;
+  };
 };
 
 const lessThanOrEqualsOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
-  return (object, filters) =>
-    isNullOrEmpty(filters[rvalue]) ||
-    normalize(object[lvalue]) <= normalize(filters[rvalue]);
+  return (object, filters) => {
+    const left = object[lvalue];
+    const right = filters[rvalue];
+    // If the filter value is empty and strict is not enabled we skip the filter
+    // by returning true.
+    if (isNullOrEmpty(right) && !options.strict) {
+      return true;
+    }
+    if (left && right) {
+      return normalize(left) <= normalize(right);
+    }
+    return compareFalsy(left, right) >= 0;
+  };
 };
 
 const startsWithOperation = (options, lvalue, rvalue) => {
