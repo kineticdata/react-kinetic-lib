@@ -57,18 +57,6 @@ describe('defineFilter', () => {
     expect(fn(person, { name: 'Alexa' })).toBe(false);
   });
 
-  // With non-empty filter values and object values it should behave the same
-  // as the `startsWith` without strict.
-  test('startsWith strict', () => {
-    const fn = defineFilter()
-      .startsWith('firstName', 'name', true)
-      .end();
-    expect(fn(person, { name: 'Alex' })).toBe(true);
-    expect(fn(person, { name: 'Ale' })).toBe(true);
-    expect(fn(person, { name: 'ALE' })).toBe(false);
-    expect(fn(person, { name: 'Alexa' })).toBe(false);
-  });
-
   test('startsWith caseInsensitive', () => {
     const fn = defineFilter(true)
       .startsWith('firstName', 'name')
@@ -459,6 +447,19 @@ describe('defineFilter', () => {
       expect(fn(person, {})).toBe(true);
       expect(fn(person, { name: '' })).toBe(true);
       expect(fn(person, { name: null })).toBe(true);
+      expect(fn(emptyPerson, {})).toBe(true);
+      expect(fn(emptyPerson, { name: '' })).toBe(true);
+      expect(fn(emptyPerson, { name: null })).toBe(true);
+      expect(fn(nullPerson, {})).toBe(true);
+      expect(fn(nullPerson, { name: '' })).toBe(true);
+      expect(fn(nullPerson, { name: null })).toBe(true);
+      expect(fn(undefinedPerson, {})).toBe(true);
+      expect(fn(undefinedPerson, { name: '' })).toBe(true);
+      expect(fn(undefinedPerson, { name: null })).toBe(true);
+      // Filtering '', null, undefined by startsWith 'a' should result in false.
+      expect(fn(emptyPerson, { name: 'a' })).toBe(false);
+      expect(fn(nullPerson, { name: 'a' })).toBe(false);
+      expect(fn(undefinedPerson, { name: 'a' })).toBe(false);
     });
 
     test('greaterThan', () => {
