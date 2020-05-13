@@ -163,11 +163,26 @@ const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => {
 
 const inOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
-  return (object, filters) =>
-    (!options.strict && isNullOrEmpty(filters[rvalue])) ||
-    (object[lvalue] &&
-      isArray(filters[rvalue]) &&
-      normalize(filters[rvalue]).includes(normalize(object[lvalue])));
+  return (object, filters) => {
+    // If the filter value is [], null, undefined then we check for the strict
+    // option, if strict always return false and if not strict always return
+    // true (because we are effectively skipping this filter operation).
+    if (isNullOrEmpty(filters[rvalue]) && !isString(filters[rvalue])) {
+      return !options.strict;
+    }
+    // If we got a non-empty filter value that isn't an array (like a string)
+    // we throw an error.
+    if (!isArray(filters[rvalue])) {
+      throw new Error(
+        `Invalid filter value for in operation of ${rvalue} filter. Got ${JSON.stringify(
+          filters[rvalue],
+        )}. Require an array.`,
+      );
+    }
+    // Finally perform the operation by checking the filter value for membership
+    // of the object value.
+    return normalize(filters[rvalue]).includes(normalize(object[lvalue]));
+  };
 };
 
 const lessThanOperation = (options, lvalue, rvalue) => {
