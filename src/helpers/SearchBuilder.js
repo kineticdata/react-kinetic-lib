@@ -25,32 +25,32 @@ class SearchBuilder {
     return pushExpression(this, {}, 'and');
   }
 
-  between(field, minValue, maxValue) {
-    return pushExpression(this, {}, 'bt', field, minValue, maxValue);
+  between(field, minValue, maxValue, strict) {
+    return pushExpression(this, { strict }, 'bt', field, minValue, maxValue);
   }
 
   equals(field, value, strict) {
     return pushExpression(this, { strict }, 'eq', field, value);
   }
 
-  greaterThan(field, value) {
-    return pushExpression(this, {}, 'gt', field, value);
+  greaterThan(field, value, strict) {
+    return pushExpression(this, { strict }, 'gt', field, value);
   }
 
-  greaterThanOrEquals(field, value) {
-    return pushExpression(this, {}, 'gte', field, value);
+  greaterThanOrEquals(field, value, strict) {
+    return pushExpression(this, { strict }, 'gte', field, value);
   }
 
   in(field, values, strict) {
     return pushExpression(this, { strict }, 'in', field, values);
   }
 
-  lessThan(field, value) {
-    return pushExpression(this, {}, 'lt', field, value);
+  lessThan(field, value, strict) {
+    return pushExpression(this, { strict }, 'lt', field, value);
   }
 
-  lessThanOrEquals(field, value) {
-    return pushExpression(this, {}, 'lte', field, value);
+  lessThanOrEquals(field, value, strict) {
+    return pushExpression(this, { strict }, 'lte', field, value);
   }
 
   or() {
@@ -149,16 +149,36 @@ const equalsOperation = (options, lvalue, rvalue) => {
 
 const greaterThanOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
-  return (object, filters) =>
-    isNullOrEmpty(filters[rvalue]) ||
-    normalize(object[lvalue]) > normalize(filters[rvalue]);
+  return (object, filters) => {
+    const left = object[lvalue];
+    const right = filters[rvalue];
+    // If the filter value is empty and strict is not enabled we skip the filter
+    // by returning true.
+    if (isNullOrEmpty(right) && !options.strict) {
+      return true;
+    }
+    if (left && right) {
+      return normalize(object[lvalue]) > normalize(filters[rvalue]);
+    }
+    return compareFalsy(left, right) < 0;
+  };
 };
 
 const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
-  return (object, filters) =>
-    isNullOrEmpty(filters[rvalue]) ||
-    normalize(object[lvalue]) >= normalize(filters[rvalue]);
+  return (object, filters) => {
+    const left = object[lvalue];
+    const right = filters[rvalue];
+    // If the filter value is empty and strict is not enabled we skip the filter
+    // by returning true.
+    if (isNullOrEmpty(right) && !options.strict) {
+      return true;
+    }
+    if (left && right) {
+      return normalize(object[lvalue]) >= normalize(filters[rvalue]);
+    }
+    return compareFalsy(left, right) <= 0;
+  };
 };
 
 const inOperation = (options, lvalue, rvalue) => {
@@ -205,6 +225,15 @@ const startsWithOperation = (options, lvalue, rvalue) => {
     isNullOrEmpty(filters[rvalue]) ||
     (object[lvalue] &&
       normalize(object[lvalue]).startsWith(normalize(filters[rvalue])));
+};
+
+// Helper that normalizes comparing values when one or both of the values is
+// falsy. Our convention is (any truthy) > '' > null > undefined;
+const compareFalsy = (left, right) => {
+  const falsyRanks = [undefined, null, ''];
+  const leftRank = !left ? falsyRanks.indexOf(left) : 3;
+  const rightRank = !right ? falsyRanks.indexOf(right) : 3;
+  return rightRank > leftRank ? 1 : rightRank === leftRank ? 0 : -1;
 };
 
 const normalization = options => (options.caseInsensitive ? toLower : identity);

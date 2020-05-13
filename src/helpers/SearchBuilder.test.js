@@ -466,36 +466,123 @@ describe('defineFilter', () => {
       const fn = defineFilter()
         .greaterThan('firstName', 'min')
         .end();
+      // No matter the object value, when the filter value is undefined, null,
+      // or empty array the filter is ignored
       expect(fn(person, {})).toBe(true);
       expect(fn(person, { min: '' })).toBe(true);
       expect(fn(person, { min: null })).toBe(true);
+      expect(fn(emptyPerson, {})).toBe(true);
+      expect(fn(emptyPerson, { min: '' })).toBe(true);
+      expect(fn(emptyPerson, { min: null })).toBe(true);
+      expect(fn(nullPerson, {})).toBe(true);
+      expect(fn(nullPerson, { min: '' })).toBe(true);
+      expect(fn(nullPerson, { min: null })).toBe(true);
+      expect(fn(undefinedPerson, {})).toBe(true);
+      expect(fn(undefinedPerson, { min: '' })).toBe(true);
+      expect(fn(undefinedPerson, { min: null })).toBe(true);
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, { min: 'A' })).toBe(false);
+      expect(fn(nullPerson, { min: 'A' })).toBe(false);
+      expect(fn(emptyPerson, { min: 'A' })).toBe(false);
+    });
+
+    test('greaterThan strict', () => {
+      const fn = defineFilter()
+        .greaterThan('firstName', 'min', true)
+        .end();
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, {})).toBe(false);
+      expect(fn(nullPerson, {})).toBe(true);
+      expect(fn(nullPerson, { min: null })).toBe(false);
+      expect(fn(emptyPerson, {})).toBe(true);
+      expect(fn(emptyPerson, { min: null })).toBe(true);
+      expect(fn(emptyPerson, { min: '' })).toBe(false);
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { min: null })).toBe(true);
+      expect(fn(person, { min: '' })).toBe(true);
     });
 
     test('greaterThanOrEquals', () => {
       const fn = defineFilter()
         .greaterThanOrEquals('firstName', 'min')
         .end();
+      // No matter the object value, when the filter value is undefined, null,
+      // or empty array the filter is ignored
       expect(fn(person, {})).toBe(true);
       expect(fn(person, { min: '' })).toBe(true);
       expect(fn(person, { min: null })).toBe(true);
+      expect(fn(emptyPerson, {})).toBe(true);
+      expect(fn(emptyPerson, { min: '' })).toBe(true);
+      expect(fn(emptyPerson, { min: null })).toBe(true);
+      expect(fn(nullPerson, {})).toBe(true);
+      expect(fn(nullPerson, { min: '' })).toBe(true);
+      expect(fn(nullPerson, { min: null })).toBe(true);
+      expect(fn(undefinedPerson, {})).toBe(true);
+      expect(fn(undefinedPerson, { min: '' })).toBe(true);
+      expect(fn(undefinedPerson, { min: null })).toBe(true);
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, { min: 'A' })).toBe(false);
+      expect(fn(nullPerson, { min: 'A' })).toBe(false);
+      expect(fn(emptyPerson, { min: 'A' })).toBe(false);
+    });
+
+    test('greaterThanOrEquals strict', () => {
+      const fn = defineFilter()
+        .greaterThanOrEquals('firstName', 'min', true)
+        .end();
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, {})).toBe(true);
+      expect(fn(undefinedPerson, { min: null })).toBe(false);
+      expect(fn(nullPerson, {})).toBe(true);
+      expect(fn(nullPerson, { min: null })).toBe(true);
+      expect(fn(nullPerson, { min: '' })).toBe(false);
+      expect(fn(emptyPerson, {})).toBe(true);
+      expect(fn(emptyPerson, { min: null })).toBe(true);
+      expect(fn(emptyPerson, { min: '' })).toBe(true);
+      expect(fn(emptyPerson, { min: 'A' })).toBe(false);
+      expect(fn(person, {})).toBe(true);
+      expect(fn(person, { min: null })).toBe(true);
+      expect(fn(person, { min: '' })).toBe(true);
     });
 
     test('lessThan', () => {
       const fn = defineFilter()
         .lessThan('firstName', 'max')
         .end();
+      // No matter the object value, when the filter value is undefined, null,
+      // or empty array the filter is ignored
       expect(fn(person, {})).toBe(true);
       expect(fn(person, { max: '' })).toBe(true);
       expect(fn(person, { max: null })).toBe(true);
+      expect(fn(emptyPerson, {})).toBe(true);
+      expect(fn(emptyPerson, { max: '' })).toBe(true);
+      expect(fn(emptyPerson, { max: null })).toBe(true);
+      expect(fn(nullPerson, {})).toBe(true);
+      expect(fn(nullPerson, { max: '' })).toBe(true);
+      expect(fn(nullPerson, { max: null })).toBe(true);
+      expect(fn(undefinedPerson, {})).toBe(true);
+      expect(fn(undefinedPerson, { max: '' })).toBe(true);
+      expect(fn(undefinedPerson, { max: null })).toBe(true);
     });
 
     test('lessThanOrEquals', () => {
       const fn = defineFilter()
         .lessThanOrEquals('firstName', 'max')
         .end();
+      // No matter the object value, when the filter value is undefined, null,
+      // or empty array the filter is ignored
       expect(fn(person, {})).toBe(true);
       expect(fn(person, { max: '' })).toBe(true);
       expect(fn(person, { max: null })).toBe(true);
+      expect(fn(emptyPerson, {})).toBe(true);
+      expect(fn(emptyPerson, { max: '' })).toBe(true);
+      expect(fn(emptyPerson, { max: null })).toBe(true);
+      expect(fn(nullPerson, {})).toBe(true);
+      expect(fn(nullPerson, { max: '' })).toBe(true);
+      expect(fn(nullPerson, { max: null })).toBe(true);
+      expect(fn(undefinedPerson, {})).toBe(true);
+      expect(fn(undefinedPerson, { max: '' })).toBe(true);
+      expect(fn(undefinedPerson, { max: null })).toBe(true);
     });
 
     test('between', () => {
