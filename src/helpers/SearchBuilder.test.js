@@ -234,26 +234,48 @@ describe('defineFilter', () => {
     );
   });
 
-  describe('empty filters', function() {
+  describe('empty values / filters', function() {
+    const emptyPerson = { firstName: '' };
+    const nullPerson = { firstName: null };
+    const undefinedPerson = {};
+    const emptyFilter = { name: '' };
+    const nullFilter = { name: null };
+    const undefinedFilter = {};
+
     test('equals', () => {
       const fn = defineFilter()
         .equals('firstName', 'name')
         .end();
-      expect(fn(person, {})).toBe(true);
-      expect(fn(person, { name: '' })).toBe(true);
-      expect(fn(person, { name: null })).toBe(true);
+      // No matter the object value, when the filter value is
+      // undefined, null, or empty the filter is ignored.
+      expect(fn(person, undefinedFilter)).toBe(true);
+      expect(fn(emptyPerson, undefinedFilter)).toBe(true);
+      expect(fn(nullPerson, undefinedFilter)).toBe(true);
+      expect(fn(undefinedPerson, undefinedFilter)).toBe(true);
+      expect(fn(person, nullFilter)).toBe(true);
+      expect(fn(emptyPerson, nullFilter)).toBe(true);
+      expect(fn(nullPerson, nullFilter)).toBe(true);
+      expect(fn(undefinedPerson, nullFilter)).toBe(true);
+      expect(fn(person, emptyFilter)).toBe(true);
+      expect(fn(emptyPerson, emptyFilter)).toBe(true);
+      expect(fn(nullPerson, emptyFilter)).toBe(true);
+      expect(fn(undefinedPerson, emptyFilter)).toBe(true);
+      // Filtering '', null, undefined by 'a' should result in false.
+      expect(fn(emptyPerson, { name: 'a' })).toBe(false);
+      expect(fn(nullPerson, { name: 'a' })).toBe(false);
+      expect(fn(undefinedPerson, { name: 'a' })).toBe(false);
     });
 
     test('equals strict', () => {
       const fn = defineFilter()
         .equals('firstName', 'name', true)
         .end();
-      expect(fn(person, {})).toBe(false);
-      expect(fn(person, { name: '' })).toBe(false);
-      expect(fn(person, { name: null })).toBe(false);
-      expect(fn({}, {})).toBe(true);
-      expect(fn({ firstName: '' }, { name: '' })).toBe(true);
-      expect(fn({ firstName: null }, { name: null })).toBe(true);
+      expect(fn(person, undefinedFilter)).toBe(false);
+      expect(fn(person, nullFilter)).toBe(false);
+      expect(fn(person, emptyFilter)).toBe(false);
+      expect(fn(undefinedPerson, undefinedFilter)).toBe(true);
+      expect(fn(nullPerson, nullFilter)).toBe(true);
+      expect(fn(emptyPerson, emptyFilter)).toBe(true);
     });
 
     test('in', () => {
@@ -335,9 +357,5 @@ describe('defineFilter', () => {
       expect(fn(person, { min: 'a', max: '' })).toBe(true);
       expect(fn(person, { min: 'a', max: null })).toBe(true);
     });
-  });
-
-  describe('empty values', function() {
-    // TODO: Write test cases handling lvalue being undefined, null, ''
   });
 });

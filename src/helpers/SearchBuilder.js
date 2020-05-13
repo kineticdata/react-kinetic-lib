@@ -138,9 +138,13 @@ const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => {
 
 const equalsOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
-  return (object, filters) =>
-    (!options.strict && isNullOrEmpty(filters[rvalue])) ||
-    normalize(object[lvalue]) === normalize(filters[rvalue]);
+  return (object, filters) => {
+    // Do not apply filter when the filter value is empty and strict is not set.
+    if (isNullOrEmpty(filters[rvalue]) && !options.strict) {
+      return true;
+    }
+    return normalize(object[lvalue]) === normalize(filters[rvalue]);
+  };
 };
 
 const greaterThanOperation = (options, lvalue, rvalue) => {
