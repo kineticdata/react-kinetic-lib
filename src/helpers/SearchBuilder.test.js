@@ -267,6 +267,8 @@ describe('defineFilter', () => {
     // case sensitive
     expect(fn(person, { min: 'aa', max: 'az' })).toBe(false);
     expect(fn(person, { min: 'Aa', max: 'Ab' })).toBe(false);
+    // tests a min - max range that relies on case sensitivity
+    expect(fn(person, { min: 'A', max: 'a' })).toBe(true);
   });
 
   // With non-empty filter values and object values it should behave the same
@@ -292,6 +294,27 @@ describe('defineFilter', () => {
     expect(fn(person, { min: 'Aa', max: 'Az' })).toBe(true);
     expect(fn(person, { min: 'aa', max: 'az' })).toBe(true);
     expect(fn(person, { min: 'Aa', max: 'Ab' })).toBe(false);
+    expect(() => {
+      fn(person, { min: 'A', max: 'a' });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid filter values for between operation of min and max. Min \\"A\\" not less than max \\"a\\" (caseInsensitive)"`,
+    );
+  });
+
+  test('between invalid', () => {
+    const fn = defineFilter(true)
+      .between('firstName', 'min', 'max')
+      .end();
+    expect(() => {
+      fn(person, { min: 'z', max: 'a' });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid filter values for between operation of min and max. Min \\"z\\" not less than max \\"a\\" (caseInsensitive)"`,
+    );
+    expect(() => {
+      fn(person, { min: 'a', max: 'a' });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid filter values for between operation of min and max. Min \\"a\\" not less than max \\"a\\" (caseInsensitive)"`,
+    );
   });
 
   test('or', () => {
@@ -638,8 +661,84 @@ describe('defineFilter', () => {
       expect(fn(person, {})).toBe(true);
       expect(fn(person, { min: '', max: 'z' })).toBe(true);
       expect(fn(person, { min: null, max: 'z' })).toBe(true);
-      expect(fn(person, { min: 'a', max: '' })).toBe(true);
-      expect(fn(person, { min: 'a', max: null })).toBe(true);
+      expect(fn(person, { min: 'A', max: '' })).toBe(true);
+      expect(fn(person, { min: 'A', max: null })).toBe(true);
+      expect(fn(emptyPerson, {})).toBe(true);
+      expect(fn(emptyPerson, { min: '', max: 'z' })).toBe(true);
+      expect(fn(emptyPerson, { min: null, max: 'z' })).toBe(true);
+      expect(fn(emptyPerson, { min: 'A', max: '' })).toBe(true);
+      expect(fn(emptyPerson, { min: 'A', max: null })).toBe(true);
+      expect(fn(nullPerson, {})).toBe(true);
+      expect(fn(nullPerson, { min: '', max: 'z' })).toBe(true);
+      expect(fn(nullPerson, { min: null, max: 'z' })).toBe(true);
+      expect(fn(nullPerson, { min: 'A', max: '' })).toBe(true);
+      expect(fn(nullPerson, { min: 'A', max: null })).toBe(true);
+      expect(fn(undefinedPerson, {})).toBe(true);
+      expect(fn(undefinedPerson, { min: '', max: 'z' })).toBe(true);
+      expect(fn(undefinedPerson, { min: null, max: 'z' })).toBe(true);
+      expect(fn(undefinedPerson, { min: 'A', max: '' })).toBe(true);
+      expect(fn(undefinedPerson, { min: 'A', max: null })).toBe(true);
+      // 'A' > '' > null > undefined
+      expect(fn(undefinedPerson, { min: 'A', max: 'z' })).toBe(false);
+      expect(fn(nullPerson, { min: 'A', max: 'z' })).toBe(false);
+      expect(fn(emptyPerson, { min: 'A', max: 'z' })).toBe(false);
+    });
+
+    test('between strict', () => {
+      const fn = defineFilter()
+        .between('firstName', 'min', 'max', true)
+        .end();
+      // 'Alex' > 'A'
+      expect(fn(person, { min: undefined, max: 'A' })).toBe(false);
+      expect(fn(person, { min: undefined, max: 'z' })).toBe(true);
+      expect(fn(emptyPerson, { min: '', max: 'z' })).toBe(true);
+      expect(fn(emptyPerson, { min: null, max: 'z' })).toBe(true);
+      expect(fn(emptyPerson, { min: undefined, max: 'z' })).toBe(true);
+      expect(fn(emptyPerson, { min: undefined, max: '' })).toBe(false);
+      expect(fn(nullPerson, { min: '', max: 'z' })).toBe(false);
+      expect(fn(nullPerson, { min: null, max: 'z' })).toBe(true);
+      expect(fn(nullPerson, { min: undefined, max: 'z' })).toBe(true);
+      expect(fn(nullPerson, { min: null, max: '' })).toBe(true);
+      expect(fn(nullPerson, { min: undefined, max: null })).toBe(false);
+      expect(fn(undefinedPerson, { min: null, max: 'z' })).toBe(false);
+      expect(fn(undefinedPerson, { min: undefined, max: 'z' })).toBe(true);
+      expect(fn(undefinedPerson, { min: undefined, max: null })).toBe(true);
+    });
+
+    test('between strict invalid', () => {
+      const fn = defineFilter()
+        .between('firstName', 'min', 'max', true)
+        .end();
+
+      expect(() => {
+        fn(person, { min: 'a', max: undefined });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid filter values for between operation of min and max. Min \\"a\\" not less than max undefined"`,
+      );
+
+      expect(() => {
+        fn(person, { min: 'a', max: '' });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid filter values for between operation of min and max. Min \\"a\\" not less than max \\"\\""`,
+      );
+
+      expect(() => {
+        fn(person, { min: '', max: null });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid filter values for between operation of min and max. Min \\"\\" not less than max null"`,
+      );
+
+      expect(() => {
+        fn(person, { min: null, max: undefined });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid filter values for between operation of min and max. Min null not less than max undefined"`,
+      );
+
+      expect(() => {
+        fn(person, { min: '', max: '' });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid filter values for between operation of min and max. Min \\"\\" not less than max \\"\\""`,
+      );
     });
   });
 });

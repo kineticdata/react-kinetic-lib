@@ -129,11 +129,28 @@ const orOperation = expressions => {
 
 const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => {
   const normalize = normalization(options);
-  return (object, filters) =>
-    isNullOrEmpty(filters[rvalueMin]) ||
-    isNullOrEmpty(filters[rvalueMax]) ||
-    (normalize(object[lvalue]) >= normalize(filters[rvalueMin]) &&
-      normalize(object[lvalue]) < normalize(filters[rvalueMax]));
+  return (object, filters) => {
+    const left = object[lvalue];
+    const right1 = filters[rvalueMin];
+    const right2 = filters[rvalueMax];
+    // If the filter value is empty and strict is not enabled we skip the filter
+    // by returning true.
+    if ((isNullOrEmpty(right1) || isNullOrEmpty(right2)) && !options.strict) {
+      return true;
+    }
+    if (compare(right1, right2, normalize) <= 0) {
+      throw new Error(
+        `Invalid filter values for between operation of ${rvalueMin} and ` +
+          `${rvalueMax}. Min ${JSON.stringify(right1)} not less than max ` +
+          JSON.stringify(right2) +
+          (options.caseInsensitive ? ' (caseInsensitive)' : ''),
+      );
+    }
+    return (
+      compare(left, right1, normalize) <= 0 &&
+      compare(left, right2, normalize) > 0
+    );
+  };
 };
 
 const equalsOperation = (options, lvalue, rvalue) => {
@@ -160,7 +177,7 @@ const greaterThanOperation = (options, lvalue, rvalue) => {
     if (left && right) {
       return normalize(object[lvalue]) > normalize(filters[rvalue]);
     }
-    return compareFalsy(left, right) < 0;
+    return compare(left, right) < 0;
   };
 };
 
@@ -177,7 +194,7 @@ const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => {
     if (left && right) {
       return normalize(object[lvalue]) >= normalize(filters[rvalue]);
     }
-    return compareFalsy(left, right) <= 0;
+    return compare(left, right) <= 0;
   };
 };
 
@@ -218,7 +235,7 @@ const lessThanOperation = (options, lvalue, rvalue) => {
     if (left && right) {
       return normalize(left) < normalize(right);
     }
-    return compareFalsy(left, right) > 0;
+    return compare(left, right) > 0;
   };
 };
 
@@ -235,7 +252,7 @@ const lessThanOrEqualsOperation = (options, lvalue, rvalue) => {
     if (left && right) {
       return normalize(left) <= normalize(right);
     }
-    return compareFalsy(left, right) >= 0;
+    return compare(left, right) >= 0;
   };
 };
 
@@ -248,12 +265,20 @@ const startsWithOperation = (options, lvalue, rvalue) => {
 };
 
 // Helper that normalizes comparing values when one or both of the values is
-// falsy. Our convention is (any truthy) > '' > null > undefined;
-const compareFalsy = (left, right) => {
-  const falsyRanks = [undefined, null, ''];
-  const leftRank = !left ? falsyRanks.indexOf(left) : 3;
-  const rightRank = !right ? falsyRanks.indexOf(right) : 3;
-  return rightRank > leftRank ? 1 : rightRank === leftRank ? 0 : -1;
+// falsy. Our convention is (any truthy) > '' > null > undefined.
+const compare = (left, right, normalize) => {
+  if (left && right) {
+    return normalize(right) > normalize(left)
+      ? 1
+      : normalize(right) === normalize(left)
+      ? 0
+      : -1;
+  } else {
+    const falsyRanks = [undefined, null, ''];
+    const leftRank = !left ? falsyRanks.indexOf(left) : 3;
+    const rightRank = !right ? falsyRanks.indexOf(right) : 3;
+    return rightRank > leftRank ? 1 : rightRank === leftRank ? 0 : -1;
+  }
 };
 
 const normalization = options => (options.caseInsensitive ? toLower : identity);
