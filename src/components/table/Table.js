@@ -9,8 +9,10 @@ import {
   mountTable,
   unmountTable,
   isClientSide,
+  filterFormKey,
 } from './Table.redux';
 import { generateKey } from '../../helpers';
+import { generateForm } from '../form/Form';
 
 const fromColumnSet = (columns, columnSet) =>
   columnSet.map(cs => columns.find(c => c.get('value') === cs));
@@ -26,9 +28,12 @@ const TableComponent = props => {
       rows,
       error,
       appliedFilters,
+      components,
     } = props;
     const table = buildTable(props);
-    const filter = buildFilterLayout(props);
+    const filter = components.FilterForm
+      ? buildFilterForm(props)
+      : buildFilterLayout(props);
     const pagination = buildPaginationControl(props);
 
     return children({
@@ -82,6 +87,45 @@ const buildField = ({
       options={options}
       tableOptions={tableOptions}
       filters={filters}
+    />
+  );
+};
+
+const filtersToFields = components =>
+  Map({
+    FormButtons: components.FilterFormButtons,
+    FormError: components.FilterFormError,
+    FormLayout: components.FilterFormLayout,
+
+    AttributesField: components.AttributesFilter,
+    CheckboxField: components.CheckboxFilter,
+    CodeField: components.CodeFilter,
+    FormField: components.FormFilter,
+    FormMultiField: components.FormMultiFilter,
+    PasswordField: components.PasswordFilter,
+    RadioField: components.RadioFilter,
+    TeamField: components.TeamFilter,
+    TeamMultiField: components.TeamMultiFilter,
+    SelectField: components.SelectFilter,
+    SelectMultiField: components.SelectMultiFilter,
+    TextField: components.TextFilter,
+    TextMultiField: components.TextMultiFilter,
+    UserField: components.UserFilter,
+    UserMultiField: components.UserMultiFilter,
+    TableField: components.TableFilter,
+  }).filter(c => !!c);
+
+const buildFilterForm = props => {
+  const FilterForm = props.components.FilterForm;
+  // Build the form filter components.
+  const components = filtersToFields(props.components);
+
+  return (
+    <FilterForm
+      formKey={filterFormKey(props.tableKey)}
+      tableKey={props.tableKey}
+      components={components}
+      alterFields={props.alterFilters}
     />
   );
 };
@@ -526,7 +570,7 @@ const TableImpl = compose(
   }),
 )(TableComponent);
 
-export const generateColumns = (columns, addColumns, alterColumns) =>
+export const generateColumns = (columns, addColumns = [], alterColumns = {}) =>
   List(addColumns)
     .concat(columns)
     .map(c => Map({ ...c, ...alterColumns[c.value], value: c.value }));
@@ -540,7 +584,12 @@ export const extractColumnComponents = columns =>
       Map(),
     );
 
-export const generateTable = ({ tableOptions, ...setObjects }) => props => {
+export const generateTable = ({
+  tableOptions = [],
+  filterDataSources = () => ({}),
+  filters,
+  ...setObjects
+}) => props => {
   const tableOptionProps = tableOptions
     ? tableOptions.reduce((to, opt) => {
         to[opt] = props[opt];
@@ -548,13 +597,36 @@ export const generateTable = ({ tableOptions, ...setObjects }) => props => {
       }, {})
     : {};
 
+  let FilterForm;
+  if (filters) {
+    FilterForm = generateForm({
+      dataSources: filterDataSources,
+      fields: filters,
+      formOptions: ['tableKey', ...tableOptions],
+      handleSubmit: ({ tableKey }) => values => {
+        // Legacy filters.
+        const appliedFilters = values.map((value, key) => {
+          const column = generateColumns(
+            setObjects.columns,
+            props.addColumns,
+            props.alterColumns,
+          ).find(c => c.get('value') === key);
+          return Map({ value, column });
+        });
+        console.log('Should apply filters', tableKey, appliedFilters.toJS());
+        dispatch('APPLY_FILTER_FORM', { tableKey, appliedFilters });
+      },
+    });
+  }
+
   const setProps = {
-    ...setObjects,
-    tableOptions: { ...props.tableOptions, ...tableOptionProps },
+    ...setObjects, // sortable
+    tableOptions: { ...tableOptionProps },
     tableKey: props.tableKey,
     alterColumns: props.alterColumns,
     addColumns: props.addColumns,
     columnSet: props.columnSet,
+    components: { FilterForm, ...props.components },
     pageSize: props.pageSize,
     defaultSortColumn: props.defaultSortColumn,
     defaultSortDirection: props.defaultSortDirection,
@@ -633,7 +705,7 @@ Table.propTypes = {
   /** An array or list of data. */
   data: PropTypes.array,
   /** An object describing how a table fetches remote data. */
-  dataSource: PropTypes.object,
+  dataSource: PropTypes.func,
   /**
    * Calculated row data from the datasource mechanism.
    * @ignore

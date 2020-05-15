@@ -12,7 +12,7 @@ const mountForm = ({
   fields = () => () => [],
   handleSubmit = () => {},
   formOptions = {},
-  ...configurationProps
+  ...formProps
 }) => {
   // Generate a Form using the options defined by the particular test case.
   const Form = generateForm({
@@ -26,23 +26,20 @@ const mountForm = ({
   return new Promise(resolve => {
     const result = mount(
       <KineticLib components={{ fields: mockFieldConfig }}>
-        <Form
-          formKey={FORM_KEY}
-          uncontrolled
-          {...configurationProps}
-          {...formOptions}
-        />
+        <Form formKey={FORM_KEY} uncontrolled {...formProps} {...formOptions} />
       </KineticLib>,
     );
-    const ready = () => !!store.getState().getIn(['forms', 'test', 'fields']);
+    const ready = () => !!store.getState().getIn(['forms', FORM_KEY, 'fields']);
     if (ready()) {
       result.update();
       resolve(result);
     } else {
-      store.subscribe(() => {
+      const unsub = store.subscribe(() => {
         if (ready()) {
           result.update();
           resolve(result);
+          // Remove the store listener since we're done.
+          unsub();
         }
       });
     }

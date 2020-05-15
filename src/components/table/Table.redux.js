@@ -2,6 +2,7 @@ import { List, Map, fromJS } from 'immutable';
 import isarray from 'isarray';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { dispatch, regHandlers, regSaga } from '../../store';
+import { mountForm, unmountForm } from '..';
 
 export const hasData = data => isarray(data) || data instanceof List;
 const noop = () => null;
@@ -213,6 +214,17 @@ regHandlers({
         .set('pageTokens', List())
         .set('error', null),
     ),
+  APPLY_FILTER_FORM: (state, { payload: { tableKey, appliedFilters } }) =>
+    state.updateIn(['tables', tableKey], table =>
+      table
+        .set('loading', true)
+        .set('appliedFilters', appliedFilters)
+        .set('pageOffset', 0)
+        .set('currentPageToken', null)
+        .set('nextPageToken', null)
+        .set('pageTokens', List())
+        .set('error', null),
+    ),
   REFETCH_TABLE_DATA: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
       tableData.get('dataSource')
@@ -275,6 +287,7 @@ regSaga(takeEvery('PREV_PAGE', calculateRowsTask));
 regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
 regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
+regSaga(takeEvery('APPLY_FILTER_FORM', calculateRowsTask));
 regSaga(takeEvery('REFETCH_TABLE_DATA', calculateRowsTask));
 
 export const operations = Map({
@@ -409,8 +422,16 @@ const calculateRows = tableData => {
   }
 };
 
-export const mountTable = tableKey => dispatch('MOUNT_TABLE', { tableKey });
-export const unmountTable = tableKey => dispatch('UNMOUNT_TABLE', { tableKey });
+export const filterFormKey = tableKey => `${tableKey}.filter-form`;
+
+export const mountTable = tableKey => {
+  dispatch('MOUNT_TABLE', { tableKey });
+  mountForm(filterFormKey(tableKey));
+};
+export const unmountTable = tableKey => {
+  dispatch('UNMOUNT_TABLE', { tableKey });
+  unmountForm(filterFormKey(tableKey));
+};
 export const configureTable = payload => {
   dispatch('CONFIGURE_TABLE', payload);
 };

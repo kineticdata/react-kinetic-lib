@@ -66,6 +66,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
+    "@types/jest": "^25.2.1",
     "babel-eslint": "9.0.0",
     "babel-plugin-prismjs": "^1.1.1",
     "babel-polyfill": "^6.26.0",

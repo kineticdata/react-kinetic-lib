@@ -23,6 +23,8 @@ export {
   serializeForm,
   submitForm,
   unmountForm,
+  // Don't keep.
+  generateForm,
 } from './form/Form';
 export { FormState } from './form/FormState';
 
@@ -36,7 +38,11 @@ export {
   clearFilters,
   isValueEmpty,
 } from './table/Table.redux';
-export { Table } from './table/Table';
+export {
+  Table,
+  // Don't keep.
+  generateTable,
+} from './table/Table';
 
 // Tree Builder
 export {
