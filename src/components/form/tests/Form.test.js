@@ -86,23 +86,23 @@ describe('dataSources', () => {
 
 describe('fields', () => {
   describe('constraint', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('constraintMessage', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('enabled', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('helpText', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('initialValue', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('label', () => {
@@ -153,35 +153,35 @@ describe('fields', () => {
   });
 
   describe('language', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('name', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('onChange', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('options', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('pattern', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('patternMessage', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('placeholder', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('renderAttributes', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('required', () => {
@@ -270,64 +270,177 @@ describe('fields', () => {
   });
 
   describe('requiredMessage', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('search', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('serialize', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('transient', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 
   describe('type', () => {
     describe('attributes', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'attributes',
+            },
+          ],
+        });
+        // options should default to an empty list
+        // value should default to empty map
+        expect(result.find('AttributesFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
 
     describe('checkbox', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'checkbox',
+            },
+          ],
+        });
+        // value should default to false
+        expect(result.find('CheckboxFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
     });
 
     describe('code', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'code',
+            },
+          ],
+        });
+        // options should default to an empty list and language should be passed
+        // value should default to empty string
+        expect(result.find('CodeFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= valid language', async () => {});
+      test('=<<TODO>>= invalid language', async () => {});
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
 
     describe('form', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'form',
+            },
+          ],
+        });
+        // options should default to an empty list
+        // search should default to an empty map
+        // value should default to empty string
+        expect(result.find('FormFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
+      test('=<<TODO>>= valid search', async () => {});
+      test('=<<TODO>>= invalid search', async () => {});
     });
 
     describe('form-multi', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'form-multi',
+            },
+          ],
+        });
+        // options should default to an empty list
+        // search should default to an empty map
+        // value should default to empty array, (but doesn't right now)
+        expect(result.find('FormMultiFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
+      test('=<<TODO>>= valid search', async () => {});
+      test('=<<TODO>>= invalid search', async () => {});
     });
 
     describe('password', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'password',
+            },
+          ],
+        });
+        // value should default to empty string
+        expect(result.find('PasswordFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
     });
 
     describe('radio', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'radio',
+            },
+          ],
+        });
+        // options should default to an empty list
+        // value should default to empty string
+        expect(result.find('RadioFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
 
     describe('table', function() {
-      test('>>=TODO>>=', async () => {});
-    });
-
-    describe('team', function() {
-      test('>>=TODO>>=', async () => {});
-    });
-
-    describe('team-multi', function() {
-      test('>>=TODO>>=', async () => {});
+      test('=<<TODO>>=', async () => {});
     });
 
     describe('select', () => {
-      test('no options', async () => {
+      test('minimal', async () => {
         const result = await mountForm({
           fields: () => () => [
             {
@@ -336,17 +449,82 @@ describe('fields', () => {
             },
           ],
         });
+        // options should default to an empty list
+        // value should default to empty string
         expect(result.find('SelectFieldMock')).toMatchSnapshot();
         result.unmount();
       });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
 
     describe('select-multi', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'select-multi',
+            },
+          ],
+        });
+        // options should default to an empty list
+        // value should default to empty array
+        expect(result.find('SelectMultiFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
+    });
+
+    describe('team', function() {
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'team',
+            },
+          ],
+        });
+        // options is not passed right now
+        // value should default to null
+        expect(result.find('TeamFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
+    });
+
+    describe('team-multi', function() {
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'team-multi',
+            },
+          ],
+        });
+        // options is not passed right now
+        // value should default to empty array
+        expect(result.find('TeamMultiFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
 
     describe('text', () => {
-      test('no options', async () => {
+      test('minimal', async () => {
         const result = await mountForm({
           fields: () => () => [
             {
@@ -355,26 +533,83 @@ describe('fields', () => {
             },
           ],
         });
+        // options should default to an empty list
+        // value should default to empty string
         expect(result.find('TextFieldMock')).toMatchSnapshot();
         result.unmount();
       });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
 
     describe('text-multi', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'text-multi',
+            },
+          ],
+        });
+        // options should default to an empty list
+        // value should default to empty list
+        expect(result.find('TextMultiFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
 
     describe('user', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'user',
+            },
+          ],
+        });
+        // options is not passed right now
+        // value should default to null
+        expect(result.find('UserFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
 
     describe('user-multi', function() {
-      test('>>=TODO>>=', async () => {});
+      test('minimal', async () => {
+        const result = await mountForm({
+          fields: () => () => [
+            {
+              name: 'test',
+              type: 'user-multi',
+            },
+          ],
+        });
+        // options is not passed right now
+        // value should default to null
+        expect(result.find('UserMultiFieldMock')).toMatchSnapshot();
+        result.unmount();
+      });
+
+      test('=<<TODO>>= invalid value type', async () => {});
+      test('=<<TODO>>= valid options', async () => {});
+      test('=<<TODO>>= invalid options', async () => {});
     });
   });
 
   describe('visible', function() {
-    test('>>=TODO>>=', async () => {});
+    test('=<<TODO>>=', async () => {});
   });
 });
 
