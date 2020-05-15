@@ -1,4 +1,4 @@
-import { generateTable } from '@kineticdata/react'
+import { generateTable, defineFilter } from '@kineticdata/react'
 
 const columns = [
   { value: 'name', title: 'Name', sortable: true, filter: 'startsWith' },
@@ -20,7 +20,7 @@ const filterDataSources = () => ({
       ]
     }),
     params: [],
-    transform: result => result.statusTypes,
+    transform: result => result.statusTypes
   }
 })
 
@@ -36,13 +36,21 @@ const dataSource = () => ({
         { name: 'Rad 3', status: 'active' },
       ],
     }),
-  params: () => [],
+  params: paramData => {
+    console.log(paramData);
+    return []
+  },
   transform: result => ({ data: result.demos }),
-  clientSideSearch: true
+  // Perform client side searching the legacy way.
+  clientSideSearch: true,
+  // Perform server side filtering, but client side sorting/pagination.
+  // clientSide: true,
+  // Perform full client side filtering, sorting, and pagination.
+  // clientSide: defineFilter(true).startsWith('name', 'name').end()
 })
 export const DemoTable = generateTable({
   columns,
   dataSource,
-  // filters,
-  // filterDataSources
+  filters,
+  filterDataSources,
 });

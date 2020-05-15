@@ -289,3 +289,5 @@ export const buildAgentPath = options =>
   `${bundle.spaceLocation()}/app/components/agents/${
     options.agentSlug ? options.agentSlug : 'system'
   }`;
+
+export * from './SearchBuilder';

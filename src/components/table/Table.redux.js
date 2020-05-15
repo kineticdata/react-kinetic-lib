@@ -19,7 +19,9 @@ export const isClientSide = tableData => {
 
   return (
     hasData(data) &&
-    ((dataSource && dataSource.clientSideSearch === true) || !dataSource)
+    ((dataSource &&
+      (dataSource.clientSideSearch === true || dataSource.clientSide)) ||
+      !dataSource)
   );
 };
 
@@ -331,7 +333,7 @@ export const isValueEmpty = value => {
   return !value;
 };
 
-export const clientSideRowFilter = filters => row => {
+export const clientSideRowFilter = (row, filters) => {
   const usableFilters = filters
     .filter(filter => filter.get('value') !== '')
     .map((filter, column) => filter.set('currentValue', row.get(column)));
@@ -358,11 +360,19 @@ const applyClientSideFilters = (tableData, data) => {
   const filters = tableData.get('appliedFilters');
   const startIndex = pageOffset;
   const endIndex = Math.min(pageOffset + pageSize, data.size);
+  const dataSource = getDataSource(tableData);
+  const filterValues = filters.map(f => f.get('value')).toJS();
+
+  const rowFilter =
+    dataSource.clientSideSearch === true
+      ? row => clientSideRowFilter(row, filters)
+      : typeof dataSource.clientSide === 'function'
+      ? row => dataSource.clientSide(row.toJS(), filterValues)
+      : () => true;
 
   return List(data)
     .map(d => Map(d))
-
-    .update(d => d.filter(clientSideRowFilter(filters)))
+    .update(d => d.filter(rowFilter))
     .update(d =>
       sortColumn ? d.sortBy(r => r.get(sortColumn.get('value'))) : d,
     )
