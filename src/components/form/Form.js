@@ -369,6 +369,10 @@ regSaga(
   }),
 );
 
+export const setValue = (formKey, name, value, triggerChange = true) => {
+  dispatch('SET_VALUE', { formKey, name, value, triggerChange });
+};
+
 const actions = {
   setValue: formKey => (name, value, triggerChange = true) =>
     dispatch('SET_VALUE', { formKey, name, value, triggerChange }),
