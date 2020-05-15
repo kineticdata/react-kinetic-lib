@@ -64,11 +64,20 @@ export class Typeahead extends React.Component {
     nextPageToken,
   }) => {
     if (searchedValue === this.state.searchValue) {
+      // when multiple mode is enabled we don't want to allow the same
+      // suggestion to be selected twice, we compare existing selections to
+      // suggestions using the getSuggestionValue function that returns a string
+      // this is necessary because one of the objects may have additional fields
+      // but should be treated as equal to an object without those fields.
+      const mappedValues =
+        this.props.multiple &&
+        this.props.value.map(this.props.getSuggestionValue);
       const filtered = suggestions
         .map(suggestion => fromJS(suggestion))
         .filter(
           suggestion =>
-            !this.props.multiple || !this.props.value.includes(suggestion),
+            !this.props.multiple ||
+            !mappedValues.includes(this.props.getSuggestionValue(suggestion)),
         );
       const customSuggestion =
         this.props.custom &&
