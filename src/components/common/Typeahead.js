@@ -205,6 +205,7 @@ export class Typeahead extends React.Component {
                 onBlur: this.props.onBlur,
                 onChange: onChangeNOOP,
                 onFocus: this.props.onFocus,
+                selection: this.props.value,
               }}
               onSuggestionHighlighted={this.onHighlight}
               onSuggestionSelected={this.onSuggestionSelected}
