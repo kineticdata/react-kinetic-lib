@@ -75,11 +75,11 @@ export const getNodeType = node =>
 
 export const getNodeShape = (type, { x, y }) =>
   type === 'start'
-    ? ShapeInfo.circle([
+    ? ShapeInfo.circle(
         x + constants.NODE_START_RADIUS,
         y + constants.NODE_START_RADIUS,
         constants.NODE_START_RADIUS + constants.NODE_PADDING,
-      ])
+      )
     : ShapeInfo.rectangle(
         x - constants.NODE_PADDING,
         y - constants.NODE_PADDING,
