@@ -350,8 +350,10 @@ const StatusDefault = props => (
   </div>
 );
 
-const SuggestionsContainerDefault = ({ children, containerProps }) => (
-  <div {...containerProps}>{children}</div>
+const SuggestionsContainerDefault = ({ children, containerProps, open }) => (
+  <div {...containerProps} style={open ? {} : { display: 'none' }}>
+    {children}
+  </div>
 );
 
 const SelectionsContainerDefault = ({ selections, input }) => (
@@ -362,7 +364,19 @@ const SelectionsContainerDefault = ({ selections, input }) => (
 );
 
 const SelectionDefault = ({ selection, remove, edit, suggestionValue }) => (
-  <div>{suggestionValue}</div>
+  <div>
+    <span>{suggestionValue || <em>None</em>}</span>
+    {edit && (
+      <button type="button" onClick={edit}>
+        {suggestionValue ? 'edit' : 'add'}
+      </button>
+    )}
+    {selection && (
+      <button type="button" onClick={remove}>
+        remove
+      </button>
+    )}
+  </div>
 );
 
 const SuggestionDefault = ({ active, suggestionValue }) => (
