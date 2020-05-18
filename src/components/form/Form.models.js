@@ -39,6 +39,8 @@ export const FIELD_DEFAULT_VALUES = Map({
   attributes: Map(),
   checkbox: false,
   'checkbox-multi': List(),
+  form: null,
+  'form-multi': List(),
   'select-multi': List(),
   team: null,
   'team-multi': List(),

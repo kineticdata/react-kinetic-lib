@@ -5,7 +5,7 @@ import { List, Map } from 'immutable';
 
 const fields = [{ name: 'name' }, { name: 'slug' }, { name: 'category' }];
 
-const searchForms = ({ options, search }) => (field, value) => {
+const searchForms = ({ options, search }) => (field, value, callback) => {
   const searchFields =
     Map.isMap(search) && search.has('fields') && !search.get('fields').isEmpty()
       ? search.get('fields').toJS()
@@ -28,7 +28,7 @@ const searchForms = ({ options, search }) => (field, value) => {
                         .startsWith(value.toLowerCase())),
               ),
             );
-    return Promise.resolve({ suggestions: filter(options.toJS(), value) });
+    return callback({ suggestions: filter(options.toJS(), value) });
   }
   // Server Side Fetching
   else {
@@ -56,17 +56,24 @@ const searchForms = ({ options, search }) => (field, value) => {
       q: [...fixedSearchParts, userSearchParts].join(' AND '),
       include: 'categorizations.category',
       limit: 25,
-    }).then(({ forms, error, nextPageToken }) => ({
-      suggestions: forms || [],
-      error,
-      nextPageToken,
-    }));
+    })
+      .then(({ forms, error, nextPageToken }) => ({
+        suggestions: forms || [],
+        error,
+        nextPageToken,
+      }))
+      .then(callback);
   }
 };
 
 const formToValue = form => (form && form.get('slug')) || '';
 
 const getStatusProps = props => ({
+  info: props.short
+    ? 'Type to find a form.'
+    : props.pending
+    ? 'Searching…'
+    : null,
   warning:
     props.error || props.more || props.empty
       ? props.error
@@ -83,12 +90,9 @@ export const FormSelect = props => (
   <Typeahead
     components={props.components || {}}
     disabled={props.disabled}
-    textMode={props.textMode}
     multiple={props.multiple}
     search={searchForms(props)}
     minSearchLength={props.minSearchLength}
-    alwaysRenderSuggestions={props.alwaysRenderSuggestions}
-    getSuggestionLabel={formToValue}
     getSuggestionValue={formToValue}
     getStatusProps={getStatusProps}
     value={props.value}
