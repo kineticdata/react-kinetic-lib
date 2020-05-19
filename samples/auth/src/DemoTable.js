@@ -36,10 +36,7 @@ const dataSource = () => ({
         { name: 'Rad 3', status: 'active' },
       ],
     }),
-  params: paramData => {
-    console.log(paramData);
-    return []
-  },
+  params: _paramData => [],
   transform: result => ({ data: result.demos }),
   // Perform client side searching the legacy way.
   clientSideSearch: true,

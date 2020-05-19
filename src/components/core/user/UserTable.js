@@ -2,10 +2,11 @@ import React from 'react';
 import { generateTable } from '../../table/Table';
 import { fetchUsers, generateCESearchParams } from '../../../apis';
 
-const dataSource = () => ({
+const dataSource = ({ spaceSlug }) => ({
   fn: fetchUsers,
   params: paramData => [
     {
+      spaceSlug,
       ...generateCESearchParams(paramData),
       include: 'authorization,details',
     },
@@ -76,6 +77,10 @@ const columns = [
   },
 ];
 
-export const UserTable = generateTable({ columns, dataSource });
+export const UserTable = generateTable({
+  tableOptions: ['system', 'spaceSlug'],
+  columns,
+  dataSource,
+});
 
 UserTable.displayName = 'UserTable';

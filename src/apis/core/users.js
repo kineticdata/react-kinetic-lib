@@ -3,13 +3,18 @@ import { bundle } from '../../helpers';
 import { handleErrors, paramBuilder, headerBuilder } from '../http';
 
 export const fetchUsers = (options = {}) => {
+  const { spaceSlug } = options;
   // Build URL and fetch the space.
-  let promise = axios.get(`${bundle.apiLocation()}/users`, {
-    params: paramBuilder(options),
-    headers: headerBuilder(options),
-  });
-  // Remove the response envelop and leave us with the users one.
-  return promise
+  return axios
+    .get(
+      options.spaceSlug
+        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${spaceSlug}/users`
+        : `${bundle.apiLocation()}/users`,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
     .then(response => ({
       users: response.data.users,
       count: response.data.count,
@@ -19,7 +24,7 @@ export const fetchUsers = (options = {}) => {
 };
 
 export const fetchUser = (options = {}) => {
-  const { username } = options;
+  const { username, spaceSlug } = options;
 
   if (!username) {
     throw new Error('fetchUser failed! The option "username" is required.');
@@ -27,16 +32,21 @@ export const fetchUser = (options = {}) => {
 
   // Build URL and fetch the space.
   return axios
-    .get(`${bundle.apiLocation()}/users/${username}`, {
-      params: paramBuilder(options),
-      headers: headerBuilder(options),
-    })
+    .get(
+      spaceSlug
+        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${spaceSlug}/users/${username}`
+        : `${bundle.apiLocation()}/users/${username}`,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
     .then(response => ({ user: response.data.user }))
     .catch(handleErrors);
 };
 
 export const updateUser = (options = {}) => {
-  const { username, user } = options;
+  const { spaceSlug, username, user } = options;
 
   if (!username) {
     throw new Error('fetchUser failed! The option "username" is required.');
@@ -48,16 +58,22 @@ export const updateUser = (options = {}) => {
 
   // Build URL and fetch the space.
   return axios
-    .put(`${bundle.apiLocation()}/users/${username}`, user, {
-      params: paramBuilder(options),
-      headers: headerBuilder(options),
-    })
+    .put(
+      spaceSlug
+        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${spaceSlug}/users/${username}`
+        : `${bundle.apiLocation()}/users/${username}`,
+      user,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
     .then(response => ({ user: response.data.user }))
     .catch(handleErrors);
 };
 
 export const createUser = (options = {}) => {
-  const { user } = options;
+  const { spaceSlug, user } = options;
 
   if (!user) {
     throw new Error('createUser failed! The option "user" is required.');
@@ -65,16 +81,22 @@ export const createUser = (options = {}) => {
 
   // Build URL and fetch the space.
   return axios
-    .post(`${bundle.apiLocation()}/users`, user, {
-      params: paramBuilder(options),
-      headers: headerBuilder(options),
-    })
+    .post(
+      spaceSlug
+        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${spaceSlug}/users`
+        : `${bundle.apiLocation()}/users`,
+      user,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
     .then(response => ({ user: response.data.user }))
     .catch(handleErrors);
 };
 
 export const deleteUser = (options = {}) => {
-  const { username } = options;
+  const { spaceSlug, username } = options;
 
   if (!username) {
     throw new Error('deleteUser failed! The option "username" is required.');
@@ -82,10 +104,15 @@ export const deleteUser = (options = {}) => {
 
   // Build URL and delete the user.
   return axios
-    .delete(`${bundle.apiLocation()}/users/${username}`, {
-      params: paramBuilder(options),
-      headers: headerBuilder(options),
-    })
+    .delete(
+      spaceSlug
+        ? `/app/system-coordinator/components/core/app/api/v1/spaces/${spaceSlug}/users/${username}`
+        : `${bundle.apiLocation()}/users/${username}`,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
     .then(response => ({ user: response.data.user }))
     .catch(handleErrors);
 };

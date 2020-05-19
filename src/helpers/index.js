@@ -291,3 +291,13 @@ export const buildAgentPath = options =>
   }`;
 
 export * from './SearchBuilder';
+
+export const handleFormErrors = key => result => {
+  const { error } = result;
+  if (error) {
+    throw (error.statusCode === 400 && error.message) ||
+      'There was an error while saving.';
+  }
+
+  return key ? result[key] : result;
+};
