@@ -271,21 +271,20 @@ export const KitchenSinkForm = generateForm({
       name: 'map3',
       type: 'map',
       label: 'Map 3',
-      options: bindings =>
-        console.log(bindings) || [
-          {
-            label: 'First Name',
-            value: 'firstName',
-          },
-          {
-            label: 'Last Name',
-            value: 'lastName',
-          },
-          {
-            label: 'Email',
-            value: 'email',
-          },
-        ],
+      options: bindings => [
+        {
+          label: 'First Name',
+          value: 'firstName',
+        },
+        {
+          label: 'Last Name',
+          value: 'lastName',
+        },
+        {
+          label: 'Email',
+          value: 'email',
+        },
+      ],
       enabled: false,
       initialValue: { lastName: 'Demo' },
     },
