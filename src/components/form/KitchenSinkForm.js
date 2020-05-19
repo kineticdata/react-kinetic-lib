@@ -229,6 +229,88 @@ export const KitchenSinkForm = generateForm({
       search: { kappSlug: 'services' },
     },
     {
+      name: 'map1',
+      type: 'map',
+      label: 'Map 1',
+      options: [
+        {
+          label: 'First Name',
+          value: 'firstName',
+        },
+        {
+          label: 'Last Name',
+          value: 'lastName',
+        },
+        {
+          label: 'Email',
+          value: 'email',
+        },
+      ],
+    },
+    {
+      name: 'map2',
+      type: 'map',
+      label: 'Map 2',
+      options: [
+        {
+          label: 'First Name',
+          value: 'firstName',
+        },
+        {
+          label: 'Last Name',
+          value: 'lastName',
+        },
+        {
+          label: 'Email',
+          value: 'email',
+        },
+      ],
+      required: true,
+    },
+    {
+      name: 'map3',
+      type: 'map',
+      label: 'Map 3',
+      options: bindings =>
+        console.log(bindings) || [
+          {
+            label: 'First Name',
+            value: 'firstName',
+          },
+          {
+            label: 'Last Name',
+            value: 'lastName',
+          },
+          {
+            label: 'Email',
+            value: 'email',
+          },
+        ],
+      enabled: false,
+      initialValue: { lastName: 'Demo' },
+    },
+    {
+      name: 'map4',
+      type: 'map',
+      label: 'Map 4',
+      options: [
+        {
+          label: 'First Name',
+          value: 'firstName',
+        },
+        {
+          label: 'Last Name',
+          value: 'lastName',
+        },
+        {
+          label: 'Email',
+          value: 'email',
+        },
+      ],
+      helpText: 'Help Text',
+      placeholder: 'Placeholder',
+    },
+    {
       name: 'password1',
       type: 'password',
       label: 'Password 1',

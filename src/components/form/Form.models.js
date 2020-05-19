@@ -1,4 +1,4 @@
-import { List, Map, Record } from 'immutable';
+import { List, Map, OrderedMap, Record } from 'immutable';
 
 export const FormState = Record({
   addFields: List(),
@@ -41,6 +41,7 @@ export const FIELD_DEFAULT_VALUES = Map({
   'checkbox-multi': List(),
   form: null,
   'form-multi': List(),
+  map: OrderedMap(),
   'select-multi': List(),
   team: null,
   'team-multi': List(),
