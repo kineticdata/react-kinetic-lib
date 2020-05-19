@@ -588,7 +588,10 @@ export const generateTable = ({
   tableOptions = [],
   filterDataSources = () => ({}),
   filters,
-  ...setObjects
+  columns,
+  dataSource,
+  sortable,
+  onValidateFilters,
 }) => props => {
   const tableOptionProps = tableOptions
     ? tableOptions.reduce((to, opt) => {
@@ -607,38 +610,45 @@ export const generateTable = ({
         // Legacy filters.
         const appliedFilters = values.map((value, key) => {
           const column = generateColumns(
-            setObjects.columns,
+            columns,
             props.addColumns,
             props.alterColumns,
           ).find(c => c.get('value') === key);
           return Map({ value, column });
         });
-        console.log('Should apply filters', tableKey, appliedFilters.toJS());
         dispatch('APPLY_FILTER_FORM', { tableKey, appliedFilters });
       },
     });
   }
 
   const setProps = {
-    ...setObjects, // sortable
+    // Passed in to `generateTable`
+    columns,
+    dataSource,
+    onValidateFilters,
+    // Calculated from props and tableOptions.
     tableOptions: { ...tableOptionProps },
+    // Add FilterForm to the components that are passed.
+    components: { ...props.components, FilterForm },
+    // Sortable can be enabled or disabled for an entire table.
+    sortable: typeof sortable !== 'undefined' ? sortable : props.sortable,
+    // Explicitly allowed props.
     tableKey: props.tableKey,
-    alterColumns: props.alterColumns,
     addColumns: props.addColumns,
+    alterColumns: props.alterColumns,
     columnSet: props.columnSet,
-    components: { FilterForm, ...props.components },
     pageSize: props.pageSize,
     defaultSortColumn: props.defaultSortColumn,
     defaultSortDirection: props.defaultSortDirection,
+    omitHeader: props.omitHeader,
+    includeFooter: props.includeFooter,
     renderOptions: props.renderOptions,
     uncontrolled: props.uncontrolled,
+    // For full client-side tables, with no datasource.
+    data: props.data,
   };
 
-  return (
-    <Table {...props} {...setProps}>
-      {props.children}
-    </Table>
-  );
+  return <Table {...setProps}>{props.children}</Table>;
 };
 
 export class Table extends Component {
