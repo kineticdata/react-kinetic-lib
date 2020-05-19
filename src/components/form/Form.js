@@ -110,11 +110,13 @@ const initializeFields = formState => {
     );
     if (!!fields) {
       return buildBindings(
-        formState.set('fields', fields.map(createField(formState.formKey))),
+        formState
+          .set('fields', fields.map(createField(formState.formKey)))
+          .set('callOnLoad', true),
       );
     }
   }
-  return formState;
+  return formState.set('callOnLoad', false);
 };
 
 const buildBindings = formState =>
@@ -170,7 +172,7 @@ regHandlers({
     state.deleteIn(['forms', formKey]),
   CONFIGURE_FORM: (state, { payload }) =>
     state.getIn(['forms', payload.formKey]) !== null
-      ? state
+      ? state.setIn(['forms', payload.formKey, 'callOnLoad'], false)
       : state.setIn(
           ['forms', payload.formKey],
           digest(createFormState(payload)),
@@ -244,6 +246,22 @@ regHandlers({
 const selectForm = formKey => state => state.getIn(['forms', formKey]);
 const selectDataSource = (formKey, name) => state =>
   selectForm(formKey)(state).getIn(['dataSources', name]);
+
+regSaga('CHECK_ON_LOAD', function*() {
+  const checkActions = ['CONFIGURE_FORM', 'RESOLVE_DATA_SOURCE'];
+  yield takeEvery(checkActions, function*({ payload: { formKey } }) {
+    try {
+      const { bindings, callOnLoad, onLoad } = yield select(
+        selectForm(formKey),
+      );
+      if (callOnLoad) {
+        yield call(onLoad, bindings);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  });
+});
 
 regSaga('CHECK_DATA_SOURCES', function*() {
   // Redux actions that should result in checking whether or not data sources
@@ -674,6 +692,7 @@ export const generateForm = ({
     onSubmit={handleSubmit}
     onSave={configurationProps.onSave}
     onError={configurationProps.onError}
+    onLoad={configurationProps.onLoad}
     uncontrolled={configurationProps.uncontrolled}
     readOnly={configurationProps.readOnly}
   >

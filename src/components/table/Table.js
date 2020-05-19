@@ -87,6 +87,7 @@ const buildField = ({
       options={options}
       tableOptions={tableOptions}
       filters={filters}
+      visible
     />
   );
 };
@@ -122,10 +123,16 @@ const buildFilterForm = props => {
 
   return (
     <FilterForm
+      {...props.tableOptions}
       formKey={filterFormKey(props.tableKey)}
       tableKey={props.tableKey}
       components={components}
       alterFields={props.alterFilters}
+      onLoad={() => ({ values }) =>
+        dispatch('APPLY_FILTER_FORM', {
+          tableKey: props.tableKey,
+          appliedFilters: values,
+        })}
     />
   );
 };
@@ -607,16 +614,7 @@ export const generateTable = ({
       fields: filters,
       formOptions: ['tableKey', ...tableOptions],
       handleSubmit: ({ tableKey }) => values => {
-        // Legacy filters.
-        const appliedFilters = values.map((value, key) => {
-          const column = generateColumns(
-            columns,
-            props.addColumns,
-            props.alterColumns,
-          ).find(c => c.get('value') === key);
-          return Map({ value, column });
-        });
-        dispatch('APPLY_FILTER_FORM', { tableKey, appliedFilters });
+        dispatch('APPLY_FILTER_FORM', { tableKey, appliedFilters: values });
       },
     });
   }
@@ -646,6 +644,7 @@ export const generateTable = ({
     uncontrolled: props.uncontrolled,
     // For full client-side tables, with no datasource.
     data: props.data,
+    filterForm: !!filters,
   };
 
   return <Table {...setProps}>{props.children}</Table>;

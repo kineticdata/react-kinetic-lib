@@ -1,7 +1,7 @@
 import { List, Map, fromJS } from 'immutable';
 import isarray from 'isarray';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
-import { dispatch, regHandlers, regSaga } from '../../store';
+import { action, dispatch, regHandlers, regSaga } from '../../store';
 import { mountForm, unmountForm } from '..';
 
 export const hasData = data => isarray(data) || data instanceof List;
@@ -104,6 +104,7 @@ regHandlers({
         defaultSortDirection = 'desc',
         tableOptions,
         onValidateFilters,
+        filterForm,
       },
     },
   ) =>
@@ -135,6 +136,7 @@ regHandlers({
             error: null,
 
             // Filtering
+            filterForm,
             filters: generateFilters(tableKey, columns),
             appliedFilters: generateFilters(tableKey, columns),
             validFilters: true,
@@ -283,7 +285,14 @@ function* calculateRowsTask({ payload }) {
   }
 }
 
-regSaga(takeEvery('CONFIGURE_TABLE', calculateRowsTask));
+function* configureTableTask({ payload }) {
+  const { filterForm, tableKey } = payload;
+  if (!filterForm) {
+    yield put(action('APPLY_FILTERS', { tableKey }));
+  }
+}
+
+regSaga(takeEvery('CONFIGURE_TABLE', configureTableTask));
 regSaga(takeEvery('NEXT_PAGE', calculateRowsTask));
 regSaga(takeEvery('PREV_PAGE', calculateRowsTask));
 regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
@@ -361,13 +370,12 @@ const applyClientSideFilters = (tableData, data) => {
   const startIndex = pageOffset;
   const endIndex = Math.min(pageOffset + pageSize, data.size);
   const dataSource = getDataSource(tableData);
-  const filterValues = filters.map(f => f.get('value')).toJS();
 
   const rowFilter =
     dataSource.clientSideSearch === true
       ? row => clientSideRowFilter(row, filters)
       : typeof dataSource.clientSide === 'function'
-      ? row => dataSource.clientSide(row.toJS(), filterValues)
+      ? row => dataSource.clientSide(row.toJS(), filters)
       : () => true;
 
   return List(data)
@@ -404,7 +412,7 @@ const calculateRows = tableData => {
     const transform = dataSource.transform || (result => result);
     const params = dataSource.params({
       pageSize: tableData.get('pageSize'),
-      filters: tableData.get('filters'),
+      filters: tableData.get('appliedFilters'),
       sortColumn: tableData.getIn(['sortColumn', 'value']),
       sortDirection: tableData.get('sortDirection'),
       nextPageToken: tableData.get('nextPageToken'),

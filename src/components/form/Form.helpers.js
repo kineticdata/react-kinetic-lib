@@ -142,6 +142,7 @@ export const createFormState = ({
   formKey,
   formOptions,
   onError,
+  onLoad,
   onSave,
   onSubmit,
 }) =>
@@ -155,6 +156,7 @@ export const createFormState = ({
     formKey,
     formOptions,
     onError: onError && onError(formOptions),
+    onLoad: onLoad && onLoad(formOptions),
     onSave: onSave && onSave(formOptions),
     onSubmit: onSubmit && onSubmit(formOptions),
   });
