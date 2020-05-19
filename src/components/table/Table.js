@@ -60,11 +60,15 @@ const buildField = ({
   columnComponents,
   tableKey,
   tableOptions,
+  renderOptions,
 }) => {
   const value = filter.get('value');
   const name = filter.getIn(['column', 'value']);
   const title = filter.getIn(['column', 'title']);
-  const options = filter.getIn(['column', 'options'], () => [])(tableOptions);
+  const options = filter.getIn(['column', 'options'], () => [])(
+    tableOptions,
+    renderOptions,
+  );
   const onChange = (value, filterName = name) => {
     dispatch('SET_FILTER', {
       tableKey,
@@ -141,6 +145,7 @@ const buildFilterLayout = ({
   loading,
   initializing,
   tableOptions,
+  renderOptions,
 }) => {
   // Add an onChange to each filter and convert it to a list for looping.
   const f = filters.map(filter =>
@@ -152,6 +157,7 @@ const buildFilterLayout = ({
       columnComponents,
       tableKey,
       tableOptions,
+      renderOptions,
     }),
   );
 
@@ -196,6 +202,7 @@ const buildFilterLayout = ({
       loading={loading}
       initializing={initializing}
       tableOptions={tableOptions}
+      renderOptions={renderOptions}
       tableKey={tableKey}
     />
   );
