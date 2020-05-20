@@ -254,7 +254,7 @@ regSaga('CHECK_ON_LOAD', function*() {
       const { bindings, callOnLoad, onLoad } = yield select(
         selectForm(formKey),
       );
-      if (callOnLoad) {
+      if (callOnLoad && typeof onLoad === 'function') {
         yield call(onLoad, bindings);
       }
     } catch (e) {
