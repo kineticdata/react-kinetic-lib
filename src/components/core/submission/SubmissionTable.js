@@ -20,8 +20,17 @@ const submissionSearch = ({ filters, pageSize, sortColumn, sortDirection }) => {
     .sortDirection(sortDirection.toLocaleUpperCase())
     .limit(pageSize);
   applyMeta(query, 'coreState', filters.get('coreState'));
-  applyMeta(query, 'startDate', filters.get('startDate'));
-  applyMeta(query, 'endDate', filters.get('endDate'));
+  applyMeta(
+    query,
+    'startDate',
+    filters.get('startDate') &&
+      new Date(`${filters.get('startDate')}T00:00:00`),
+  );
+  applyMeta(
+    query,
+    'endDate',
+    filters.get('endDate') && new Date(`${filters.get('endDate')}T00:00:00`),
+  );
   applyOp(query, 'eq', 'handle', filters.get('handle'));
   applyOp(
     query,
@@ -98,8 +107,8 @@ const filters = ({ kappSlug, formSlug }) => ({
   forms,
 }) =>
   coreStateOptions && [
-    { label: 'Start Date', name: 'startDate', type: 'text' },
-    { label: 'End Date', name: 'endDate', type: 'text' },
+    { label: 'Start Date', name: 'startDate', type: 'date' },
+    { label: 'End Date', name: 'endDate', type: 'date' },
     {
       label: 'Handle',
       name: 'handle',
