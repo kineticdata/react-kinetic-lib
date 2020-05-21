@@ -1,4 +1,4 @@
-import { defineFilter } from './SearchBuilder';
+import { defineFilter, defineKqlQuery } from './SearchBuilder';
 
 describe('defineFilter', () => {
   const person = {
@@ -738,6 +738,240 @@ describe('defineFilter', () => {
         fn(person, { min: '', max: '' });
       }).toThrowErrorMatchingInlineSnapshot(
         `"Invalid filter values for between operation of min and max. Min \\"\\" not less than max \\"\\""`,
+      );
+    });
+  });
+});
+
+describe('defineKqlQuery', () => {
+  let values;
+  beforeEach(() => {
+    values = {
+      name: 'Matt',
+      names: ['Bob', 'Matt', '', undefined, null],
+      otherName: 'Bob',
+      slug: 'acme',
+      empty: '',
+      nullName: null,
+      undefinedName: undefined,
+
+      minValue: 'min',
+      maxValue: 'max',
+    };
+  });
+
+  test('equals', () => {
+    const query = defineKqlQuery()
+      .equals('name', 'name')
+      .equals('slug', 'slug')
+      .equals('empty', 'empty')
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name = "Matt" AND slug = "acme"`);
+  });
+  test('equals strict', () => {
+    const query = defineKqlQuery()
+      .equals('empty', 'empty', true)
+      .equals('nullName', 'nullName', true)
+      .equals('undefinedName', 'undefinedName', true)
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(
+      `empty = "" AND nullName = "" AND undefinedName = ""`,
+    );
+  });
+
+  test('startsWith', () => {
+    const query = defineKqlQuery()
+      .startsWith('name', 'name')
+      .startsWith('slug', 'slug')
+      .startsWith('empty', 'empty', true)
+      .startsWith('nullName', 'nullName', true)
+      .startsWith('undefinedName', 'undefinedName', true)
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name =* "Matt" AND slug =* "acme"`);
+  });
+
+  test('in', () => {
+    const query = defineKqlQuery()
+      .in('name', 'names')
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name IN ("Bob", "Matt")`);
+  });
+  test('in strict', () => {
+    const query = defineKqlQuery()
+      .in('name', 'names', true)
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name IN ("Bob", "Matt", "", "", "")`);
+  });
+
+  test('between', () => {
+    const query = defineKqlQuery()
+      .between('values', 'minValue', 'maxValue')
+      .between('missingOne', 'missingValue', 'maxValue')
+      .between('missingBoth', 'missingValue', 'missingValue')
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`values BETWEEN ("min", "max")`);
+  });
+
+  test('between strict', () => {
+    const query = defineKqlQuery()
+      .between('values', 'minValue', 'maxValue', true)
+      .between('missingOne', 'missingValue', 'maxValue', true)
+      .between('missingBoth', 'missingValue', 'missingValue', true)
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(
+      `values BETWEEN ("min", "max") AND missingOne BETWEEN ("", "max") AND missingBoth BETWEEN ("", "")`,
+    );
+  });
+
+  test('greaterThan', () => {
+    const query = defineKqlQuery()
+      .greaterThan('name', 'name')
+      .greaterThan('slug', 'slug')
+      .greaterThan('empty', 'empty')
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name > "Matt" AND slug > "acme"`);
+  });
+  test('greaterThan strict', () => {
+    const query = defineKqlQuery()
+      .greaterThan('empty', 'empty', true)
+      .greaterThan('nullName', 'nullName', true)
+      .greaterThan('undefinedName', 'undefinedName', true)
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(
+      `empty > "" AND nullName > "" AND undefinedName > ""`,
+    );
+  });
+
+  test('greaterThanOrEquals', () => {
+    const query = defineKqlQuery()
+      .greaterThanOrEquals('name', 'name')
+      .greaterThanOrEquals('slug', 'slug')
+      .greaterThanOrEquals('empty', 'empty')
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name >= "Matt" AND slug >= "acme"`);
+  });
+  test('greaterThanOrEquals strict', () => {
+    const query = defineKqlQuery()
+      .greaterThanOrEquals('empty', 'empty', true)
+      .greaterThanOrEquals('nullName', 'nullName', true)
+      .greaterThanOrEquals('undefinedName', 'undefinedName', true)
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(
+      `empty >= "" AND nullName >= "" AND undefinedName >= ""`,
+    );
+  });
+
+  test('lessThan', () => {
+    const query = defineKqlQuery()
+      .lessThan('name', 'name')
+      .lessThan('slug', 'slug')
+      .lessThan('empty', 'empty')
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name < "Matt" AND slug < "acme"`);
+  });
+  test('lessThan strict', () => {
+    const query = defineKqlQuery()
+      .lessThan('empty', 'empty', true)
+      .lessThan('nullName', 'nullName', true)
+      .lessThan('undefinedName', 'undefinedName', true)
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(
+      `empty < "" AND nullName < "" AND undefinedName < ""`,
+    );
+  });
+
+  test('lessThanOrEquals', () => {
+    const query = defineKqlQuery()
+      .lessThanOrEquals('name', 'name')
+      .lessThanOrEquals('slug', 'slug')
+      .lessThanOrEquals('empty', 'empty')
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name <= "Matt" AND slug <= "acme"`);
+  });
+  test('lessThanOrEquals strict', () => {
+    const query = defineKqlQuery()
+      .lessThanOrEquals('empty', 'empty', true)
+      .lessThanOrEquals('nullName', 'nullName', true)
+      .lessThanOrEquals('undefinedName', 'undefinedName', true)
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(
+      `empty <= "" AND nullName <= "" AND undefinedName <= ""`,
+    );
+  });
+
+  describe('groupings', () => {
+    test('or separates equalities in its context with OR', () => {
+      const query = defineKqlQuery()
+        .or()
+        .equals('name', 'name')
+        .equals('name', 'otherName')
+        .end()
+        .end();
+
+      expect(query).toBeDefined();
+      expect(query(values)).toEqual('( name = "Matt" OR name = "Bob" )');
+    });
+
+    test('or following other equalities implies an and', () => {
+      const query = defineKqlQuery()
+        .equals('slug', 'slug')
+        .or()
+        .equals('name', 'name')
+        .equals('name', 'otherName')
+        .end()
+        .end();
+
+      expect(query).toBeDefined();
+      expect(query(values)).toEqual(
+        'slug = "acme" AND ( name = "Matt" OR name = "Bob" )',
+      );
+    });
+
+    test('complex query', () => {
+      const query = defineKqlQuery()
+        .equals('slug', 'slug')
+        .or()
+        .equals('name', 'name')
+        .and()
+        .equals('name', 'otherName')
+        .equals('slug', 'slug')
+        .end()
+        .end()
+        .end();
+
+      expect(query).toBeDefined();
+      expect(query(values)).toEqual(
+        'slug = "acme" AND ( name = "Matt" OR ( name = "Bob" AND slug = "acme" ) )',
       );
     });
   });

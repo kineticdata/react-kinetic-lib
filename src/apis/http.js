@@ -164,7 +164,7 @@ const searchFilters = filters => {
     .filter(filter => filter.getIn(['value'], '') !== '')
     .map((filter, key) => {
       const mode = filter.getIn(['column', 'filter']);
-      const op = operations.get(mode, operations.get('equals'));
+      const op = operations.get(mode, operations.get('startsWith'));
 
       return op(key, filter.get('value'));
     })
@@ -175,7 +175,20 @@ const searchFilters = filters => {
   return q.length > 0 ? { q } : {};
 };
 
-const generateSortParams = (sortColumn, sortDirection) =>
+export const generateSortParams = ({ sortColumn, sortDirection }) =>
+  sortColumn
+    ? {
+        orderBy: sortColumn,
+        direction: sortDirection,
+      }
+    : {};
+
+export const generatePaginationParams = ({ pageSize, nextPageToken }) => ({
+  limit: pageSize,
+  pageToken: nextPageToken,
+});
+
+const sortParams = (sortColumn, sortDirection) =>
   sortColumn
     ? {
         orderBy: sortColumn,
@@ -193,5 +206,5 @@ export const generateCESearchParams = ({
   limit: pageSize,
   pageToken: nextPageToken,
   ...searchFilters(filters),
-  ...generateSortParams(sortColumn, sortDirection),
+  ...sortParams(sortColumn, sortDirection),
 });

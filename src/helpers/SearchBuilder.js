@@ -63,7 +63,12 @@ class SearchBuilder {
 
   end() {
     if (this.expressionStack.length === 1) {
-      return this.type === 'kql' ? '' : compileExpression(this.rootExpression);
+      return this.type === 'kql'
+        ? values =>
+            compileKqlQuery(this.rootExpression, values, '', true, true)
+              .replace(/^\s*\(\s*/, '')
+              .replace(/\s*\)\s*$/, '')
+        : compileExpression(this.rootExpression);
     } else {
       this.expressionStack.pop();
       return this;
@@ -88,6 +93,74 @@ const pushExpression = (self, options, operator, ...operands) => {
     self.expressionStack.push(last(currentExpression.operands));
   }
   return self;
+};
+
+const nullFix = val =>
+  val === null || typeof val === 'undefined' ? '""' : `"${val}"`;
+
+const compileKqlQuery = (
+  { operator, operands, options },
+  values,
+  query = '',
+  and = true,
+  firstTerm = false,
+) => {
+  const combinator = and ? 'AND' : 'OR';
+  const combine = q =>
+    firstTerm ? `${query} ${q}` : `${query} ${combinator} ${q}`;
+
+  switch (operator) {
+    case 'or':
+    case 'and':
+      const andContents = operands.reduce(
+        (q, operand, index) =>
+          compileKqlQuery(operand, values, q, operator === 'and', index === 0),
+        '',
+      );
+
+      return combine(`(${andContents} )`);
+    case 'eq':
+      return options.strict || values[operands[1]]
+        ? combine(`${operands[0]} = ${nullFix(values[operands[1]])}`)
+        : query;
+    case 'sw':
+      return values[operands[1]]
+        ? combine(`${operands[0]} =* ${nullFix(values[operands[1]])}`)
+        : query;
+    case 'in': {
+      const inList = values[operands[1]]
+        .filter(val => (options.strict ? true : val))
+        .map(val => nullFix(val))
+        .join(', ');
+      return combine(`${operands[0]} IN (${inList})`);
+    }
+    case 'bt': {
+      const lval = operands[0];
+      const rval1 = values[operands[1]];
+      const rval2 = values[operands[2]];
+      return options.strict || (rval1 && rval2)
+        ? combine(`${lval} BETWEEN (${nullFix(rval1)}, ${nullFix(rval2)})`)
+        : query;
+    }
+    case 'gt':
+      return options.strict || values[operands[1]]
+        ? combine(`${operands[0]} > ${nullFix(values[operands[1]])}`)
+        : query;
+    case 'gte':
+      return options.strict || values[operands[1]]
+        ? combine(`${operands[0]} >= ${nullFix(values[operands[1]])}`)
+        : query;
+    case 'lt':
+      return options.strict || values[operands[1]]
+        ? combine(`${operands[0]} < ${nullFix(values[operands[1]])}`)
+        : query;
+    case 'lte':
+      return options.strict || values[operands[1]]
+        ? combine(`${operands[0]} <= ${nullFix(values[operands[1]])}`)
+        : query;
+    default:
+      return query;
+  }
 };
 
 const compileExpression = ({ operator, operands, options }) => {
