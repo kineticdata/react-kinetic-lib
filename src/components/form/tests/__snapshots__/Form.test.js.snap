@@ -493,7 +493,7 @@ exports[`fields type form minimal 1`] = `
   required={false}
   search={Immutable.Map {}}
   touched={false}
-  value=""
+  value={null}
   visible={true}
 />
 `;
@@ -519,7 +519,7 @@ exports[`fields type form-multi minimal 1`] = `
   required={false}
   search={Immutable.Map {}}
   touched={false}
-  value=""
+  value={Immutable.List []}
   visible={true}
 />
 `;

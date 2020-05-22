@@ -183,10 +183,15 @@ export const generateSortParams = ({ sortColumn, sortDirection }) =>
       }
     : {};
 
-export const generatePaginationParams = ({ pageSize, nextPageToken }) => ({
-  limit: pageSize,
-  pageToken: nextPageToken,
-});
+export const generatePaginationParams = ({ pageSize, nextPageToken }) =>
+  pageSize && nextPageToken
+    ? {
+        limit: pageSize,
+        pageToken: nextPageToken,
+      }
+    : pageSize
+    ? { limit: pageSize }
+    : {};
 
 const sortParams = (sortColumn, sortDirection) =>
   sortColumn
