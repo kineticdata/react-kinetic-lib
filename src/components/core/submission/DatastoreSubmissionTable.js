@@ -1,118 +1,208 @@
+import { List, Range } from 'immutable';
 import { generateTable } from '../../table/Table';
-import {
-  searchSubmissions,
-  SubmissionSearch,
-  VALID_DS_CORE_STATES,
-} from '../../../apis';
-import { List } from 'immutable';
+import { fetchForm, searchSubmissions } from '../../../apis';
+import { defineKqlQuery } from '../../../helpers';
+import { generatePaginationParams } from '../../../apis/http';
 
-const processValues = (q, v) => {
-  const op = v.get('op');
-  const part = v.get('part');
-  const value = v.get('criteria');
-
-  if (op === 'sw') {
-    return q.sw(part, value);
-  } else if (op === 'gt') {
-    q.gt(part, value);
-  } else if (op === 'gteq') {
-    q.gteq(part, value);
-  } else if (op === 'lt') {
-    q.lt(part, value);
-  } else if (op === 'lteq') {
-    q.lteq(part, value);
-  } else if (op === 'between') {
-    q.between(part, value.get(0), value.get(1));
-  } else if (op === 'eq' && value.size === 1) {
-    return q.eq(part, value.get(0));
-  } else if (op === 'eq' && value.size > 1) {
-    return q.in(part, value.toArray());
-  }
-  return q;
-};
-
-const submissionsFilter = (paramData, props) => {
-  const { filters, pageSize } = paramData;
-  const { include = ['details'] } = props;
-  const query = new SubmissionSearch(true);
-  const index = filters.getIn(['index', 'value']);
-
-  query
-    .includes(include)
-    .index(index)
-    .sortDirection(paramData.sortDirection.toLocaleUpperCase())
-    .limit(pageSize);
-
-  filters
-    .getIn(['values', 'value'])
-    .map(v =>
-      List.isList(v.get('criteria'))
-        ? v.update('criteria', criteria => criteria.filter(cv => cv !== ''))
-        : v,
-    )
-    .reduce((q, v) => processValues(q, v), query);
-
-  return { search: query.build(), datastore: true };
-};
-
-const dataSource = props => {
-  return {
-    fn: searchSubmissions,
-    params: paramData => {
-      const formSlug = paramData.filters.getIn(['form', 'value'], '')
-        ? paramData.filters.getIn(['form', 'value'])
-        : props.formSlug;
-
-      return [
-        {
-          form: formSlug,
-          pageToken: paramData.nextPageToken,
-          ...submissionsFilter(paramData, props),
-        },
-      ];
+const dataSource = ({ formSlug }) => ({
+  fn: searchSubmissions,
+  params: paramData => [
+    {
+      datastore: true,
+      form: formSlug,
+      search: {
+        direction: paramData.sortDirection,
+        include: ['details'],
+        index: paramData.filters.getIn(['query', 'index']),
+        // need to pass undefined instead of null so the `q` parameter is not
+        // added to the query string with empty value
+        q: paramData.filters.getIn(['query', 'q']) || undefined,
+        ...generatePaginationParams(paramData),
+      },
     },
-    transform: result => ({
-      data: result.submissions,
-      nextPageToken: result.nextPageToken,
-    }),
-  };
+  ],
+  transform: result => ({
+    data: result.submissions,
+    nextPageToken: result.nextPageToken,
+  }),
+});
+
+const filterDataSources = ({ formSlug }) => ({
+  form: {
+    fn: fetchForm,
+    params: [{ datastore: true, formSlug, include: 'indexDefinitions' }],
+    transform: result => result.form,
+  },
+  indexOptions: {
+    fn: form =>
+      form
+        .get('indexDefinitions')
+        .map(indexDefinition => ({
+          label: indexDefinition.get('name'),
+          value: indexDefinition.get('name'),
+        }))
+        .toArray(),
+    params: ({ form }) => form && [form],
+  },
+  maxLength: {
+    fn: form =>
+      form
+        .get('indexDefinitions')
+        .map(indexDefinition => indexDefinition.get('parts').size)
+        .max(),
+    params: ({ form }) => form && [form],
+  },
+  selectedIndexDefinition: {
+    fn: (form, index) =>
+      form
+        .get('indexDefinitions')
+        .find(indexDefinition => indexDefinition.get('name') === index),
+    params: ({ form, values }) => values && [form, values.get('index')],
+  },
+});
+
+const getOperatorIndex = name => {
+  const match = name.match(/op(\d+)-operator/);
+  return match && parseInt(match[1]);
 };
+
+const operatorChangeFn = i => ({ values }, { setValue }) => {
+  const value = values.get(`op${i}-operator`);
+  // If the operator was set to something besides 'eq' or 'in' clear any
+  // operators after this. Their change events will then fire and clear the
+  // corresponding operands.
+  if (!['equals', 'in'].includes(value)) {
+    values
+      .filter((value, name) => getOperatorIndex(name) > i)
+      .forEach((_value, name) => setValue(name, ''));
+  }
+  // If the operator was set to '' and the first operand is set, clear it.
+  if (!value && values.get(`op${i}-operand1`)) {
+    setValue(`op${i}-operand1`, '');
+  }
+  // If the operator is not 'bt' and the second operand is set, clear it.
+  if (value !== 'between' && values.get(`op${i}-operand2`)) {
+    setValue(`op${i}-operand2`, '');
+  }
+  // If the operator is not 'in and the third operand is set, clear it.
+  if (value !== 'in' && !values.get(`op${i}-operand3`).isEmpty()) {
+    setValue(`op${i}-operand3`, List());
+  }
+};
+
+const enabledFn = i => ({ values }) =>
+  Range(0, i, -1)
+    .map(i => values.get(`op${i}-operator`))
+    .every(value => ['equals', 'in'].includes(value));
+
+const visibleFn = (i, operatorType) => ({ selectedIndexDefinition, values }) =>
+  selectedIndexDefinition &&
+  i < selectedIndexDefinition.get('parts').size &&
+  (!operatorType || values.get(`op${i}-operator`) === operatorType);
+
+const serializeQuery = ({ selectedIndexDefinition, values }) => ({
+  index: values.get('index'),
+  q: selectedIndexDefinition
+    .get('parts')
+    .reduce((query, part, i) => {
+      const op = values.get(`op${i}-operator`);
+      return op === 'between'
+        ? query.between(part, `op${i}-operand1`, `op${i}-operand2`)
+        : op === 'in'
+        ? query.in(part, `op${i}-operand3`)
+        : op
+        ? query[op](part, `op${i}-operand1`)
+        : query;
+    }, defineKqlQuery())
+    .end()(values.toJS()),
+});
+
+const filters = () => ({ form, indexOptions, maxLength }) =>
+  form &&
+  indexOptions &&
+  maxLength && [
+    {
+      label: 'Search By',
+      initialValue: indexOptions.first().get('value'),
+      name: 'index',
+      options: indexOptions,
+      transient: true,
+      type: 'select',
+    },
+    ...Range(0, maxLength)
+      .flatMap(i => [
+        {
+          enabled: enabledFn(i),
+          name: `op${i}-operator`,
+          type: 'select',
+          visible: visibleFn(i),
+          onChange: operatorChangeFn(i),
+          options: [
+            { label: '=', value: 'equals' },
+            { label: 'in', value: 'in' },
+            { label: '>', value: 'greaterThan' },
+            { label: '>=', value: 'greaterThanOrEquals' },
+            { label: '<', value: 'lessThan' },
+            { label: '<=', value: 'lessThanOrEquals' },
+            { label: 'between', value: 'between' },
+            { label: 'startsWith', value: 'startsWith' },
+          ],
+          transient: true,
+        },
+        {
+          enabled: enabledFn(i),
+          name: `op${i}-operand1`,
+          transient: true,
+          type: 'text',
+          visible: visibleFn(i),
+        },
+        {
+          enabled: enabledFn(i),
+          name: `op${i}-operand2`,
+          transient: true,
+          type: 'text',
+          visible: visibleFn(i, 'between'),
+        },
+        {
+          enabled: enabledFn(i),
+          name: `op${i}-operand3`,
+          transient: true,
+          type: 'text-multi',
+          visible: visibleFn(i, 'in'),
+        },
+      ])
+      .toArray(),
+    {
+      name: 'query',
+      type: null,
+      serialize: serializeQuery,
+    },
+  ];
 
 const columns = [
   {
     value: 'closedAt',
     title: 'Closed At',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'closedBy',
     title: 'closedBy',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'coreState',
     title: 'Core State',
-    filter: 'equals',
-    type: 'text',
-    options: () =>
-      VALID_DS_CORE_STATES.map(s => ({
-        value: s,
-        label: s,
-      })),
     sortable: false,
   },
   {
     value: 'createdAt',
     title: 'Created',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'createdBy',
     title: 'Created By',
-    type: 'text',
     sortable: false,
   },
   {
@@ -153,43 +243,26 @@ const columns = [
   {
     value: 'submittedAt',
     title: 'Submitted At',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'submittedBy',
     title: 'Submitted By',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'type',
     title: 'Type',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'updatedAt',
     title: 'Updated',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'updatedBy',
     title: 'Updated By',
-    type: 'text',
-    sortable: false,
-  },
-  // Used for filtering by values on the fly
-  {
-    value: 'values',
-    title: 'Values',
-    sortable: false,
-  },
-  // Used for filtering by form slug on the fly.
-  {
-    value: 'form',
-    title: 'Form',
     sortable: false,
   },
 ];
@@ -198,6 +271,8 @@ export const DatastoreSubmissionTable = generateTable({
   tableOptions: ['formSlug'],
   columns,
   dataSource,
+  filters,
+  filterDataSources,
 });
 
 DatastoreSubmissionTable.displayName = 'DatastoreSubmissionTable';
