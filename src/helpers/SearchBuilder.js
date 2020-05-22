@@ -65,7 +65,7 @@ class SearchBuilder {
     if (this.expressionStack.length === 1) {
       return this.type === 'kql'
         ? values =>
-            compileKqlQuery(this.rootExpression, values, '', true, true)
+            compileKqlQuery(this.rootExpression, values)
               .replace(/^\s*\(\s*/, '')
               .replace(/\s*\)\s*$/, '')
         : compileExpression(this.rootExpression);
@@ -98,68 +98,60 @@ const pushExpression = (self, options, operator, ...operands) => {
 const nullFix = val =>
   val === null || typeof val === 'undefined' ? '""' : `"${val}"`;
 
-const compileKqlQuery = (
-  { operator, operands, options },
-  values,
-  query = '',
-  and = true,
-  firstTerm = false,
-) => {
-  const combinator = and ? 'AND' : 'OR';
-  const combine = q =>
-    firstTerm ? `${query} ${q}` : `${query} ${combinator} ${q}`;
-
+const compileKqlQuery = ({ operator, operands, options }, values) => {
   switch (operator) {
     case 'or':
     case 'and':
-      const andContents = operands.reduce(
-        (q, operand, index) =>
-          compileKqlQuery(operand, values, q, operator === 'and', index === 0),
-        '',
-      );
+      const andContents = operands
+        .map(operand => compileKqlQuery(operand, values))
+        .filter(op => op !== '');
 
-      return combine(`(${andContents} )`);
+      const combinator = operator === 'and' ? 'AND' : 'OR';
+      return `( ${andContents.join(` ${combinator} `)} )`;
     case 'eq':
       return options.strict || values[operands[1]]
-        ? combine(`${operands[0]} = ${nullFix(values[operands[1]])}`)
-        : query;
+        ? `${operands[0]} = ${nullFix(values[operands[1]])}`
+        : '';
     case 'sw':
       return values[operands[1]]
-        ? combine(`${operands[0]} =* ${nullFix(values[operands[1]])}`)
-        : query;
+        ? `${operands[0]} =* ${nullFix(values[operands[1]])}`
+        : '';
     case 'in': {
-      const inList = values[operands[1]]
-        .filter(val => (options.strict ? true : val))
-        .map(val => nullFix(val))
-        .join(', ');
-      return combine(`${operands[0]} IN (${inList})`);
+      const rval = values[operands[1]];
+      const inList = rval
+        ? rval
+            .filter(val => (options.strict ? true : val))
+            .map(val => nullFix(val))
+            .join(', ')
+        : '';
+      return inList ? `${operands[0]} IN (${inList})` : '';
     }
     case 'bt': {
       const lval = operands[0];
       const rval1 = values[operands[1]];
       const rval2 = values[operands[2]];
       return options.strict || (rval1 && rval2)
-        ? combine(`${lval} BETWEEN (${nullFix(rval1)}, ${nullFix(rval2)})`)
-        : query;
+        ? `${lval} BETWEEN (${nullFix(rval1)}, ${nullFix(rval2)})`
+        : '';
     }
     case 'gt':
       return options.strict || values[operands[1]]
-        ? combine(`${operands[0]} > ${nullFix(values[operands[1]])}`)
-        : query;
+        ? `${operands[0]} > ${nullFix(values[operands[1]])}`
+        : '';
     case 'gte':
       return options.strict || values[operands[1]]
-        ? combine(`${operands[0]} >= ${nullFix(values[operands[1]])}`)
-        : query;
+        ? `${operands[0]} >= ${nullFix(values[operands[1]])}`
+        : '';
     case 'lt':
       return options.strict || values[operands[1]]
-        ? combine(`${operands[0]} < ${nullFix(values[operands[1]])}`)
-        : query;
+        ? `${operands[0]} < ${nullFix(values[operands[1]])}`
+        : '';
     case 'lte':
       return options.strict || values[operands[1]]
-        ? combine(`${operands[0]} <= ${nullFix(values[operands[1]])}`)
-        : query;
+        ? `${operands[0]} <= ${nullFix(values[operands[1]])}`
+        : '';
     default:
-      return query;
+      return '';
   }
 };
 

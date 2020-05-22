@@ -128,6 +128,7 @@ const buildFilterForm = props => {
       tableKey={props.tableKey}
       components={components}
       alterFields={props.alterFilters}
+      fieldSet={props.filterSet}
       onLoad={() => ({ values }) =>
         dispatch('APPLY_FILTER_FORM', {
           tableKey: props.tableKey,
@@ -634,6 +635,8 @@ export const generateTable = ({
     tableKey: props.tableKey,
     addColumns: props.addColumns,
     alterColumns: props.alterColumns,
+    alterFilters: props.alterFilters,
+    filterSet: props.filterSet,
     columnSet: props.columnSet,
     pageSize: props.pageSize,
     defaultSortColumn: props.defaultSortColumn,

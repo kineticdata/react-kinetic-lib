@@ -1,9 +1,15 @@
 import { generateTable } from '../../table/Table';
 import { fetchBridgeModels } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .equals('status', 'status')
+  .end();
 
 const dataSource = () => ({
   fn: fetchBridgeModels,
-  clientSideSearch: true,
+  clientSide,
   params: () => [
     {
       include: 'details',
@@ -15,25 +21,38 @@ const dataSource = () => ({
   }),
 });
 
+const filters = () => () => [
+  { name: 'name', label: 'Model Name', type: 'text' },
+  {
+    name: 'status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      {
+        label: 'Active',
+        value: 'Active',
+      },
+      { label: 'Inactive', value: 'Inactive' },
+    ],
+  },
+];
+
 const columns = [
   {
     value: 'name',
     title: 'Model Name',
-    filter: 'includes',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'status',
     title: 'Status',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
 ];
 
 export const BridgeModelTable = generateTable({
   columns,
+  filters,
   dataSource,
 });
 

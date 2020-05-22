@@ -749,6 +749,9 @@ describe('defineKqlQuery', () => {
     values = {
       name: 'Matt',
       names: ['Bob', 'Matt', '', undefined, null],
+      emptyNames: [],
+      nullNames: null,
+      undefinedNames: undefined,
       otherName: 'Bob',
       slug: 'acme',
       empty: '',
@@ -811,6 +814,19 @@ describe('defineKqlQuery', () => {
 
     expect(query).toBeDefined();
     expect(query(values)).toBe(`name IN ("Bob", "Matt", "", "", "")`);
+  });
+
+  test('in invalid list', () => {
+    const query = defineKqlQuery()
+      .in('name', 'names')
+      .in('name', 'emptyNames')
+      .in('name', 'nullNames')
+      .in('name', 'undefinedNames')
+      .end();
+
+    expect(query).toBeDefined();
+    expect(query(values)).toBe(`name IN ("Bob", "Matt")`);
+    // TODO implement for empty list, list of empty values, and invalid lists (null or undefined)
   });
 
   test('between', () => {
@@ -973,6 +989,16 @@ describe('defineKqlQuery', () => {
       expect(query(values)).toEqual(
         'slug = "acme" AND ( name = "Matt" OR ( name = "Bob" AND slug = "acme" ) )',
       );
+    });
+
+    test('when previous items are not included', () => {
+      const query = defineKqlQuery()
+        .equals('name', 'missingName')
+        .equals('slug', 'slug')
+        .end();
+
+      expect(query).toBeDefined();
+      expect(query(values)).toBe('slug = "acme"');
     });
   });
 });

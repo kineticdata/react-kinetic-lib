@@ -371,11 +371,16 @@ const applyClientSideFilters = (tableData, data) => {
   const endIndex = Math.min(pageOffset + pageSize, data.size);
   const dataSource = getDataSource(tableData);
 
+  // This is because the `defineFilter` function wants a native object
+  // and not an Immutable map. This changes when we stop using the
+  // `clientSideRowFilter` legacy function or when we support immutable
+  // objects in the `defineFilter`.
+  const clientSideFilters = filters.toJS();
   const rowFilter =
     dataSource.clientSideSearch === true
       ? row => clientSideRowFilter(row, filters)
       : typeof dataSource.clientSide === 'function'
-      ? row => dataSource.clientSide(row.toJS(), filters)
+      ? row => dataSource.clientSide(row.toJS(), clientSideFilters)
       : () => true;
 
   return List(data)
