@@ -26,8 +26,22 @@ const dataSource = ({ datastore, custom }) => ({
 
 const columns = [
   {
+    value: 'kapp',
+    title: 'Kapp Name',
+    filter: 'startsWith',
+    type: 'text',
+    sortable: true,
+  },
+  {
+    value: 'form',
+    title: 'Form Name',
+    filter: 'startsWith',
+    type: 'text',
+    sortable: true,
+  },
+  {
     value: 'name',
-    title: 'Name',
+    title: 'Context Name',
     filter: 'startsWith',
     type: 'text',
     sortable: true,

@@ -1,15 +1,21 @@
 import { generateForm } from '../../form/Form';
 import {
-  fetchContextKeys,
+  fetchKapps,
+  fetchForms,
   createContext,
   updateContext,
 } from '../../../apis';
 
-const dataSources = ({ contextName }) => ({
-  locale: {
-    fn: fetchContextKeys,
-    params: contextName && [{ contextName, include: 'details' }],
-    transform: result => result.context,
+const dataSources = ({ isDatastore }) => ({
+  kapps: {
+    fn: fetchKapps,
+    params: [],
+    transform: result => result.kapps,
+  },
+  forms: {
+    fn: fetchForms,
+    params: isDatastore && [{ datastore: isDatastore }],
+    transform: result => result.forms,
   },
 });
 
@@ -30,10 +36,15 @@ const handleSubmit = ({ contextName }) => values =>
 
 const fields = () => () => [
   {
-    name: 'name',
-    label: 'Context Name',
-    type: 'text',
+    name: 'type',
+    label: 'Type',
+    type: 'radio',
     required: true,
+    options: () => [
+      { value: 'form', label: 'Form' },
+      { value: 'datastore', label: 'Datastore' },
+      { value: 'custom', label: 'Custom' },
+    ],
   },
   {
     name: 'kapp',

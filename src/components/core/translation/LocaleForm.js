@@ -1,41 +1,49 @@
+import { get, List, Map } from 'immutable';
 import { generateForm } from '../../form/Form';
-import { fetchLocale, enableLocale } from '../../../apis';
+import { fetchAvailableLocales, enableLocale } from '../../../apis';
 
 const dataSources = ({ localeCode }) => ({
-  // locale: {
-  //   fn: fetchLocale,
-  //   params: localeCode && [{ localeCode, include: 'details' }],
-  //   transform: result => result.locale,
-  // },
+  locales: {
+    fn: fetchAvailableLocales,
+    params: [],
+    // params: localeCode && [{ localeCode, include: 'details' }],
+    transform: result => result.locales,
+  },
 });
 
-const handleSubmit = ({ localeCode }) => values =>
-  new Promise((resolve, reject) => {
-    const locale = values.toJS();
-    (localeCode
-      ? enableLocale({ localeCode, locale })
-      : null
-     /*: createLocale({ locale })*/)
-      // : createLocale({ locale })
-      .then(({ locale, error }) => {
-        if (locale) {
-          resolve(locale);
-        } else {
-          reject(error.message || 'There was an error saving the locale');
-        }
-      });
-  });
+const handleSubmit = () => values => {
+  const localeCode = values.toJS();
+  console.log('LC:', localeCode);
+  return enableLocale({ localeCode: localeCode.code });
+  // return localeCode
+  //   ? updateLocale({ localeCode, locale })
+  //   : enableLocale({ locale });
+};
 
-const fields = () => () => [
-  {
-    name: 'code',
-    label: 'Code',
-    type: 'text',
-    required: true,
-  },
-];
+const fields = ({ localeCode }) => () => {
+  console.log('hello!!!');
+  return (
+    !localeCode && [
+      {
+        name: 'code',
+        label: 'Locale',
+        type: 'text',
+        options: ({ locales }) =>
+          locales
+            ? locales.map(locale =>
+                Map({
+                  value: locale.get('code'),
+                  label: locale.get('name'),
+                }),
+              )
+            : List(),
+      },
+    ]
+  );
+};
 
 export const LocaleForm = generateForm({
+  formOptions: ['localeCode'],
   dataSources,
   fields,
   handleSubmit,
