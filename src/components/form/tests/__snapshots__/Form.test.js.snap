@@ -128,6 +128,70 @@ Array [
 ]
 `;
 
+exports[`fields initialValue initialValue properly converted to immutable team 1`] = `
+<TeamFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={
+    Immutable.Map {
+      "name": "Test Team",
+      "slug": "test-team",
+    }
+  }
+  visible={true}
+/>
+`;
+
+exports[`fields initialValue initialValue properly converted to immutable team-multi 1`] = `
+<TeamMultiFieldMock
+  dirty={false}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={false}
+  value={
+    Immutable.List [
+      Immutable.Map {
+        "name": "Test Team A",
+        "slug": "test-team-a",
+      },
+      Immutable.Map {
+        "name": "Test Team B",
+        "slug": "test-team-b",
+      },
+    ]
+  }
+  visible={true}
+/>
+`;
+
 exports[`fields label given a function value 1`] = `
 <TextFieldMock
   dirty={false}
@@ -466,58 +530,6 @@ exports[`fields type code minimal 1`] = `
   placeholder=""
   renderAttributes={Immutable.Map {}}
   required={false}
-  touched={false}
-  value=""
-  visible={true}
-/>
-`;
-
-exports[`fields type form minimal 1`] = `
-<FormFieldMock
-  dirty={false}
-  enabled={true}
-  errors={Immutable.List []}
-  focusRef={null}
-  focused={false}
-  helpText=""
-  id="dGVzdCB0ZXN0"
-  key="test"
-  label=""
-  name="test"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onFocus={[Function]}
-  options={Immutable.List []}
-  placeholder=""
-  renderAttributes={Immutable.Map {}}
-  required={false}
-  search={Immutable.Map {}}
-  touched={false}
-  value=""
-  visible={true}
-/>
-`;
-
-exports[`fields type form-multi minimal 1`] = `
-<FormMultiFieldMock
-  dirty={false}
-  enabled={true}
-  errors={Immutable.List []}
-  focusRef={null}
-  focused={false}
-  helpText=""
-  id="dGVzdCB0ZXN0"
-  key="test"
-  label=""
-  name="test"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onFocus={[Function]}
-  options={Immutable.List []}
-  placeholder=""
-  renderAttributes={Immutable.Map {}}
-  required={false}
-  search={Immutable.Map {}}
   touched={false}
   value=""
   visible={true}
@@ -1125,6 +1137,800 @@ exports[`handleSubmit submit unexpected error, we expect the promise to reject w
 </FormLayout>
 `;
 
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES attributes 1`] = `
+<AttributesFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.Map {}}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES checkbox 1`] = `
+<CheckboxFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={false}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES code 1`] = `
+<CodeFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  language=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES form 1`] = `
+<FormFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  search={Immutable.Map {}}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES form-multi 1`] = `
+<FormMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  search={Immutable.Map {}}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES password 1`] = `
+<PasswordFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES radio 1`] = `
+<RadioFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES select 1`] = `
+<SelectFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES select-multi 1`] = `
+<SelectMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES table 1`] = `
+<TableFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES team 1`] = `
+<TeamFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES team-multi 1`] = `
+<TeamMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES text 1`] = `
+<TextFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES text-multi 1`] = `
+<TextMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES user 1`] = `
+<UserFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue empty string values should use FIELD_DEFAULT_VALUES user-multi 1`] = `
+<UserMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES attributes 1`] = `
+<AttributesFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.Map {}}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES checkbox 1`] = `
+<CheckboxFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={false}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES code 1`] = `
+<CodeFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  language=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES form 1`] = `
+<FormFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  search={Immutable.Map {}}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES form-multi 1`] = `
+<FormMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  search={Immutable.Map {}}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES password 1`] = `
+<PasswordFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES radio 1`] = `
+<RadioFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES select 1`] = `
+<SelectFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES select-multi 1`] = `
+<SelectMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES table 1`] = `
+<TableFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES team 1`] = `
+<TeamFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES team-multi 1`] = `
+<TeamMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES text 1`] = `
+<TextFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES text-multi 1`] = `
+<TextMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES user 1`] = `
+<UserFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue null values should use FIELD_DEFAULT_VALUES user-multi 1`] = `
+<UserMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
 exports[`setValue triggerChange 1`] = `
 <TextFieldMock
   dirty={true}
@@ -1187,6 +1993,403 @@ exports[`setValue triggerChange false 1`] = `
   required={false}
   touched={true}
   value="Hello World!"
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES attributes 1`] = `
+<AttributesFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.Map {}}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES checkbox 1`] = `
+<CheckboxFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={false}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES code 1`] = `
+<CodeFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  language=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES form 1`] = `
+<FormFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  search={Immutable.Map {}}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES form-multi 1`] = `
+<FormMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  search={Immutable.Map {}}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES password 1`] = `
+<PasswordFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES radio 1`] = `
+<RadioFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES select 1`] = `
+<SelectFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES select-multi 1`] = `
+<SelectMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES table 1`] = `
+<TableFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES team 1`] = `
+<TeamFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES team-multi 1`] = `
+<TeamMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES text 1`] = `
+<TextFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES text-multi 1`] = `
+<TextMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  options={Immutable.List []}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES user 1`] = `
+<UserFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={null}
+  visible={true}
+/>
+`;
+
+exports[`setValue undefined values should use FIELD_DEFAULT_VALUES user-multi 1`] = `
+<UserMultiFieldMock
+  dirty={true}
+  enabled={true}
+  errors={Immutable.List []}
+  focusRef={null}
+  focused={false}
+  helpText=""
+  id="dGVzdCB0ZXN0"
+  key="test"
+  label=""
+  name="test"
+  onBlur={[Function]}
+  onChange={[Function]}
+  onFocus={[Function]}
+  placeholder=""
+  renderAttributes={Immutable.Map {}}
+  required={false}
+  touched={true}
+  value={Immutable.List []}
   visible={true}
 />
 `;

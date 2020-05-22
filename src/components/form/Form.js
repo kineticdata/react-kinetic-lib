@@ -20,7 +20,7 @@ import {
 } from '../../store';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { generateKey } from '../../helpers';
-import { DATA_SOURCE_STATUS } from './Form.models';
+import { DATA_SOURCE_STATUS, FIELD_DEFAULT_VALUES } from './Form.models';
 import {
   createField,
   createFormState,
@@ -179,7 +179,7 @@ regHandlers({
     state
       .updateIn(['forms', formKey, 'fields', name], field =>
         field.merge({
-          value,
+          value: value || FIELD_DEFAULT_VALUES.get(field.type, ''),
           touched: true,
           dirty: !is(value, field.initialValue),
         }),
