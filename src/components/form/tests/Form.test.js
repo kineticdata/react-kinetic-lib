@@ -1,9 +1,10 @@
 import React from 'react';
+import { Map } from 'immutable';
+import { mount } from 'enzyme';
 import { KineticLib } from '../../../index';
 import { store } from '../../../store';
 import { generateForm, setValue, submitForm } from '../Form';
 import { mockFieldConfig } from './components';
-import { mount } from 'enzyme';
 
 const FORM_KEY = 'test';
 
@@ -80,6 +81,76 @@ describe('dataSources', () => {
     expect(messageFn.mock.calls).toMatchSnapshot();
     // should be called several times as bindings change
     expect(messageParams.mock.calls).toMatchSnapshot();
+    result.unmount();
+  });
+
+  // This tests a specific bug where calling setValue multiple times was
+  // resulting in issues where the state was updated multiple times before the
+  // saga could check for the change in the datasource params.
+  // Additionally, I could only reproduce this issue by making the `setValue`
+  // calls inside the change event of a field.
+  test('handles multiple change events', async () => {
+    const dataFn = jest.fn(arg => Promise.resolve({ arg }));
+    const result = await mountForm({
+      dataSources: () => ({
+        data: {
+          fn: dataFn,
+          params: ({ values }) => [values.get('paramField')],
+        },
+      }),
+      fields: () => () => [
+        {
+          name: 'mainField',
+          onChange: ({ values }, { setValue }) => {
+            setValue('paramField', 'Two');
+            setValue('otherField', 'n/a');
+          },
+          type: 'text',
+        },
+        { initialValue: 'One', name: 'paramField', type: 'text' },
+        { name: 'otherField', type: 'text' },
+      ],
+    });
+    // dataFn should be called once with the initial value of paramField
+    expect(dataFn.mock.calls.length).toBe(1);
+    expect(dataFn.mock.calls[0][0]).toBe('One');
+    // trigger change event that changes the paramField
+    setValue(FORM_KEY, 'mainField', 'n/a');
+    // dataFn should be called again with the updated value of paramField
+    expect(dataFn.mock.calls.length).toBe(2);
+    expect(dataFn.mock.calls[1][0]).toBe('Two');
+    result.unmount();
+  });
+
+  test('resets to null when params evaluates to falsey', async () => {
+    const dataFn = jest.fn(arg => Promise.resolve({ arg }));
+    const paramFn = jest.fn(({ values }) => values.get('enabled') && ['Test']);
+    const result = await mountForm({
+      dataSources: () => ({
+        data: {
+          fn: dataFn,
+          params: paramFn,
+        },
+      }),
+      fields: () => () => [
+        { initialValue: true, name: 'enabled', type: 'checkbox' },
+      ],
+    });
+    // Update the component because we want to test the bindings prop passed to
+    // FormLayout.
+    result.update();
+    expect(dataFn.mock.calls.length).toBe(1);
+    expect(result.find('FormLayout').prop('bindings').data).toEqual(
+      Map({ arg: 'Test' }),
+    );
+    // Uncheck enabled which should cause paramFn to return false, which should
+    // result in clearing the datasource.
+    setValue(FORM_KEY, 'enabled', false);
+    // Update the component because we want to test the bindings prop passed to
+    // FormLayout.
+    result.update();
+    expect(dataFn.mock.calls.length).toBe(1);
+    expect(result.find('FormLayout').prop('bindings').data).toBe(null);
     result.unmount();
   });
 });

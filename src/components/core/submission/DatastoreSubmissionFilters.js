@@ -41,6 +41,13 @@ const getOperatorIndex = name => {
   return match && parseInt(match[1]);
 };
 
+const indexChangeFn = ({ maxLength, values }, { setValue }) => {
+  Range(0, maxLength)
+    .map(i => `op${i}-operator`)
+    .filter(name => !!values.get(name))
+    .forEach(name => setValue(name, ''));
+};
+
 const operatorChangeFn = i => ({ values }, { setValue }) => {
   const value = values.get(`op${i}-operator`);
   // If the operator was set to something besides 'eq' or 'in' clear any
@@ -100,6 +107,7 @@ export const filters = () => ({ form, indexOptions, maxLength }) =>
       label: 'Search By',
       initialValue: indexOptions.first().get('value'),
       name: 'index',
+      onChange: indexChangeFn,
       options: indexOptions,
       transient: true,
       type: 'select',

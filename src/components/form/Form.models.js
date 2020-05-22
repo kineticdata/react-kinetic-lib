@@ -20,7 +20,6 @@ export const FormState = Record({
 });
 
 export const DATA_SOURCE_STATUS = {
-  UNINITIALIZED: 'UNINITIALIZED',
   PENDING: 'PENDING',
   RESOLVED: 'RESOLVED',
   REJECTED: 'REJECTED',
@@ -31,9 +30,7 @@ export const DataSource = Record({
   fn: null,
   params: null,
   paramsFn: null,
-  prevParams: null,
-  rawParams: null,
-  status: DATA_SOURCE_STATUS.UNINITIALIZED,
+  status: DATA_SOURCE_STATUS.PENDING,
   transform: null,
 });
 

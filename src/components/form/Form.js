@@ -1,5 +1,14 @@
 import React, { Component, createRef } from 'react';
-import { all, call, put, select, takeEvery } from 'redux-saga/effects';
+import {
+  all,
+  call,
+  fork,
+  put,
+  race,
+  select,
+  take,
+  takeEvery,
+} from 'redux-saga/effects';
 import {
   fromJS,
   is,
@@ -135,18 +144,11 @@ const buildBindings = formState =>
 
 const evaluateDataSources = formState =>
   formState.update('dataSources', dataSources =>
-    dataSources.map(dataSource => {
-      if (dataSource.paramsFn) {
-        const rawParams = dataSource.paramsFn(formState.bindings);
-        return dataSource.merge({
-          rawParams,
-          params: rawParams && fromJS(rawParams),
-          prevParams: dataSource.params,
-        });
-      } else {
-        return dataSource;
-      }
-    }),
+    dataSources.map(dataSource =>
+      dataSource.paramsFn
+        ? dataSource.set('params', dataSource.paramsFn(formState.bindings))
+        : dataSource,
+    ),
   );
 
 const evaluateFields = formState =>
@@ -251,51 +253,13 @@ regSaga('CHECK_ON_LOAD', function*() {
   const checkActions = ['CONFIGURE_FORM', 'RESOLVE_DATA_SOURCE'];
   yield takeEvery(checkActions, function*({ payload: { formKey } }) {
     try {
-      const { bindings, callOnLoad, onLoad } = yield select(
-        selectForm(formKey),
-      );
-      if (callOnLoad && typeof onLoad === 'function') {
-        yield call(onLoad, bindings);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  });
-});
-
-regSaga('CHECK_DATA_SOURCES', function*() {
-  // Redux actions that should result in checking whether or not data sources
-  // should be called.
-  const checkActions = [
-    'CONFIGURE_FORM',
-    'REJECT_DATA_SOURCE',
-    'RESET',
-    'RESOLVE_DATA_SOURCE',
-    'SET_VALUE',
-    'SUBMIT_SUCCESS',
-  ];
-  // Looks at the params to see if the data source should be called.
-  const shouldCall = (dataSource, name) =>
-    (!dataSource.paramsFn &&
-      dataSource.rawParams &&
-      dataSource.status === DATA_SOURCE_STATUS.UNINITIALIZED) ||
-    (dataSource.params && !dataSource.params.equals(dataSource.prevParams));
-  // Builds the redux action that triggers a call of the data source.
-  const callAction = formKey => (dataSource, name) =>
-    put(action('CALL_DATA_SOURCE', { formKey, name }));
-
-  // Putting the above pieces together to call data sources when appropriate.
-  yield takeEvery(checkActions, function*({ payload: { formKey } }) {
-    try {
       const formState = yield select(selectForm(formKey));
-      if (formState) {
-        yield all(
-          formState.dataSources
-            .filter(shouldCall)
-            .map(callAction(formKey))
-            .valueSeq()
-            .toArray(),
-        );
+      if (
+        formState &&
+        formState.callOnLoad &&
+        typeof formState.onLoad === 'function'
+      ) {
+        yield call(formState.onLoad, formState.bindings);
       }
     } catch (e) {
       console.error(e);
@@ -304,10 +268,72 @@ regSaga('CHECK_DATA_SOURCES', function*() {
 });
 
 regSaga(
-  takeEvery('CALL_DATA_SOURCE', function*({ payload: { formKey, name } }) {
+  takeEvery('CONFIGURE_FORM', function*(action) {
+    const { formKey } = action.payload;
+    const { dataSources } = yield select(selectForm(formKey));
+    yield all(
+      dataSources
+        .map((ds, name) => fork(runDataSource, formKey, name, ds))
+        .valueSeq()
+        .toArray(),
+    );
+  }),
+);
+
+// Create a process that represents a datasource, it listens for form events
+// and checks to see if its parameters have changed, if it detects parameter
+// changes it should trigger a call to the datasource function. Finally, it
+// listens for a UNMOUNT_FORM action to end the while-loop.
+function* runDataSource(formKey, name, dataSource) {
+  const { params, paramsFn } = dataSource;
+  let prevParams = fromJS(params);
+  if (params) {
+    yield put(action('CALL_DATA_SOURCE', { formKey, name, params }));
+  }
+  if (paramsFn) {
+    while (true) {
+      const [checkAction, unmountAction] = yield race([
+        take([
+          'CONFIGURE_FORM',
+          'REJECT_DATA_SOURCE',
+          'RESET',
+          'RESOLVE_DATA_SOURCE',
+          'SET_VALUE',
+          'SUBMIT_SUCCESS',
+        ]),
+        take('UNMOUNT_FORM'),
+      ]);
+      if (unmountAction && unmountAction.payload.formKey === formKey) {
+        break;
+      } else if (checkAction.payload.formKey === formKey) {
+        const formState = yield select(selectForm(formKey));
+        const params = formState.getIn(['dataSources', name, 'params']);
+        const nextParams = fromJS(params);
+        if (!is(nextParams, prevParams)) {
+          prevParams = nextParams;
+          yield put(
+            params
+              ? action('CALL_DATA_SOURCE', { formKey, name, params })
+              : action('RESOLVE_DATA_SOURCE', {
+                  formKey,
+                  name,
+                  data: null,
+                  timestamp: null,
+                }),
+          );
+        }
+      }
+    }
+  }
+}
+
+regSaga(
+  takeEvery('CALL_DATA_SOURCE', function*({
+    payload: { formKey, name, params },
+  }) {
     try {
-      const { fn, rawParams } = yield select(selectDataSource(formKey, name));
-      const data = yield call(fn, ...rawParams);
+      const { fn } = yield select(selectDataSource(formKey, name));
+      const data = yield call(fn, ...params);
       const timestamp = yield call(getTimestamp);
       yield put(
         action('RESOLVE_DATA_SOURCE', { formKey, name, data, timestamp }),
