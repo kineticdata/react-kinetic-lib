@@ -1,26 +1,30 @@
 import { generateTable } from '../../table/Table';
 import { fetchPolicyRules } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .startsWith('type', 'type')
+  .end();
 
 const dataSource = () => ({
   fn: fetchPolicyRules,
-  clientSideSearch: true,
+  clientSide,
   params: () => [{ include: 'details' }],
   transform: result => ({ data: result.policyRules }),
 });
+
+const filters = () => () => [{ name: 'name', label: 'Name', type: 'text' }];
 
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'type',
     title: 'Type',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
@@ -36,15 +40,11 @@ const columns = [
   {
     value: 'id',
     title: 'Id',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'createdAt',
     title: 'Created',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
   },
   {
@@ -66,6 +66,7 @@ const columns = [
 
 export const PolicyRuleTable = generateTable({
   columns,
+  filters,
   dataSource,
 });
 PolicyRuleTable.propTypes = {};

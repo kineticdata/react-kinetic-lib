@@ -826,7 +826,6 @@ describe('defineKqlQuery', () => {
 
     expect(query).toBeDefined();
     expect(query(values)).toBe(`name IN ("Bob", "Matt")`);
-    // TODO implement for empty list, list of empty values, and invalid lists (null or undefined)
   });
 
   test('between', () => {

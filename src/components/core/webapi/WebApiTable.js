@@ -1,35 +1,47 @@
 import { generateTable } from '../../table/Table';
 import { fetchWebApis } from '../../../apis';
 import { WEB_API_METHODS } from './WebApiForm';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('slug', 'slug')
+  .equals('method', 'method')
+  .end();
 
 const dataSource = ({ kappSlug }) => ({
   fn: fetchWebApis,
-  clientSideSearch: true,
+  clientSide,
   params: () => [{ kappSlug, include: 'details' }],
   transform: result => ({
     data: result.webApis,
   }),
 });
 
-const columns = [
+const filters = () => () => [
+  { name: 'slug', label: 'Slug', type: 'text' },
   {
-    value: 'slug',
-    title: 'Slug',
-    filter: 'startsWith',
-    type: 'text',
-    sortable: true,
-  },
-  {
-    value: 'method',
-    title: 'Method',
-    filter: 'startsWith',
-    type: 'text',
-    sortable: true,
+    name: 'method',
+    label: 'Method',
+    type: 'select',
     options: () =>
       WEB_API_METHODS.map(el => ({
         value: el,
         label: el,
       })),
+  },
+  { name: 'slug', label: 'Slug', type: 'text' },
+];
+
+const columns = [
+  {
+    value: 'slug',
+    title: 'Slug',
+    sortable: true,
+  },
+  {
+    value: 'method',
+    title: 'Method',
+    sortable: true,
   },
   {
     value: 'createdAt',
@@ -54,10 +66,8 @@ const columns = [
 export const WebApiTable = generateTable({
   tableOptions: ['kappSlug'],
   columns,
+  filters,
   dataSource,
 });
 
 WebApiTable.displayName = 'WebApiTable';
-WebApiTable.defaultProps = {
-  columns,
-};

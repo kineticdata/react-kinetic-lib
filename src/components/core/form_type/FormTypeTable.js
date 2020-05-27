@@ -1,27 +1,28 @@
 import { generateTable } from '../../table/Table';
 import { fetchFormTypes } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .end();
 
 const dataSource = ({ kappSlug }) => ({
   fn: fetchFormTypes,
-  clientSideSearch: true,
-  params: () => [
-    {
-      kappSlug,
-    },
-  ],
-  transform: result => {
-    return {
-      data: result.formTypes,
-    };
-  },
+  clientSide,
+  params: () => [{ kappSlug }],
+  transform: result => ({
+    data: result.formTypes,
+  }),
 });
+
+const filters = () => () => [
+  { name: 'name', label: 'Form Type', type: 'text' },
+];
 
 const columns = [
   {
     value: 'name',
     title: 'Form Type',
-    filter: 'includes',
-    type: 'text',
     sortable: false,
   },
 ];
@@ -29,6 +30,7 @@ const columns = [
 export const FormTypeTable = generateTable({
   tableOptions: ['kappSlug'],
   columns,
+  filters,
   dataSource,
 });
 

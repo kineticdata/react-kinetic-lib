@@ -3,7 +3,7 @@ import { fetchAgentComponents } from '../../../apis';
 
 const dataSource = () => ({
   fn: fetchAgentComponents,
-  clientSideSearch: true,
+  clientSide: true,
   params: () => [],
   transform: result => ({
     data: result.agents,
@@ -29,6 +29,3 @@ export const AgentComponentTable = generateTable({
 });
 
 AgentComponentTable.displayName = 'AgentComponentTable';
-AgentComponentTable.defaultProps = {
-  columns,
-};

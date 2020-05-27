@@ -87,6 +87,3 @@ export const KappTable = generateTable({
 });
 
 KappTable.displayName = 'KappTable';
-KappTable.defaultProps = {
-  columns,
-};

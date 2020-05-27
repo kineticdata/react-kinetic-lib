@@ -1,11 +1,22 @@
 import { generateTable } from '../../table/Table';
 import { fetchTeams, generateCESearchParams } from '../../../apis';
+import { defineKqlQuery } from '../../../helpers';
+import {
+  generatePaginationParams,
+  generateSortParams,
+} from '../../../apis/http';
+
+const teamQuery = defineKqlQuery()
+  .startsWith('name', 'name')
+  .end();
 
 const dataSource = () => ({
   fn: fetchTeams,
   params: paramData => [
     {
-      ...generateCESearchParams(paramData),
+      ...generateSortParams(paramData),
+      ...generatePaginationParams(paramData),
+      q: teamQuery(paramData.filters.toJS()),
       include: 'authorization,details',
     },
   ],
@@ -15,26 +26,22 @@ const dataSource = () => ({
   }),
 });
 
+const filters = () => () => [{ name: 'name', label: 'Name', type: 'text' }];
+
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'updatedAt',
     title: 'Updated',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'createdAt',
     title: 'Created',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
@@ -45,18 +52,14 @@ const columns = [
   {
     value: 'slug',
     title: 'Slug',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
 ];
 
 export const TeamTable = generateTable({
   columns,
+  filters,
   dataSource,
 });
 
 TeamTable.displayName = 'TeamTable';
-TeamTable.defaultProps = {
-  columns,
-};
