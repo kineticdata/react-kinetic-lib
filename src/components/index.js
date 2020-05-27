@@ -91,6 +91,7 @@ export {
   AgentComponentForm,
 } from './core/platform_component/AgentComponentForm';
 export { TaskComponentForm } from './core/platform_component/TaskComponentForm';
+export { EntryForm } from './core/translation/EntryForm';
 export { EntryTable } from './core/translation/EntryTable';
 export { FormForm } from './core/form/FormForm';
 export { FormTable } from './core/form/FormTable';
