@@ -1,4 +1,4 @@
-import { List, Map, OrderedMap } from 'immutable';
+import { isImmutable, List, Map, OrderedMap } from 'immutable';
 import { isObject } from 'lodash-es';
 import { Intersection, ShapeInfo } from 'kld-intersections';
 import * as constants from './constants';
@@ -142,14 +142,18 @@ export const getAncestors = (tree, node, result = Map()) =>
 // or returns the leaf value object if not (removing the erb tags at the same
 // time)
 const bindify = raw =>
-  Map(raw).map(value =>
-    isObject(value)
-      ? Map({ children: bindify(value) })
-      : Map({ value: value.replace(/^<%=(.*)%>$/, '$1') }),
-  );
+  Map(raw)
+    .sortBy((_, key) => key)
+    .map(value =>
+      isImmutable(value)
+        ? value
+        : isObject(value)
+        ? Map({ children: bindify(value) })
+        : Map({ value: value.replace(/^<%=(.*)%>$/, '$1') }),
+    );
 
 export const buildBindings = (tree, tasks, node) => {
-  const ancestorResultBindings = Map({
+  const Results = Map({
     children: tree.nodes
       // convert the node map to use the name as the key
       .mapKeys((_, node) => node.name)
@@ -177,10 +181,11 @@ export const buildBindings = (tree, tasks, node) => {
         }),
       ),
   });
-  const otherBindings = bindify(tree.bindings);
-  return ancestorResultBindings.get('children').isEmpty()
-    ? otherBindings
-    : otherBindings.set('Results', ancestorResultBindings);
+  return bindify(
+    Results.get('children').isEmpty()
+      ? tree.bindings
+      : { ...tree.bindings, Results },
+  );
 };
 
 // implements the process of adding a new task node and connector to the tree,
