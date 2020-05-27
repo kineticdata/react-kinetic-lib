@@ -1,12 +1,17 @@
 import React from 'react';
-import { fetchBackgroundJobs } from '../../../apis';
+import { fetchBackgroundJobs, fetchForm } from '../../../apis';
 import { generateTable } from '../../table/Table';
 
-const dataSource = () => ({
-  fn: fetchBackgroundJobs,
+const dataSource = ({ formSlug }) => ({
+  fn: () =>
+    formSlug
+      ? fetchForm({ datastore: true, formSlug, include: 'backgroundJobs' })
+      : fetchBackgroundJobs(),
   clientSideSearch: true,
   params: () => [],
-  transform: result => ({ data: result.backgroundJobs }),
+  transform: result => ({
+    data: formSlug ? result.form.backgroundJobs : result.backgroundJobs,
+  }),
 });
 
 const columns = [
@@ -47,6 +52,7 @@ const columns = [
 ];
 
 export const IndexJobTable = generateTable({
+  tableOptions: ['formSlug'],
   dataSource,
   columns,
   sortable: false,
