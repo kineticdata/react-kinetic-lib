@@ -4,10 +4,16 @@ import {
   KAPP_SECURITY_DEFINITION_TYPES,
   SPACE_SECURITY_DEFINITION_TYPES,
 } from './SecurityDefinitionForm';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .equals('type', 'type')
+  .end();
 
 const dataSource = ({ kappSlug }) => ({
   fn: fetchSecurityPolicyDefinitions,
-  clientSideSearch: true,
+  clientSide,
   params: () => [
     {
       include: 'details',
@@ -19,30 +25,12 @@ const dataSource = ({ kappSlug }) => ({
   }),
 });
 
-const columns = [
+const filters = () => () => [
+  { name: 'name', label: 'Name', type: 'text' },
   {
-    value: 'message',
-    title: 'Message',
-    sortable: false,
-  },
-  {
-    value: 'name',
-    title: 'Name',
-    filter: 'includes',
-    type: 'text',
-    sortable: true,
-  },
-  {
-    value: 'rule',
-    title: 'Rule',
-    sortable: false,
-  },
-  {
-    value: 'type',
-    title: 'Type',
-    filter: 'equals',
-    type: 'text',
-    sortable: true,
+    name: 'type',
+    label: 'Type',
+    type: 'select',
     options: kappSlug =>
       kappSlug.kappSlug
         ? KAPP_SECURITY_DEFINITION_TYPES.map(el => ({
@@ -56,13 +44,34 @@ const columns = [
   },
 ];
 
+const columns = [
+  {
+    value: 'message',
+    title: 'Message',
+    sortable: false,
+  },
+  {
+    value: 'name',
+    title: 'Name',
+    sortable: true,
+  },
+  {
+    value: 'rule',
+    title: 'Rule',
+    sortable: false,
+  },
+  {
+    value: 'type',
+    title: 'Type',
+    sortable: true,
+  },
+];
+
 export const SecurityDefinitionTable = generateTable({
   tableOptions: ['kappSlug'],
   columns,
+  filters,
   dataSource,
 });
 
 SecurityDefinitionTable.displayName = 'SecurityDefinitionTable';
-SecurityDefinitionTable.defaultProps = {
-  columns,
-};
