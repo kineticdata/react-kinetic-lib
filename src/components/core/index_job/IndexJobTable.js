@@ -1,13 +1,40 @@
 import React from 'react';
 import { fetchBackgroundJobs } from '../../../apis';
 import { generateTable } from '../../table/Table';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .equals('status', 'status')
+  .between('startedAt', 'minStartedAt', 'maxStartedAt')
+  .end();
+
+const indexJobStatuses = ['Running', 'Paused'];
 
 const dataSource = () => ({
   fn: fetchBackgroundJobs,
-  clientSideSearch: true,
+  clientSide,
   params: () => [],
   transform: result => ({ data: result.backgroundJobs }),
 });
+
+const filters = () => () => [
+  {
+    name: 'status',
+    label: 'Status',
+    type: 'select',
+    options: indexJobStatuses.map(el => ({ value: el, label: el })),
+  },
+  {
+    name: 'minStartedAt',
+    label: 'Start',
+    type: 'date',
+  },
+  {
+    name: 'maxStartedAt',
+    label: 'End',
+    type: 'date',
+  },
+];
 
 const columns = [
   {
@@ -49,6 +76,7 @@ const columns = [
 export const IndexJobTable = generateTable({
   dataSource,
   columns,
+  // filters,
   sortable: false,
 });
 IndexJobTable.displayName = 'IndexJobTable';

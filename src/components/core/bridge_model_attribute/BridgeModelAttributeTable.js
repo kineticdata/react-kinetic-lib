@@ -1,5 +1,10 @@
 import { generateTable } from '../../table/Table';
 import { fetchBridgeModel } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .end();
 
 // Handles bridge model api response by checking for error and also returning
 // error if active mapping is not present. If valid returns object with the
@@ -31,17 +36,17 @@ const transform = ({ attributes, attributeMappings }) => ({
 
 const dataSource = ({ modelName }) => ({
   fn: () => fetchBridgeModel({ modelName }).then(handleBridgeModel),
-  clientSideSearch: true,
+  clientSide,
   params: () => [{ modelName }],
   transform,
 });
+
+const filters = () => () => [{ name: 'name', label: 'Name', type: 'text' }];
 
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'includes',
-    type: 'text',
     sortable: true,
   },
   {
@@ -53,6 +58,7 @@ const columns = [
 
 export const BridgeModelAttributeTable = generateTable({
   columns,
+  // filters,
   dataSource,
   tableOptions: ['modelName'],
 });
