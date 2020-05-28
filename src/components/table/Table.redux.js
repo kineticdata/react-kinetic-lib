@@ -440,9 +440,10 @@ const calculateRows = tableData => {
       return {
         nextPageToken,
         data,
-        rows: dataSource.clientSideSearch
-          ? applyClientSideFilters(tableData, rows)
-          : rows,
+        rows:
+          dataSource.clientSideSearch || dataSource.clientSide
+            ? applyClientSideFilters(tableData, rows)
+            : rows,
       };
     });
   } else {

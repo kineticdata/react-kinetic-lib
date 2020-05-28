@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose, lifecycle } from 'recompose';
-import { List, Map } from 'immutable';
+import { List, Map, mergeDeep } from 'immutable';
 import { ComponentConfigContext } from '../common/ComponentConfigContext';
 import { connect, dispatch } from '../../store';
 import {
@@ -133,7 +133,6 @@ const buildFilterForm = props => {
       components={components}
       alterFields={props.alterFilters}
       fieldSet={props.filterSet}
-      initialValues={props.initialFilterValues}
     />
   );
 };
@@ -638,7 +637,12 @@ export const generateTable = ({
     tableKey: props.tableKey,
     addColumns: props.addColumns,
     alterColumns: props.alterColumns,
-    alterFilters: props.alterFilters,
+    alterFilters: mergeDeep(
+      props.alterFilters || {},
+      Map(props.initialFilterValues)
+        .map(initialValue => ({ initialValue }))
+        .toObject(),
+    ),
     filterSet: props.filterSet,
     columnSet: props.columnSet,
     pageSize: props.pageSize,
