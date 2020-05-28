@@ -129,11 +129,7 @@ const buildFilterForm = props => {
       components={components}
       alterFields={props.alterFilters}
       fieldSet={props.filterSet}
-      onLoad={() => ({ values }) =>
-        dispatch('APPLY_FILTER_FORM', {
-          tableKey: props.tableKey,
-          appliedFilters: values,
-        })}
+      initialValues={props.initialFilterValues}
     />
   );
 };
@@ -648,6 +644,7 @@ export const generateTable = ({
     // For full client-side tables, with no datasource.
     data: props.data,
     filterForm: !!filters,
+    initialFilterValues: props.initialFilterValues || {},
   };
 
   return <Table {...setProps}>{props.children}</Table>;

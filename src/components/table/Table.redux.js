@@ -286,9 +286,16 @@ function* calculateRowsTask({ payload }) {
 }
 
 function* configureTableTask({ payload }) {
-  const { filterForm, tableKey } = payload;
+  const { filterForm, tableKey, initialFilterValues } = payload;
   if (!filterForm) {
     yield put(action('APPLY_FILTERS', { tableKey }));
+  } else {
+    yield put(
+      action('APPLY_FILTER_FORM', {
+        tableKey,
+        appliedFilters: initialFilterValues,
+      }),
+    );
   }
 }
 
