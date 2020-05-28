@@ -293,7 +293,7 @@ function* configureTableTask({ payload }) {
     yield put(
       action('APPLY_FILTER_FORM', {
         tableKey,
-        appliedFilters: initialFilterValues,
+        appliedFilters: Map(initialFilterValues),
       }),
     );
   }

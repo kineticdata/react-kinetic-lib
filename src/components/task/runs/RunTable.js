@@ -1,6 +1,18 @@
-import { fetchTaskRuns } from '../../../apis/task';
+import { fetchSources, fetchTaskRuns } from '../../../apis/task';
 import { generateTable } from '../../table/Table';
-import { get, getIn } from 'immutable';
+import { get, getIn, Map } from 'immutable';
+
+const ORDER_BY = Map({
+  sourceName: 'tree.sourceRoot.name',
+  sourceGroup: 'tree.sourceGroup',
+  tree: 'tree.name',
+  type: 'tree.type',
+});
+
+const RUN_TYPES = ['Tree', 'Global Routine', 'Local Routine'].map(v => ({
+  label: v,
+  value: v,
+}));
 
 const dataSource = ({
   sourceName,
@@ -13,40 +25,20 @@ const dataSource = ({
   fn: fetchTaskRuns,
   params: paramData => [
     {
-      source: sourceName
-        ? sourceName
-        : paramData.filters.getIn(['sourceName', 'value']),
-      includeSystemRuns: paramData.filters.getIn([
-        'includeSystemRuns',
-        'value',
-      ]),
+      source: sourceName ? sourceName : paramData.filters.get('sourceName'),
+      includeSystemRuns: paramData.filters.get('includeSystemRuns'),
 
       groupFragment: sourceGroup
         ? sourceGroup
         : paramData.filters.get('sourceGroup'),
-      treeFragment: treeName
-        ? treeName
-        : paramData.filters.getIn(['tree', 'value']),
-      treeType: treeType
-        ? treeType
-        : paramData.filters.getIn(['type', 'value']),
-      sourceId: sourceId
-        ? sourceId
-        : paramData.filters.getIn(['sourceId', 'value']),
-      id: id ? id : paramData.filters.getIn(['id', 'value']),
+      treeFragment: treeName ? treeName : paramData.filters.get('tree'),
+      treeType: treeType ? treeType : paramData.filters.get('type'),
+      sourceId: sourceId ? sourceId : paramData.filters.get('sourceId'),
+      id: id ? id : paramData.filters.get('id'),
       include: 'details',
       limit: paramData.pageSize,
       offset: paramData.nextPageToken,
-      orderBy:
-        paramData.sortColumn === 'sourceName'
-          ? 'tree.sourceRoot.name'
-          : paramData.sortColumn === 'sourceGroup'
-          ? 'tree.sourceGroup'
-          : paramData.sortColumn === 'tree'
-          ? 'tree.name'
-          : paramData.sortColumn === 'type'
-          ? 'tree.type'
-          : paramData.sortColumn,
+      orderBy: ORDER_BY.get(paramData.sortColumn, paramData.sortColumn),
       direction: paramData.sortColumn ? paramData.sortDirection : undefined,
     },
   ],
@@ -56,12 +48,50 @@ const dataSource = ({
   }),
 });
 
+const filterDataSources = () => ({
+  sourceTypes: {
+    fn: fetchSources,
+    params: [],
+    transform: result =>
+      result.sources
+        .filter(s => s.name !== '-')
+        .map(s => ({
+          label: s.name,
+          value: s.name,
+        })),
+  },
+});
+
+const filters = () => ({ sourceTypes }) =>
+  sourceTypes && [
+    {
+      name: 'sourceName',
+      label: 'Source',
+      type: 'select',
+      options: sourceTypes,
+    },
+    { name: 'sourceGroup', label: 'Group', type: 'text' },
+    { name: 'tree', label: 'Name', type: 'text' },
+    {
+      name: 'includeSystemRuns',
+      label: 'Include System Runs',
+      type: 'checkbox',
+    },
+    {
+      name: 'type',
+      label: 'Type',
+      type: 'select',
+      options: RUN_TYPES,
+      initialValue: 'Tree',
+    },
+    { name: 'sourceId', label: 'Source ID', type: 'text' },
+    { name: 'id', label: 'Run ID', type: 'text' },
+  ];
+
 const columns = [
   {
     value: 'id',
     title: 'Id',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
   },
   {
@@ -73,28 +103,16 @@ const columns = [
     value: 'sourceName',
     valueTransform: (_value, row) => getIn(row, ['source', 'name'], ''),
     title: 'Source',
-    type: 'text',
-    filter: 'equals',
     sortable: true,
-  },
-  {
-    value: 'includeSystemRuns',
-    title: 'Include System Runs',
-    filter: 'equals',
-    type: 'boolean',
   },
   {
     value: 'sourceId',
     title: 'Source Id',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'tree',
     title: 'Tree',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
     valueTransform: value => get(value, 'name', ''),
   },
@@ -102,15 +120,11 @@ const columns = [
     value: 'sourceGroup',
     title: 'Group',
     sortable: true,
-    filter: 'equals',
-    type: 'text',
     valueTransform: (_value, row) => row.getIn(['tree', 'sourceGroup']),
   },
   {
     value: 'type',
     title: 'Type',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
     valueTransform: (_value, row) => row.getIn(['tree', 'type']),
   },
@@ -128,5 +142,7 @@ const columns = [
 export const RunTable = generateTable({
   tableOptions: ['sourceName', 'sourceGroup', 'treeName', 'sourceId'],
   columns,
+  filters,
   dataSource,
+  filterDataSources,
 });
