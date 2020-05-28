@@ -1,9 +1,15 @@
 import { generateTable } from '../../table/Table';
 import { fetchAgentHandlers } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('slug', 'slug')
+  .startsWith('definitionId', 'definitionId')
+  .end();
 
 const dataSource = ({ agentSlug }) => ({
   fn: fetchAgentHandlers,
-  clientSideSearch: true,
+  clientSide,
   params: () => [
     {
       agentSlug,
@@ -15,19 +21,28 @@ const dataSource = ({ agentSlug }) => ({
   }),
 });
 
+const filters = () => () => [
+  {
+    name: 'slug',
+    label: 'Slug',
+    type: 'text',
+  },
+  {
+    name: 'definitionId',
+    label: 'Handler Adapter',
+    type: 'text',
+  },
+];
+
 const columns = [
   {
     value: 'slug',
     title: 'Slug',
-    filter: 'includes',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'definitionId',
     title: 'Handler Adapter',
-    filter: 'includes',
-    type: 'text',
     sortable: true,
   },
 ];
@@ -35,6 +50,7 @@ const columns = [
 export const AgentHandlerTable = generateTable({
   tableOptions: ['agentSlug'],
   columns,
+  filters,
   dataSource,
 });
 

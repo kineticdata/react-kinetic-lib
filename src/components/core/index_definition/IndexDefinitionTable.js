@@ -1,12 +1,21 @@
 import React from 'react';
 import { generateTable } from '../../table/Table';
 import { fetchForm } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .equals('status', 'status')
+  .equals('unique', 'unique')
+  .end();
+
+const indexStatuses = ['New', 'Building', 'Built', 'Failed'];
 
 const BooleanYesNoCell = props => <td>{props.value ? 'Yes' : 'No'}</td>;
 
 const dataSource = ({ formSlug }) => ({
   fn: fetchForm,
-  clientSideSearch: true,
+  clientSide,
   params: () => [
     {
       datastore: true,
@@ -19,6 +28,22 @@ const dataSource = ({ formSlug }) => ({
     data: result.form.indexDefinitions,
   }),
 });
+
+const filters = () => () => [
+  { name: 'name', label: 'Name', type: 'text' },
+  {
+    name: 'status',
+    label: 'Status',
+    type: 'select',
+    options: indexStatuses.map(el => ({ value: el, label: el })),
+  },
+  {
+    name: 'unique',
+    label: 'Unique',
+    type: 'select',
+    options: ['Yes', 'No'].map(el => ({ value: el, label: el })),
+  },
+];
 
 const columns = [
   {
@@ -46,6 +71,7 @@ export const IndexDefinitionTable = generateTable({
   tableOptions: ['formSlug'],
   sortable: false,
   columns,
+  // filters,
   dataSource,
 });
 

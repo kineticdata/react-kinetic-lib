@@ -1,9 +1,15 @@
 import { generateTable } from '../../table/Table';
 import { fetchBridges } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('slug', 'slug')
+  .startsWith('adapterClass', 'adapterClass')
+  .end();
 
 const dataSource = ({ agentSlug }) => ({
   fn: fetchBridges,
-  clientSideSearch: true,
+  clientSide,
   params: () => [
     {
       agentSlug,
@@ -15,26 +21,34 @@ const dataSource = ({ agentSlug }) => ({
   }),
 });
 
+const filters = () => () => [
+  { name: 'slug', label: 'Slug', type: 'text' },
+  { name: 'adapterClass', label: 'Adapter', type: 'text' },
+];
+
 const columns = [
   {
     value: 'slug',
     title: 'Slug',
-    filter: 'includes',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'adapterClass',
-    title: 'Adapter Class',
-    filter: 'includes',
-    type: 'text',
+    title: 'Adapter',
     sortable: true,
+    valueTransform: _value =>
+      _value
+        .split('.')
+        .pop()
+        .match(/[A-Z][a-z]+/g)
+        .join(' '),
   },
 ];
 
 export const BridgeTable = generateTable({
   tableOptions: ['agentSlug'],
   columns,
+  filters,
   dataSource,
 });
 

@@ -29,7 +29,6 @@ const filters = () => () => [
         label: el,
       })),
   },
-  { name: 'slug', label: 'Slug', type: 'text' },
 ];
 
 const columns = [
