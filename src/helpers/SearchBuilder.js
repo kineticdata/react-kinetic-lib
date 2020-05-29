@@ -8,6 +8,7 @@ import {
   map,
   some,
 } from 'lodash-es';
+import { get, isImmutable } from 'immutable';
 
 const defineKqlQuery = () => new SearchBuilder('kql');
 const defineFilter = (caseInsensitive, rootOperator) =>
@@ -197,8 +198,8 @@ const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => (
   filters,
 ) => {
   const left = object[lvalue];
-  const right1 = filters[rvalueMin];
-  const right2 = filters[rvalueMax];
+  const right1 = get(filters, rvalueMin);
+  const right2 = get(filters, rvalueMax);
   // If the filter value is empty and strict is not enabled we skip the filter
   // by returning true.
   if ((isNullOrEmpty(right1) || isNullOrEmpty(right2)) && !options.strict) {
@@ -217,27 +218,23 @@ const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => (
   );
 };
 
-const equalsOperation = (options, lvalue, rvalue) => {
-  const normalize = normalization(options);
-  return (object, filters) => {
-    // Do not apply filter when the filter value is empty and strict is not set.
-    if (isNullOrEmpty(filters[rvalue]) && !options.strict) {
-      return true;
-    }
-    return normalize(object[lvalue]) === normalize(filters[rvalue]);
-  };
+const equalsOperation = (options, lvalue, rvalue) => (object, filters) => {
+  return (
+    skip(get(filters, rvalue), options) ||
+    compare(object[lvalue], get(filters, rvalue), options) === 0
+  );
 };
 
 const greaterThanOperation = (options, lvalue, rvalue) => (object, filters) =>
-  skip(filters[rvalue], options) ||
-  compare(object[lvalue], filters[rvalue], options) < 0;
+  skip(get(filters, rvalue), options) ||
+  compare(object[lvalue], get(filters, rvalue), options) < 0;
 
 const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => (
   object,
   filters,
 ) =>
-  skip(filters[rvalue], options) ||
-  compare(object[lvalue], filters[rvalue], options) <= 0;
+  skip(get(filters, rvalue), options) ||
+  compare(object[lvalue], get(filters, rvalue), options) <= 0;
 
 const inOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
@@ -245,41 +242,44 @@ const inOperation = (options, lvalue, rvalue) => {
     // If the filter value is [], null, undefined then we check for the strict
     // option, if strict always return false and if not strict always return
     // true (because we are effectively skipping this filter operation).
-    if (isNullOrEmpty(filters[rvalue]) && !isString(filters[rvalue])) {
+    if (
+      isNullOrEmpty(get(filters, rvalue)) &&
+      !isString(get(filters, rvalue))
+    ) {
       return !options.strict;
     }
     // If we got a non-empty filter value that isn't an array (like a string)
     // we throw an error.
-    if (!isArray(filters[rvalue])) {
+    if (!isArray(get(filters, rvalue)) && !isImmutable(get(filters, rvalue))) {
       throw new Error(
         `Invalid filter value for in operation of ${rvalue} filter. Got ${JSON.stringify(
-          filters[rvalue],
+          get(filters, rvalue),
         )}. Require an array.`,
       );
     }
     // Finally perform the operation by checking the filter value for membership
     // of the object value.
-    return normalize(filters[rvalue]).includes(normalize(object[lvalue]));
+    return normalize(get(filters, rvalue)).includes(normalize(object[lvalue]));
   };
 };
 
 const lessThanOperation = (options, lvalue, rvalue) => (object, filters) =>
-  skip(filters[rvalue], options) ||
-  compare(object[lvalue], filters[rvalue], options) > 0;
+  skip(get(filters, rvalue), options) ||
+  compare(object[lvalue], get(filters, rvalue), options) > 0;
 
 const lessThanOrEqualsOperation = (options, lvalue, rvalue) => (
   object,
   filters,
 ) =>
-  skip(filters[rvalue], options) ||
-  compare(object[lvalue], filters[rvalue], options) >= 0;
+  skip(get(filters, rvalue), options) ||
+  compare(object[lvalue], get(filters, rvalue), options) >= 0;
 
 const startsWithOperation = (options, lvalue, rvalue) => {
   const normalize = normalization(options);
   return (object, filters) =>
-    isNullOrEmpty(filters[rvalue]) ||
+    isNullOrEmpty(get(filters, rvalue)) ||
     (object[lvalue] &&
-      normalize(object[lvalue]).startsWith(normalize(filters[rvalue])));
+      normalize(object[lvalue]).startsWith(normalize(get(filters, rvalue))));
 };
 
 const skip = (filterValue, options) =>

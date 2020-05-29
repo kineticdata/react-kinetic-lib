@@ -1,4 +1,5 @@
 import { defineFilter, defineKqlQuery } from './SearchBuilder';
+import { Map, fromJS } from 'immutable';
 
 describe('defineFilter', () => {
   const person = {
@@ -14,6 +15,8 @@ describe('defineFilter', () => {
     expect(fn(person, { name: 'ALEX' })).toBe(false);
     expect(fn(person, { name: 'Ale' })).toBe(false);
     expect(fn({ firstName: '\u00C5af' }, { name: '\u00E5af' })).toBe(false);
+    expect(fn(person, fromJS({ name: 'Alex' }))).toBe(true);
+    expect(fn(person, fromJS({ name: 'ALEX' }))).toBe(false);
   });
 
   // With non-empty filter values and object values it should behave the same
@@ -55,6 +58,8 @@ describe('defineFilter', () => {
     expect(fn(person, { name: 'Ale' })).toBe(true);
     expect(fn(person, { name: 'ALE' })).toBe(false);
     expect(fn(person, { name: 'Alexa' })).toBe(false);
+    expect(fn(person, fromJS({ name: 'Ale' }))).toBe(true);
+    expect(fn(person, fromJS({ name: 'ALE' }))).toBe(false);
   });
 
   test('startsWith caseInsensitive', () => {
@@ -74,6 +79,8 @@ describe('defineFilter', () => {
     expect(fn(person, { names: ['Alex', 'Sam'] })).toBe(true);
     expect(fn(person, { names: ['ALEX', 'Same'] })).toBe(false);
     expect(fn(person, { names: ['Ale', 'Same'] })).toBe(false);
+    expect(fn(person, fromJS({ names: ['Alex', 'Sam'] }))).toBe(true);
+    expect(fn(person, fromJS({ names: ['ALEX', 'Same'] }))).toBe(false);
   });
 
   // With non-empty filter values and object values it should behave the same
@@ -121,6 +128,8 @@ describe('defineFilter', () => {
     expect(fn(person, { min: 'aa' })).toBe(false);
     expect(fn(person, { min: 'Alex' })).toBe(false);
     expect(fn(person, { min: 'Az' })).toBe(false);
+    expect(fn(person, fromJS({ min: 'Aa' }))).toBe(true);
+    expect(fn(person, fromJS({ min: 'aa' }))).toBe(false);
   });
 
   // With non-empty filter values and object values it should behave the same
@@ -157,6 +166,8 @@ describe('defineFilter', () => {
     expect(fn(person, { min: 'Alex' })).toBe(true);
     expect(fn(person, { min: 'alex' })).toBe(false);
     expect(fn(person, { min: 'Az' })).toBe(false);
+    expect(fn(person, fromJS({ min: 'Aa' }))).toBe(true);
+    expect(fn(person, fromJS({ min: 'aa' }))).toBe(false);
   });
 
   // With non-empty filter values and object values it should behave the same
@@ -194,6 +205,8 @@ describe('defineFilter', () => {
     expect(fn(person, { max: 'AZ' })).toBe(false);
     expect(fn(person, { max: 'Alex' })).toBe(false);
     expect(fn(person, { max: 'Aa' })).toBe(false);
+    expect(fn(person, fromJS({ max: 'Az' }))).toBe(true);
+    expect(fn(person, fromJS({ max: 'AZ' }))).toBe(false);
   });
 
   // With non-empty filter values and object values it should behave the same
@@ -229,6 +242,8 @@ describe('defineFilter', () => {
     expect(fn(person, { max: 'aa' })).toBe(true);
     expect(fn(person, { max: 'Alex' })).toBe(true);
     expect(fn(person, { max: 'Aa' })).toBe(false);
+    expect(fn(person, fromJS({ max: 'Alex' }))).toBe(true);
+    expect(fn(person, fromJS({ max: 'Aa' }))).toBe(false);
   });
 
   // With non-empty filter values and object values it should behave the same
@@ -269,6 +284,8 @@ describe('defineFilter', () => {
     expect(fn(person, { min: 'Aa', max: 'Ab' })).toBe(false);
     // tests a min - max range that relies on case sensitivity
     expect(fn(person, { min: 'A', max: 'a' })).toBe(true);
+    expect(fn(person, fromJS({ min: 'Aa', max: 'Az' }))).toBe(true);
+    expect(fn(person, fromJS({ min: 'Aa', max: 'Alex' }))).toBe(false);
   });
 
   // With non-empty filter values and object values it should behave the same
