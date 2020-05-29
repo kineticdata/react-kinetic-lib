@@ -7,7 +7,7 @@ import {
   fetchTenant,
   updateTenant,
 } from '../../../apis/system';
-import { slugify } from '../../../helpers';
+import { handleFormErrors, slugify } from '../../../helpers';
 import {
   propertiesFromAdapters,
   propertiesFromValues,
@@ -39,7 +39,9 @@ const dataSources = ({ slug }) => ({
 
 const handleSubmit = ({ slug }) => values => {
   const tenant = values.toJS();
-  return slug ? updateTenant({ slug, tenant }) : createTenant({ tenant });
+  return slug
+    ? updateTenant({ slug, tenant }).then(handleFormErrors('space'))
+    : createTenant({ tenant }).then(handleFormErrors());
 };
 
 const getSpaceValue = (tenant, key) =>

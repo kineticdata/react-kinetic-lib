@@ -1,4 +1,4 @@
-import { getIn, List } from 'immutable';
+import { getIn, List, Map } from 'immutable';
 import { generateTable } from '../../table/Table';
 import {
   fetchForm,
@@ -39,7 +39,7 @@ const submissionSearch = ({ filters, pageSize, sortColumn, sortDirection }) => {
     filters.getIn(['submittedBy', 'username']),
   );
   filters
-    .get('values')
+    .get('values', Map())
     .forEach((value, field) => applyOp(query, 'eq', `values[${field}]`, value));
   return query.build();
 };

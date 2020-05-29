@@ -1,6 +1,6 @@
 import { generateTable } from '../../table/Table';
 import { fetchTaskCategories } from '../../../apis';
-import { defineFilter } from '@kineticdata/react/lib/helpers';
+import { defineFilter } from '../../../helpers';
 
 const clientSide = defineFilter(true)
   .startsWith('name', 'name')
