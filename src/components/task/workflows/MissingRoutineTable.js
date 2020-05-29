@@ -1,14 +1,27 @@
 import { generateTable } from '../../table/Table';
 import { fetchMissingRoutines } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('definitionId', 'definitionId')
+  .end();
 
 const dataSource = () => ({
   fn: fetchMissingRoutines,
+  clientSide,
   params: () => [],
   transform: result => ({
     data: result.missingRoutines,
   }),
-  clientSideSearch: true,
 });
+
+const filters = () => () => [
+  {
+    name: 'definitionId',
+    label: 'Routine Definition Id',
+    type: 'text',
+  },
+];
 
 const columns = [
   {
@@ -36,6 +49,7 @@ const columns = [
 export const MissingRoutineTable = generateTable({
   tableOptions: [],
   columns,
+  filters,
   dataSource,
 });
 

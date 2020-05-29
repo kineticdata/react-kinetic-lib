@@ -1,6 +1,28 @@
 import { fetchTaskRunErrors } from '../../../apis/task';
 import { generateTable } from '../../table/Table';
 import { getIn } from 'immutable';
+import { defineFilter } from '../../../helpers';
+
+const ERROR_TYPES = [
+  'Connector Error',
+  'Handler Error',
+  'Invalid Trigger Error',
+  'Missing Handler Error',
+  'Missing Routine Error',
+  'Node Message Error',
+  'Node Parameter Error',
+  'Source Error',
+  'Tree Error',
+  'Unidentified Error',
+  'Unknown Variable Error',
+];
+
+const clientSide = defineFilter()
+  .between('createdAt', 'createdAtMin', 'createdAtMax')
+  .equals('id', 'id')
+  .equals('type', 'type')
+  .equals('status', 'status')
+  .end();
 
 const dataSource = ({
   runId,
@@ -12,6 +34,7 @@ const dataSource = ({
   id,
 }) => ({
   fn: fetchTaskRunErrors,
+  clientSide,
   params: paramData => [
     {
       runId,
@@ -49,68 +72,87 @@ const dataSource = ({
   }),
 });
 
+const filters = () => () => [
+  {
+    name: 'id',
+    label: 'Error Id',
+    type: 'text',
+    serialize: ({ values }) => values.get('id') && parseInt(values.get('id')),
+  },
+  {
+    name: 'type',
+    label: 'Type',
+    type: 'select',
+    options: ERROR_TYPES.map(s => ({ label: s, value: s })),
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    type: 'select',
+    initialValue: 'Active',
+    options: ['Active', 'Handled'].map(s => ({ label: s, value: s })),
+  },
+  {
+    name: 'createdAtMin',
+    label: 'Start',
+    type: 'date',
+  },
+  {
+    name: 'createdAtMax',
+    label: 'End',
+    type: 'date',
+  },
+];
+
 const columns = [
   {
     value: 'createdAt',
     title: 'Created At',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'createdBy',
     title: 'Created By',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'engineIdentification',
     title: 'Engine Identification',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'id',
     title: 'Error Id',
-    type: 'text',
-    filter: 'equals',
     sortable: false,
   },
   {
     value: 'relatedItem1Id',
     title: 'Related Item 1 ID',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'relatedItem1Type',
     title: 'Related Item 1 Type',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'relatedItem2Id',
     title: 'Related Item 2 ID',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'relatedItem2Type',
     title: 'Related Item 2 Type',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'status',
     title: 'Status',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'sourceName',
     title: 'Source',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
     valueTransform: (_value, row) =>
       getIn(row, ['run', 'tree', 'sourceName'], ''),
@@ -118,8 +160,6 @@ const columns = [
   {
     value: 'sourceGroup',
     title: 'Group',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
     valueTransform: (_value, row) =>
       getIn(row, ['run', 'tree', 'sourceGroup'], ''),
@@ -127,41 +167,32 @@ const columns = [
   {
     value: 'treeName',
     title: 'Name',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
     valueTransform: (_value, row) => getIn(row, ['run', 'tree', 'name'], ''),
   },
   {
     value: 'Summary',
     title: 'Summary',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'text',
     title: 'Text',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'type',
     title: 'Type',
-    filter: 'equals',
-    type: 'text',
-    // options: [{ label: 'a', value: 'a' }],
     sortable: false,
   },
   {
     value: 'updatedAt',
     title: 'Updated At',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'updatedBy',
     title: 'Updated By',
-    type: 'text',
     sortable: false,
   },
 ];
@@ -169,5 +200,6 @@ const columns = [
 export const RunErrorTable = generateTable({
   tableOptions: ['runId'],
   columns,
+  filters,
   dataSource,
 });

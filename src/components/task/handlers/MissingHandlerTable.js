@@ -1,14 +1,27 @@
 import { generateTable } from '../../table/Table';
 import { fetchMissingHandlers } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('definitionId', 'definitionId')
+  .end();
 
 const dataSource = () => ({
   fn: fetchMissingHandlers,
+  clientSide,
   params: () => [],
   transform: result => ({
     data: result.missingHandlers,
   }),
-  clientSideSearch: true,
 });
+
+const filters = () => () => [
+  {
+    name: 'definitionId',
+    label: 'Handler Definition Id',
+    type: 'text',
+  },
+];
 
 const columns = [
   {
@@ -36,6 +49,7 @@ const columns = [
 export const MissingHandlerTable = generateTable({
   tableOptions: [],
   columns,
+  filters,
   dataSource,
 });
 
