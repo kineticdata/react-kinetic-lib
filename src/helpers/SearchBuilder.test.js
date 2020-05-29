@@ -28,6 +28,14 @@ describe('defineFilter', () => {
     expect(fn({ firstName: '\u00C5af' }, { name: '\u00E5af' })).toBe(false);
   });
 
+  test('equals coerces', () => {
+    const fn = defineFilter()
+      .equals('value', 'filterValue', true)
+      .end();
+    expect(fn({ value: 2 }, { filterValue: '2' })).toBe(true);
+    expect(fn({ value: true }, { filterValue: 'true' })).toBe(true);
+  });
+
   test('equals caseInsensitive', () => {
     const fn = defineFilter(true)
       .equals('firstName', 'name')
@@ -87,6 +95,14 @@ describe('defineFilter', () => {
     expect(fn(person, { names: ['Ale', 'Same'] })).toBe(false);
   });
 
+  test('in coerces', () => {
+    const fn = defineFilter()
+      .in('value', 'filterValue')
+      .end();
+    expect(fn({ value: 2 }, { filterValue: ['2'] })).toBe(true);
+    expect(fn({ value: true }, { filterValue: ['true'] })).toBe(true);
+  });
+
   test('in caseInsensitive', () => {
     const fn = defineFilter(true)
       .in('firstName', 'names')
@@ -136,6 +152,16 @@ describe('defineFilter', () => {
     expect(fn(person, { min: 'Az' })).toBe(false);
   });
 
+  test('greaterThan coerces', () => {
+    const fn = defineFilter()
+      .greaterThan('value', 'filterValue')
+      .end();
+    expect(fn({ value: 2 }, { filterValue: '1' })).toBe(true);
+    expect(fn({ value: 2 }, { filterValue: '2' })).toBe(false);
+    expect(fn({ value: true }, { filterValue: 'false' })).toBe(true);
+    expect(fn({ value: false }, { filterValue: 'false' })).toBe(false);
+  });
+
   test('greaterThan caseInsensitive', () => {
     const fn = defineFilter(true)
       .greaterThan('firstName', 'min')
@@ -171,6 +197,18 @@ describe('defineFilter', () => {
     expect(fn(person, { min: 'Alex' })).toBe(true);
     expect(fn(person, { min: 'alex' })).toBe(false);
     expect(fn(person, { min: 'Az' })).toBe(false);
+  });
+
+  test('greaterThanOrEquals coerces', () => {
+    const fn = defineFilter()
+      .greaterThanOrEquals('value', 'filterValue')
+      .end();
+    expect(fn({ value: 2 }, { filterValue: '1' })).toBe(true);
+    expect(fn({ value: 2 }, { filterValue: '2' })).toBe(true);
+    expect(fn({ value: 2 }, { filterValue: '3' })).toBe(false);
+    expect(fn({ value: true }, { filterValue: 'false' })).toBe(true);
+    expect(fn({ value: true }, { filterValue: 'true' })).toBe(true);
+    expect(fn({ value: false }, { filterValue: 'true' })).toBe(false);
   });
 
   test('greaterThanOrEquals caseInsensitive', () => {
@@ -209,6 +247,18 @@ describe('defineFilter', () => {
     expect(fn(person, { max: 'Aa' })).toBe(false);
   });
 
+  test('lessThan coerces', () => {
+    const fn = defineFilter()
+      .lessThan('value', 'filterValue')
+      .end();
+    expect(fn({ value: 2 }, { filterValue: '3' })).toBe(true);
+    expect(fn({ value: 2 }, { filterValue: '2' })).toBe(false);
+    expect(fn({ value: 2 }, { filterValue: '1' })).toBe(false);
+    expect(fn({ value: true }, { filterValue: 'false' })).toBe(false);
+    expect(fn({ value: true }, { filterValue: 'true' })).toBe(false);
+    expect(fn({ value: false }, { filterValue: 'true' })).toBe(true);
+  });
+
   test('lessThan caseInsensitive', () => {
     const fn = defineFilter(true)
       .lessThan('firstName', 'max')
@@ -242,6 +292,18 @@ describe('defineFilter', () => {
     expect(fn(person, { max: 'aa' })).toBe(true);
     expect(fn(person, { max: 'Alex' })).toBe(true);
     expect(fn(person, { max: 'Aa' })).toBe(false);
+  });
+
+  test('lessThanOrEquals coerces', () => {
+    const fn = defineFilter()
+      .lessThanOrEquals('value', 'filterValue')
+      .end();
+    expect(fn({ value: 2 }, { filterValue: '3' })).toBe(true);
+    expect(fn({ value: 2 }, { filterValue: '2' })).toBe(true);
+    expect(fn({ value: 2 }, { filterValue: '1' })).toBe(false);
+    expect(fn({ value: true }, { filterValue: 'false' })).toBe(false);
+    expect(fn({ value: true }, { filterValue: 'true' })).toBe(true);
+    expect(fn({ value: false }, { filterValue: 'true' })).toBe(true);
   });
 
   test('lessThanOrEquals caseInsensitive', () => {
@@ -285,6 +347,22 @@ describe('defineFilter', () => {
     // case sensitive
     expect(fn(person, { min: 'aa', max: 'az' })).toBe(false);
     expect(fn(person, { min: 'Aa', max: 'Ab' })).toBe(false);
+  });
+
+  test('between coerces', () => {
+    const fn = defineFilter()
+      .between('value', 'min', 'max')
+      .end();
+    expect(fn({ value: 1 }, { min: '1', max: '3' })).toBe(true);
+    expect(fn({ value: 2 }, { min: '1', max: '3' })).toBe(true);
+    expect(fn({ value: 3 }, { min: '1', max: '3' })).toBe(false);
+    expect(fn({ value: false }, { min: 'false', max: 'true' })).toBe(true);
+    expect(fn({ value: true }, { min: 'false', max: 'true' })).toBe(false);
+    expect(() => {
+      fn({ value: 3 }, { min: '3', max: '1' });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid filter values for between operation of min and max. Min \\"3\\" not less than max \\"1\\""`,
+    );
   });
 
   test('between caseInsensitive', () => {

@@ -1,3 +1,4 @@
+import { Seq } from 'immutable';
 import {
   isArray,
   isEmpty,
@@ -204,7 +205,7 @@ const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => (
   if ((isNullOrEmpty(right1) || isNullOrEmpty(right2)) && !options.strict) {
     return true;
   }
-  if (compare(right1, right2, options) <= 0) {
+  if (compare(right1, right2, options, typeof left) <= 0) {
     throw new Error(
       `Invalid filter values for between operation of ${rvalueMin} and ` +
         `${rvalueMax}. Min ${JSON.stringify(right1)} not less than max ` +
@@ -217,16 +218,9 @@ const betweenOperation = (options, lvalue, rvalueMin, rvalueMax) => (
   );
 };
 
-const equalsOperation = (options, lvalue, rvalue) => {
-  const normalize = normalization(options);
-  return (object, filters) => {
-    // Do not apply filter when the filter value is empty and strict is not set.
-    if (isNullOrEmpty(filters[rvalue]) && !options.strict) {
-      return true;
-    }
-    return normalize(object[lvalue]) === normalize(filters[rvalue]);
-  };
-};
+const equalsOperation = (options, lvalue, rvalue) => (object, filters) =>
+  skip(filters[rvalue], options) ||
+  compare(object[lvalue], filters[rvalue], options) === 0;
 
 const greaterThanOperation = (options, lvalue, rvalue) => (object, filters) =>
   skip(filters[rvalue], options) ||
@@ -239,28 +233,27 @@ const greaterThanOrEqualsOperation = (options, lvalue, rvalue) => (
   skip(filters[rvalue], options) ||
   compare(object[lvalue], filters[rvalue], options) <= 0;
 
-const inOperation = (options, lvalue, rvalue) => {
-  const normalize = normalization(options);
-  return (object, filters) => {
-    // If the filter value is [], null, undefined then we check for the strict
-    // option, if strict always return false and if not strict always return
-    // true (because we are effectively skipping this filter operation).
-    if (isNullOrEmpty(filters[rvalue]) && !isString(filters[rvalue])) {
-      return !options.strict;
-    }
-    // If we got a non-empty filter value that isn't an array (like a string)
-    // we throw an error.
-    if (!isArray(filters[rvalue])) {
-      throw new Error(
-        `Invalid filter value for in operation of ${rvalue} filter. Got ${JSON.stringify(
-          filters[rvalue],
-        )}. Require an array.`,
-      );
-    }
-    // Finally perform the operation by checking the filter value for membership
-    // of the object value.
-    return normalize(filters[rvalue]).includes(normalize(object[lvalue]));
-  };
+const inOperation = (options, lvalue, rvalue) => (object, filters) => {
+  // If the filter value is [], null, undefined then we check for the strict
+  // option, if strict always return false and if not strict always return
+  // true (because we are effectively skipping this filter operation).
+  if (isNullOrEmpty(filters[rvalue]) && !isString(filters[rvalue])) {
+    return !options.strict;
+  }
+  // If we got a non-empty filter value that isn't an array (like a string)
+  // we throw an error.
+  if (!isArray(filters[rvalue])) {
+    throw new Error(
+      `Invalid filter value for in operation of ${rvalue} filter. Got ${JSON.stringify(
+        filters[rvalue],
+      )}. Require an array.`,
+    );
+  }
+  // Finally perform the operation by checking the filter value for membership
+  // of the object value.
+  return Seq(filters[rvalue]).some(
+    v => compare(object[lvalue], v, options) === 0,
+  );
 };
 
 const lessThanOperation = (options, lvalue, rvalue) => (object, filters) =>
@@ -287,23 +280,28 @@ const skip = (filterValue, options) =>
 
 // Helper that normalizes comparing values when one or both of the values is
 // falsy. Our convention is (any truthy) > '' > null > undefined.
-const compare = (left, right, options) => {
-  const normalize = options.caseInsensitive ? toLower : identity;
-  if (left && right) {
-    return normalize(right) > normalize(left)
+const compare = (left, right, options, type = typeof left) => {
+  const normalize = normalization(options);
+  if (nonNull(left) && nonNull(right)) {
+    return normalize(right, type) > normalize(left, type)
       ? 1
-      : normalize(right) === normalize(left)
+      : normalize(right, type) === normalize(left, type)
       ? 0
       : -1;
   } else {
     const falsyRanks = [undefined, null, ''];
-    const leftRank = !left ? falsyRanks.indexOf(left) : 3;
-    const rightRank = !right ? falsyRanks.indexOf(right) : 3;
+    const leftRank = nonNull(left) ? 3 : falsyRanks.indexOf(left);
+    const rightRank = nonNull(right) ? 3 : falsyRanks.indexOf(right);
     return rightRank > leftRank ? 1 : rightRank === leftRank ? 0 : -1;
   }
 };
 
-const normalization = options => (options.caseInsensitive ? toLower : identity);
+const nonNull = v => v || v === 0 || v === false;
+
+const normalization = options => (value, coerceType) =>
+  options.caseInsensitive
+    ? toLower(coerce(value, coerceType))
+    : coerce(value, coerceType);
 
 const isNullOrEmpty = value =>
   (isString(value) && isEmpty(value)) ||
@@ -311,13 +309,36 @@ const isNullOrEmpty = value =>
   value === null ||
   value === undefined;
 
-const toLower = value =>
-  isString(value)
-    ? value.toLocaleLowerCase()
-    : isArray(value)
-    ? value.map(toLower)
-    : value;
+const coerce = (value, type) => {
+  if (
+    // no-op if a type is not specified
+    !type ||
+    // return value if it is already the correct type
+    typeof value === type ||
+    // do not attempt to coerce null / undefined
+    value === null ||
+    typeof value === 'undefined' ||
+    // do not attempt to coerce to undefined or object (which type null returns)
+    type === 'undefined' ||
+    type === 'object'
+  ) {
+    return value;
+  }
+  const valueType = typeof value;
+  // if-else conditions below perform the actual type coercion, if a value is
+  // not returned
+  if (type === 'number' && valueType === 'string') {
+    return parseInt(value);
+  } else if (type === 'boolean' && valueType === 'string') {
+    if (value === 'true') {
+      return true;
+    } else if (value === 'false') {
+      return false;
+    }
+  }
+  throw new Error(`Cannot coerce value ${JSON.stringify(value)} to ${type}.`);
+};
 
-const identity = v => v;
+const toLower = value => (isString(value) ? value.toLocaleLowerCase() : value);
 
 export { defineKqlQuery, defineFilter };
