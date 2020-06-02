@@ -133,6 +133,7 @@ const buildFilterForm = props => {
       components={components}
       alterFields={props.alterFilters}
       fieldSet={props.filterSet}
+      onSave={props.onSearch}
     />
   );
 };
@@ -656,6 +657,7 @@ export const generateTable = ({
     data: props.data,
     filterForm: !!filters,
     initialFilterValues: props.initialFilterValues || {},
+    onSearch: props.onSearch,
   };
 
   return <Table {...setProps}>{props.children}</Table>;
