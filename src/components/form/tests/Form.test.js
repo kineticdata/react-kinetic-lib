@@ -1899,3 +1899,30 @@ describe('handleSubmit', () => {
     result.unmount();
   });
 });
+
+describe('submitForm', () => {
+  test('with fieldset and values', async () => {
+    const onSubmit = jest.fn(bindings => 'success');
+    const handleSubmit = jest.fn(() => onSubmit);
+    const result = await mountForm({
+      fields: () => () => [
+        { name: 'firstName', type: 'text', initialValue: 'Shayne' },
+        { name: 'lastName', type: 'text', initialValue: 'Koestler' },
+        { name: 'email', type: 'text' },
+      ],
+      formOptions: { testOption: 'Foo' },
+      handleSubmit,
+    });
+    submitForm(FORM_KEY, {
+      fieldSet: ['firstName', 'lastName'],
+      values: {
+        firstName: 'Matt',
+        lastName: null,
+      },
+    });
+    result.update();
+    expect(onSubmit.mock.calls).toMatchSnapshot();
+    expect(result.find('FormLayout').prop('bindings')).toMatchSnapshot();
+    result.unmount();
+  });
+});
