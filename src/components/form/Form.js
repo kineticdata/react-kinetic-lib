@@ -305,7 +305,7 @@ function* runDataSource(formKey, name, dataSource) {
       ]);
       if (unmountAction && unmountAction.payload.formKey === formKey) {
         break;
-      } else if (checkAction.payload.formKey === formKey) {
+      } else if (checkAction && checkAction.payload.formKey === formKey) {
         const formState = yield select(selectForm(formKey));
         const params = formState.getIn(['dataSources', name, 'params']);
         const nextParams = fromJS(params);
