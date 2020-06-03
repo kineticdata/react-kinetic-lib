@@ -13,13 +13,14 @@ const dataSource = ({ datastore, custom }) => ({
   ],
   transform: result => ({
     // replace if we can pass datastore flag to api
-    data: result.contexts.filter(c =>
-      custom
-        ? c
-        : datastore
-        ? c.name.startsWith('datastore')
-        : !c.name.startsWith('datastore') && !c.name.startsWith('custom'),
-    ),
+    data: result.contexts,
+    // .filter(c =>
+    //   custom
+    //     ? c
+    //     : datastore
+    //     ? c.name.startsWith('datastore')
+    //     : !c.name.startsWith('datastore') && !c.name.startsWith('custom'),
+    // ),
     nextPageToken: result.nextPageToken,
   }),
 });

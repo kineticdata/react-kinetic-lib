@@ -1,10 +1,12 @@
 import { generateTable } from '../../table/Table';
 import { fetchTranslations, fetchStagedTranslations } from '../../../apis';
 
-const dataSource = ({ datastore, custom, staged }) => ({
+const dataSource = ({ datastore, custom, staged, locale, context }) => ({
   fn: staged ? fetchStagedTranslations : fetchTranslations,
   params: paramData => [
     {
+      localeCode: locale && locale,
+      contextName: context && context,
       include: 'authorization,details',
     },
   ],
@@ -39,7 +41,7 @@ const columns = [
 ];
 
 export const EntryTable = generateTable({
-  tableOptions: ['datastore', 'staged'],
+  tableOptions: ['datastore', 'staged', 'locale', 'context'],
   columns,
   dataSource,
 });

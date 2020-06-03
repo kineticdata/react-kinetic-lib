@@ -1,21 +1,18 @@
 import { generateTable } from '../../table/Table';
-import {
-  fetchEnabledLocales,
-  generateCESearchParams,
-} from '../../../apis';
+import { fetchEnabledLocales, generateCESearchParams } from '../../../apis';
 
 const dataSource = () => ({
-    fn: fetchEnabledLocales,
-    params: paramData => [
-      {
-        ...generateCESearchParams(paramData),
-        include: 'authorization,details',
-      },
-    ],
-    transform: result => ({
-      data: result.locales,
-      nextPageToken: result.nextPageToken,
-    }),
+  fn: fetchEnabledLocales,
+  params: paramData => [
+    {
+      ...generateCESearchParams(paramData),
+      include: 'authorization,details',
+    },
+  ],
+  transform: result => ({
+    data: result.locales,
+    nextPageToken: result.nextPageToken,
+  }),
 });
 
 const columns = [
