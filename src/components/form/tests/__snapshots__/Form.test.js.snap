@@ -2701,3 +2701,31 @@ exports[`setValue undefined values should use FIELD_DEFAULT_VALUES user-multi 1`
   visible={true}
 />
 `;
+
+exports[`submitForm with fieldset and values 1`] = `
+Array [
+  Array [
+    Immutable.OrderedMap {
+      "firstName": "Matt",
+      "lastName": "",
+    },
+    Object {
+      "values": Immutable.OrderedMap {
+        "firstName": "Matt",
+        "lastName": "",
+        "email": "",
+      },
+    },
+  ],
+]
+`;
+
+exports[`submitForm with fieldset and values 2`] = `
+Object {
+  "values": Immutable.OrderedMap {
+    "firstName": "Matt",
+    "lastName": "",
+    "email": "",
+  },
+}
+`;

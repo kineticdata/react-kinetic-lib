@@ -220,8 +220,21 @@ regHandlers({
           .updateIn(['forms', formKey, 'fields'], resetValues)
           .updateIn(['forms', formKey], digest)
       : state,
-  SUBMIT: (state, { payload: { formKey } }) =>
-    state.setIn(['forms', formKey, 'submitting'], true),
+  SUBMIT: (state, { payload: { formKey, values } }) =>
+    state
+      .setIn(['forms', formKey, 'submitting'], true)
+      .updateIn(['forms', formKey, 'fields'], fields =>
+        Map(values).reduce(
+          (fields, value, fieldName) =>
+            fields.setIn(
+              [fieldName, 'value'],
+              value ||
+                FIELD_DEFAULT_VALUES.get(fields.getIn([fieldName, 'type']), ''),
+            ),
+          fields,
+        ),
+      )
+      .updateIn(['forms', formKey], digest),
   SUBMIT_SUCCESS: (state, { payload: { formKey } }) =>
     state
       .setIn(['forms', formKey, 'submitting'], false)
@@ -481,8 +494,8 @@ export const reloadDataSource = (formKey, name) =>
 
 export const configureForm = config => dispatch('CONFIGURE_FORM', config);
 
-export const submitForm = (formKey, { fieldSet, onInvalid }) =>
-  dispatch('SUBMIT', { formKey, fieldSet, onInvalid });
+export const submitForm = (formKey, { fieldSet, onInvalid, values }) =>
+  dispatch('SUBMIT', { formKey, fieldSet, onInvalid, values });
 
 export const serializeForm = (formKey, { fieldSet } = {}) =>
   serializeImpl(selectForm(formKey)(store.getState()), fieldSet);
