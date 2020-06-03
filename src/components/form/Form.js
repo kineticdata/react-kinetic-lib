@@ -651,6 +651,7 @@ class FormImplComponent extends Component {
       const computedFieldSet = computeFieldSet(fields, fieldSet);
       form = (
         <FormLayout
+          formKey={formKey}
           formOptions={formOptions}
           fields={OrderedMap(
             computedFieldSet.map(name => [name, fields.get(name)]),
