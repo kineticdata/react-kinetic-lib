@@ -29,6 +29,8 @@ const TableComponent = props => {
       error,
       appliedFilters,
       components,
+      tableKey,
+      filterFormKey,
     } = props;
     const table = buildTable(props);
     const filter = components.FilterForm
@@ -37,6 +39,8 @@ const TableComponent = props => {
     const pagination = buildPaginationControl(props);
 
     return children({
+      tableKey,
+      filterFormKey,
       table,
       filter,
       appliedFilters,
@@ -128,12 +132,13 @@ const buildFilterForm = props => {
   return (
     <FilterForm
       {...props.tableOptions}
-      formKey={filterFormKey(props.tableKey)}
+      formKey={props.filterFormKey}
       tableKey={props.tableKey}
       components={components}
       alterFields={props.alterFilters}
       fieldSet={props.filterSet}
       onSave={props.onSearch}
+      appliedFilters={props.appliedFilters}
     />
   );
 };
@@ -253,6 +258,7 @@ const getIndexes = (
 const buildPaginationControl = props => {
   const {
     tableKey,
+    filterFormKey,
     data,
     rows,
     dataSource,
@@ -298,6 +304,8 @@ const buildPaginationControl = props => {
 
   return (
     <PaginationControl
+      tableKey={tableKey}
+      filterFormKey={filterFormKey}
       prevPage={prevPage}
       nextPage={nextPage}
       loading={loading}
@@ -315,6 +323,8 @@ export const buildTable = props => {
 
   return (
     <TableLayout
+      tableKey={props.tableKey}
+      filterFormKey={props.filterFormKey}
       header={header}
       body={body}
       footer={footer}
@@ -636,6 +646,7 @@ export const generateTable = ({
     sortable: typeof sortable !== 'undefined' ? sortable : props.sortable,
     // Explicitly allowed props.
     tableKey: props.tableKey,
+    filterFormKey: filterFormKey(props.tableKey),
     addColumns: props.addColumns,
     alterColumns: props.alterColumns,
     alterFilters: mergeDeep(
