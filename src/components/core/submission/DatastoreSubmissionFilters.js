@@ -1,4 +1,4 @@
-import { List, Range } from 'immutable';
+import { isImmutable, List, Range } from 'immutable';
 import { fetchForm } from '../../../apis';
 import { defineKqlQuery } from '../../../helpers';
 
@@ -84,6 +84,24 @@ const visibleFn = (i, operatorType) => ({ selectedIndexDefinition, values }) =>
 
 const serializeQuery = ({ selectedIndexDefinition, values }) => ({
   index: values.get('index'),
+  parts: selectedIndexDefinition
+    .get('parts')
+    .reduce((reduction, part, i) => {
+      const operator = values.get(`op${i}-operator`);
+      const rValues =
+        operator === 'between'
+          ? [values.get(`op${i}-operand1`), values.get(`op${i}-operand2`)]
+          : operator === 'in'
+          ? [values.get(`op${i}-operand3`)]
+          : [values.get(`op${i}-operand1`)];
+      return reduction.push(List([part, operator, ...rValues]));
+    }, List())
+    .filter(
+      part =>
+        !part.some(
+          term => (isImmutable(term) && term.isEmpty()) || term.length === 0,
+        ),
+    ),
   q: selectedIndexDefinition
     .get('parts')
     .reduce((query, part, i) => {
