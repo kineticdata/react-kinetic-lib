@@ -1,11 +1,10 @@
 import { generateTable } from '../../table/Table';
-import { fetchEnabledLocales, generateCESearchParams } from '../../../apis';
+import { fetchEnabledLocales } from '../../../apis';
 
 const dataSource = () => ({
   fn: fetchEnabledLocales,
   params: paramData => [
     {
-      ...generateCESearchParams(paramData),
       include: 'authorization,details',
     },
   ],
@@ -31,6 +30,3 @@ export const LocaleTable = generateTable({
 });
 
 LocaleTable.displayName = 'LocaleTable';
-LocaleTable.defaultProps = {
-  columns,
-};

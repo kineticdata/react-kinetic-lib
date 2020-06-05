@@ -7,7 +7,7 @@ import {
 } from '../../../apis';
 import { Map } from 'immutable';
 
-const dataSources = ({ datastore }) => ({
+const dataSources = () => ({
   kapps: {
     fn: fetchKapps,
     params: [],
@@ -15,8 +15,13 @@ const dataSources = ({ datastore }) => ({
   },
   forms: {
     fn: fetchForms,
-    params: [],
-    // params: isDatastore && [{ datastore: isDatastore }],
+    params: ({ values }) =>
+      values && [
+        {
+          kappSlug: values.get('kapp'),
+          datastore: !values.get('kapp'),
+        },
+      ],
     transform: result => result.forms,
   },
 });
@@ -36,57 +41,78 @@ const handleSubmit = ({ contextName }) => values =>
     });
   });
 
-const fields = ({ datastore }) => ({ kapps, forms }) =>
+const fields = () => ({ kapps, forms }) =>
   kapps && [
-    {
-      name: 'type',
-      label: 'Type',
-      type: 'radio',
-      required: true,
-      options: () => [
-        { value: 'form', label: 'Form' },
-        { value: 'datastore', label: 'Datastore' },
-        { value: 'custom', label: 'Custom' },
-      ],
-    },
     {
       name: 'kapp',
       label: 'Kapp',
       type: 'text',
       options: ({ kapps }) =>
+        kapps &&
         kapps.map(kapp =>
           Map({
-            value: kapp.get('name'),
+            value: kapp.get('slug'),
             label: kapp.get('name'),
           }),
         ),
-      required: ({ values }) => values.get('type') === 'form',
-      visible: ({ values }) => values.get('type') === 'form',
-      transient: ({ values }) => !values.get('type') === 'form',
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('kapp')) {
+          setValue('name', `kapps.${values.get('kapp')}`);
+        } else {
+          setValue('name', '');
+        }
+        setValue('form', null);
+      },
     },
     {
       name: 'form',
       label: 'Form',
       type: 'text',
-      required: ({ values }) =>
-        values.get('type') === 'form' || values.get('type') === 'datastore',
-      visible: ({ values }) =>
-        values.get('type') === 'form' || values.get('type') === 'datastore',
-      transient: ({ values }) =>
-        !values.get('type') === 'form' && !values.get('type') === 'datastore',
+      required: ({ values }) => values.get('kapp'),
+      options: ({ forms }) =>
+        forms &&
+        forms.map(form =>
+          Map({
+            value: form.get('slug'),
+            label: form.get('name'),
+          }),
+        ),
+      onChange: ({ values }, { setValue }) => {
+        if (values.get('form')) {
+          if (values.get('name')) {
+            setValue(
+              'name',
+              values.get('name').concat(`.forms.${values.get('form')}`),
+            );
+          } else {
+            setValue('name', `datastore.forms.${values.get('form')}`);
+          }
+        } else {
+          if (values.get('name').includes('datastore')) {
+            setValue('name', '');
+          } else {
+            setValue(
+              'name',
+              values
+                .get('name')
+                .split('.')
+                .slice(0, 2)
+                .join('.'),
+            );
+          }
+        }
+      },
     },
     {
       name: 'name',
       label: 'Name',
       type: 'text',
-      required: ({ values }) => values.get('type') === 'custom',
-      visible: ({ values }) => values.get('type') === 'custom',
-      transient: ({ values }) => !values.get('type') === 'custom',
+      required: true,
+      enabled: ({ values }) => !values.get('kapp') && !values.get('form'),
     },
   ];
 
 export const ContextForm = generateForm({
-  formOptions: ['datastore', 'kappName'],
   dataSources,
   fields,
   handleSubmit,

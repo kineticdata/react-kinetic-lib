@@ -25,6 +25,13 @@ const columns = [
     sortable: true,
   },
   {
+    value: 'context',
+    title: 'Context',
+    filter: 'startsWith',
+    type: 'text',
+    sortable: true,
+  },
+  {
     value: 'key',
     title: 'Key',
     filter: 'startsWith',

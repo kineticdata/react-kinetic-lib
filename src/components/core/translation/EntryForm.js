@@ -1,10 +1,15 @@
 import { generateForm } from '../../form/Form';
 import { fetchEnabledLocales, upsertTranslations } from '../../../apis';
+import { Map } from 'immutable';
 
 const dataSources = () => ({
   locales: {
     fn: fetchEnabledLocales,
-    params: [],
+    params: [
+      {
+        include: 'authorization,details',
+      },
+    ],
     transform: result => result.locales,
   },
 });
@@ -24,34 +29,46 @@ const dataSources = () => ({
 //     });
 //   });
 
-const fields = () => ({ locales }) =>
-  locales && [
-    {
-      name: 'locale',
-      label: 'Locale',
-      type: 'text',
-      required: true,
-      options: ({ locales }) => locales,
-    },
-    {
-      name: 'key',
-      label: 'Key',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'entry',
-      label: 'Translation',
-      type: 'text',
-      required: true,
-    },
-  ];
+const fields = ({ entry }) => ({ locales }) => {
+  locales && console.log('loc:', locales.toJS());
+  return (
+    locales && [
+      {
+        name: 'locale',
+        label: 'Locale',
+        type: 'text',
+        required: true,
+        enabled: !entry,
+        options: ({ locales }) =>
+          locales &&
+          locales.map(loc => {
+            console.log('lC:', loc.get('code'));
+            return Map({
+              value: loc.get('code'),
+              label: loc.get('code'),
+            });
+          }),
+      },
+      {
+        name: 'key',
+        label: 'Key',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'entry',
+        label: 'Translation',
+        type: 'text',
+        required: true,
+      },
+    ]
+  );
+};
 
 export const EntryForm = generateForm({
-  formOptions: [],
+  formOptions: ['entry'],
   dataSources,
   fields,
-  //   handleSubmit,
 });
 
 EntryForm.displayName = 'EntryForm';
