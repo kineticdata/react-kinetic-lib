@@ -158,15 +158,243 @@ describe('dataSources', () => {
 
 describe('fields', () => {
   describe('constraint', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: false,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns true', async () => {
+      const constraintFn = jest.fn(bindings => true);
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: constraintFn,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      expect(constraintFn.mock.calls).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => false,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns a string', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
   });
 
   describe('constraintMessage', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given constraint true and constraintMessage string', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => true,
+            constraintMessage: 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given constraint false and constraintMessage string', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => false,
+            constraintMessage: 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given constraint with string and constraintMessage string', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => 'test',
+            constraintMessage: 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given constraint true and constraintMessage null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => true,
+            constraintMessage: null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given constraint true and constraintMessage function that returns string', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => true,
+            constraintMessage: () => 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given constraint true and constraintMessage function that returns null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            constraint: () => true,
+            constraintMessage: () => null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
   });
 
   describe('enabled', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given true', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            enabled: true,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            enabled: false,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a string value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            enabled: 'true',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a null value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            enabled: null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a function that returns a boolean', async () => {
+      const enabledFn = jest.fn(bindings => false);
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            enabled: enabledFn,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      expect(enabledFn.mock.calls).toMatchSnapshot();
+      result.unmount();
+    });
   });
 
   describe('helpText', function() {
@@ -513,15 +741,199 @@ describe('fields', () => {
   });
 
   describe('pattern', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given regex and matching initialValue', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: '314159',
+            pattern: /^\d+$/,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    // test('given null', async () => {
+    //   const result = await mountForm({
+    //     fields: () => () => [
+    //       {
+    //         name: 'test',
+    //         type: 'text',
+    //         initialValue: '314159',
+    //         pattern: null,
+    //       },
+    //     ],
+    //   });
+    //   expect(result.find('TextFieldMock')).toMatchSnapshot();
+    //   result.unmount();
+    // });
+    test('given function that returns regex and matching initialValue', async () => {
+      const patternFn = jest.fn(bindings => /^\d+$/);
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: '314159',
+            pattern: patternFn,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      expect(patternFn.mock.calls).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: '314159',
+            pattern: () => null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
   });
 
   describe('patternMessage', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given trigger and string message', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: 'hello',
+            pattern: /^\d+$/,
+            patternMessage: 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given trigger and null message', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: 'hello',
+            pattern: /^\d+$/,
+            patternMessage: null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given trigger and message function that returns string', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: 'hello',
+            pattern: /^\d+$/,
+            patternMessage: () => 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given trigger and message function that returns null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: 'hello',
+            pattern: /^\d+$/,
+            patternMessage: () => null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given no trigger', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: '314159',
+            pattern: /^\d+$/,
+            patternMessage: 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
   });
 
   describe('placeholder', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given a string value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            placeholder: 'Test 123',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a null value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            placeholder: null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a function that returns a string value', async () => {
+      const placeholderFn = jest.fn(bindings => 'Test ABC');
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            placeholder: placeholderFn,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      expect(placeholderFn.mock.calls).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a function that returns a null value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            placeholder: () => null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
   });
 
   describe('renderAttributes', function() {
@@ -614,7 +1026,81 @@ describe('fields', () => {
   });
 
   describe('requiredMessage', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given trigger and string message', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: '',
+            required: true,
+            requiredMessage: 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given trigger and null message', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: '',
+            required: true,
+            requiredMessage: null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given trigger and message function that returns string', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: '',
+            required: true,
+            requiredMessage: () => 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given trigger and message function that returns null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: '',
+            required: true,
+            requiredMessage: () => null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given no trigger', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            initialValue: 'hello',
+            required: true,
+            requiredMessage: 'test message',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
   });
 
   describe('search', function() {
@@ -626,7 +1112,99 @@ describe('fields', () => {
   });
 
   describe('transient', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given true', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            transient: true,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            transient: false,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a string value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            transient: 'false',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a null value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            transient: null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns true', async () => {
+      const transientFn = jest.fn(bindings => true);
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            transient: transientFn,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      expect(transientFn.mock.calls).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            transient: () => false,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            transient: () => null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
   });
 
   describe('type', () => {
@@ -953,7 +1531,99 @@ describe('fields', () => {
   });
 
   describe('visible', function() {
-    test('=<<TODO>>=', async () => {});
+    test('given true', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            visible: true,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            visible: false,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a string value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            visible: 'false',
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given a null value', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            visible: null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns true', async () => {
+      const visibleFn = jest.fn(bindings => true);
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            visible: visibleFn,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      expect(visibleFn.mock.calls).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns false', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            visible: () => false,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
+    test('given function that returns null', async () => {
+      const result = await mountForm({
+        fields: () => () => [
+          {
+            name: 'test',
+            type: 'text',
+            visible: () => null,
+          },
+        ],
+      });
+      expect(result.find('TextFieldMock')).toMatchSnapshot();
+      result.unmount();
+    });
   });
 });
 
