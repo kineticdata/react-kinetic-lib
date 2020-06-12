@@ -3,7 +3,7 @@ import { fetchTenants } from '../../../apis/system';
 import { defineFilter } from '../../../helpers';
 
 const clientSide = defineFilter(true)
-  .startsWith('spaceSlug', 'spaceSlug')
+  .startsWith('slug', 'slug')
   .startsWith('space.name', 'space.name')
   .end();
 
@@ -18,25 +18,28 @@ const dataSource = () => ({
 });
 
 const filters = [
-  { name: 'spaceSlug', label: 'Slug', type: 'text' },
+  { name: 'slug', label: 'Slug', type: 'text' },
   { name: 'space.name', label: 'Name', type: 'text' },
 ];
 
 const columns = [
   {
-    value: 'spaceSlug',
+    value: 'slug',
     title: 'Slug',
     sortable: false,
   },
   {
-    value: 'namespace',
+    value: 'task.deployment.namespace',
     title: 'Namespace',
     sortable: false,
+    valueTransform: (_value, row) =>
+      row.getIn(['task', 'deployment', 'namespace']),
   },
   {
-    value: 'taskImage',
+    value: 'task.deployment.image',
     title: 'Task Image',
     sortable: false,
+    valueTransform: (_value, row) => row.getIn(['task', 'deployment', 'image']),
   },
   {
     value: 'space.name',
@@ -182,11 +185,6 @@ const columns = [
     valueTransform: (_value, row) =>
       row.getIn(['space', 'trustedResourceDomains']),
   },
-
-  /*
-  value: 'space.trustedFrameDomains',
-  value: 'space.trustedResourceDomains',
-   */
 ];
 
 export const SystemTenantTable = generateTable({
