@@ -1,22 +1,12 @@
 import {
+  fetchWebhooks,
   fetchWebhookJobs,
-  fetchKappWebhookEvents,
-  fetchSpaceWebhookEvents,
 } from '../../../apis';
 import { generateTable } from '../../table/Table';
-import { defineFilter } from '../../../helpers';
 import { List, Map } from 'immutable';
-
-const clientSide = defineFilter(true)
-  .startsWith('name', 'name')
-  .equals('event', 'event')
-  .equals('type', 'type')
-  .between('scheduledAt', 'minScheduledAt', 'maxScheduledAt')
-  .end();
 
 const dataSource = ({ scope, kappSlug, status }) => ({
   fn: fetchWebhookJobs,
-  clientSide,
   params: paramData => [
     {
       include: 'details',
@@ -25,6 +15,7 @@ const dataSource = ({ scope, kappSlug, status }) => ({
       status,
       limit: paramData.pageSize,
       pageToken: paramData.nextPageToken,
+      webhook: paramData.filters.get('name') || undefined, // required by the API, can't pass empty webhook= param
     },
   ],
   transform: result => ({
@@ -34,52 +25,23 @@ const dataSource = ({ scope, kappSlug, status }) => ({
 });
 
 const filterDataSources = ({ kappSlug }) => ({
-  events: {
-    fn: kappSlug ? fetchKappWebhookEvents : fetchSpaceWebhookEvents,
-    params: [],
-    transform: result => result,
+  definitions: {
+    fn: fetchWebhooks,
+    params: () => [{ kappSlug }],
+    transform: result => result.webhooks,
   },
 });
 
-const filters = () => ({ events, values }) =>
-  events && [
+const filters = () => ({ values, definitions }) =>
+  definitions && [
     {
-      name: 'minScheduledAt',
-      label: 'Start',
-      type: 'date',
-    },
-    {
-      name: 'maxScheduledAt',
-      label: 'End',
-      type: 'date',
-    },
-    { name: 'name', label: 'Name', type: 'text' },
-    {
-      name: 'type',
-      label: 'Type',
+      name: 'name',
+      label: 'Webhook Name',
       type: 'select',
-      options: ({ events }) =>
-        events
-          ? events
-              .keySeq()
-              .sort()
-              .map(type => Map({ label: type, value: type }))
-          : List(),
-      onChange: ({ values }, { setValue }) => {
-        if (values.get('event')) {
-          setValue('event', '');
-        }
-      },
-    },
-    {
-      name: 'event',
-      label: 'Event',
-      type: 'select',
-      options: ({ values, events }) =>
-        values && events
-          ? events
-              .get(values.get('type'), List())
-              .map(event => Map({ label: event, value: event }))
+      options: ({ definitions }) =>
+        definitions
+          ? List(definitions)
+              .map(definition => Map({ label: definition.get('name'), value: definition.get('name') }))
           : List(),
     },
   ];

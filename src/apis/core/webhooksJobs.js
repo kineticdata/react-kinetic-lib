@@ -8,7 +8,7 @@ const buildEndpoint = (scope, kappSlug) =>
     : `${bundle.apiLocation()}/webhookJobs`;
 
 export const fetchWebhookJobs = (options = {}) => {
-  const { scope, kappSlug, status } = options;
+  const { scope, kappSlug, status, webhook } = options;
 
   return axios
     .get(buildEndpoint(scope, kappSlug), {
@@ -17,6 +17,7 @@ export const fetchWebhookJobs = (options = {}) => {
         status,
         limit: options.limit,
         pageToken: options.pageToken,
+        webhook
       },
       headers: headerBuilder(options),
     })
