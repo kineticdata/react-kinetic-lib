@@ -1,4 +1,4 @@
-import { fetchTaskTriggers } from '../../../apis/task';
+import { fetchTaskTriggers, fetchSources } from '../../../apis/task';
 import { generateTable } from '../../table/Table';
 import { get, getIn } from 'immutable';
 
@@ -38,12 +38,32 @@ const dataSource = ({
   }),
 });
 
-const filters = () => () => [
-  { name: 'sourceName', label: 'Source', type: 'text' },
-  { name: 'sourceGroup', label: 'Group', type: 'text' },
-  { name: 'tree', label: 'Tree', type: 'text' },
-  { name: 'treeType', label: 'Tree Type', type: 'text' },
-];
+const filterDataSources = () => ({
+  sourceTypes: {
+    fn: fetchSources,
+    params: [],
+    transform: result =>
+      result.sources
+        .filter(s => s.name !== '-')
+        .map(s => ({
+          label: s.name,
+          value: s.name,
+        })),
+  },
+});
+
+const filters = () => ({ sourceTypes }) =>
+  sourceTypes && [
+    {
+      name: 'sourceName',
+      label: 'Source Name',
+      type: 'select',
+      options: sourceTypes,
+    },
+    { name: 'sourceGroup', label: 'Group', type: 'text' },
+    { name: 'tree', label: 'Tree', type: 'text' },
+    { name: 'treeType', label: 'Tree Type', type: 'text' },
+  ];
 
 const columns = [
   {
@@ -133,7 +153,7 @@ const columns = [
   },
   {
     value: 'sourceName',
-    valueTransform: (_value, row) => getIn(row, ['tree', 'sourceName'], ''),
+    //valueTransform: (_value, row) => getIn(row, ['tree', 'sourceName'], ''),
     title: 'Source',
     sortable: false,
   },
@@ -170,5 +190,6 @@ export const TriggerTable = generateTable({
   tableOptions: ['runId', 'triggerStatus'],
   columns,
   filters,
+  filterDataSources,
   dataSource,
 });
