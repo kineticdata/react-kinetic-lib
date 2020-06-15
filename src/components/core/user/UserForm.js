@@ -12,37 +12,41 @@ import {
 const USER_INCLUDES =
   'attributesMap,authorization,memberships,profileAttributesMap';
 
-const dataSources = ({ username }) => ({
+const dataSources = ({ username, spaceSlug }) => ({
   locales: {
     fn: fetchLocales,
-    params: [],
+    params: !spaceSlug && [],
     transform: result => result.data.locales,
   },
   timezones: {
     fn: fetchTimezones,
-    params: [],
+    params: !spaceSlug && [],
     transform: result => result.data.timezones,
   },
   user: {
     fn: fetchUser,
-    params: username && [{ username, include: USER_INCLUDES }],
+    params: username && [{ username, include: USER_INCLUDES, spaceSlug }],
     transform: result => result.user,
   },
   attributeDefinitions: {
     fn: fetchAttributeDefinitions,
-    params: [{ attributeType: 'userAttributeDefinitions' }],
+    params: !spaceSlug && [{ attributeType: 'userAttributeDefinitions' }],
     transform: result => result.attributeDefinitions,
   },
   profileAttributeDefinitions: {
     fn: fetchAttributeDefinitions,
-    params: [{ attributeType: 'userProfileAttributeDefinitions' }],
+    params: !spaceSlug && [
+      { attributeType: 'userProfileAttributeDefinitions' },
+    ],
     transform: result => result.attributeDefinitions,
   },
 });
 
-const handleSubmit = ({ username }) => values => {
+const handleSubmit = ({ username, spaceSlug }) => values => {
   const user = values.toJS();
-  return username ? updateUser({ username, user }) : createUser({ user });
+  return username
+    ? updateUser({ spaceSlug, username, user })
+    : createUser({ spaceSlug, user });
 };
 
 const fields = ({ username }) => ({ user }) =>
@@ -193,7 +197,7 @@ const fields = ({ username }) => ({ user }) =>
   ];
 
 export const UserForm = generateForm({
-  formOptions: ['username'],
+  formOptions: ['username', 'spaceSlug'],
   dataSources,
   fields,
   handleSubmit,

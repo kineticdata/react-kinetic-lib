@@ -46,6 +46,16 @@ export const resolveFieldConfig = (
   }
 };
 
+export const initializeValue = (
+  type,
+  // if the initialValue option is undefined look up the appropriate empty value
+  // for the field's type
+  value = FIELD_DEFAULT_VALUES.get(type, ''),
+) =>
+  type === 'map'
+    ? OrderedMap(value).map(value => fromJS(value))
+    : fromJS(value);
+
 export const createField = formKey => ({
   constraint,
   constraintMessage,
@@ -68,17 +78,13 @@ export const createField = formKey => ({
   transient,
   type,
   visible,
-}) => {
-  const defaultedValue =
-    initialValue === undefined
-      ? FIELD_DEFAULT_VALUES.get(type, '')
-      : fromJS(initialValue);
-  return Field({
+}) =>
+  Field({
     // Derived options
     id: btoa(`${formKey} ${name}`).replace(/=+$/, ''),
-    initialValue: defaultedValue,
+    initialValue: initializeValue(type, initialValue),
     renderAttributes: fromJS(renderAttributes),
-    value: defaultedValue,
+    value: initializeValue(type, initialValue),
     // Options supporting conditional expressions,
     enabled: typeof enabled === 'function' ? false : enabled,
     label: typeof label === 'function' ? '' : label,
@@ -117,10 +123,9 @@ export const createField = formKey => ({
     serialize,
     type,
   });
-};
 
 export const createDataSource = ({ fn, params, transform }) => {
-  const paramProp = typeof params === 'function' ? 'paramsFn' : 'rawParams';
+  const paramProp = typeof params === 'function' ? 'paramsFn' : 'params';
   return DataSource({
     fn,
     [paramProp]: params,
@@ -137,6 +142,7 @@ export const createFormState = ({
   formKey,
   formOptions,
   onError,
+  onLoad,
   onSave,
   onSubmit,
 }) =>
@@ -150,6 +156,7 @@ export const createFormState = ({
     formKey,
     formOptions,
     onError: onError && onError(formOptions),
+    onLoad: onLoad && onLoad(formOptions),
     onSave: onSave && onSave(formOptions),
     onSubmit: onSubmit && onSubmit(formOptions),
   });
@@ -250,6 +257,7 @@ export const getFieldComponentProps = (field, readOnly) => ({
     'code',
     'form',
     'form-multi',
+    'map',
     'radio',
     'select',
     'select-multi',

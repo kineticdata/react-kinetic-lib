@@ -1,9 +1,10 @@
-import { List, Map, Record } from 'immutable';
+import { List, Map, OrderedMap, Record } from 'immutable';
 
 export const FormState = Record({
   addFields: List(),
   alterFields: Map(),
   bindings: {},
+  callOnLoad: false,
   dataSources: null,
   error: null,
   fields: null,
@@ -12,13 +13,13 @@ export const FormState = Record({
   formOptions: Map(),
   initialValuesFn: null,
   onError: null,
+  onLoad: null,
   onSave: null,
   onSubmit: null,
   submitting: false,
 });
 
 export const DATA_SOURCE_STATUS = {
-  UNINITIALIZED: 'UNINITIALIZED',
   PENDING: 'PENDING',
   RESOLVED: 'RESOLVED',
   REJECTED: 'REJECTED',
@@ -29,9 +30,7 @@ export const DataSource = Record({
   fn: null,
   params: null,
   paramsFn: null,
-  prevParams: null,
-  rawParams: null,
-  status: DATA_SOURCE_STATUS.UNINITIALIZED,
+  status: DATA_SOURCE_STATUS.PENDING,
   transform: null,
 });
 
@@ -39,6 +38,9 @@ export const FIELD_DEFAULT_VALUES = Map({
   attributes: Map(),
   checkbox: false,
   'checkbox-multi': List(),
+  form: null,
+  'form-multi': List(),
+  map: OrderedMap(),
   'select-multi': List(),
   team: null,
   'team-multi': List(),

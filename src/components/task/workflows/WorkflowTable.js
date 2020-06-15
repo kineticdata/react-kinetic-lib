@@ -1,33 +1,34 @@
 import { generateTable } from '../../table/Table';
-import { fetchTrees } from '../../../apis';
+import { fetchSources, fetchTrees } from '../../../apis';
+import { defineFilter } from '../../../helpers';
 
 const STATUS_OPTIONS = ['Active', 'Inactive', 'Paused'].map(v => ({
   label: v,
   value: v,
 }));
 
-const filtersToParams = filters => ({
-  [filters.getIn(['name', 'column', 'filter']) === 'equals'
-    ? 'name'
-    : 'nameFragment']: filters.getIn(['name', 'value']),
-  ownerEmail: filters.getIn(['ownerEmail', 'value']),
-  status: filters.getIn(['status', 'value']),
-});
+const clientSide = defineFilter(true)
+  .equals('name', 'name')
+  .startsWith('name', 'nameFragment')
+  .equals('sourceName', 'source')
+  .equals('sourceGroup', 'sourceGroup')
+  .startsWith('sourceGroup', 'sourceGroupFragment')
+  .startsWith('ownerEmail', 'ownerEmail')
+  .equals('status', 'status')
+  .end();
 
 const dataSource = ({ alterData, workflowType, sourceName, sourceGroup }) => ({
-  clientSideSearch: !!alterData,
+  clientSide: !!alterData ? clientSide : false,
   fn: fetchTrees,
   params: paramData => [
     {
-      ...filtersToParams(paramData.filters),
-      source: sourceName
-        ? sourceName
-        : paramData.filters.getIn(['sourceName', 'value']),
-      [paramData.filters.getIn(['sourceGroup', 'column', 'filter']) === 'equals'
-        ? 'group'
-        : 'groupFragment']: sourceGroup
-        ? sourceGroup
-        : paramData.filters.getIn(['sourceGroup', 'value']),
+      name: paramData.filters.get('name'),
+      nameFragment: paramData.filters.get('nameFragment'),
+      source: sourceName ? sourceName : paramData.filters.get('sourceName'),
+      group: sourceGroup ? sourceGroup : paramData.filters.get('sourceGroup'),
+      groupFragment: paramData.filters.get('sourceGroupFragment'),
+      ownerEmail: paramData.filters.get('ownerEmail'),
+      status: paramData.filters.get('status'),
       type: workflowType || 'Tree',
       include: 'details',
       orderBy:
@@ -45,6 +46,41 @@ const dataSource = ({ alterData, workflowType, sourceName, sourceGroup }) => ({
   }),
 });
 
+const filterDataSources = () => ({
+  sourceTypes: {
+    fn: fetchSources,
+    params: [],
+    transform: result =>
+      result.sources
+        .filter(s => s.name !== '-')
+        .map(s => ({
+          label: s.name,
+          value: s.name,
+        })),
+  },
+});
+
+const filters = () => ({ sourceTypes }) =>
+  sourceTypes && [
+    { name: 'name', label: 'Name', type: 'text' },
+    { name: 'nameFragment', label: 'Name', type: 'text' },
+    {
+      name: 'sourceName',
+      label: 'Source Name',
+      type: 'select',
+      options: sourceTypes,
+    },
+    { name: 'sourceGroup', label: 'Source Group', type: 'text' },
+    { name: 'sourceGroupFragment', label: 'Source Group', type: 'text' },
+    { name: 'ownerEmail', label: 'Owner Email', type: 'text' },
+    {
+      name: 'status',
+      label: 'Status',
+      type: 'select',
+      options: STATUS_OPTIONS,
+    },
+  ];
+
 const columns = [
   {
     value: 'id',
@@ -54,8 +90,6 @@ const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
@@ -76,22 +110,16 @@ const columns = [
   {
     value: 'sourceGroup',
     title: 'Source Group',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'sourceName',
     title: 'Source Name',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'status',
     title: 'Status',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
 
     options: () => STATUS_OPTIONS,
@@ -107,6 +135,8 @@ const columns = [
 export const WorkflowTable = generateTable({
   tableOptions: ['alterData', 'workflowType', 'sourceName', 'sourceGroup'],
   columns,
+  filters,
+  filterDataSources,
   dataSource,
 });
 

@@ -1,10 +1,15 @@
 import t from 'prop-types';
 import { generateTable } from '../../table/Table';
 import { fetchAttributeDefinitions } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .end();
 
 const dataSource = ({ kappSlug, attributeType }) => ({
   fn: fetchAttributeDefinitions,
-  clientSideSearch: true,
+  clientSide,
   params: () => [
     {
       include: 'details',
@@ -19,11 +24,12 @@ const dataSource = ({ kappSlug, attributeType }) => ({
   },
 });
 
+const filters = () => () => [{ name: 'name', label: 'Name', type: 'text' }];
+
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'includes',
     sortable: false,
   },
   {
@@ -41,6 +47,7 @@ const columns = [
 export const AttributeDefinitionTable = generateTable({
   tableOptions: ['kappSlug', 'attributeType'],
   columns,
+  filters,
   dataSource,
 });
 AttributeDefinitionTable.displayName = 'AttributeDefinitionTable';

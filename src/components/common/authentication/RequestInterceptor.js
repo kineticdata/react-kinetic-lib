@@ -1,4 +1,4 @@
-const tokenEndpointPattern = /\/app\/(discussions|loghub)\/api\/v\d/;
+const tokenEndpointPattern = /\/app\/(discussions|loghub|system-coordinator)\/(refresh|components|api\/v\d)/;
 
 export default class RequestInterceptor {
   constructor(store) {

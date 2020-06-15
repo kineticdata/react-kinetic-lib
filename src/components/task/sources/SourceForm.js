@@ -80,6 +80,7 @@ const fields = ({ sourceName, sourceType }) => ({
         label: 'Name',
         required: true,
         initialValue: get(source, 'name', ''),
+        type: 'text',
       },
       {
         name: 'policyRules',

@@ -1,6 +1,6 @@
 import { List, Map } from 'immutable';
-import { isEmpty, validateField } from './Form';
-import { Field } from './Form.models';
+import { isEmpty, validateField } from '../Form';
+import { Field } from '../Form.models';
 
 describe('isEmpty', () => {
   test('returns true if null', () => {

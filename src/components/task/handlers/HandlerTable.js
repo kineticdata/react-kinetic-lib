@@ -1,84 +1,90 @@
 import { generateTable } from '../../table/Table';
 import { fetchHandlers } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .equals('id', 'id')
+  .startsWith('name', 'name')
+  .equals('status', 'status')
+  .equals('definitionId', 'definitionId')
+  .startsWith('definitionName', 'definitionName')
+  .equals('definitionVersion', 'definitionVersion')
+  .end();
 
 const dataSource = () => ({
   fn: fetchHandlers,
   params: () => [{ include: 'details' }],
   transform: result => ({ data: result.handlers }),
-  clientSideSearch: true,
+  clientSide,
 });
+
+const filters = () => () => [
+  { name: 'id', label: 'ID', type: 'text' },
+  { name: 'name', label: 'Name', type: 'text' },
+  {
+    name: 'status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      { label: 'Active', value: 'Active' },
+      { label: 'Paused', value: 'Paused' },
+    ],
+  },
+  { name: 'definitionId', label: 'Definition ID', type: 'text' },
+  { name: 'definitionName', label: 'Definition Name', type: 'text' },
+  { name: 'definitionVersion', label: 'Definition Version', type: 'text' },
+];
 
 const columns = [
   {
     title: 'ID',
     value: 'id',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Name',
     value: 'name',
-    filter: 'includes',
-    type: 'text',
   },
   {
     title: 'Status',
     value: 'status',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Definition ID',
     value: 'definitionId',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Definition Name',
     value: 'definitionName',
-    filter: 'startsWith',
-    type: 'text',
   },
   {
     title: 'Definition Version',
     value: 'definitionVersion',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Description',
     value: 'description',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Created',
     value: 'createdAt',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Created By',
     value: 'createdBy',
-    filter: 'startsWith',
-    type: 'text',
   },
   {
     title: 'Updated',
     value: 'updatedAt',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Updated By',
     value: 'updatedBy',
-    filter: 'startsWith',
-    type: 'text',
   },
 ];
 
 export const HandlerTable = generateTable({
   columns,
+  filters,
   dataSource,
 });
 

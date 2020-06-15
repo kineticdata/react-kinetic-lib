@@ -1,66 +1,78 @@
 import { generateTable } from '../../table/Table';
 import { fetchSources } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+import { fetchSourceAdapters } from '../../../apis/task';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .equals('type', 'type')
+  .end();
+
+const filterDataSources = () => ({
+  sourceTypes: {
+    fn: fetchSourceAdapters,
+    params: [],
+    transform: result =>
+      result.sourceAdapters.map(st => ({
+        label: st.name,
+        value: st.name,
+      })),
+  },
+});
 
 const dataSource = () => ({
   fn: fetchSources,
   params: () => [{ include: 'details' }],
   transform: result => ({ data: result.sources }),
-  clientSideSearch: true,
+  clientSide,
 });
+
+const filters = () => ({ sourceTypes }) =>
+  sourceTypes && [
+    { name: 'name', label: 'Name', type: 'text' },
+    {
+      name: 'type',
+      label: 'Type',
+      type: 'select',
+      options: sourceTypes,
+    },
+  ];
 
 const columns = [
   {
     title: 'ID',
     value: 'id',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Name',
     value: 'name',
-    filter: 'equals',
-    type: 'text',
-  },
-  {
-    title: 'Status',
-    value: 'status',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Type',
     value: 'type',
-    filter: 'startsWith',
-    type: 'text',
   },
   {
     title: 'Created',
     value: 'createdAt',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Created By',
     value: 'createdBy',
-    filter: 'startsWith',
-    type: 'text',
   },
   {
     title: 'Updated',
     value: 'updatedAt',
-    filter: 'equals',
-    type: 'text',
   },
   {
     title: 'Updated By',
     value: 'updatedBy',
-    filter: 'startsWith',
-    type: 'text',
   },
 ];
 
 export const SourceTable = generateTable({
   columns,
+  filters,
+  filterDataSources,
   dataSource,
 });
 

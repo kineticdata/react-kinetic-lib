@@ -3,17 +3,32 @@ import { CoreForm } from './CoreForm';
 import { CoreModal, CoreModalBody, CoreModalHeader } from './CoreModal';
 
 const MODAL_PROPS = ['dismissed', 'size'];
-const FORM_PROPS = ['created', 'updated', 'completed', 'form', 'kapp',
-  'submission', 'review', 'error', 'unauthorized', 'forbidden', 'notFound'];
+const FORM_PROPS = [
+  'created',
+  'updated',
+  'completed',
+  'form',
+  'kapp',
+  'submission',
+  'review',
+  'error',
+  'unauthorized',
+  'forbidden',
+  'notFound',
+];
 
 export class CoreFormModal extends Component {
   constructor(props) {
     super(props);
     this.state = { visible: false, title: '' };
     this.modalProps = {};
-    MODAL_PROPS.forEach((prop) => { this.modalProps[prop] = this.props[prop]; });
+    MODAL_PROPS.forEach(prop => {
+      this.modalProps[prop] = this.props[prop];
+    });
     this.formProps = {};
-    FORM_PROPS.forEach((prop) => { this.formProps[prop] = this.props[prop]; });
+    FORM_PROPS.forEach(prop => {
+      this.formProps[prop] = this.props[prop];
+    });
     this.onFormLoaded = this.onFormLoaded.bind(this);
   }
 

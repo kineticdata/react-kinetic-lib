@@ -1,12 +1,24 @@
 import { generateTable } from '../../table/Table';
-import { fetchKapps, generateCESearchParams } from '../../../apis';
+import { fetchKapps } from '../../../apis';
+import { defineKqlQuery } from '../../../helpers';
+import {
+  generatePaginationParams,
+  generateSortParams,
+} from '../../../apis/http';
+
+const kappQuery = defineKqlQuery()
+  .startsWith('name', 'name')
+  .startsWith('slug', 'slug')
+  .end();
 
 const dataSource = () => ({
   fn: fetchKapps,
   params: paramData => [
     {
       include: 'details',
-      ...generateCESearchParams(paramData),
+      ...generateSortParams(paramData),
+      ...generatePaginationParams(paramData),
+      q: kappQuery(paramData.filters.toJS()),
     },
   ],
   transform: result => ({
@@ -15,19 +27,20 @@ const dataSource = () => ({
   }),
 });
 
+const filters = () => () => [
+  { name: 'name', label: 'Name', type: 'text' },
+  { name: 'slug', label: 'Slug', type: 'text' },
+];
+
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'slug',
     title: 'Slug',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
@@ -69,10 +82,8 @@ const columns = [
 
 export const KappTable = generateTable({
   columns,
+  filters,
   dataSource,
 });
 
 KappTable.displayName = 'KappTable';
-KappTable.defaultProps = {
-  columns,
-};

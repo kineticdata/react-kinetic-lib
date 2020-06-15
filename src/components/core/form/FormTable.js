@@ -1,17 +1,58 @@
 import { generateTable } from '../../table/Table';
-import { fetchForms, generateCESearchParams } from '../../../apis';
+import { fetchForms, fetchFormTypes } from '../../../apis';
 import t from 'prop-types';
+import { defineKqlQuery } from '../../../helpers';
+import {
+  generatePaginationParams,
+  generateSortParams,
+} from '../../../apis/http';
 
 const VALID_FORM_STATUES = ['New', 'Active', 'Inactive', 'Delete'].map(s => ({
   value: s,
   label: s,
 }));
 
+const filterDataSources = ({ kappSlug }) => ({
+  types: {
+    fn: fetchFormTypes,
+    params: kappSlug && [{ kappSlug }],
+    transform: result =>
+      result.formTypes.map(type => ({ label: type.name, value: type.name })),
+  },
+});
+
+const filters = ({ kappSlug }) => ({ types }) =>
+  (!kappSlug || types) && [
+    { name: 'name', label: 'Name', type: 'text' },
+    { name: 'slug', label: 'Slug', type: 'text' },
+    kappSlug && {
+      name: 'type',
+      label: 'Type',
+      type: 'select',
+      options: types,
+    },
+    {
+      name: 'status',
+      label: 'Status',
+      type: 'select',
+      options: () => VALID_FORM_STATUES,
+    },
+  ];
+
+const formQuery = defineKqlQuery()
+  .startsWith('name', 'name')
+  .startsWith('slug', 'slug')
+  .equals('type', 'type')
+  .equals('status', 'status')
+  .end();
+
 const dataSource = ({ kappSlug = null, datastore, manage = false }) => ({
   fn: fetchForms,
   params: paramData => [
     {
-      ...generateCESearchParams(paramData),
+      ...generateSortParams(paramData),
+      ...generatePaginationParams(paramData),
+      q: formQuery(paramData.filters.toJS()),
       include: `details${datastore ? ',indexDefinitions,backgroundJobs' : ''}`,
       datastore,
       kappSlug,
@@ -28,23 +69,17 @@ const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'slug',
     title: 'Slug',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'createdAt',
     title: 'Created',
     sortable: true,
-    filter: 'equals',
-    type: 'text',
   },
   {
     value: 'createdBy',
@@ -54,8 +89,6 @@ const columns = [
     value: 'updatedAt',
     title: 'Updated',
     sortable: true,
-    filter: 'equals',
-    type: 'text',
   },
   {
     value: 'updatedBy',
@@ -70,9 +103,6 @@ const columns = [
     value: 'status',
     title: 'Status',
     sortable: true,
-    filter: 'startsWith',
-    type: 'text',
-    options: () => VALID_FORM_STATUES,
   },
   {
     value: 'type',
@@ -87,6 +117,8 @@ const columns = [
 export const FormTable = generateTable({
   tableOptions: ['kappSlug', 'datastore', 'manage'],
   columns,
+  filters,
+  filterDataSources,
   dataSource,
 });
 

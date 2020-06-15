@@ -163,6 +163,153 @@ export const KitchenSinkForm = generateForm({
       helpText: 'Help Text',
     },
     {
+      name: 'form1',
+      type: 'form',
+      label: 'Form 1',
+      search: { kappSlug: 'services' },
+    },
+    {
+      name: 'form2',
+      type: 'form',
+      label: 'Form 2',
+      required: true,
+      search: { kappSlug: 'services' },
+    },
+    {
+      name: 'form3',
+      type: 'form',
+      label: 'Form 3',
+      enabled: false,
+      initialValue: {
+        name: 'Leave a comment',
+        slug: 'comments',
+      },
+      search: { kappSlug: 'services' },
+    },
+    {
+      name: 'form4',
+      type: 'form',
+      label: 'Form 4',
+      helpText: 'Help Text',
+      placeholder: 'Placeholder',
+      search: { kappSlug: 'services' },
+    },
+    {
+      name: 'form-multi1',
+      type: 'form-multi',
+      label: 'Form Multi 1',
+      search: { kappSlug: 'services' },
+    },
+    {
+      name: 'form-multi2',
+      type: 'form-multi',
+      label: 'Form Multi 2',
+      required: true,
+      search: { kappSlug: 'services' },
+    },
+    {
+      name: 'form-multi3',
+      type: 'form-multi',
+      label: 'Form Multi 3',
+      enabled: false,
+      initialValue: [
+        {
+          name: 'Leave a comment',
+          slug: 'comments',
+        },
+      ],
+      search: { kappSlug: 'services' },
+    },
+    {
+      name: 'form-multi4',
+      type: 'form-multi',
+      label: 'Form Multi 4',
+      helpText: 'Help Text',
+      placeholder: 'Placeholder',
+      search: { kappSlug: 'services' },
+    },
+    {
+      name: 'map1',
+      type: 'map',
+      label: 'Map 1',
+      options: [
+        {
+          label: 'First Name',
+          value: 'firstName',
+        },
+        {
+          label: 'Last Name',
+          value: 'lastName',
+        },
+        {
+          label: 'Email',
+          value: 'email',
+        },
+      ],
+    },
+    {
+      name: 'map2',
+      type: 'map',
+      label: 'Map 2',
+      options: [
+        {
+          label: 'First Name',
+          value: 'firstName',
+        },
+        {
+          label: 'Last Name',
+          value: 'lastName',
+        },
+        {
+          label: 'Email',
+          value: 'email',
+        },
+      ],
+      required: true,
+    },
+    {
+      name: 'map3',
+      type: 'map',
+      label: 'Map 3',
+      options: bindings => [
+        {
+          label: 'First Name',
+          value: 'firstName',
+        },
+        {
+          label: 'Last Name',
+          value: 'lastName',
+        },
+        {
+          label: 'Email',
+          value: 'email',
+        },
+      ],
+      enabled: false,
+      initialValue: { lastName: 'Demo' },
+    },
+    {
+      name: 'map4',
+      type: 'map',
+      label: 'Map 4',
+      options: [
+        {
+          label: 'First Name',
+          value: 'firstName',
+        },
+        {
+          label: 'Last Name',
+          value: 'lastName',
+        },
+        {
+          label: 'Email',
+          value: 'email',
+        },
+      ],
+      helpText: 'Help Text',
+      placeholder: 'Placeholder',
+    },
+    {
       name: 'password1',
       type: 'password',
       label: 'Password 1',

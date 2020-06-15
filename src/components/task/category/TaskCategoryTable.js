@@ -1,19 +1,24 @@
 import { generateTable } from '../../table/Table';
 import { fetchTaskCategories } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .end();
 
 const dataSource = () => ({
   fn: fetchTaskCategories,
-  clientSideSearch: true,
+  clientSide,
   params: () => [{ include: 'details' }],
   transform: result => ({ data: result.categories }),
 });
+
+const filters = () => () => [{ name: 'name', label: 'Name', type: 'text' }];
 
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
@@ -24,22 +29,16 @@ const columns = [
   {
     value: 'type',
     title: 'Type',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'id',
     title: 'Id',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'createdAt',
     title: 'Created',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
   },
   {
@@ -62,6 +61,7 @@ const columns = [
 export const TaskCategoryTable = generateTable({
   tableOptions: [],
   columns,
+  filters,
   dataSource,
 });
 TaskCategoryTable.propTypes = {};

@@ -1,7 +1,8 @@
 import { List, Map, fromJS } from 'immutable';
 import isarray from 'isarray';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
-import { dispatch, regHandlers, regSaga } from '../../store';
+import { action, dispatch, regHandlers, regSaga } from '../../store';
+import { mountForm, unmountForm } from '..';
 
 export const hasData = data => isarray(data) || data instanceof List;
 const noop = () => null;
@@ -18,7 +19,9 @@ export const isClientSide = tableData => {
 
   return (
     hasData(data) &&
-    ((dataSource && dataSource.clientSideSearch === true) || !dataSource)
+    ((dataSource &&
+      (dataSource.clientSideSearch === true || dataSource.clientSide)) ||
+      !dataSource)
   );
 };
 
@@ -101,6 +104,7 @@ regHandlers({
         defaultSortDirection = 'desc',
         tableOptions,
         onValidateFilters,
+        filterForm,
       },
     },
   ) =>
@@ -132,6 +136,7 @@ regHandlers({
             error: null,
 
             // Filtering
+            filterForm,
             filters: generateFilters(tableKey, columns),
             appliedFilters: generateFilters(tableKey, columns),
             validFilters: true,
@@ -213,6 +218,17 @@ regHandlers({
         .set('pageTokens', List())
         .set('error', null),
     ),
+  APPLY_FILTER_FORM: (state, { payload: { tableKey, appliedFilters } }) =>
+    state.updateIn(['tables', tableKey], table =>
+      table
+        .set('loading', true)
+        .set('appliedFilters', appliedFilters)
+        .set('pageOffset', 0)
+        .set('currentPageToken', null)
+        .set('nextPageToken', null)
+        .set('pageTokens', List())
+        .set('error', null),
+    ),
   REFETCH_TABLE_DATA: (state, { payload: { tableKey } }) =>
     state.updateIn(['tables', tableKey], tableData =>
       tableData.get('dataSource')
@@ -269,12 +285,27 @@ function* calculateRowsTask({ payload }) {
   }
 }
 
-regSaga(takeEvery('CONFIGURE_TABLE', calculateRowsTask));
+function* configureTableTask({ payload }) {
+  const { filterForm, tableKey, initialFilterValues } = payload;
+  if (!filterForm) {
+    yield put(action('APPLY_FILTERS', { tableKey }));
+  } else {
+    yield put(
+      action('APPLY_FILTER_FORM', {
+        tableKey,
+        appliedFilters: Map(initialFilterValues),
+      }),
+    );
+  }
+}
+
+regSaga(takeEvery('CONFIGURE_TABLE', configureTableTask));
 regSaga(takeEvery('NEXT_PAGE', calculateRowsTask));
 regSaga(takeEvery('PREV_PAGE', calculateRowsTask));
 regSaga(takeEvery('SORT_COLUMN', calculateRowsTask));
 regSaga(takeEvery('SORT_DIRECTION', calculateRowsTask));
 regSaga(takeEvery('APPLY_FILTERS', calculateRowsTask));
+regSaga(takeEvery('APPLY_FILTER_FORM', calculateRowsTask));
 regSaga(takeEvery('REFETCH_TABLE_DATA', calculateRowsTask));
 
 export const operations = Map({
@@ -318,7 +349,7 @@ export const isValueEmpty = value => {
   return !value;
 };
 
-export const clientSideRowFilter = filters => row => {
+export const clientSideRowFilter = (row, filters) => {
   const usableFilters = filters
     .filter(filter => filter.get('value') !== '')
     .map((filter, column) => filter.set('currentValue', row.get(column)));
@@ -345,11 +376,23 @@ const applyClientSideFilters = (tableData, data) => {
   const filters = tableData.get('appliedFilters');
   const startIndex = pageOffset;
   const endIndex = Math.min(pageOffset + pageSize, data.size);
+  const dataSource = getDataSource(tableData);
+
+  // This is because the `defineFilter` function wants a native object
+  // and not an Immutable map. This changes when we stop using the
+  // `clientSideRowFilter` legacy function or when we support immutable
+  // objects in the `defineFilter`.
+  const clientSideFilters = filters.toJS();
+  const rowFilter =
+    dataSource.clientSideSearch === true
+      ? row => clientSideRowFilter(row, filters)
+      : typeof dataSource.clientSide === 'function'
+      ? row => dataSource.clientSide(row.toJS(), clientSideFilters)
+      : () => true;
 
   return List(data)
     .map(d => Map(d))
-
-    .update(d => d.filter(clientSideRowFilter(filters)))
+    .update(d => d.filter(rowFilter))
     .update(d =>
       sortColumn ? d.sortBy(r => r.get(sortColumn.get('value'))) : d,
     )
@@ -381,7 +424,7 @@ const calculateRows = tableData => {
     const transform = dataSource.transform || (result => result);
     const params = dataSource.params({
       pageSize: tableData.get('pageSize'),
-      filters: tableData.get('filters'),
+      filters: tableData.get('appliedFilters'),
       sortColumn: tableData.getIn(['sortColumn', 'value']),
       sortDirection: tableData.get('sortDirection'),
       nextPageToken: tableData.get('nextPageToken'),
@@ -397,9 +440,10 @@ const calculateRows = tableData => {
       return {
         nextPageToken,
         data,
-        rows: dataSource.clientSideSearch
-          ? applyClientSideFilters(tableData, rows)
-          : rows,
+        rows:
+          dataSource.clientSideSearch || dataSource.clientSide
+            ? applyClientSideFilters(tableData, rows)
+            : rows,
       };
     });
   } else {
@@ -409,8 +453,16 @@ const calculateRows = tableData => {
   }
 };
 
-export const mountTable = tableKey => dispatch('MOUNT_TABLE', { tableKey });
-export const unmountTable = tableKey => dispatch('UNMOUNT_TABLE', { tableKey });
+export const filterFormKey = tableKey => `${tableKey}.filter-form`;
+
+export const mountTable = tableKey => {
+  dispatch('MOUNT_TABLE', { tableKey });
+  mountForm(filterFormKey(tableKey));
+};
+export const unmountTable = tableKey => {
+  dispatch('UNMOUNT_TABLE', { tableKey });
+  unmountForm(filterFormKey(tableKey));
+};
 export const configureTable = payload => {
   dispatch('CONFIGURE_TABLE', payload);
 };

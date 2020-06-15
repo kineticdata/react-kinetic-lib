@@ -1,5 +1,6 @@
 import React from 'react';
-import { KineticLib } from '@kineticdata/react';
+import { KineticLib } from '../../index';
+import { store } from '../../store';
 import { render, mount } from 'enzyme';
 import { List, Map } from 'immutable';
 import { users } from '../../docz/fixtures';
@@ -25,78 +26,200 @@ const buildProps = props => {
   return props;
 };
 
-const dataSource = ({ results = {} }) => ({
-  fn: () => Promise.resolve({ mock: results }),
-  params: () => [],
-  transform: result => ({
-    data: result.mock,
-    nextPageToken: result.nextPageToken,
-  }),
-});
+// Things passed in from generateTables
+// tableOptions, columns, dataSource, sortable
 
-const columns = [
-  {
-    value: 'createdAt',
-    label: 'Created At',
-    filter: 'startsWith',
-    type: 'text',
-    sortable: true,
-  },
-  {
-    value: 'createdBy',
-    label: 'Created By',
-    filter: 'startsWith',
-    type: 'text',
-    sortable: false,
-  },
-  {
-    value: 'createdBy',
-    label: 'Created By',
-    filter: 'equals',
-    type: 'text',
-    sortable: false,
-  },
-];
+const TABLE_KEY = 'mock-table-key';
 
-const MockTable = generateTable({
-  columns,
-  dataSource,
-  tableOptions: ['results'],
-});
-
-const getComponent = state => (
-  <KineticLib system>
-    <MockTable results={state.results}>
-      {({ initialized, table }) => {
-        return <div>{table}</div>;
-      }}
-    </MockTable>
-  </KineticLib>
+const TableViewMock = props => (
+  <>
+    {props.table}
+    {props.pagination}
+    {props.filter}
+  </>
 );
 
-const flushPromises = () => new Promise(setImmediate);
+const mountTable = ({
+  dataSource,
+  filters,
+  filterDataSources,
+  columns = [],
+  tableOptions = {},
+  tableKey = TABLE_KEY,
+  TableView = TableViewMock,
+  ...tableProps
+}) => {
+  // Generate a new Table type using the options.
+  const Table = generateTable({
+    dataSource,
+    columns,
+    filters,
+    filterDataSources,
+    tableOptions: Object.keys(tableOptions),
+  });
+
+  return new Promise(resolve => {
+    const result = mount(
+      <KineticLib>
+        <Table
+          tableKey={tableKey}
+          uncontrolled
+          {...tableProps}
+          {...tableOptions}
+        >
+          {props => <TableView {...props} />}
+        </Table>
+      </KineticLib>,
+    );
+
+    const ready = () =>
+      !(
+        store.getState().getIn(['tables', tableKey, 'loading'], true) ||
+        store.getState().getIn(['tables', tableKey, 'initializing'], true)
+      );
+
+    if (ready()) {
+      result.update();
+      resolve(result);
+    } else {
+      const unsub = store.subscribe(() => {
+        if (ready()) {
+          result.update();
+          resolve(result);
+          // Remove the store listener since we're done.
+          unsub();
+        }
+      });
+    }
+  });
+};
+
+/*
+
+* Repeat for: server-side, server-side w/client sort and paginate, client-side
+* test sorting by column
+* test sorting changing direction
+* test default sort parameters
+
+* test pure-client-side (data prop passed)
+
+ * test overriding default components for whole table
+ * test altering columns
+ ** changing component
+ ** What else *can* be changed???
+ * test adding columns
+ * test valueTransform
+ * test columnSet
+ * test pageSize
+ * test sortable
+ * test omit header
+ * test include footer
+
+
+ */
 
 describe('<Table />', () => {
-  describe('Table render', () => {
-    let state;
+  describe('render', () => {
+    let data, columns, wrapper, dataSourceFn;
     beforeEach(() => {
-      state = {
-        results: [
-          {
-            createdAt: 'Today',
-            createdBy: 'Tester',
-            name: 'Developer',
-          },
-        ],
-      };
+      data = { mockData: [{ name: 'test', status: 'active' }] };
+      columns = [
+        {
+          value: 'name',
+          title: 'Name',
+          sortable: true,
+          filter: 'startsWith',
+          type: 'text',
+        },
+        {
+          value: 'status',
+          title: 'Status',
+          sortable: true,
+          filter: 'equals',
+          type: 'text',
+          options: () => [
+            { label: 'Active', value: 'active' },
+            { label: 'Inactive', value: 'inactive' },
+          ],
+        },
+      ];
+
+      dataSourceFn = jest.fn(() => Promise.resolve(data));
+    });
+    afterEach(() => {
+      if (wrapper) {
+        wrapper.unmount();
+      }
     });
 
-    test('renders normally', async () => {
-      await flushPromises();
-      const wrapper = mount(getComponent(state));
-      await flushPromises();
-      wrapper.update();
+    test('kitchen sink', async () => {
+      const ActionCell = props => <td>{props.value}</td>;
+      const addColumns = [
+        {
+          value: '_action',
+          label: 'Actions',
+          components: { BodyCell: ActionCell },
+        },
+      ];
+      wrapper = await mountTable({
+        columns,
+        addColumns,
+        dataSource: _tableOptions => ({
+          fn: dataSourceFn,
+          params: _paramData => [],
+          transform: result => ({ data: result.mockData }),
+        }),
+      });
       expect(wrapper).toMatchSnapshot();
+    });
+
+    describe('filters', () => {
+      test('legacy filters', async () => {
+        wrapper = await mountTable({
+          dataSource: _tableOptions => ({
+            fn: dataSourceFn,
+            params: _paramData => [],
+            transform: result => ({ data: result.mockData }),
+          }),
+        });
+
+        const filterLayout = wrapper.find('FilterLayout');
+        expect(filterLayout).toBeDefined();
+        expect(filterLayout).toMatchSnapshot();
+      });
+
+      test('filter form', async () => {
+        wrapper = await mountTable({
+          filters: () => () => [
+            { name: 'name', label: 'Name', type: 'text' },
+            { name: 'status', label: 'Status', type: 'text' },
+          ],
+          dataSource: _tableOptions => ({
+            fn: dataSourceFn,
+            params: _paramData => [],
+            transform: result => ({ data: result.mockData }),
+          }),
+        });
+
+        const filterForm = wrapper.find('FilterForm');
+        expect(filterForm).toBeDefined();
+        expect(filterForm).toMatchSnapshot();
+      });
+    });
+
+    describe('dataSource', () => {
+      test('dataSource resolves', async () => {
+        wrapper = await mountTable({
+          dataSource: _tableOptions => ({
+            fn: dataSourceFn,
+            params: _paramData => [],
+            transform: result => ({ data: result.mockData }),
+          }),
+        });
+
+        expect(wrapper).toMatchSnapshot();
+        expect(dataSourceFn.mock.calls).toMatchSnapshot();
+      });
     });
   });
   describe('build methods', () => {
@@ -555,7 +678,7 @@ describe('<Table />', () => {
     });
   });
 
-  xdescribe('data manipulators', () => {
+  describe('data manipulators', () => {
     describe('#generateColumns', () => {
       let columns;
       let addColumns;
@@ -569,7 +692,7 @@ describe('<Table />', () => {
 
       test('combines the column config and additional columns', () => {
         const total = columns.length + addColumns.length;
-        expect(generateColumns(columns, addColumns, alterColumns)).toHaveLength(
+        expect(generateColumns(columns, addColumns, alterColumns).size).toBe(
           total,
         );
       });
@@ -586,7 +709,6 @@ describe('<Table />', () => {
       test('alters columns does not change value key', () => {
         alterColumns.a = { value: 'c' };
         const columnConfig = generateColumns(columns, addColumns, alterColumns);
-        console.log(columnConfig.toJS());
         const column = columnConfig.find(c => c.get('value') === 'a');
         expect(column).not.toBeUndefined();
       });

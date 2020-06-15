@@ -3,6 +3,7 @@ import { Link, Route, Switch } from "react-router-dom";
 import { FormList } from "./pages/FormList";
 import { Form } from "./pages/Form";
 import { Login } from "./pages/Login";
+import { Tables } from './pages/Tables'
 
 export const PublicFacing = ({ loginProps }) => {
   return (
@@ -10,6 +11,7 @@ export const PublicFacing = ({ loginProps }) => {
       <header className="public">
         <h1>Public</h1>
         <Link to="/forms">Forms</Link>
+        <Link to="/tables">Tables</Link>
         <Link to="/submissions">Submissions</Link>
         <Link to="/login">Login</Link>
         <Link to="/sign-up">Sign Up</Link>
@@ -22,6 +24,7 @@ export const PublicFacing = ({ loginProps }) => {
             path="/forms/:slug"
             render={({ match }) => <Form slug={match.params.slug} />}
           />
+          <Route path="/tables" render={() => <Tables />} />
           <Route
             path="/sign-up"
             render={() => (

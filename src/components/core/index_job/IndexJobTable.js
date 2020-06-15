@@ -1,13 +1,45 @@
 import React from 'react';
-import { fetchBackgroundJobs } from '../../../apis';
+import { fetchBackgroundJobs, fetchForm } from '../../../apis';
 import { generateTable } from '../../table/Table';
+import { defineFilter } from '../../../helpers';
 
-const dataSource = () => ({
-  fn: fetchBackgroundJobs,
-  clientSideSearch: true,
+const clientSide = defineFilter(true)
+  .equals('status', 'status')
+  .between('startedAt', 'minStartedAt', 'maxStartedAt')
+  .end();
+
+const indexJobStatuses = ['Running', 'Paused'];
+
+const dataSource = ({ formSlug }) => ({
+  fn: () =>
+    formSlug
+      ? fetchForm({ datastore: true, formSlug, include: 'backgroundJobs' })
+      : fetchBackgroundJobs(),
+  clientSide,
   params: () => [],
-  transform: result => ({ data: result.backgroundJobs }),
+  transform: result => ({
+    data: formSlug ? result.form.backgroundJobs : result.backgroundJobs,
+  }),
 });
+
+const filters = () => () => [
+  {
+    name: 'status',
+    label: 'Status',
+    type: 'select',
+    options: indexJobStatuses.map(el => ({ value: el, label: el })),
+  },
+  {
+    name: 'minStartedAt',
+    label: 'Start',
+    type: 'date',
+  },
+  {
+    name: 'maxStartedAt',
+    label: 'End',
+    type: 'date',
+  },
+];
 
 const columns = [
   {
@@ -47,8 +79,10 @@ const columns = [
 ];
 
 export const IndexJobTable = generateTable({
+  tableOptions: ['formSlug'],
   dataSource,
   columns,
+  filters,
   sortable: false,
 });
 IndexJobTable.displayName = 'IndexJobTable';

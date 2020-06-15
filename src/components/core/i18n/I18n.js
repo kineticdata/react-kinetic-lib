@@ -150,7 +150,10 @@ export class I18nTranslate extends React.Component {
         return this.props.children;
       }
     } else {
-      return null;
+      //TODO:I changed this because translations doesn't exist in the SPUI yet.
+      return typeof this.props.children === 'string'
+        ? this.props.children
+        : null;
     }
   }
 }

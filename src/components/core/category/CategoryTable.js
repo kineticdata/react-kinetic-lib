@@ -1,34 +1,39 @@
 import t from 'prop-types';
 import { generateTable } from '../../table/Table';
 import { fetchCategories } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .startsWith('slug', 'slug')
+  .end();
 
 const dataSource = ({ kappSlug }) => ({
   fn: fetchCategories,
-  clientSideSearch: true,
+  clientSide,
   params: () => [{ include: 'details', kappSlug }],
   transform: result => ({ data: result.categories }),
 });
+
+const filters = () => () => [
+  { name: 'name', label: 'Name', type: 'text' },
+  { name: 'slug', label: 'Slug', type: 'text' },
+];
 
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'includes',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'slug',
     title: 'Slug',
-    filter: 'includes',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'createdAt',
     title: 'Created',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
   },
   {
@@ -51,6 +56,7 @@ const columns = [
 export const CategoryTable = generateTable({
   tableOptions: ['kappSlug'],
   columns,
+  filters,
   dataSource,
 });
 CategoryTable.propTypes = {

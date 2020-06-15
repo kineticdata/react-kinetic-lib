@@ -1,5 +1,13 @@
 import { generateTable } from '../../table/Table';
 import { fetchUsage } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .equals('type', 'type')
+  .startsWith('source', 'source')
+  .startsWith('group', 'group')
+  .startsWith('name', 'name')
+  .end();
 
 const dataSource = ({
   definitionId,
@@ -9,54 +17,49 @@ const dataSource = ({
   usageType,
 }) => ({
   fn: fetchUsage,
-  clientSideSearch: true,
+  clientSide,
   params: () => [{ definitionId, sourceName, sourceGroup, name, usageType }],
   transform: result => ({
     data: result.usages,
   }),
 });
 
+const filters = () => () => [
+  { name: 'type', label: 'Type', type: 'text' },
+  { name: 'source', label: 'Source', type: 'text' },
+  { name: 'group', label: 'Group', type: 'text' },
+  { name: 'name', label: 'Name', type: 'text' },
+];
+
 const columns = [
   {
     value: 'type',
     title: 'Type',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'source',
     title: 'Source',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'group',
     title: 'Group',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'name',
     title: 'Tree',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'nodeCount',
     title: 'Usage',
-    filter: 'startsWith',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'updatedAt',
     title: 'Updated',
-    filter: 'equals',
-    type: 'text',
     sortable: true,
   },
 ];
@@ -70,6 +73,7 @@ export const UsageTable = generateTable({
     'usageType',
   ],
   columns,
+  filters,
   dataSource,
 });
 

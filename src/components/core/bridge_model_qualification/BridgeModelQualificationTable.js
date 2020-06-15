@@ -1,5 +1,13 @@
 import { generateTable } from '../../table/Table';
 import { fetchBridgeModel } from '../../../apis';
+import { defineFilter } from '../../../helpers';
+
+const clientSide = defineFilter(true)
+  .startsWith('name', 'name')
+  .equals('resultType', 'resultType')
+  .end();
+
+const resultTypes = ['Single', 'Multiple'];
 
 // Handles bridge model api response by checking for error and also returning
 // error if active mapping is not present. If valid returns object with the
@@ -31,34 +39,40 @@ const transform = ({ qualifications, qualificationMappings }) => ({
 
 const dataSource = ({ modelName }) => ({
   fn: () => fetchBridgeModel({ modelName }).then(handleBridgeModel),
-  clientSideSearch: true,
+  clientSide,
   params: () => [{ modelName }],
   transform,
 });
+
+const filters = () => () => [
+  { name: 'name', label: 'Name', type: 'text' },
+  {
+    name: 'resultType',
+    label: 'Result Type',
+    type: 'select',
+    options: resultTypes.map(el => ({ label: el, value: el })),
+  },
+];
 
 const columns = [
   {
     value: 'name',
     title: 'Name',
-    filter: 'includes',
-    type: 'text',
     sortable: true,
   },
   {
     value: 'resultType',
     title: 'Result Type',
-    filter: 'equals',
-    type: 'text',
   },
   {
     value: 'query',
     title: 'Query',
-    type: 'text',
   },
 ];
 
 export const BridgeModelQualificationTable = generateTable({
   columns,
+  // filters,
   dataSource,
   tableOptions: ['modelName'],
 });

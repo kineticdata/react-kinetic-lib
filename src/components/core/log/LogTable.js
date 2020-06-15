@@ -1,22 +1,31 @@
 import { generateTable } from '../../table/Table';
 import { fetchLogs } from '../../../apis';
-import { List } from 'immutable';
 import moment from 'moment';
+
+const EXCLUDED_FILTERS = ['startTime', 'endTime', 'timestampPreset'];
 
 export const generateLogQuery = appliedFilters => {
   const filters = JSON.stringify(
     appliedFilters
-      .filter((_v, k) => k !== 'timestamp')
-      .map(filter => filter.get('value'))
+      .filter((_v, k) => !EXCLUDED_FILTERS.includes(k))
       .filter(filter => filter !== '')
       .toJSON(),
   );
 
   const q = filters === '{}' ? undefined : filters;
-  const [startDate, endDate] = appliedFilters.getIn(
-    ['timestamp', 'value'],
-    List(['', '']),
-  );
+  const preset = appliedFilters.get('timestampPreset');
+
+  let startDate, endDate;
+  if (preset && preset !== 'custom') {
+    const minutes = Number.parseInt(preset, 10);
+    startDate = moment()
+      .subtract(minutes, 'minutes')
+      .format();
+    endDate = '';
+  } else {
+    startDate = appliedFilters.get('startTime', '');
+    endDate = appliedFilters.get('endTime', '');
+  }
 
   const start =
     startDate === '' && endDate === ''
@@ -73,20 +82,62 @@ const LEVEL_OPTIONS = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'].map(
   }),
 );
 
+const TIMESTAMP_PRESET_OPTIONS = [
+  { label: 'Last 10 Minutes', value: '10' },
+  { label: 'Last 20 Minutes', value: '20' },
+  { label: 'Last 1 Hour', value: '60' },
+  { label: 'Last 4 Hours', value: '240' },
+  { label: 'Custom', value: 'custom' },
+];
+
+const filters = () => () => [
+  {
+    name: 'app.component',
+    label: 'Component',
+    type: 'select',
+    options: APP_COMPONENT_OPTIONS,
+  },
+  { name: 'app.correlationId', label: 'Correlation ID', type: 'text' },
+  { name: 'app.user', label: 'User', type: 'text' },
+  { name: 'app.responseStatus', label: 'Response Status', type: 'text' },
+  { name: 'level', label: 'Level', type: 'select', options: LEVEL_OPTIONS },
+  { name: 'message', label: 'Message', type: 'text' },
+  {
+    name: 'startTime',
+    label: 'Start Date',
+    type: 'datetime',
+    visible: ({ values }) => values.get('timestampPreset') === 'custom',
+  },
+  {
+    name: 'endTime',
+    label: 'End Date',
+    type: 'datetime',
+    visible: ({ values }) => values.get('timestampPreset') === 'custom',
+  },
+  {
+    name: 'timestampPreset',
+    label: 'Timestamp',
+    type: 'radio',
+    initialValue: '60',
+    options: TIMESTAMP_PRESET_OPTIONS,
+    onChange: ({ values }, { setValue }) => {
+      if (values.get('timestampPreset') !== 'custom') {
+        setValue('startTime', '');
+        setValue('endTime', '');
+      }
+    },
+  },
+];
+
 const columns = [
   {
     value: 'app.component',
     title: 'Component',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
-    options: () => APP_COMPONENT_OPTIONS,
   },
   {
     value: 'app.correlationId',
     title: 'Correlation ID',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
   },
   {
@@ -107,8 +158,6 @@ const columns = [
   {
     value: 'app.user',
     title: 'User',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
   },
 
@@ -150,9 +199,7 @@ const columns = [
 
   {
     value: 'app.responseStatus',
-    title: 'Responsed Status',
-    filter: 'equals',
-    type: 'text',
+    title: 'Response Status',
     sortable: false,
   },
 
@@ -216,27 +263,20 @@ const columns = [
     value: 'level',
     title: 'Level',
     sortable: false,
-    type: 'text',
-    filter: 'equals',
-    options: () => LEVEL_OPTIONS,
   },
   {
     value: 'message',
     title: 'Message',
-    filter: 'equals',
-    type: 'text',
     sortable: false,
   },
   {
     value: 'timestamp',
     title: 'Timestamp',
-    filter: 'between',
-    type: 'text',
     sortable: false,
   },
 ];
 
-export const LogTable = generateTable({ columns, dataSource });
+export const LogTable = generateTable({ columns, dataSource, filters });
 
 LogTable.displayName = 'LogTable';
 LogTable.columns = columns.map(c => c.value);

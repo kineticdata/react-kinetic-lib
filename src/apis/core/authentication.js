@@ -71,7 +71,7 @@ export const singleSignOn = (spaceSlug, dimensions, target = '_blank') =>
     // use a larger interval in dev mode because we are going to be checking
     // by making an ajax call
     const popupPollingInterval =
-      process.env.NODE_ENV === 'development' ? 2000 : 100;
+      process.env.NODE_ENV === 'development' ? 2000 : 1000;
 
     // Check the status of the popup window.  Was it closed, was it redirected
     // back to the same host as the parent window, othewise try again later.
@@ -81,7 +81,7 @@ export const singleSignOn = (spaceSlug, dimensions, target = '_blank') =>
       } else if (await sameHost(window, popup)) {
         if (
           process.env.NODE_ENV !== 'development' &&
-          popup.location.includes('authentication_error')
+          popup.location.href.includes('authentication_error')
         ) {
           resolve({ error: 'Single Sign-on failed' });
         } else {
