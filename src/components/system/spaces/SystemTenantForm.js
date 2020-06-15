@@ -1,18 +1,12 @@
-import { Map, get, getIn, List } from 'immutable';
+import { get, getIn } from 'immutable';
 import { generateForm } from '../../form/Form';
 import {
   createTenant,
   fetchSystemDefaultTaskDbAdapter,
-  fetchTaskDbAdapters,
   fetchTenant,
   updateTenant,
 } from '../../../apis/system';
 import { handleFormErrors, slugify } from '../../../helpers';
-import {
-  propertiesFromAdapters,
-  propertiesFromValues,
-  adapterPropertiesFields,
-} from '../helpers';
 
 const TENANT_INCLUDES = 'details';
 
@@ -71,6 +65,65 @@ const generateInitialValues = (
   return initialValue;
 };
 
+const generatePasswordFields = (
+  adapterName,
+  tenant,
+  currentAdapter,
+  defaultAdapter,
+) => {
+  const required = ({ values }) => {
+    const currentAdapterName = values.get(currentAdapter);
+
+    if (currentAdapterName === adapterName) {
+      if (tenant) {
+        return values.get(`${adapterName}_passwordChange`);
+      } else {
+        return getIn(defaultAdapter, ['type'], '') !== adapterName;
+      }
+    }
+    return false;
+  };
+
+  return [
+    {
+      name: `${adapterName}_password`,
+      label: 'Password',
+      type: 'password',
+      transient: true,
+      required,
+      visible: ({ values }) => values.get(`${adapterName}_passwordChange`),
+    },
+    {
+      name: `${adapterName}_passwordConfirmation`,
+      label: 'Password Confirmation',
+      type: 'password',
+      required,
+      visible: ({ values }) => values.get(`${adapterName}_passwordChange`),
+      transient: true,
+      constraint: ({ values }) =>
+        values.get(`${adapterName}_passwordConfirmation`) ===
+        values.get(`${adapterName}_password`),
+      constraintMessage: 'Password Confirmation does not match',
+    },
+    {
+      name: `${adapterName}_passwordChange`,
+      label: 'Change Password',
+      type: 'checkbox',
+      visible: !!tenant,
+      initialValue: !tenant,
+      transient: true,
+      onChange: ({ values }, { setValue }) => {
+        if (values.get(`${adapterName}_password`) !== '') {
+          setValue(`${adapterName}_password`, '');
+        }
+        if (values.get(`${adapterName}_passwordConfirmation`) !== '') {
+          setValue(`${adapterName}_passwordConfirmation`, '');
+        }
+      },
+    },
+  ];
+};
+
 const MSSQL_FIELDS = (adapter, tenant, defaultAdapter) => {
   const trueIfAdapter = ({ values }) => values.get(adapter) === 'mssql';
   const initialValues = generateInitialValues(
@@ -122,14 +175,7 @@ const MSSQL_FIELDS = (adapter, tenant, defaultAdapter) => {
       required: false,
       visible: trueIfAdapter,
     },
-    {
-      name: 'mssql_password',
-      label: 'Password',
-      type: 'password',
-      transient: true,
-      required: false,
-      visible: trueIfAdapter,
-    },
+    ...generatePasswordFields('mssql', tenant, adapter, defaultAdapter),
     {
       name: 'mssql_sslEnabled',
       label: 'Enable SSL',
@@ -188,7 +234,7 @@ const MSSQL_FIELDS = (adapter, tenant, defaultAdapter) => {
   ];
 };
 
-const ORACLE_FIELDS = adapter => {
+const ORACLE_FIELDS = (adapter, tenant, defaultAdapter) => {
   const trueIfAdapter = ({ values }) => values.get(adapter) === 'oracle';
   return [
     {
@@ -226,14 +272,7 @@ const ORACLE_FIELDS = adapter => {
       required: false,
       visible: trueIfAdapter,
     },
-    {
-      name: 'oracle_password',
-      label: 'Password',
-      type: 'password',
-      transient: true,
-      required: false,
-      visible: trueIfAdapter,
-    },
+    ...generatePasswordFields('oracle', tenant, adapter, defaultAdapter),
     {
       name: 'oracle_sslEnabled',
       label: 'Enable SSL',
@@ -358,15 +397,7 @@ const POSTGRES_FIELDS = (adapter, tenant, defaultAdapter) => {
       visible: trueIfAdapter,
       initialValue: initialValues('username', ''),
     },
-    {
-      name: 'postgres_password',
-      label: 'Password',
-      type: 'password',
-      transient: true,
-      required: false,
-      visible: trueIfAdapter,
-      initialValue: initialValues('password', ''),
-    },
+    ...generatePasswordFields('postgres', tenant, adapter, defaultAdapter),
     {
       name: 'postgres_sslEnabled',
       label: 'Enable SSL',
@@ -431,9 +462,24 @@ const POSTGRES_FIELDS = (adapter, tenant, defaultAdapter) => {
 const adapterProperties = values => {
   const adapterPrefix = `${values.get('task_databaseAdapter_type')}_`;
   const properties = values
-    .filter((_v, key) => {
-      return key.startsWith(adapterPrefix);
-    })
+    // Remove the other adapters properties and the password properties for
+    // the current one.
+    .filter(
+      (_v, key) =>
+        key.startsWith(adapterPrefix) &&
+        !key.startsWith(`${adapterPrefix}password`),
+    )
+    // Then check to see if we checked the passwordChange and if we did add the
+    // password property back in
+    .update(properties =>
+      values.get(`${adapterPrefix}passwordChange`, false)
+        ? properties.set(
+            `${adapterPrefix}password`,
+            values.get(`${adapterPrefix}password`),
+          )
+        : properties,
+    )
+    // Remove the adapter prefix from the property names.
     .mapKeys(key => key.replace(adapterPrefix, ''))
     .toObject();
 
