@@ -130,6 +130,17 @@ export const updateSystemUser = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const fetchSystemIngress = (options = {}) => {
+  // Build URL and fetch the space.
+  return axios
+    .get('/app/system-coordinator/api/v1/platform/ingress', {
+      params: paramBuilder(options),
+      headers: headerBuilder(options),
+    })
+    .then(response => ({ ingress: response.data }))
+    .catch(handleErrors);
+};
+
 export const fetchTaskDbAdapters = (options = {}) => {
   // Build URL and fetch the space.
   return (
