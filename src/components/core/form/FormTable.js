@@ -37,11 +37,19 @@ const filters = ({ kappSlug }) => ({ types }) =>
       type: 'select',
       options: () => VALID_FORM_STATUES,
     },
+    {
+      name: 'updatedBy',
+      label: 'Updated By',
+      type: 'user',
+      serialize: ({ values }) =>
+        values.getIn(['updatedBy','username']),
+    },
   ];
 
 const formQuery = defineKqlQuery()
   .startsWith('name', 'name')
   .startsWith('slug', 'slug')
+  .startsWith('updatedBy', 'updatedBy')
   .equals('type', 'type')
   .equals('status', 'status')
   .end();
@@ -87,7 +95,7 @@ const columns = [
   },
   {
     value: 'updatedAt',
-    title: 'Updated',
+    title: 'Updated At',
     sortable: true,
   },
   {
