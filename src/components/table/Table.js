@@ -229,11 +229,14 @@ const hasNextPage = (
   pageOffset,
   pageSize,
   currentPageToken,
+  rows,
 ) =>
   isClientSide(Map({ data, dataSource, tableOptions }))
-    ? data
-      ? pageOffset + pageSize < data.size
-      : false
+    ? rows.size >= pageSize
+      ? data
+        ? pageOffset + pageSize < data.size
+        : false
+      : !!currentPageToken
     : !!currentPageToken;
 
 const getIndexes = (
@@ -288,6 +291,7 @@ const buildPaginationControl = props => {
     pageOffset,
     pageSize,
     currentPageToken,
+    rows,
   )
     ? onNextPage(tableKey)
     : null;
