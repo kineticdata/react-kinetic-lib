@@ -89,7 +89,6 @@ const filters = () => () => [
     name: 'status',
     label: 'Status',
     type: 'select',
-    initialValue: 'Active',
     options: ['Active', 'Handled'].map(s => ({ label: s, value: s })),
   },
   {
