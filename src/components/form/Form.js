@@ -65,6 +65,9 @@ const resetValues = fields =>
     }),
   );
 
+const clearFilterFormValues = (fields, formKey) =>
+  fields.map(field => actions.setValue(formKey)(field.get('name'), null));
+
 export const checkRequired = field =>
   field.required && isEmpty(field.value)
     ? List([field.requiredMessage])
@@ -382,6 +385,18 @@ regSaga(
 );
 
 regSaga(
+  takeEvery('RESET', function*({ payload: { formKey } }) {
+    try {
+      const { fields } = yield select(selectForm(formKey));
+      clearFilterFormValues(fields, formKey);
+      dispatch('SUBMIT', { formKey });
+    } catch (e) {
+      console.log(e);
+    }
+  }),
+);
+
+regSaga(
   takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet, onInvalid } }) {
     try {
       const { bindings, fields, onSubmit, onSave, onError } = yield select(
@@ -475,9 +490,7 @@ export const onSubmit = (formKey, fieldSet) => event => {
   dispatch('SUBMIT', { formKey, fieldSet });
 };
 
-export const onReset = formKey => () => {
-  resetForm(formKey);
-};
+export const onReset = formKey => () => resetForm(formKey);
 
 export const clearError = formKey => event => {
   dispatch('CLEAR_ERROR', { formKey });
