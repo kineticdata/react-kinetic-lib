@@ -29,7 +29,11 @@ export const fetchAdapters = (options = {}) => {
   validateOptions('fetchAdapters', ['type'], options);
   return axios
     .get(
-      `${buildAgentPath(options)}/app/api/v1/adapters?type=${options.type}`,
+      `${
+        options.slug
+          ? '/app/system-coordinator/components/agent'
+          : buildAgentPath(options)
+      }/app/api/v1/adapters?type=${options.type}`,
       {
         params: paramBuilder(options),
         headers: headerBuilder(options),

@@ -474,5 +474,81 @@ export const adapterProperties = (values, adapter) => {
   return properties;
 };
 
+export const propertiesFromAdapters = (
+  taskDbAdapters = List(),
+  typeKey = 'type',
+) =>
+  taskDbAdapters.flatMap(adapter =>
+    adapter
+      .get('properties', List())
+      .map(property => property.set('type', adapter.get(typeKey))),
+  );
+
+export const propertiesFromValues = (
+  values,
+  adapterType = 'type',
+  prefix = '',
+) => {
+  const adapterTypeName = formPropertyName(prefix, adapterType);
+  const propertiesType = formPropertyName(
+    prefix,
+    'properties',
+    values.get(adapterTypeName),
+  );
+  return values
+    .filter((value, name) => name.startsWith(propertiesType))
+    .mapKeys(name => name.replace(`${propertiesType}_`, ''));
+};
+
 export const formPropertyName = (...names) =>
   names.filter(n => n !== '').join('_');
+
+const getPropertyValue = (property, adapter, adapterType) => {
+  const defaultType = get(adapter, adapterType, null);
+  const type = property.get('type');
+  const propertyValue = property.get('value', '') || '';
+
+  if (defaultType && defaultType === type) {
+    const defaultProperty = adapter.getIn(
+      ['properties', property.get('name')],
+      null,
+    );
+
+    return defaultProperty || propertyValue || '';
+  } else {
+    return propertyValue;
+  }
+};
+
+export const adapterPropertiesFields = ({
+  adapterProperties,
+  defaultAdapter,
+  prefix = '',
+  adapterType = 'type',
+}) =>
+  adapterProperties.map(property => {
+    return {
+      name: formPropertyName(
+        prefix,
+        'properties',
+        property.get('type'),
+        property.get('name'),
+      ),
+      label: property.get('label') || property.get('name'),
+      visible: ({ values }) =>
+        values.get(formPropertyName(prefix, adapterType)) ===
+        property.get('type'),
+      type: property.get('sensitive')
+        ? 'password'
+        : property.has('options')
+        ? 'select'
+        : 'text',
+      helpText: property.get('description'),
+      required: ({ values }) =>
+        values.get(formPropertyName(prefix, adapterType)) ===
+          property.get('type') && property.get('required', false),
+      transient: true,
+      options: property.get('options', undefined),
+      initialValue: getPropertyValue(property, defaultAdapter, adapterType),
+    };
+  });

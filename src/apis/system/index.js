@@ -233,6 +233,41 @@ export const updateSystemDefaultSmtpAdapter = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const fetchSystemFilestore = (options = {}) => {
+  // Build URL and fetch the space.
+  return axios
+    .get(
+      '/app/system-coordinator/components/agent/app/api/v1/spaces/SYSTEM/filestores/system',
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => response.data)
+    .catch(handleErrors);
+};
+
+export const updateSystemFilestore = (options = {}) => {
+  const { filestore } = options;
+  if (!filestore) {
+    throw new Error(
+      'updateSystemFilestore failed! The option "adapter" is required.',
+    );
+  }
+
+  return axios
+    .put(
+      '/app/system-coordinator/components/agent/app/api/v1/spaces/SYSTEM/filestores/system',
+      filestore,
+      {
+        params: paramBuilder(options),
+        headers: headerBuilder(options),
+      },
+    )
+    .then(response => ({ filestore: response.data.filestore }))
+    .catch(handleErrors);
+};
+
 export const systemLogin = (options = {}) => {
   const { username, password } = options;
 
