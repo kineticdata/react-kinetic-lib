@@ -210,9 +210,7 @@ regHandlers({
         dataSource =>
           dataSource &&
           dataSource.merge({
-            data: fromJS(
-              dataSource.transform ? dataSource.transform(data) : data,
-            ),
+            data: fromJS(data),
             status: DATA_SOURCE_STATUS.RESOLVED,
           }),
       )
@@ -348,11 +346,16 @@ regSaga(
     payload: { formKey, name, params },
   }) {
     try {
-      const { fn } = yield select(selectDataSource(formKey, name));
+      const { fn, transform } = yield select(selectDataSource(formKey, name));
       const data = yield call(fn, ...params);
       const timestamp = yield call(getTimestamp);
       yield put(
-        action('RESOLVE_DATA_SOURCE', { formKey, name, data, timestamp }),
+        action('RESOLVE_DATA_SOURCE', {
+          formKey,
+          name,
+          data: transform ? transform(data) : data,
+          timestamp,
+        }),
       );
     } catch (e) {
       console.error(e);

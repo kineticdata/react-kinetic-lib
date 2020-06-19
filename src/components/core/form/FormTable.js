@@ -41,8 +41,7 @@ const filters = ({ kappSlug }) => ({ types }) =>
       name: 'updatedBy',
       label: 'Updated By',
       type: 'user',
-      serialize: ({ values }) =>
-        values.getIn(['updatedBy','username']),
+      serialize: ({ values }) => values.getIn(['updatedBy', 'username']),
     },
   ];
 

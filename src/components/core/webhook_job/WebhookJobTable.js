@@ -1,7 +1,4 @@
-import {
-  fetchWebhooks,
-  fetchWebhookJobs,
-} from '../../../apis';
+import { fetchWebhooks, fetchWebhookJobs } from '../../../apis';
 import { generateTable } from '../../table/Table';
 import { List, Map } from 'immutable';
 
@@ -40,8 +37,12 @@ const filters = () => ({ values, definitions }) =>
       type: 'select',
       options: ({ definitions }) =>
         definitions
-          ? List(definitions)
-              .map(definition => Map({ label: definition.get('name'), value: definition.get('name') }))
+          ? List(definitions).map(definition =>
+              Map({
+                label: definition.get('name'),
+                value: definition.get('name'),
+              }),
+            )
           : List(),
     },
   ];
