@@ -16,10 +16,7 @@ const ERROR_TYPES = [
   'Unknown Variable Error',
 ];
 
-const dataSource = ({
-  runId,
-  id,
-}) => ({
+const dataSource = ({ runId, id }) => ({
   fn: fetchTaskRunErrors,
   params: paramData => [
     {
@@ -44,8 +41,12 @@ const dataSource = ({
       direction: paramData.sortColumn
         ? paramData.sortDirection.toUpperCase()
         : undefined,
-      start: paramData.filters.get('createdAtMin') ? paramData.filters.get('createdAtMin') : undefined,
-      end: paramData.filters.get('createdAtMax') ? paramData.filters.get('createdAtMax') : undefined,
+      start: paramData.filters.get('createdAtMin')
+        ? paramData.filters.get('createdAtMin')
+        : undefined,
+      end: paramData.filters.get('createdAtMax')
+        ? paramData.filters.get('createdAtMax')
+        : undefined,
     },
   ],
   transform: result => ({
