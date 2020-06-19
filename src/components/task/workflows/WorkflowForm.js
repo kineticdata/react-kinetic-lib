@@ -46,7 +46,7 @@ const dataSources = ({ workflowType, sourceName, sourceGroup, name }) => {
             include: 'predefinedSourceGroups,predefinedTreeNames',
           },
         ],
-      transform: result => result.source,
+      transform: result => result && result.source,
     },
     sources: {
       fn: fetchSources,
