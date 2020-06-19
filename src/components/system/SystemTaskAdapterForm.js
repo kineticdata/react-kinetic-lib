@@ -34,7 +34,7 @@ const handleSubmit = () => values => {
 };
 
 const fields = () => ({ defaultTaskDbAdapter }) =>
-  defaultTaskDbAdapter && [
+  (defaultTaskDbAdapter || defaultTaskDbAdapter === null) && [
     {
       name: 'type',
       label: 'Task Adapter',
