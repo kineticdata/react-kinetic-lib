@@ -1,7 +1,6 @@
 import { fetchTaskRunErrors } from '../../../apis/task';
 import { generateTable } from '../../table/Table';
 import { getIn } from 'immutable';
-import { defineFilter } from '../../../helpers';
 
 const ERROR_TYPES = [
   'Connector Error',
@@ -17,46 +16,27 @@ const ERROR_TYPES = [
   'Unknown Variable Error',
 ];
 
-const clientSide = defineFilter()
-  .between('createdAt', 'createdAtMin', 'createdAtMax')
-  .equals('id', 'id')
-  .equals('type', 'type')
-  .equals('status', 'status')
-  .end();
-
 const dataSource = ({
   runId,
-  sourceName,
-  sourceGroup,
-  sourceId,
-  tree,
-  status,
   id,
 }) => ({
   fn: fetchTaskRunErrors,
-  clientSide,
   params: paramData => [
     {
       runId,
-      source: sourceName
-        ? sourceName
-        : paramData.filters.getIn(['sourceName', 'value']),
-      group: sourceGroup
-        ? sourceGroup
-        : paramData.filters.getIn(['sourceGroup', 'value']),
-      tree: tree ? tree : paramData.filters.getIn(['treeName', 'value']),
-      sourceId: sourceId
-        ? sourceId
-        : paramData.filters.getIn(['sourceId', 'value']),
-      id: id ? id : paramData.filters.getIn(['id', 'value']),
-      status: status ? status : paramData.filters.getIn(['status', 'value']),
-      nodeId: paramData.filters.getIn(['nodeId', 'value']),
-      handlerId: paramData.filters.getIn(['handlerId', 'value']),
-      type: paramData.filters.getIn(['type', 'value']),
-      relatedItem1Id: paramData.filters.getIn(['relatedItem1Id', 'value']),
-      relatedItem1Type: paramData.filters.getIn(['relatedItem1Type', 'value']),
-      relatedItem2Id: paramData.filters.getIn(['relatedItem2Id', 'value']),
-      relatedItem2Type: paramData.filters.getIn(['relatedItem2Type', 'value']),
+      source: paramData.filters.get('sourceName'),
+      group: paramData.filters.get('sourceGroup'),
+      tree: paramData.filters.get('treeName'),
+      sourceId: paramData.filters.get('sourceId'),
+      id: id ? id : paramData.filters.get('id'),
+      status: paramData.filters.get('status'),
+      nodeId: paramData.filters.get('nodeId'),
+      handlerId: paramData.filters.get('handlerId'),
+      type: paramData.filters.get('type'),
+      relatedItem1Id: paramData.filters.get('relatedItem1Id'),
+      relatedItem1Type: paramData.filters.get('relatedItem1Type'),
+      relatedItem2Id: paramData.filters.get('relatedItem2Id'),
+      relatedItem2Type: paramData.filters.get('relatedItem2Type'),
       include: 'details,run,messages,messages.details',
       limit: paramData.pageSize,
       offset: paramData.nextPageToken,
@@ -64,6 +44,8 @@ const dataSource = ({
       direction: paramData.sortColumn
         ? paramData.sortDirection.toUpperCase()
         : undefined,
+      start: paramData.filters.get('createdAtMin') ? paramData.filters.get('createdAtMin') : undefined,
+      end: paramData.filters.get('createdAtMax') ? paramData.filters.get('createdAtMax') : undefined,
     },
   ],
   transform: result => ({
