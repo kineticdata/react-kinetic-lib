@@ -13,15 +13,7 @@ const clientSide = defineFilter(true)
   .startsWith('key', 'key')
   .end();
 
-const dataSource = ({
-  datastore,
-  custom,
-  shared,
-  staged,
-  locale,
-  keyHash,
-  context,
-}) => ({
+const dataSource = ({ shared, staged, locale, keyHash, context }) => ({
   fn: staged ? fetchStagedTranslations : fetchTranslations,
   clientSide,
   params: paramData => [
@@ -93,14 +85,7 @@ const columns = [
 ];
 
 export const EntryTable = generateTable({
-  tableOptions: [
-    'datastore',
-    'staged',
-    'shared',
-    'locale',
-    'keyHash',
-    'context',
-  ],
+  tableOptions: ['staged', 'shared', 'locale', 'keyHash', 'context'],
   columns,
   filters,
   dataSource,
