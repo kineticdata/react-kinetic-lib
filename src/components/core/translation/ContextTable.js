@@ -1,5 +1,5 @@
 import { generateTable } from '../../table/Table';
-import { fetchContexts } from '../../../apis';
+import { fetchContexts, fetchKapps } from '../../../apis';
 import { defineFilter } from '../../../helpers';
 
 const clientSide = defineFilter(true)
@@ -11,7 +11,7 @@ const clientSide = defineFilter(true)
 const dataSource = () => ({
   fn: fetchContexts,
   clientSide,
-  params: paramData => [
+  params: () => [
     {
       include: 'authorization,details',
       expected: true,
@@ -23,21 +23,49 @@ const dataSource = () => ({
   }),
 });
 
-const filters = () => () => [
-  { name: 'kapp', label: 'Kapp', type: 'text' },
-  { name: 'form', label: 'Form', type: 'text' },
-  { name: 'context', label: 'Context', type: 'text' },
-];
+const filterDataSources = () => ({
+  kapps: {
+    fn: fetchKapps,
+    params: () => [{ include: 'details' }],
+    transform: result =>
+      result.kapps.map(kapp => ({ label: kapp.slug, value: kapp.slug })),
+  },
+});
+
+const filters = () => ({ kapps }) =>
+  kapps && [
+    {
+      name: 'context',
+      label: 'Context Type',
+      type: 'select',
+      options: ['Kapp', 'Datastore', 'Custom'].map(el => ({
+        value: el,
+        label: el === 'Kapp' ? 'Form' : el,
+      })),
+      onChange: (_bindings, { setValue }) => {
+        setValue('kapp', '');
+        setValue('form', '');
+      },
+    },
+    {
+      name: 'kapp',
+      label: 'Kapp Slug',
+      type: 'select',
+      enabled: ({ values }) => values.get('context') === 'Kapp',
+      options: kapps,
+    },
+    { name: 'form', label: 'Form Slug', type: 'text' },
+  ];
 
 const columns = [
   {
     value: 'kapp',
-    title: 'Kapp Name',
+    title: 'Kapp Slug',
     sortable: true,
   },
   {
     value: 'form',
-    title: 'Form Name',
+    title: 'Form Slug',
     sortable: true,
   },
   {
@@ -51,6 +79,7 @@ export const ContextTable = generateTable({
   columns,
   filters,
   dataSource,
+  filterDataSources,
 });
 
 ContextTable.displayName = 'ContextTable';

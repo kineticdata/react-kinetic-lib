@@ -1,17 +1,22 @@
 import { generateTable } from '../../table/Table';
-import { fetchTranslations, fetchStagedTranslations } from '../../../apis';
+import {
+  fetchTranslations,
+  fetchStagedTranslations,
+  fetchEnabledLocales,
+} from '../../../apis';
 import { defineFilter } from '../../../helpers';
+import { Map } from 'immutable';
 
 const clientSide = defineFilter(true)
   .startsWith('locale', 'locale')
   .startsWith('context', 'context')
   .startsWith('key', 'key')
-  .startsWith('value', 'translation')
   .end();
 
 const dataSource = ({
   datastore,
   custom,
+  shared,
   staged,
   locale,
   keyHash,
@@ -23,7 +28,7 @@ const dataSource = ({
     {
       localeCode: locale && locale,
       keyHash: keyHash && keyHash,
-      contextName: context && context,
+      contextName: shared ? 'shared' : context ? context : null,
       include: 'authorization,details',
     },
   ],
@@ -33,11 +38,30 @@ const dataSource = ({
   }),
 });
 
-const filters = () => () => [
-  { name: 'locale', label: 'Locale', type: 'text' },
+const filterDataSources = () => ({
+  locales: {
+    fn: fetchEnabledLocales,
+    params: () => [{ include: 'details' }],
+    transform: result => result.locales,
+  },
+});
+
+const filters = () => ({ locales }) => [
+  {
+    name: 'locale',
+    label: 'Locale',
+    type: 'select',
+    options: ({ locales }) =>
+      locales &&
+      locales.map(loc => {
+        return Map({
+          value: loc.get('code'),
+          label: loc.get('code'),
+        });
+      }),
+  },
   { name: 'context', label: 'Context', type: 'text' },
   { name: 'key', label: 'Key', type: 'text' },
-  { name: 'translation', label: 'Translation', type: 'text' },
 ];
 
 const columns = [
@@ -61,16 +85,26 @@ const columns = [
     title: 'Translation',
     sortable: true,
   },
+  {
+    value: 'valueStaged',
+    title: 'New Translation',
+    sortable: true,
+  },
 ];
 
 export const EntryTable = generateTable({
-  tableOptions: ['datastore', 'staged', 'locale', 'keyHash', 'context'],
+  tableOptions: [
+    'datastore',
+    'staged',
+    'shared',
+    'locale',
+    'keyHash',
+    'context',
+  ],
   columns,
   filters,
   dataSource,
+  filterDataSources,
 });
 
 EntryTable.displayName = 'EntryTable';
-EntryTable.defaultProps = {
-  columns,
-};
