@@ -98,7 +98,7 @@ const formatFileSize = fileSize => {
 
 export const TextMessage = ({ discussion, message }) => (
   <div>
-    <Markdown source={produceContent(message)} skipHtml />
+    <Markdown source={produceContent(message)} skipHtml linkTarget="_blank" />
     {message.content
       .filter(c => c.type === 'attachment')
       .map(attachment => (
