@@ -129,31 +129,6 @@ Array [
 ]
 `;
 
-exports[`fields constraint given a null value 1`] = `
-<TextFieldMock
-  dirty={false}
-  enabled={true}
-  errors={Immutable.List []}
-  focusRef={null}
-  focused={false}
-  helpText=""
-  id="dGVzdCB0ZXN0"
-  key="test"
-  label=""
-  name="test"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onFocus={[Function]}
-  options={Immutable.List []}
-  placeholder=""
-  renderAttributes={Immutable.Map {}}
-  required={false}
-  touched={false}
-  value=""
-  visible={true}
-/>
-`;
-
 exports[`fields constraint given false 1`] = `
 <TextFieldMock
   dirty={false}
@@ -1216,31 +1191,6 @@ exports[`fields pattern given function that returns regex and matching initialVa
 `;
 
 exports[`fields pattern given function that returns regex and matching initialValue 2`] = `Array []`;
-
-exports[`fields pattern given null 1`] = `
-<TextFieldMock
-  dirty={false}
-  enabled={true}
-  errors={Immutable.List []}
-  focusRef={null}
-  focused={false}
-  helpText=""
-  id="dGVzdCB0ZXN0"
-  key="test"
-  label=""
-  name="test"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onFocus={[Function]}
-  options={Immutable.List []}
-  placeholder=""
-  renderAttributes={Immutable.Map {}}
-  required={false}
-  touched={false}
-  value={314159}
-  visible={true}
-/>
-`;
 
 exports[`fields pattern given regex and matching initialValue 1`] = `
 <TextFieldMock
