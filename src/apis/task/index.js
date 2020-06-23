@@ -937,6 +937,26 @@ export const createTaskTrigger = (options = {}) => {
     .catch(handleErrors);
 };
 
+export const updateTaskTrigger = (options = {}) => {
+  validateOptions('updateTaskTrigger', ['triggerId', 'trigger'], options);
+  axios
+    .put(
+      `${bundle.spaceLocation()}/app/components/task/app/api/v2/triggers/${
+        options.triggerId
+      }`,
+      options.trigger,
+      {
+        params: {
+          include: options.include,
+        },
+      },
+    )
+    .then(response => ({
+      trigger: response.data.trigger,
+    }))
+    .catch(handleErrors);
+};
+
 export const fetchTaskRunErrors = (options = {}) =>
   axios
     .get(`${bundle.spaceLocation()}/app/components/task/app/api/v2/errors`, {
