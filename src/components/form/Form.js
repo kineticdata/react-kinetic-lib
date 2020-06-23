@@ -387,17 +387,18 @@ regSaga(
   }),
 );
 
-regSaga(
-  takeEvery('RESET', function*({ payload: { formKey } }) {
-    try {
-      const { fields } = yield select(selectForm(formKey));
-      clearFilterFormValues(fields, formKey);
-      dispatch('SUBMIT', { formKey });
-    } catch (e) {
-      console.log(e);
-    }
-  }),
-);
+// TODO: Removing code to fix bug in production (James)
+// regSaga(
+//   takeEvery('RESET', function*({ payload: { formKey } }) {
+//     try {
+//       const { fields } = yield select(selectForm(formKey));
+//       //clearFilterFormValues(fields, formKey);
+//       dispatch('SUBMIT', { formKey });
+//     } catch (e) {
+//       console.log(e);
+//     }
+//   }),
+// );
 
 regSaga(
   takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet, onInvalid } }) {
