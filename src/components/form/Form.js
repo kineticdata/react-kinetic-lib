@@ -65,9 +65,6 @@ const resetValues = fields =>
     }),
   );
 
-const clearFilterFormValues = (fields, formKey) =>
-  fields.map(field => actions.setValue(formKey)(field.get('name'), null));
-
 export const checkRequired = field =>
   field.required && isEmpty(field.value)
     ? List([field.requiredMessage])
@@ -387,19 +384,6 @@ regSaga(
   }),
 );
 
-// TODO: Removing code to fix bug in production (James)
-// regSaga(
-//   takeEvery('RESET', function*({ payload: { formKey } }) {
-//     try {
-//       const { fields } = yield select(selectForm(formKey));
-//       //clearFilterFormValues(fields, formKey);
-//       dispatch('SUBMIT', { formKey });
-//     } catch (e) {
-//       console.log(e);
-//     }
-//   }),
-// );
-
 regSaga(
   takeEvery('SUBMIT', function*({ payload: { formKey, fieldSet, onInvalid } }) {
     try {
@@ -495,6 +479,12 @@ export const onSubmit = (formKey, fieldSet) => event => {
 };
 
 export const onReset = formKey => () => resetForm(formKey);
+
+export const resetFilterForm = (formKey, fieldSet) => event => {
+  event && event.preventDefault && event.preventDefault();
+  const values = Map(fieldSet.reduce((a, b) => ((a[b] = null), a), {}));
+  submitForm(formKey, { fieldSet, values });
+};
 
 export const clearError = formKey => event => {
   dispatch('CLEAR_ERROR', { formKey });
@@ -700,6 +690,7 @@ class FormImplComponent extends Component {
               <FormButtons
                 formOptions={formOptions}
                 reset={onReset(formKey)}
+                resetFilterForm={resetFilterForm(formKey, fieldSet)}
                 submit={onSubmit(formKey, fieldSet)}
                 submitting={submitting}
                 dirty={dirty}
