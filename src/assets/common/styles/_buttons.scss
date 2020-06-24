@@ -4,8 +4,8 @@
 
 // Button transtions
 button,
-input[type="submit"],
-input[type="button"],
+input[type='submit'],
+input[type='button'],
 .btn {
   -webkit-transition: all 0.15s ease-out;
   transition: all 0.15s ease-out;
@@ -228,23 +228,23 @@ input[type="button"],
 }
 
 // Kinetic Form Buttons
-button[data-element-type="button"] {
+button[data-element-type='button'] {
   @extend .btn-primary;
 
-  &[data-button-type="submit-page"],
-  &[data-button-type="custom"] {
+  &[data-button-type='submit-page'],
+  &[data-button-type='custom'] {
     @extend .btn-primary;
   }
 
-  &[data-button-type="custom"].btn-link {
+  &[data-button-type='custom'].btn-link {
     @extend .btn-link;
   }
 
-  &[data-button-type="custom"].btn-subtle {
+  &[data-button-type='custom'].btn-subtle {
     @extend .btn-subtle;
   }
 
-  &[data-button-type="previous-page"] {
+  &[data-button-type='previous-page'] {
     @extend .btn-secondary;
 
     position: relative;
@@ -259,13 +259,13 @@ button[data-element-type="button"] {
       height: 1.4rem;
       margin-top: -0.4rem;
       font-weight: 400;
-      font-family: "FontAwesome";
+      font-family: 'FontAwesome';
       line-height: 1;
-      content: "\f053";
+      content: '\f053';
     }
   }
 
-  &[data-button-type="save"] {
+  &[data-button-type='save'] {
     position: relative;
     @extend .btn-subtle;
 
@@ -280,9 +280,9 @@ button[data-element-type="button"] {
       height: 1rem;
       margin-top: -0.4rem;
       font-weight: 400;
-      font-family: "FontAwesome";
+      font-family: 'FontAwesome';
       line-height: 1;
-      content: "\f0c7";
+      content: '\f0c7';
     }
   }
 
