@@ -938,21 +938,16 @@ export const createTaskTrigger = (options = {}) => {
 };
 
 export const updateTaskTrigger = (options = {}) => {
-  validateOptions('updateTaskTrigger', ['triggerId', 'trigger'], options);
+  validateOptions('updateTaskTrigger', ['triggerId', 'status'], options);
   axios
     .put(
       `${bundle.spaceLocation()}/app/components/task/app/api/v2/triggers/${
         options.triggerId
       }`,
-      options.trigger,
-      {
-        params: {
-          include: options.include,
-        },
-      },
+      { status: options.status },
     )
     .then(response => ({
-      trigger: response.data.trigger,
+      trigger: response.data,
     }))
     .catch(handleErrors);
 };
