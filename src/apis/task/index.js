@@ -939,7 +939,7 @@ export const createTaskTrigger = (options = {}) => {
 
 export const updateTaskTrigger = (options = {}) => {
   validateOptions('updateTaskTrigger', ['triggerId', 'status'], options);
-  axios
+  return axios
     .put(
       `${bundle.spaceLocation()}/app/components/task/app/api/v2/triggers/${
         options.triggerId
