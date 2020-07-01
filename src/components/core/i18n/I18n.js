@@ -59,7 +59,7 @@ export class I18n extends React.Component {
   render() {
     return !this.state.loading ? (
       <I18nContext.Consumer>
-        {({ context, locale, translations, loadTranslations }) => {
+        {({ context, locale, translations, loadTranslations, disabled }) => {
           // If render funtion is passed, or children is a string or array of strings,
           // return the translation of the children string
           if (
@@ -68,7 +68,7 @@ export class I18n extends React.Component {
             (isarray(this.props.children) &&
               this.props.children.every(c => typeof c === 'string'))
           ) {
-            return (
+            return !disabled ? (
               <I18nTranslate
                 context={this.state.context || context}
                 locale={locale}
@@ -78,6 +78,10 @@ export class I18n extends React.Component {
               >
                 {this.props.children}
               </I18nTranslate>
+            ) : (
+              <I18nDisabled render={this.props.render}>
+                {this.props.children}
+              </I18nDisabled>
             );
           }
           // Otherwise wrap children in a new instance of I18nProvider with the new context
@@ -89,16 +93,23 @@ export class I18n extends React.Component {
                   locale: locale,
                   translations: translations,
                   loadTranslations: loadTranslations,
+                  disabled,
                 }}
               >
-                <I18nTranslate
-                  context={this.state.context}
-                  locale={locale}
-                  translations={translations}
-                  loadTranslations={loadTranslations}
-                >
-                  {this.props.children}
-                </I18nTranslate>
+                {!disabled ? (
+                  <I18nTranslate
+                    context={this.state.context}
+                    locale={locale}
+                    translations={translations}
+                    loadTranslations={loadTranslations}
+                  >
+                    {this.props.children}
+                  </I18nTranslate>
+                ) : (
+                  <I18nDisabled render={this.props.render}>
+                    {this.props.children}
+                  </I18nDisabled>
+                )}
               </I18nContext.Provider>
             );
           }
@@ -169,4 +180,12 @@ const trackKeys = (context, key) => {
   window.bundle = window.bundle || {};
   window.bundle.config = window.bundle.config || {};
   window.bundle.config.translationKeys = trackedKeys.toJS();
+};
+
+const I18nDisabled = ({ render, children }) => {
+  if (typeof render === 'function') {
+    return render(t => t);
+  } else {
+    return children || null;
+  }
 };

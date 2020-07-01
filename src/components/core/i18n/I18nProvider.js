@@ -15,22 +15,26 @@ export class I18nProvider extends React.Component {
   }
 
   componentDidMount() {
-    this.loadTranslations(this.props.locale, 'shared');
+    if (!this.props.disabled) {
+      this.loadTranslations(this.props.locale, 'shared');
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.locale !== this.props.locale) {
-      this.loadTranslations(this.props.locale, 'shared');
-    }
-    if (
-      !this.state.translations.equals(prevState.translations) &&
-      this.state.translations.get(this.props.locale) &&
-      bundle.config
-    ) {
-      bundle.config.translations = {
-        ...bundle.config.translations,
-        ...this.state.translations.get(this.props.locale).toJS(),
-      };
+    if (!this.props.disabled) {
+      if (prevProps.locale !== this.props.locale || prevProps.disabled) {
+        this.loadTranslations(this.props.locale, 'shared');
+      }
+      if (
+        !this.state.translations.equals(prevState.translations) &&
+        this.state.translations.get(this.props.locale) &&
+        bundle.config
+      ) {
+        bundle.config.translations = {
+          ...bundle.config.translations,
+          ...this.state.translations.get(this.props.locale).toJS(),
+        };
+      }
     }
   }
 
@@ -79,6 +83,7 @@ export class I18nProvider extends React.Component {
             locale: this.props.locale || 'en',
             translations: this.state.translations,
             loadTranslations: this.loadTranslations,
+            disabled: this.props.disabled,
           }}
         >
           {this.props.children}

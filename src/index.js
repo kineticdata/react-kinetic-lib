@@ -19,7 +19,7 @@ commitStore();
 
 const KineticLib = props => (
   <Provider store={store} context={context}>
-    <I18nProvider locale={props.locale}>
+    <I18nProvider locale={props.locale} disabled={props.disableTranslations}>
       <ComponentConfigContext.Provider
         value={DefaultFieldConfig.merge(DefaultTableConfig)
           .merge(remove(props.components || {}, 'fields'))
